@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Mathematica——画图3, 我心永恆的小站">
+    <meta name="keywords" content="Mathematica——画图2, 我心永恆的小站">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Mathematica——画图3 | 我心永恆的小站</title>
+    <title>Mathematica——画图2 | 我心永恆的小站</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -243,12 +243,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/20.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/21.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Mathematica——画图3</h1>
+                    <h1 class="description center-align post-title">Mathematica——画图2</h1>
                 </div>
             </div>
         </div>
@@ -402,134 +402,88 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="在一个网格中显示多个图形"><a href="#在一个网格中显示多个图形" class="headerlink" title="在一个网格中显示多个图形"></a><center>在一个网格中显示多个图形</center></h2><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>为了便于比较，你可能需要显示几个相关的图形在一个网格中。</p>
-<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>使用<code>GraphicsGrid</code>在mathematica6或GraphicsArray在较早的版本。<br>您可以使用表来将几个图形分组在一起，但这使你几乎无法控制图像的布局。<br>GraphicsGrid可以控制网格、框架、间距、分隔符和其他选项的大小。<br>网格的维是从作为第一个参数传递的图形列表的维中推断出来的。<br>你可以用<code>Partition</code>方便地将线性列表转换为所需的二维。<br>说了这么多似乎很抽象，我们举一个例子。</p>
-<pre><code>With[{a = 2},(*With函数，如果不懂，可以查帮助文档*)
- GraphicsGrid[(*GraphicsGrid函数，用来把图形组成一个大网格的*)
-  Partition[(*划分的函数，查看帮助文档*)
-   Table[
-    Plot[0.5 Sin@(2 x), {x, 0, 2 Pi},(*plot的函数以及变量的范围*)
-     Mesh -&gt; m, ImageSize -&gt; 300, Frame -&gt; True, FrameLabel -&gt; &quot;网格是&quot; &lt;&gt; ToString@m],(*plot的样式*)
-    {m, {None, Automatic, All, Full, 16, 50}}],(*Table的选项*)
-   a],(*Partition的选项*)
-  Frame -&gt; All](*GraphicsGrid的选项*)
- ]</code></pre><p><img src="3tu1.svg" alt=""></p>
-<h3 id="讨论"><a href="#讨论" class="headerlink" title="讨论"></a>讨论</h3><p>除了<code>GraphicsGrid</code>之外，Mathematica还提供了<code>GraphicsRow</code>和<code>GraphicsColumn</code>.<br><code>GraphicsGrid</code>提供横向布局，<code>GraphicsRow</code>提供纵向布局<br>尽管他们这些布局都比较简单但是不要小看他们，用这些简单的布局函数可以组建很复杂的图像。<br>在这里，我将演示如何使用<code>GraphicsRow</code>在另一个<code>GraphicsRow</code>旁边显示一个<code>GraphicsColumn</code>。<br><code>Frame</code>可以围绕行或列绘制(<code>Frame-&gt;True</code>)或另外划分的所有元素(<code>Frame-&gt;All</code>)。<br>看下面这个例子</p>
-<pre><code>With[
- {p1 = Table[
-    Graphics[{EdgeForm[Black], FaceForm[LightYellow],
-      Polygon[Table[
-        {Cos[2 Pi k/p], Sin[2 Pi k/p]}, {k, p}]]},
-     ImageSize -&gt; 350],
-    {p, 4, 8, 2}]},
- GraphicsRow[{
-   GraphicsColumn[p1, Frame -&gt; True],
-   GraphicsRow[p1, Frame -&gt; True]},
-  Frame -&gt; All, ImageSize -&gt; 450]]</code></pre><p><img src="3tu2.svg" alt=""></p>
+                <h2 id="极坐标绘图"><a href="#极坐标绘图" class="headerlink" title="极坐标绘图"></a><center>极坐标绘图</center></h2><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>你想去画一个极坐标图</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>使用<code>PolarPlot</code>，它以极坐标系中的角度为半径，在 (x) 轴上以0为轴，在 (y) 轴上以(\dfrac{\pi}{2})为轴画图。</p>
+<pre><code>GraphicsGrid[{
+{PolarPlot[1, {\[Theta], 0, 2 Pi}, PlotLabel -&gt; &quot;圆&quot;], 
+PolarPlot[\[Theta], {\[Theta], 0, 2 Pi}, PlotLabel -&gt; &quot;螺线&quot;]},
+{PolarPlot[Sin@(5 x), {x, 0, 2 Pi}, PlotLabel -&gt; &quot;环状图&quot;], 
+PolarPlot[1/(1.5 + Sin@(5 x)), {x, 0, 2 Pi}, PlotLabel -&gt; &quot;星鱼图&quot;]}
+}]</code></pre><p><img src="2tu1.svg" alt=""></p>
+<h3 id="讨论"><a href="#讨论" class="headerlink" title="讨论"></a>讨论</h3><p>与<code>Plot</code>一样，你可以同时绘制多个函数。</p>
+<pre><code>PolarPlot[{1, 0.5 Cos[20], Sin[Exp[\[Theta]/2]]}, {\[Theta], 0, 
+2 \[Pi]}, ImageSize -&gt; 350, 
+PlotStyle -&gt; {Directive[Black, Dashed], Directive[Black, DotDashed], 
+Directive[Black, Dotted]}]</code></pre><p><img src="2tu2.svg" alt=""></p>
+<p><code>PolarPlot</code>的选项基本上与<code>Plot</code>相同<br>一个明显的不同是：<strong><code>PolarPlot</code>没有与填充(<code>Filling</code>)相关的选项。</strong><br>还要注意，<strong>宽高比(<code>AspectRatio</code>)在默认情况下是自动的(<code>Automatic</code>)，即宽高比是1，</strong>这是有道理的，因为对称是极坐标图的基本美学。</p>
+<pre><code>Complement[Options[PolarPlot], Options[Plot]]</code></pre><pre><code>{AspectRatio -&gt; Automatic, Axes -&gt;      
+Automatic, AxesOrigin -&gt; {0, 0}, 
+MeshFunctions -&gt; {#3 &amp;}, 
+PlotRange -&gt; Automatic, PolarAxes -&gt; False, 
+PolarAxesOrigin -&gt; Automatic,
+ PolarGridLines -&gt; None, 
+PolarTicks -&gt; Automatic}</code></pre><p> 从上面的例子中我使用了<code>Complement</code>(补集),使用这个命令可以找到不属于<code>PolarPlot</code>的选项.<br> 可以看到和我说的是一样的.</p>
 <hr>
-<h2 id="给图像加图例"><a href="#给图像加图例" class="headerlink" title="给图像加图例"></a><center>给图像加图例</center></h2><h3 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h3><p>你现在一个图中有几个曲线，你希望使用图例来标识这几个曲线。</p>
-<h3 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h3><p>使用这个函数包 <code>PlotLegends package</code><br>这个包里面有这几个选项<br><code>PlotLegend</code>, <code>LegendPosition</code>, 和<code>LegendSize options</code><br>具体用法，看下面这个例子。</p>
-<pre><code>Needs[&quot;PlotLegends`&quot;];
-Plot[{Sin@x, Sin@(2 x)}, {x, 0, 2 Pi},
-PlotStyle -&gt; {Directive[Black, Dotted], Directive[Black, Dashed]},
-PlotLegend -&gt; {&quot;Sin x&quot;, &quot;Sin 2x&quot;},
-LegendPosition -&gt; {1, 0.1}, LegendSize -&gt; 0.75]</code></pre><p><img src="3tu3.svg" alt=""></p>
-<p>调用包首先需要用<code>Needs</code>函数，然后才能操作。<br><code>LegendsPosition</code>是指图例的 左下角的位置</p>
-<h3 id="讨论-1"><a href="#讨论-1" class="headerlink" title="讨论"></a>讨论</h3><p>有多种方式进一步调整<code>Legends</code>的外观。你<br>1.<code>LegendShado</code>(图例阴影)你可以关闭或控制投影的偏移;<br>2.使用 <code>LegendSpacing</code>, <code>LegendTextSpace</code>, <code>LegendLabelSpace</code>,和 <code>LegendBorderSpace</code>控制各种元素的间距;<br>3.使用<code>LegendTextDirection</code>, <code>LegendTextOffset</code>, <code>LegendSpacing</code>, 和 <code>LegendTextSpace</code>控制标签<br>4.用<code>LegendLabel</code> 和 <code>LegendLabelSpace</code>给图例一个标签<br><strong>注意 <code>LegendTextSpace</code>的效果，这有点违反直觉，它表示文本空间与键盒大小的比例，因此较大的数字实际上缩小了图例。</strong></p>
-<p><code>LegendSpacing</code>控制每个键盒大小为1的范围内的空间。<br>扯了这么多，太抽象像了，看例子。然后再回过来看这些。</p>
-<h4 id="LegendShadow-阴影"><a href="#LegendShadow-阴影" class="headerlink" title="LegendShadow (阴影)"></a>LegendShadow (阴影)</h4><p>step1<br>我先规定样式,为了方便后面操作</p>
-<pre><code>Needs[&quot;PlotLegends`&quot;];
-p = Sequence[
-   PlotStyle -&gt; {Directive[Black, Dotted], Directive[Black, Dashed]}, 
-   PlotLegend -&gt; {&quot;Sin x&quot;, &quot;cos 2x&quot;}, LegendPosition -&gt; {1, 0.1}, 
-   LegendSize -&gt; 0.7, ImageSize -&gt; 350];</code></pre><p>第一个例子：</p>
-<pre><code>Plot[{Sin@x, Cos@x}, {x, 0, 2 Pi},
- Evaluate[p], LegendShadow -&gt; None, LegendSpacing -&gt; 1/2, LegendTextSpace -&gt; 10]</code></pre><p><img src="3tu4.svg" alt=""><br><strong>说明</strong> </p>
-<p><code>Evaluate[p]</code>的作用是让p这个样式生效。<br><code>LegendShadow -&gt; None</code>表示不加阴影</p>
-<h4 id="LegendSpacing"><a href="#LegendSpacing" class="headerlink" title="LegendSpacing"></a>LegendSpacing</h4><p>我们看下面这个例子</p>
-<pre><code>GraphicsRow[{Plot[{Sin[x], Cos[x]}, {x, 0, 2 Pi}, 
-   PlotLegend -&gt; {&quot;sine&quot;, &quot;cosine&quot;}, LegendSpacing -&gt; 0],
-  Plot[{Sin[x], Cos[x]}, {x, 0, 2 Pi}, 
-   PlotLegend -&gt; {&quot;sine&quot;, &quot;cosine&quot;}, LegendSpacing -&gt; 1]}, 
- ImageSize -&gt; 700]</code></pre><p><img src="3tu5.svg" alt=""></p>
-<h4 id="LegendTextSpace"><a href="#LegendTextSpace" class="headerlink" title="LegendTextSpace"></a>LegendTextSpace</h4><p>对比下面这两个图，可以看出差别。</p>
-<pre><code>Row[{Plot[{Sin[x], Cos[x]}, {x, 0, 2 Pi}, Evaluate[p], 
-   PlotLegend -&gt; {&quot;sine&quot;, &quot;cosine&quot;}, LegendTextSpace -&gt; 10],
-  Plot[{Sin[x], Cos[x]}, {x, 0, 2 Pi}, 
-   PlotLegend -&gt; {&quot;sine&quot;, &quot;cosine&quot;}, Evaluate[p], 
-   LegendTextSpace -&gt; 5]}]</code></pre><p><img src="3tu6.svg" alt=""><br>有时你想要创建一个更自定义的图例。在这种情况下，考虑<code>Legend</code>和<code>ShowLegend</code>。</p>
+<h2 id="参数图的绘制"><a href="#参数图的绘制" class="headerlink" title="参数图的绘制"></a><center>参数图的绘制</center></h2><h3 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h3><p> 你需要去绘制参数图,比如说你想绘制这样的参数图.<br> $${x=x[t],y=y[t]}$$</p>
+<h3 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h3><p> 这是一些常见的(Lissajous)曲线。请注意参数绘图如何以列表的形式获取一对函数。</p>
+<pre><code>GraphicsGrid[{{ParametricPlot[{Sin[Pi u], Sin[2 Pi u]}, {u, 0, 2}, 
+    PlotLabel -> "(1:2)"], 
+   ParametricPlot[{Sin[2 Pi u], Sin[Pi u]}, {u, 0, 2}, 
+    PlotLabel -> " (2:1)"]}, {ParametricPlot[{Sin[5 Pi u], 
+     Sin[4 Pi u]}, {u, 0, 2}, PlotLabel -> "(5:4) "], 
+   ParametricPlot[{Sin[9 Pi u], Sin[8 Pi u]}, {u, 0, 2}, 
+    PlotLabel -> "(9:8) "]}}, Background -&gt; White, ImageSize -&gt; 400]</code></pre><p><img src="2tu3.svg" alt=""></p>
+<h3 id="讨论-1"><a href="#讨论-1" class="headerlink" title="讨论"></a>讨论</h3><p>  这是一个显示相移对频率信号影响的动画。</p>
+<pre><code>   GraphicsGrid[{{ParametricPlot[{Sin[Pi u], Sin[2 Pi u]}, {u, 0, 2}, 
+    PlotLabel -> "(1:2)"], 
+   ParametricPlot[{Sin[2 Pi u], Sin[Pi u]}, {u, 0, 2}, 
+    PlotLabel -> " (2:1)"]}, {ParametricPlot[{Sin[5 Pi u], 
+     Sin[4 Pi u]}, {u, 0, 2}, PlotLabel -> "(5:4) "], 
+   ParametricPlot[{Sin[9 Pi u], Sin[8 Pi u]}, {u, 0, 2}, 
+    PlotLabel -> "(9:8) "]}}, Background -&gt; White, ImageSize -&gt; 400]</code></pre><p>  你也可以用<code>ParametricPlot</code>去画一个参数<strong>曲面</strong><br>  在这里引入了第二个参数。</p>
+<pre><code>ParametricPlot[{r^2 Cos[Sqrt[t]], Sqrt[r] Sin
+[r t]}, {t, 0, 2 Pi}, {r,1, 2}, Mesh -&gt; Full]</code></pre><p><img src="2tu4.svg" alt=""><br>关于这个函数更多的可以看帮助文档。</p>
 <hr>
-<h2 id="自定义2D图形"><a href="#自定义2D图形" class="headerlink" title="自定义2D图形"></a><center>自定义2D图形</center></h2><h3 id="问题-2"><a href="#问题-2" class="headerlink" title="问题"></a>问题</h3><p>你希望创建包含线条、正方形、圆形或者其他几何对象的图形</p>
-<h3 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h3><p>Mathematica有一个通用的图形函数集合：<br>点<code>Point</code><br>线<code>Line</code><br>矩形<code>Rectangle</code>  圆<code>Circle</code> 圆盘 <code>Disk</code>,<br>多边形<code>Polygon</code><br>箭头 <code>Arrow</code>, 栅格<code>Raster</code><br>文本<code>Text</code><br>我们使用这些基本元素创造一个很复杂的图形，雪人。<br><img src="3tu7.png" alt=""><br>代码太长了，这里省略</p>
-<h3 id="讨论-2"><a href="#讨论-2" class="headerlink" title="讨论"></a>讨论</h3><p>充分利用图形原语的关键之一是学习如何将它们与图形指令结合起来。<br>有些指令非常具体，而另一些则非常笼统。<br>例如，<code>Arrowheads</code>只适用于<code>Arrow</code>，而<code>Red</code>和<code>Opacity</code>适用于所有基本元素。<br><strong>一个指令将适用于它后面的所有对象，受限于在列表中嵌套对象所创建的作用域。</strong><br>例如，在下面的图形中，<code>Red</code>适用于<code>Disk</code>和<code>Rectangle</code>，但不适用于<code>Line</code>(线条)。<br>因为<code>Line</code>(线条)在其自己的范围内具有特定的颜色和粗细。</p>
-<pre><code>Graphics[{Red, Disk[{-2, -2}, 0.5], 
-  Rectangle[], {Thickness[0.02], Black, 
-   Line[{{-1.65, -1.65}, {0, 0}}]}}, ImageSize -&gt; Small]</code></pre><p><img src="3tu8.svg" alt=""></p>
-<h4 id="Color-颜色"><a href="#Color-颜色" class="headerlink" title="Color(颜色)"></a>Color(颜色)</h4><p><code>Color</code>指令可以使用指定的颜色:<br>红色、绿色、蓝色、黑色、白色、灰色等<br>你还可以使用<code>RGBColor</code> 或 <code>Hue</code>、 <code>CMYKColor</code> 、 <code>GrayLevel</code> 和 <code>Blend</code> 来合成颜色。<br>在Mathematica 6或更高版本中，这些指令除了定义颜色或灰色设置的值外，还可以使用不透明度值。<br><code>Blend</code>(混合)也是mathematica6的新功能。</p>
-<pre><code>Graphics[Table[{Hue@x,Rectangle[{x,1},{x+0.1,2}]},{x,0,0.99,0.1}]]</code></pre><p><img src="3tu9.svg" alt=""></p>
-<pre><code>Graphics[Table[{Hue@x, Rectangle[{x, 1}, {x + 0.05, 2}],
-   Blend[{Hue[x], Hue[x + 0.05]}, 0.25], 
-   Rectangle[{x + 0.05, 1}, {x + 0.1, 2}]}, {x, 0, 0.99, 0.1}]]</code></pre><p><img src="3tu10.svg" alt=""></p>
-<h4 id="Thickness-粗细"><a href="#Thickness-粗细" class="headerlink" title="Thickness(粗细)"></a>Thickness(粗细)</h4><p><code>Thickness[r]</code>是相对于图形的总宽度指定的，因此，<strong>刻度是随尺寸变化而变化的</strong>。<br><code>AbsoluteThickness[d]</code>的单位是打印机点(1/72英寸)，不缩放。<br> <code>Thick</code> 和 <code>Thin</code> 是<code>AbsoluteThickness</code>的预定义版本(分别为0.25和2)。<br> <code>Thickness</code>指令适用于包含线条(如线条、多边形、箭头等)的元素。</p>
-<pre><code>(*注意给线条加粗，需要把命令放到Line的前面*)
-Graphics[{
-  {Line[{{0, -1}, {0, 1}}]},
-  {Thin, Line[{{0.5, -1}, {0.5, 1}}]},
-  {Thick, Line[{{1, -1}, {1, 1}}]},
-  {AbsoluteThickness@3, Line[{{1.5, -1}, {1.5, 1}}]}
-  }]</code></pre><p><img src="3tu11.svg" alt=""></p>
+<h2 id="数据的绘制"><a href="#数据的绘制" class="headerlink" title="数据的绘制"></a><center>数据的绘制</center></h2><h3 id="问题-2"><a href="#问题-2" class="headerlink" title="问题"></a>问题</h3><p>  你已经有一套数据了，你想把这些数据画出来。</p>
+<h3 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h3><p>  利用<code>ListPlot</code></p>
+<pre><code>ListPlot[Table[Prime@i/(1 + Log[Fibonacci[i]]), {i, 1, 100}], 
+ImageSize -&gt; 350]</code></pre><p>  <img src="2tu5.svg" alt=""><br>  上面这个图，我们使用了一个列表，也就是x值列表</p>
+<pre><code>  ListPlot[Table[{PrimePi[i], Prime[i]}, {i, 1, 100}], ImageSize -&gt; 350]</code></pre><p>  <img src="2tu6.svg" alt=""><br>  上面这个图，我们使用了一个列表，也就是( (x,y) )值列表</p>
+<h3 id="讨论-2"><a href="#讨论-2" class="headerlink" title="讨论"></a>讨论</h3><p> <code>ListPlot</code>与<code>Plot</code>大部分选项都一样;<br>  在这里我不再重复它们，我只展示它们之间的区别。</p>
+<pre><code>  Complement[Options[ListPlot], Options[Plot]]</code></pre><pre><code>  {Axes -&gt; Automatic, DataRange -&gt;  Automatic, Frame -&gt; Automatic, 
+  InterpolationOrder -&gt; None, IntervalMarkers -&gt; Automatic, 
+  IntervalMarkersStyle -&gt; Automatic, Joined -&gt; False, 
+  LabelingFunction -&gt; Automatic, MaxPlotPoints -&gt; \[Infinity], 
+  PlotLayout -&gt; &quot;Overlaid&quot;, PlotMarkers -&gt; None, 
+  PlotRange -&gt; Automatic}</code></pre><h4 id="DataRange-范围"><a href="#DataRange-范围" class="headerlink" title="DataRange(范围)"></a>DataRange(范围)</h4><p>  <code>DataRange</code>允许你为 (x) 轴指定<strong>最小值</strong>和<strong>最大值</strong>。</p>
+<pre><code>  data = Table[Sin[x], {x, -10, 10, 0.1}];
+   GraphicsRow[{ListPlot@data, ListPlot[data, DataRange -&gt; {-10, 10}]},ImageSize -&gt; 400]</code></pre><p>  <img src="2tu7.svg" alt=""><br>  在这个图中，假设x轴是整数值。</p>
+<h4 id="InterpolationOrde-内插阶数"><a href="#InterpolationOrde-内插阶数" class="headerlink" title="InterpolationOrde(内插阶数)"></a>InterpolationOrde(内插阶数)</h4><p>  <code>InterpolationOrde</code>(内插阶数)与<code>Joined</code>(连接点)一起使用，以控制点之间绘制的线被插值的方式<br>  <code>InterpolationOrder-&gt;n</code>指定应该在数据点间进行 <code>n</code> 次多项式的插值.<br>  n=1表示直线<br>  n 较高会让图像很平滑<br>  尽管对于大多数实际情况来说来说，n=2 就足够了。</p>
+<pre><code>  data1 = RandomReal[{0, 2}, 20];
+  GraphicsColumn[
+  Table[ListPlot[data1, Joined -&gt; True,InterpolationOrder -&gt; i, 
+  PlotLabel -&gt; (&quot;内插阶数为&quot; &lt;&gt; ToString@i), 
+  ImageSize -&gt; Large], {i, {1, 2, 3, 4}}]]</code></pre><p>  <img src="2tu8.svg" alt=""></p>
 <hr>
-<h2 id="用文本注释图形"><a href="#用文本注释图形" class="headerlink" title="用文本注释图形"></a><center>用文本注释图形</center></h2><h3 id="问题-3"><a href="#问题-3" class="headerlink" title="问题"></a>问题</h3><p>你想把文本加到你的图像上</p>
-<h3 id="解决方案-3"><a href="#解决方案-3" class="headerlink" title="解决方案"></a>解决方案</h3><p>使用带样式的文本指定字体族、字体替换、字体大小、字体权重、字体倾斜、字体跟踪、字体颜色和背景 </p>
-<pre><code>Graphics[{
-  Text[Style[&quot;大小为12的默认字体&quot;, FontSize -&gt; 12], {0, 0}], 
-  Text[Style[&quot;大小为16的斜体字体&quot;, FontSize -&gt; 16, 
-    FontSlant -&gt; Italic], {0, -.2}], 
-  Text[Style[&quot;大小为14的粗体字体&quot;, FontSize -&gt; 14, 
-    FontWeight -&gt; Bold], {0, -.4}], 
-  Text[Style[&quot;大小为14的Arial字体 &quot;, FontSize -&gt; 14, 
-    FontFamily -&gt; &quot;Arial&quot;], {0, -.6}], 
-  Text[Style[&quot;大小为14的Aria的缩小l字体&quot;, FontSize -&gt; 14, 
-    FontFamily -&gt; &quot;Arial&quot;, FontTracking -&gt; &quot;Narrow&quot;], {0, -.8}], 
-  Text[Style[&quot;大小为14的黑底白字&quot;, FontSize -&gt; 14, FontWeight -&gt; Bold, 
-    FontColor -&gt; White, Background -&gt; Black], {0, -1}]}]</code></pre><p><img src="3tu12.svg" alt=""></p>
-<h3 id="讨论-3"><a href="#讨论-3" class="headerlink" title="讨论"></a>讨论</h3><p>下面这个图中我将演示各种绘图选项，它们包含向整个图形、框架和轴添加标签的选项。</p>
-<pre><code>op = {PlotLabel -&gt; 
-    Style[0.5 Sin [2 x], FontSize -&gt; 18, FontFamily -&gt; &quot;Arial&quot;],
-   AxesLabel -&gt; {&quot;x&quot;, &quot;y&quot;},
-   LabelStyle -&gt; 
-    Directive[Bold, FontFamily -&gt; &quot;Arial&quot;, FontSize -&gt; 13],
-   Frame -&gt; True, FrameLabel -&gt; Style[&quot;正弦曲线&quot;, FontSlant -&gt; Italic],
-   ImageSize -&gt; 350};
-Plot[0.5 Sin[2 x], {x, 0, 2 Pi}, Evaluate@op]</code></pre><p><img src="3tu13.svg" alt=""></p>
-<hr>
-<h2 id="创建自定义的箭头"><a href="#创建自定义的箭头" class="headerlink" title="创建自定义的箭头"></a><center>创建自定义的箭头</center></h2><h3 id="问题-4"><a href="#问题-4" class="headerlink" title="问题"></a>问题</h3><p>你希望创建带有自定义箭头、尾部和连接线的箭头，以便在图形注释中使用</p>
-<h3 id="解决方案-4"><a href="#解决方案-4" class="headerlink" title="解决方案"></a>解决方案</h3><pre><code>With[{h = Graphics[{Disk[{0, 0}, 0.75]}],
-  t = Graphics[
-    {Line[{{-0.5, 0}, {0.5, 0}}],
-     Line[{{0, -0.6}, {0, 0.6}}],
-     Line[{{0.2, -0.6}, {0.2, 0.6}}]}]},
- Graphics[{Arrowheads[{{0.05, 1, h}, {0.1, 0, t}}],
-   Arrow[{{0, 0}, {0.25, 0.25}}]}, ImageSize -&gt; 200]]</code></pre><p><img src="3tu14.svg" alt=""></p>
-<h3 id="讨论-4"><a href="#讨论-4" class="headerlink" title="讨论"></a>讨论</h3><p>箭头有很多功能。<br>你可以很容易地创建双端箭头和沿某个方向具有多个箭头的箭头。</p>
-<pre><code>Graphics[
- {Arrowheads[{-0.05, 0.05}], Arrow[{{0, 0}, {1, 0}}],
-  Arrowheads[{0, 0.05, 0.05, 0.05, 0.05}], 
-  Arrow[{{0, -0.2}, {1, -0.2}}]}, ImageSize -&gt; 350]</code></pre><p><img src="3tu15.svg" alt=""><br>你也可以考虑使用箭头来标记箭头，但Mathematica没有专门处理这种“箭头”，所以你可能会得到不希望的效果。</p>
-<pre><code>Graphics[
- {Arrowheads
-   [{0, {Automatic, 0.5, 
-     Graphics[{Text[
-        Style[&quot;Label&quot;, FontSize -&gt; 14, FontWeight -&gt; Bold]]}]}, 0.1}],
-  Arrow[{{0, 0}, {-0.25, 0.25}}]}]</code></pre><p><img src="3tu16.svg" alt=""><br>一个更好的选择是使用文本或Inset的旋转，或者使用GraphPlot或相关函数来定位文本<br>Inset比手动定位文本的优点是:如果你不介意标签不平行于箭头，你可以自动定心.</p>
-<pre><code>Graphics[{Arrowheads[{0.1}], Arrow[{{0, 0}, {-0.25, 0.25}}], 
-  Rotate[Text[
-    Style[&quot;Label&quot;, FontSize -&gt; 14, FontWeight -&gt; Bold], {-0.14, 
-     0.11}], -Pi/4]}, ImageSize -&gt; 350]</code></pre><p><img src="3tu17.svg" alt=""></p>
-<pre><code>Graphics[{Arrowheads[{0.1}], Arrow[{{0, 0}, {-0.25, 0.25}}], 
-  Inset[Text[Style[&quot;Label&quot;, FontSize -&gt; 14, FontWeight -&gt; Bold]]]}, 
- ImageSize -&gt; Small]</code></pre><p><img src="3tu18.svg" alt=""></p>
-<p><font size=6> 2D图部分完！ </font ></p>
+<h2 id="将两个或多个图合成一个图"><a href="#将两个或多个图合成一个图" class="headerlink" title="将两个或多个图合成一个图"></a><center>将两个或多个图合成一个图</center></h2><h3 id="问题-3"><a href="#问题-3" class="headerlink" title="问题"></a>问题</h3><p> 你想要在一个图表中混合几种不同的图。</p>
+<h3 id="解决方案-3"><a href="#解决方案-3" class="headerlink" title="解决方案"></a>解决方案</h3><p> 用<code>Show</code>函数可以解决这个问题。</p>
+<pre><code> plot = Plot[x, {x, 1, 100}];
+ listplot = ListPlot[Table[Prime@x, {x, 1, 100}]];
+ Show[plot, listplot, Background -&gt; White, ImageSize -&gt; 350]</code></pre><p><img src="2tu9.svg" alt=""></p>
+<h3 id="讨论-3"><a href="#讨论-3" class="headerlink" title="讨论"></a>讨论</h3><p> 在使用<code>Show</code>组合绘图时，可以覆盖各个图中使用的选项。<br> 例如，你可以覆盖<strong>轴的位置、纵横比和绘图范围</strong>。<br> 看下面这个例子。</p>
+<pre><code>  g1 = Plot[x^2 - x, {x, 1, 10},AspectRatio -&gt; 0.2, 
+   AxesOrigin -&gt; {1, 50}];
+   g2 = Plot[x^2 + x, {x, 1, 10}, AspectRatio -&gt; 0.8, 
+   AxesOrigin -&gt; {6, 30}];
+   GraphicsColumn[{g1, g2, 
+   Show[g1, g2, AspectRatio -&gt; 1, PlotRange -&gt; All, 
+   AxesOrigin -&gt; {0, 0}]}, ImageSize -&gt; 35</code></pre><p><img src="2tu10.svg" alt=""><br><code>Show</code>可以用来组合任意图形。<br>例如，可以为图形提供背景图像。</p>
+<pre><code>i=你的图片;
+Show[i, Plot[x, {x, 0, 700}, PlotStyle -&gt; 
+{Red, Thick}], 
+PlotRange -&gt; All, ImageSize -&gt; 350]
+Export[&quot;tu11.svg&quot;, %]</code></pre><p><img src="2tu11.svg" alt=""><br>我最喜欢的一个数学插图是通过一个函数的迭代来实现收敛.<br>这里，<code>NestList</code>执行12次迭代。<br>我们每两个复制一次，然后展开，并以1为起点把它们分成对，从而得到一些点来说明起点1到x = Cos[x]的解的收敛性。<br><img src="tu13.png" alt=""></p>
+<p><img src="2tu12.svg" alt=""><br>   说明<br>   <strong><code>Show</code>使用以下规则来组合图像:<br>   使用图像区间的并集。</strong><br>   除非被<code>Show</code>的选项覆盖，否则使用<strong>第一个<code>plot</code></strong>中的选项的值。</p>
 
             </div>
             <hr/>
@@ -555,7 +509,7 @@ Plot[0.5 Sin[2 x], {x, 0, 2 Pi}, Evaluate@op]</code></pre><p><img src="3tu13.svg
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="mxv7y2.coding-pages.com/2020/03/13/Mathematica%E2%80%94%E2%80%94%E7%94%BB%E5%9B%BE3/">mxv7y2.coding-pages.com/2020/03/13/Mathematica%E2%80%94%E2%80%94%E7%94%BB%E5%9B%BE3/</a>
+                    <a href="mxv7y2.coding-pages.com/Mathematica%E2%80%94%E2%80%94%E7%94%BB%E5%9B%BE2/">mxv7y2.coding-pages.com/Mathematica%E2%80%94%E2%80%94%E7%94%BB%E5%9B%BE2/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -768,39 +722,25 @@ Plot[0.5 Sin[2 x], {x, 0, 2 Pi}, Evaluate@op]</code></pre><p><img src="3tu13.svg
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/03/14/Mathematica%E2%80%94%E2%80%94%E6%A8%A1%E5%BC%8F%EF%BC%8C%E8%A7%84%E5%88%991/">
+                <a href="/Mathematica%E2%80%94%E2%80%94%E7%94%BB%E5%9B%BE3/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="Mathematica——模式，规则1">
+                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="Mathematica——画图3">
                         
-                        <span class="card-title">Mathematica——模式，规则1</span>
+                        <span class="card-title">Mathematica——画图3</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            
-
-p {font-size:18px;}
-
-
-
-
- 写在前面的话本次的mma教程，有以下改进：1.代码的输入和结果分开 2.提供了在线运行，不过速度很慢。3.其他小改动
-
-
-
-1.1介绍
-
-
-
- 在这一章中，我们将 在Mathematic
+                            在一个网格中显示多个图形问题为了便于比较，你可能需要显示几个相关的图形在一个网格中。
+解决方案使用GraphicsGrid在mathematica6或GraphicsArray在较早的版本。您可以使用表来将几个图形分组在一起，但这使你几乎无
                         
                     </div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2020-03-14
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-03-13
                         </span>
                         <span class="publish-author">
                             
@@ -832,27 +772,25 @@ p {font-size:18px;}
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2020/03/13/Mathematica%E2%80%94%E2%80%94%E7%94%BB%E5%9B%BE2/">
+                <a href="/Mathematica%E2%80%94%E2%80%94%E7%94%BB%E5%9B%BE1/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="Mathematica——画图2">
+                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="Mathematica——画图1">
                         
-                        <span class="card-title">Mathematica——画图2</span>
+                        <span class="card-title">Mathematica——画图1</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            极坐标绘图问题你想去画一个极坐标图
-解决方案使用PolarPlot，它以极坐标系中的角度为半径，在 (x) 轴上以0为轴，在 (y) 轴上以(\dfrac{\pi}{2})为轴画图。
-GraphicsGrid[{
-{PolarPlot[1,
+                            0.简介Mathematica在同类计算机辅助数学工具中独树一帜的一个特点是它的高级图形功能。可以用InputForm来查看图的本质
+ListPlot[{1, 2, 5, 8}] // InputForGraphics[{{}, {{{}}
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-03-13
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-03-12
                             </span>
                         <span class="publish-author">
                             
