@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Mathematica——画图3, 我心永恆的小站">
+    <meta name="keywords" content="Mathematica——规则模式2, 我心永恆的小站">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Mathematica——画图3 | 我心永恆的小站</title>
+    <title>Mathematica——规则模式2 | 我心永恆的小站</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -243,12 +243,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/20.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/5.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Mathematica——画图3</h1>
+                    <h1 class="description center-align post-title">Mathematica——规则模式2</h1>
                 </div>
             </div>
         </div>
@@ -385,7 +385,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-03-13
+                    2020-03-20
                 </div>
                 
 
@@ -402,135 +402,132 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="在一个网格中显示多个图形"><a href="#在一个网格中显示多个图形" class="headerlink" title="在一个网格中显示多个图形"></a><center>在一个网格中显示多个图形</center></h2><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>为了便于比较，你可能需要显示几个相关的图形在一个网格中。</p>
-<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>使用<code>GraphicsGrid</code>在mathematica6或GraphicsArray在较早的版本。<br>您可以使用表来将几个图形分组在一起，但这使你几乎无法控制图像的布局。<br>GraphicsGrid可以控制网格、框架、间距、分隔符和其他选项的大小。<br>网格的维是从作为第一个参数传递的图形列表的维中推断出来的。<br>你可以用<code>Partition</code>方便地将线性列表转换为所需的二维。<br>说了这么多似乎很抽象，我们举一个例子。</p>
-<pre><code>With[{a = 2},(*With函数，如果不懂，可以查帮助文档*)
- GraphicsGrid[(*GraphicsGrid函数，用来把图形组成一个大网格的*)
-  Partition[(*划分的函数，查看帮助文档*)
-   Table[
-    Plot[0.5 Sin@(2 x), {x, 0, 2 Pi},(*plot的函数以及变量的范围*)
-     Mesh -&gt; m, ImageSize -&gt; 300, Frame -&gt; True, FrameLabel -&gt; &quot;网格是&quot; &lt;&gt; ToString@m],(*plot的样式*)
-    {m, {None, Automatic, All, Full, 16, 50}}],(*Table的选项*)
-   a],(*Partition的选项*)
-  Frame -&gt; All](*GraphicsGrid的选项*)
- ]</code></pre><p><img src="3tu1.svg" alt=""></p>
-<h3 id="讨论"><a href="#讨论" class="headerlink" title="讨论"></a>讨论</h3><p>除了<code>GraphicsGrid</code>之外，Mathematica还提供了<code>GraphicsRow</code>和<code>GraphicsColumn</code>.<br><code>GraphicsGrid</code>提供横向布局，<code>GraphicsRow</code>提供纵向布局<br>尽管他们这些布局都比较简单但是不要小看他们，用这些简单的布局函数可以组建很复杂的图像。<br>在这里，我将演示如何使用<code>GraphicsRow</code>在另一个<code>GraphicsRow</code>旁边显示一个<code>GraphicsColumn</code>。<br><code>Frame</code>可以围绕行或列绘制(<code>Frame-&gt;True</code>)或另外划分的所有元素(<code>Frame-&gt;All</code>)。<br>看下面这个例子</p>
-<pre><code>With[
- {p1 = Table[
-    Graphics[{EdgeForm[Black], FaceForm[LightYellow],
-      Polygon[Table[
-        {Cos[2 Pi k/p], Sin[2 Pi k/p]}, {k, p}]]},
-     ImageSize -&gt; 350],
-    {p, 4, 8, 2}]},
- GraphicsRow[{
-   GraphicsColumn[p1, Frame -&gt; True],
-   GraphicsRow[p1, Frame -&gt; True]},
-  Frame -&gt; All, ImageSize -&gt; 450]]</code></pre><p><img src="3tu2.svg" alt=""></p>
-<hr>
-<h2 id="给图像加图例"><a href="#给图像加图例" class="headerlink" title="给图像加图例"></a><center>给图像加图例</center></h2><h3 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h3><p>你现在一个图中有几个曲线，你希望使用图例来标识这几个曲线。</p>
-<h3 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h3><p>使用这个函数包 <code>PlotLegends package</code><br>这个包里面有这几个选项<br><code>PlotLegend</code>, <code>LegendPosition</code>, 和<code>LegendSize options</code><br>具体用法，看下面这个例子。</p>
-<pre><code>Needs[&quot;PlotLegends`&quot;];
-Plot[{Sin@x, Sin@(2 x)}, {x, 0, 2 Pi},
-PlotStyle -&gt; {Directive[Black, Dotted], Directive[Black, Dashed]},
-PlotLegend -&gt; {&quot;Sin x&quot;, &quot;Sin 2x&quot;},
-LegendPosition -&gt; {1, 0.1}, LegendSize -&gt; 0.75]</code></pre><p><img src="3tu3.svg" alt=""></p>
-<p>调用包首先需要用<code>Needs</code>函数，然后才能操作。<br><code>LegendsPosition</code>是指图例的 左下角的位置</p>
-<h3 id="讨论-1"><a href="#讨论-1" class="headerlink" title="讨论"></a>讨论</h3><p>有多种方式进一步调整<code>Legends</code>的外观。你<br>1.<code>LegendShado</code>(图例阴影)你可以关闭或控制投影的偏移;<br>2.使用 <code>LegendSpacing</code>, <code>LegendTextSpace</code>, <code>LegendLabelSpace</code>,和 <code>LegendBorderSpace</code>控制各种元素的间距;<br>3.使用<code>LegendTextDirection</code>, <code>LegendTextOffset</code>, <code>LegendSpacing</code>, 和 <code>LegendTextSpace</code>控制标签<br>4.用<code>LegendLabel</code> 和 <code>LegendLabelSpace</code>给图例一个标签<br><strong>注意 <code>LegendTextSpace</code>的效果，这有点违反直觉，它表示文本空间与键盒大小的比例，因此较大的数字实际上缩小了图例。</strong></p>
-<p><code>LegendSpacing</code>控制每个键盒大小为1的范围内的空间。<br>扯了这么多，太抽象像了，看例子。然后再回过来看这些。</p>
-<h4 id="LegendShadow-阴影"><a href="#LegendShadow-阴影" class="headerlink" title="LegendShadow (阴影)"></a>LegendShadow (阴影)</h4><p>step1<br>我先规定样式,为了方便后面操作</p>
-<pre><code>Needs[&quot;PlotLegends`&quot;];
-p = Sequence[
-   PlotStyle -&gt; {Directive[Black, Dotted], Directive[Black, Dashed]}, 
-   PlotLegend -&gt; {&quot;Sin x&quot;, &quot;cos 2x&quot;}, LegendPosition -&gt; {1, 0.1}, 
-   LegendSize -&gt; 0.7, ImageSize -&gt; 350];</code></pre><p>第一个例子：</p>
-<pre><code>Plot[{Sin@x, Cos@x}, {x, 0, 2 Pi},
- Evaluate[p], LegendShadow -&gt; None, LegendSpacing -&gt; 1/2, LegendTextSpace -&gt; 10]</code></pre><p><img src="3tu4.svg" alt=""><br><strong>说明</strong> </p>
-<p><code>Evaluate[p]</code>的作用是让p这个样式生效。<br><code>LegendShadow -&gt; None</code>表示不加阴影</p>
-<h4 id="LegendSpacing"><a href="#LegendSpacing" class="headerlink" title="LegendSpacing"></a>LegendSpacing</h4><p>我们看下面这个例子</p>
-<pre><code>GraphicsRow[{Plot[{Sin[x], Cos[x]}, {x, 0, 2 Pi}, 
-   PlotLegend -&gt; {&quot;sine&quot;, &quot;cosine&quot;}, LegendSpacing -&gt; 0],
-  Plot[{Sin[x], Cos[x]}, {x, 0, 2 Pi}, 
-   PlotLegend -&gt; {&quot;sine&quot;, &quot;cosine&quot;}, LegendSpacing -&gt; 1]}, 
- ImageSize -&gt; 700]</code></pre><p><img src="3tu5.svg" alt=""></p>
-<h4 id="LegendTextSpace"><a href="#LegendTextSpace" class="headerlink" title="LegendTextSpace"></a>LegendTextSpace</h4><p>对比下面这两个图，可以看出差别。</p>
-<pre><code>Row[{Plot[{Sin[x], Cos[x]}, {x, 0, 2 Pi}, Evaluate[p], 
-   PlotLegend -&gt; {&quot;sine&quot;, &quot;cosine&quot;}, LegendTextSpace -&gt; 10],
-  Plot[{Sin[x], Cos[x]}, {x, 0, 2 Pi}, 
-   PlotLegend -&gt; {&quot;sine&quot;, &quot;cosine&quot;}, Evaluate[p], 
-   LegendTextSpace -&gt; 5]}]</code></pre><p><img src="3tu6.svg" alt=""><br>有时你想要创建一个更自定义的图例。在这种情况下，考虑<code>Legend</code>和<code>ShowLegend</code>。</p>
-<hr>
-<h2 id="自定义2D图形"><a href="#自定义2D图形" class="headerlink" title="自定义2D图形"></a><center>自定义2D图形</center></h2><h3 id="问题-2"><a href="#问题-2" class="headerlink" title="问题"></a>问题</h3><p>你希望创建包含线条、正方形、圆形或者其他几何对象的图形</p>
-<h3 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h3><p>Mathematica有一个通用的图形函数集合：<br>点<code>Point</code><br>线<code>Line</code><br>矩形<code>Rectangle</code>  圆<code>Circle</code> 圆盘 <code>Disk</code>,<br>多边形<code>Polygon</code><br>箭头 <code>Arrow</code>, 栅格<code>Raster</code><br>文本<code>Text</code><br>我们使用这些基本元素创造一个很复杂的图形，雪人。<br><img src="3tu7.png" alt=""><br>代码太长了，这里省略</p>
-<h3 id="讨论-2"><a href="#讨论-2" class="headerlink" title="讨论"></a>讨论</h3><p>充分利用图形原语的关键之一是学习如何将它们与图形指令结合起来。<br>有些指令非常具体，而另一些则非常笼统。<br>例如，<code>Arrowheads</code>只适用于<code>Arrow</code>，而<code>Red</code>和<code>Opacity</code>适用于所有基本元素。<br><strong>一个指令将适用于它后面的所有对象，受限于在列表中嵌套对象所创建的作用域。</strong><br>例如，在下面的图形中，<code>Red</code>适用于<code>Disk</code>和<code>Rectangle</code>，但不适用于<code>Line</code>(线条)。<br>因为<code>Line</code>(线条)在其自己的范围内具有特定的颜色和粗细。</p>
-<pre><code>Graphics[{Red, Disk[{-2, -2}, 0.5], 
-  Rectangle[], {Thickness[0.02], Black, 
-   Line[{{-1.65, -1.65}, {0, 0}}]}}, ImageSize -&gt; Small]</code></pre><p><img src="3tu8.svg" alt=""></p>
-<h4 id="Color-颜色"><a href="#Color-颜色" class="headerlink" title="Color(颜色)"></a>Color(颜色)</h4><p><code>Color</code>指令可以使用指定的颜色:<br>红色、绿色、蓝色、黑色、白色、灰色等<br>你还可以使用<code>RGBColor</code> 或 <code>Hue</code>、 <code>CMYKColor</code> 、 <code>GrayLevel</code> 和 <code>Blend</code> 来合成颜色。<br>在Mathematica 6或更高版本中，这些指令除了定义颜色或灰色设置的值外，还可以使用不透明度值。<br><code>Blend</code>(混合)也是mathematica6的新功能。</p>
-<pre><code>Graphics[Table[{Hue@x,Rectangle[{x,1},{x+0.1,2}]},{x,0,0.99,0.1}]]</code></pre><p><img src="3tu9.svg" alt=""></p>
-<pre><code>Graphics[Table[{Hue@x, Rectangle[{x, 1}, {x + 0.05, 2}],
-   Blend[{Hue[x], Hue[x + 0.05]}, 0.25], 
-   Rectangle[{x + 0.05, 1}, {x + 0.1, 2}]}, {x, 0, 0.99, 0.1}]]</code></pre><p><img src="3tu10.svg" alt=""></p>
-<h4 id="Thickness-粗细"><a href="#Thickness-粗细" class="headerlink" title="Thickness(粗细)"></a>Thickness(粗细)</h4><p><code>Thickness[r]</code>是相对于图形的总宽度指定的，因此，<strong>刻度是随尺寸变化而变化的</strong>。<br><code>AbsoluteThickness[d]</code>的单位是打印机点(1/72英寸)，不缩放。<br> <code>Thick</code> 和 <code>Thin</code> 是<code>AbsoluteThickness</code>的预定义版本(分别为0.25和2)。<br> <code>Thickness</code>指令适用于包含线条(如线条、多边形、箭头等)的元素。</p>
-<pre><code>(*注意给线条加粗，需要把命令放到Line的前面*)
-Graphics[{
-  {Line[{{0, -1}, {0, 1}}]},
-  {Thin, Line[{{0.5, -1}, {0.5, 1}}]},
-  {Thick, Line[{{1, -1}, {1, 1}}]},
-  {AbsoluteThickness@3, Line[{{1.5, -1}, {1.5, 1}}]}
-  }]</code></pre><p><img src="3tu11.svg" alt=""></p>
-<hr>
-<h2 id="用文本注释图形"><a href="#用文本注释图形" class="headerlink" title="用文本注释图形"></a><center>用文本注释图形</center></h2><h3 id="问题-3"><a href="#问题-3" class="headerlink" title="问题"></a>问题</h3><p>你想把文本加到你的图像上</p>
-<h3 id="解决方案-3"><a href="#解决方案-3" class="headerlink" title="解决方案"></a>解决方案</h3><p>使用带样式的文本指定字体族、字体替换、字体大小、字体权重、字体倾斜、字体跟踪、字体颜色和背景 </p>
-<pre><code>Graphics[{
-  Text[Style[&quot;大小为12的默认字体&quot;, FontSize -&gt; 12], {0, 0}], 
-  Text[Style[&quot;大小为16的斜体字体&quot;, FontSize -&gt; 16, 
-    FontSlant -&gt; Italic], {0, -.2}], 
-  Text[Style[&quot;大小为14的粗体字体&quot;, FontSize -&gt; 14, 
-    FontWeight -&gt; Bold], {0, -.4}], 
-  Text[Style[&quot;大小为14的Arial字体 &quot;, FontSize -&gt; 14, 
-    FontFamily -&gt; &quot;Arial&quot;], {0, -.6}], 
-  Text[Style[&quot;大小为14的Aria的缩小l字体&quot;, FontSize -&gt; 14, 
-    FontFamily -&gt; &quot;Arial&quot;, FontTracking -&gt; &quot;Narrow&quot;], {0, -.8}], 
-  Text[Style[&quot;大小为14的黑底白字&quot;, FontSize -&gt; 14, FontWeight -&gt; Bold, 
-    FontColor -&gt; White, Background -&gt; Black], {0, -1}]}]</code></pre><p><img src="3tu12.svg" alt=""></p>
-<h3 id="讨论-3"><a href="#讨论-3" class="headerlink" title="讨论"></a>讨论</h3><p>下面这个图中我将演示各种绘图选项，它们包含向整个图形、框架和轴添加标签的选项。</p>
-<pre><code>op = {PlotLabel -&gt; 
-    Style[0.5 Sin [2 x], FontSize -&gt; 18, FontFamily -&gt; &quot;Arial&quot;],
-   AxesLabel -&gt; {&quot;x&quot;, &quot;y&quot;},
-   LabelStyle -&gt; 
-    Directive[Bold, FontFamily -&gt; &quot;Arial&quot;, FontSize -&gt; 13],
-   Frame -&gt; True, FrameLabel -&gt; Style[&quot;正弦曲线&quot;, FontSlant -&gt; Italic],
-   ImageSize -&gt; 350};
-Plot[0.5 Sin[2 x], {x, 0, 2 Pi}, Evaluate@op]</code></pre><p><img src="3tu13.svg" alt=""></p>
-<hr>
-<h2 id="创建自定义的箭头"><a href="#创建自定义的箭头" class="headerlink" title="创建自定义的箭头"></a><center>创建自定义的箭头</center></h2><h3 id="问题-4"><a href="#问题-4" class="headerlink" title="问题"></a>问题</h3><p>你希望创建带有自定义箭头、尾部和连接线的箭头，以便在图形注释中使用</p>
-<h3 id="解决方案-4"><a href="#解决方案-4" class="headerlink" title="解决方案"></a>解决方案</h3><pre><code>With[{h = Graphics[{Disk[{0, 0}, 0.75]}],
-  t = Graphics[
-    {Line[{{-0.5, 0}, {0.5, 0}}],
-     Line[{{0, -0.6}, {0, 0.6}}],
-     Line[{{0.2, -0.6}, {0.2, 0.6}}]}]},
- Graphics[{Arrowheads[{{0.05, 1, h}, {0.1, 0, t}}],
-   Arrow[{{0, 0}, {0.25, 0.25}}]}, ImageSize -&gt; 200]]</code></pre><p><img src="3tu14.svg" alt=""></p>
-<h3 id="讨论-4"><a href="#讨论-4" class="headerlink" title="讨论"></a>讨论</h3><p>箭头有很多功能。<br>你可以很容易地创建双端箭头和沿某个方向具有多个箭头的箭头。</p>
-<pre><code>Graphics[
- {Arrowheads[{-0.05, 0.05}], Arrow[{{0, 0}, {1, 0}}],
-  Arrowheads[{0, 0.05, 0.05, 0.05, 0.05}], 
-  Arrow[{{0, -0.2}, {1, -0.2}}]}, ImageSize -&gt; 350]</code></pre><p><img src="3tu15.svg" alt=""><br>你也可以考虑使用箭头来标记箭头，但Mathematica没有专门处理这种“箭头”，所以你可能会得到不希望的效果。</p>
-<pre><code>Graphics[
- {Arrowheads
-   [{0, {Automatic, 0.5, 
-     Graphics[{Text[
-        Style[&quot;Label&quot;, FontSize -&gt; 14, FontWeight -&gt; Bold]]}]}, 0.1}],
-  Arrow[{{0, 0}, {-0.25, 0.25}}]}]</code></pre><p><img src="3tu16.svg" alt=""><br>一个更好的选择是使用文本或Inset的旋转，或者使用GraphPlot或相关函数来定位文本<br>Inset比手动定位文本的优点是:如果你不介意标签不平行于箭头，你可以自动定心.</p>
-<pre><code>Graphics[{Arrowheads[{0.1}], Arrow[{{0, 0}, {-0.25, 0.25}}], 
-  Rotate[Text[
-    Style[&quot;Label&quot;, FontSize -&gt; 14, FontWeight -&gt; Bold], {-0.14, 
-     0.11}], -Pi/4]}, ImageSize -&gt; 350]</code></pre><p><img src="3tu17.svg" alt=""></p>
-<pre><code>Graphics[{Arrowheads[{0.1}], Arrow[{{0, 0}, {-0.25, 0.25}}], 
-  Inset[Text[Style[&quot;Label&quot;, FontSize -&gt; 14, FontWeight -&gt; Bold]]]}, 
- ImageSize -&gt; Small]</code></pre><p><img src="3tu18.svg" alt=""></p>
-<p><font size=6> 2D图部分完！ </font ></p>
+                <h3 id="1-2-5-反复应用规则——ReplaceRepeated函数"><a href="#1-2-5-反复应用规则——ReplaceRepeated函数" class="headerlink" title="1.2.5 反复应用规则——ReplaceRepeated函数"></a>1.2.5 反复应用规则——ReplaceRepeated函数</h3><p>由于任何给定的规则或规则列表通常只在表达式的任何元素上<strong>作用一次</strong>，所以它们不会“跟踪”由它们自己的操作导致的表达式中的更改。<br>通过反复将规则或规则列表应用于表达式直到其停止更改，可以创建更有趣的结构。<br>通过这样做，实际上可以在局部模拟(以一种非常简化的方式)Mathematica在计算表达式时所经历的全局计算过程。存在一个特殊的内置函数来执行这种重复的规则应用程序——<code>ReplaceRepeated</code>。它的符号等价于<code>\\.</code>。<br>让我们举几个例子:</p>
+<h4 id="例子：排序一系列的数字"><a href="#例子：排序一系列的数字" class="headerlink" title="例子：排序一系列的数字"></a>例子：排序一系列的数字</h4><p>首先创建一个列表</p>
+<pre><code>list = Table[Random[Integer, {1, 20}], {15}]</code></pre><pre><code>{10, 18, 16, 11, 2, 6, 2, 7, 6, 18, 6, 10, 2, 16, 6}</code></pre><pre><code>sortrule = {x___, y_, z_, t___} /; y &gt; z :&gt; {x, z, y, t}</code></pre><p>从规则可以看出来，这个规则的作用是：当左边的数字大于右边的数字，那么就交换它们的顺序。<br>好了，我们对原列表使用这个规则</p>
+<pre><code>list//.sortrule</code></pre><pre><code>{2, 2, 2, 6, 6, 6, 6, 7, 10, 10, 11, 16, 16, 18, 18}</code></pre><h4 id="例子：删除多余的元素"><a href="#例子：删除多余的元素" class="headerlink" title="例子：删除多余的元素"></a>例子：删除多余的元素</h4><p>同样的先创立一个列表</p>
+<pre><code>Clear[list1];
+list1 = Table[Random[Integer, {1, 5}], {15}]</code></pre><pre><code>{3, 5, 1, 2, 2, 4, 1, 1, 1, 3, 4, 4, 1, 4, 2}</code></pre><p>现在创建规则</p>
+<pre><code>delrule={x___,y_,z___,y_,t___}:&gt;{x,y,z,t}</code></pre><p>应用规则</p>
+<pre><code>list1//.delrule</code></pre><pre><code>{3,5,1,2,4}</code></pre><p>看见没有，里面所有的重复元素都被删了，其实<code>//.</code>相当于<code>/.</code>的多次重新使用<br>你可以尝试一下，使用一次</p>
+<h4 id="例子：用规则实现阶乘"><a href="#例子：用规则实现阶乘" class="headerlink" title="例子：用规则实现阶乘"></a>例子：用规则实现阶乘</h4><p>建立规则</p>
+<pre><code>Clear[fact];
+frules = {fact [1] -&gt; 1, fact[n_Integer] :&gt; n*fact[n - 1]};</code></pre><p>我们来看看fact[5]到底是不是120。</p>
+<pre><code>fact[5]//.frules</code></pre><pre><code>120</code></pre><p>和我们料想的一样，这个是可以的！<br>需要注意的是rule（规则）是局部的！没有改变fact[5]的值，我们再次在Mathemmatica上输入fact[5]，可以发现，fact[5]没有被赋予任何值。</p>
+<pre><code>fact[5]</code></pre><pre><code>fact[5]</code></pre><p>还有一个需要注意的是：我们如果将上面的规则顺序 换过来，我们将得到一个死循，为什么会这样呢？<br>原因是规则<code>f[n_Integer]:&gt;n*fact[n-1]</code>总是会用的，并且第二个规则fact[1]-&gt;1根本就不能作用。<br>不信的话我可以给你看看这个：<br><img src="tu1.png" alt=""><br>从这个图中可以看到，这个fact[1]-&gt;1就没起过作用！</p>
+<h4 id="效率问题"><a href="#效率问题" class="headerlink" title="效率问题"></a>效率问题</h4><p>向上面那些例子还有很多。但是需要注意的一个问题就是效率问题。<br>例如，我们的第一个带有列表排序的测试具有很糟糕的效率性能，对于任何实际大小的列表都是完全不切实际的，因为每次替换都要从头开始匹配，这样的速度是很慢的！</p>
+<pre><code>Clear[testlist, testlist2, testlist3];
+testlist1 = Table[Random[Integer, {1, 500}], {25}];
+testlist2 = Table[Random[Integer, {1, 500}], {50}];
+testlist3 = Table[Random[Integer, {1, 500}], {100}];
+sortrule = {x___, y_, z_, t___} /; y &gt; z :&gt; {x, z, y, t};
+testlist1 //. sortrule; // AbsoluteTiming
+testlist2 //. sortrule; // AbsoluteTiming
+testlist3 //. sortrule; // AbsoluteTiming</code></pre><pre><code>{0.00355479, Null}
 
+{0.0471226, Null}
+
+{0.361151, Null}</code></pre><p>这些计时结果证实了我们的预期。<br>虽然这表明我们基于规则的实现是完全低效的，因为它为exchange排序算法的标准复杂度增加了列表大小的另一种能力，但这是一个好消息，我们可以理解为什么会发生这种情况。<br>因为事实证明，在许多情况下，尝试模式的结构加上模式本身可以以这样一种方式组织模式，即<strong>模式通常在开始后很快匹配。</strong><br>因此，简单地说:组织你的数据，以确保模式匹配器尽可能少地浪费在要失败的匹配尝试上的时间，这样你就会得到一个高效的基于规则的解决方案。</p>
+<h3 id="1-2-6-条件-限制-的模式"><a href="#1-2-6-条件-限制-的模式" class="headerlink" title="1.2.6 条件(限制)的模式"></a>1.2.6 条件(限制)的模式</h3><p>所有简单的模式都是完全基于语法的。<br>在许多情况下，我们希望做出决定_模式是否匹配_不仅要根据它的语法，还要检查匹配的(子)表达式必须满足的某些条件。这时限制或条件模式就派上用场了<br>条件模式只是普通的模式，但是附加了一些条件。有三种主要的条件模式:<br>1.<code>x_f</code></p>
+<p>2.<code>x_?Perdicate</code></p>
+<p>3.<code>x/;condition</code><br>下面对上面三种做一些举例说明</p>
+<h4 id="检查表达式头部的模式"><a href="#检查表达式头部的模式" class="headerlink" title="检查表达式头部的模式"></a>检查表达式头部的模式</h4><h5 id="Example-1"><a href="#Example-1" class="headerlink" title="Example 1"></a>Example 1</h5><p>首先我们造一个列表</p>
+<pre><code>Clear[list,a,x];
+list={Pi,1.5,3/2,10,y^2,ABC,Sin@x,15,Cos[Exp[Tan[2]]]}</code></pre><p>紧接着我们把头部为整数的替换为a。</p>
+<pre><code>list/._Integer:&gt;a</code></pre><pre><code>{\[Pi], 1.5, 3/2, a, y^a, ABC, Sin[x], a, Cos[E^Tan[a]]}</code></pre><pre><code>{\[Pi], 1.5, 3/2, a, y^a, ABC, Sin[x], a, Cos[E^Tan[a]]}</code></pre><p>或者我们可以把头部替换为f</p>
+<pre><code>list/.x_Integer:&gt;f[x]</code></pre><pre><code>{\[Pi], 1.5, 3/2, f[10], y^f[2], ABC, Sin[x], f[15], Cos[E^Tan[f[2]]]}</code></pre><h5 id="Example2"><a href="#Example2" class="headerlink" title="Example2"></a>Example2</h5><p>我们想要创建一个可以反转字符串的规则。<br>有一个内置的<code>StringReverse</code>函数，所以我们的第一次尝试是:</p>
+<pre><code>{x,1,ABC,&quot;HELLO&quot;,Pi}/.s_:-&gt;StringReverse[s]</code></pre><p>可以发现报错了！</p>
+<pre><code>StringReverse::string: StringReverse[s] 中位置 1 处应该是字符串.
+StringReverse::string: StringReverse[x] 中位置 1 处应该是字符串.
+StringReverse::string: StringReverse[1] 中位置 1 处应该是字符串.
+General::stop: 在本次计算中，StringReverse::string 的进一步输出将被抑制.</code></pre><p>我们看到必须将模式限制为仅对实际字符串有效。<br>因此，我们这样</p>
+<pre><code>{x,1,ABC,&quot;HELLO&quot;,Pi}/.s_String:&gt;StringReverse[s]</code></pre><pre><code>{x, 1, ABC, &quot;OLLEH&quot;, \[Pi]}</code></pre><h5 id="Example3"><a href="#Example3" class="headerlink" title="Example3"></a>Example3</h5><p>现在我们想把Sin作用到头部为f的表达式。</p>
+<pre><code>Clear[list,f,g];
+lsit={g[x],x^2,f[x],Cos[x*Tan[x]],f[x,y,z],f[z*Tan[x+y]],h[x],f[ArcSin[x-y]]};</code></pre><pre><code>list/.x_f:&gt;Sin[x]</code></pre><pre><code>{g[x], x^2, Sin[f[x]], Cos[x Tan[x]], Sin[f[x, y, z]], 
+ Sin[f[z Tan[x + y]]], h[x], Sin[f[ArcSin[x - y]]]}</code></pre><h5 id="Example4"><a href="#Example4" class="headerlink" title="Example4"></a>Example4</h5><p>关于这个主题的最后一个例子:<br>比如说我们就有一个函数f,它必须被定义使得它的任何幂都等于它自己.<br>也就是说：f[f [f[ …f [x]]]=f[x]<br>怎么办呢？<br>我们用这个规则f[x_f]:&gt;x<br>但是这个规则必须与<code>ReplaceRepeated(//.)</code>一起使用,而不是<code>ReplaceAll</code></p>
+<pre><code>list=NestList[f,x,4]</code></pre><pre><code>{x, f[x], f[f[x]], f[f[f[x]]], f[f[f[f[x]]]]}</code></pre><pre><code>list //. f[x_f] :&gt; x</code></pre><pre><code>{x, f[x], f[x], f[x], f[x]}</code></pre><h4 id="检查某些条件的模式——PatternTest和Condition"><a href="#检查某些条件的模式——PatternTest和Condition" class="headerlink" title="检查某些条件的模式——PatternTest和Condition"></a>检查某些条件的模式——<code>PatternTest</code>和<code>Condition</code></h4><p>这是一种更一般的模式.<br>如果简单模式是 x_,那么有条件的模式就是x_?ftest或者x_/;ftest[x].<br>这两种情况，ftest代表函数的名称，该函数检查某些条件并返回True或False。<br>在第一种情况下，问号是内置命令<code>PatternTest</code>的简写符号<br>比如说</p>
+<pre><code>PatternTest[x_,ftest]</code></pre><pre><code>x_?ftest</code></pre><p>在第二种情况下,这个符号/;是<code>Condition</code> 的简写模式</p>
+<pre><code>Condition[x_,ftest[x]]</code></pre><pre><code>x_/;ftest[x]</code></pre><p>我们将会发现<code>PatternTest</code>没有<code>Condition</code>普遍。<br>特别是当模式包含多个模式标记时，这种情况下<code>PatternTest</code>基本不能用，但是<code>Condition</code>就可以，我们可以根据几个模式标签来设定条件。<br>一个值得注意的点是：<br>如果条件既不是True，也不是False，那么无论是<code>PatternTest</code>还是 <code>Condition</code>都不会执行计算。<br>因此，我们在构造模式的时候需要格外的小心！尤其是在使用模式匹配那些必须从列表中删除的元素(如果模式不匹配)的情况下。<br>说了这么多，我们来看一些例子加深理解；</p>
+<h5 id="Example1"><a href="#Example1" class="headerlink" title="Example1"></a>Example1</h5><p>这里我们取一个相当随意的数字列表，并将其中所有正整数的取立方次幂。</p>
+<pre><code>Clear[list];
+list=Table[Random[Integer,{-10,10}]/2,{15}];</code></pre><p>解决方案是</p>
+<pre><code>list /. x_Integer?Positive :&gt; x^3</code></pre><pre><code>{1/2, 5/2, 1/2, 8, -1, -(9/2), -1, -4, 1, -(1/2), -(7/2), -(3/
+  2), 8, 5/2, 8}</code></pre><p>或者：</p>
+<pre><code>list/.x_Integer/;Positive[x]:&gt;x^3</code></pre><pre><code>{1/2, 5/2, 1/2, 8, -1, -(9/2), -1, -4, 1, -(1/2), -(7/2), -(3/
+  2), 8, 5/2, 8}</code></pre><p>还或者：</p>
+<pre><code>list /. x_ /; (IntegerQ[x] &amp;&amp; Positive[x]) :&gt; x^3</code></pre><pre><code>{1/2, 5/2, 1/2, 8, -1, -(9/2), -1, -4, 1, -(1/2), -(7/2), -(3/
+2), 8, 5/2, 8}</code></pre><h5 id="Example2-1"><a href="#Example2-1" class="headerlink" title="Example2"></a>Example2</h5><p>在这里，我们将从整数列表中选择那些等于除2余5的数，或者，更确切地说，从列表中删除所有其他数。这里我们将提前一点定义我们自己的函数</p>
+<pre><code>Clear[ftest];
+ftest[x_Integer]:=Mod[x,5]=!=2;</code></pre><p>现在我们产生一个列表</p>
+<pre><code>Clear[list,a,x];
+list=Table[Random[Integer,{1,20}],{15}];</code></pre><p>我们已经建立规则了，于是我们用//.来处理。</p>
+<pre><code>list//.{x___,y_Integer/;ftest[y],z___}:&gt;{x,z}</code></pre><pre><code>{2, 7, 12, 7, 7}</code></pre><p>然而，这是非常低效的方法，因为要删除单个元素，需要整个模式遍历列表(通常，匹配将发生在列表中间的某个地方)。有一个更好的基于规则的解决方案:</p>
+<pre><code>list/.x_/;test[x]:&gt;Sequence[]</code></pre><pre><code>{2, 7, 12, 7, 7}</code></pre><p>这里的情况是，在模式匹配的单个运行中尝试列表中的每个元素，如果必须消除它，则使用Sequence[]替换.<br>我们没有在结果列表中看到Sequence[] 对象的原因是 Sequence[] 表示“空”，或者“没有任何元素”，它通常会消失在任何其他头部中。</p>
+<pre><code>Clear[deletef];
+deletef[lst_List, test_] := lst /. x_?test :&gt; Sequence[]
+deletef[list, ftest] </code></pre><pre><code>{2, 7, 12, 7, 7}</code></pre><p>一些说明：<br>首先，上面的模式标记x被认为是一个局部变量，因为<code>RuleDelayed</code>(延迟规则)被使用。<br>第二，我们实际上写了一个高阶函数，也就是说，一个函数取另一个<br>函数作为它的一个参数。</p>
+<p>效率分析和一个程序版本<br>后两种实现的速度大致相同(模式测试<code>PatternTest</code>可能稍微快一些)，但是<br>与第一个版本差别很大:</p>
+<pre><code>Clear[list];
+list = Table[Random[Integer, {1, 20}], {2000}];
+list //. {x___, y_Integer /; ftest@y, z___} :&gt; {x, 
+     z}; // AbsoluteTiming
+list /. x_ /; ftest@x :&gt; Sequence[]; // AbsoluteTiming
+list /. x_?ftest :&gt; Sequence[]; // AbsoluteTiming</code></pre><pre><code>{3.6179, Null}
+{0.00751185, Null}
+{0.00568005, Null}</code></pre><p>在Mathematica中，基于规则的方法有潜力比程序方法有更大的优势，也更简洁和直观。<br>但它如果使用低效的模式，也可能被严重误用。这种模式几乎肯定是低效的模式匹配器能够匹配和转换一个大的集合(列表)中的一个或几个项单遍历这个列表。<br>对于高效的程序，应该避免使用{x_，a_，y_，b_，z_)和<code>ReplaceRepeated</code>这样的模式。<br>从某种意义上说，像“Mathematica中基于规则的编程很慢”这样的语句是没有意义的.因为Mathematica中的所有编程在某种程度上都是基于规则的。</p>
+<h5 id="Example3-1"><a href="#Example3-1" class="headerlink" title="Example3"></a>Example3</h5><p>假设我们现在只想对列表中的那些元素执行一些操作,例如，取平方根，也就是整数的平方。<br>首先想到的是一个x_^2的模式:</p>
+<pre><code>Clear[list];
+list = Range[30];
+list /. x_^2 -&gt; Sqrt[x]</code></pre><pre><code>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}</code></pre><p>你会发现没什么效果，为什么会这样？<br>原因是，即使一个数字确实是某个平方数字，它的内部形式也不是a^2。<br>简单模式的模式匹配只基于语法，因此没有发生匹配。</p>
+<pre><code>list /. x_ /; IntegerQ[Sqrt[x]] :&gt; List@Sqrt[x]</code></pre></br>
+{% raw %}
+```
+{{1}, 2, 3, {2}, 5, 6, 7, 8, {3}, 10, 11, 12, 13, 14, 15, {4}, 17,
+18, 19, 20, 21, 22, 23, 24, {5}, 26, 27, 28, 29, 30}
+````
+{% endraw %}
+
+
+
+<p>我将转换后的数字放在额外的列表大括号中以使它们可见</p>
+<h5 id="Example4-1"><a href="#Example4-1" class="headerlink" title="Example4"></a>Example4</h5><p>Mathematica中有一个内置命令<code>PrimeQ</code>,这个命令可以检查一个数字是否是素数。<br>我们可以用这个函数来找出1000内的所有素数。</p>
+<pre><code>Range@1000/.x_Integer/;Not[PrimeQ@x]:&gt;Sequence[]//Short</code></pre><pre><code>\!\(
+TagBox[
+RowBox[{&quot;{&quot;, 
+RowBox[{&quot;2&quot;, &quot;,&quot;, &quot;3&quot;, &quot;,&quot;, &quot;5&quot;, &quot;,&quot;, &quot;7&quot;, &quot;,&quot;, 
+RowBox[{&quot;&lt;&lt;&quot;, &quot;161&quot;, &quot;&gt;&gt;&quot;}], &quot;,&quot;, &quot;983&quot;, &quot;,&quot;, &quot;991&quot;, &quot;,&quot;, &quot;997&quot;}], 
+    &quot;}&quot;}],
+Short]\)</code></pre><h5 id="Example5"><a href="#Example5" class="headerlink" title="Example5"></a>Example5</h5><p>人们可以施加更复杂的条件在一个模式上。<br>现在我们造一个二位随机列表：</p>
+<pre><code>Clear[list1];
+list1 = Partition[Table[Random[Integer, {1, 20}], {20}], 2]</code></pre>
+```
+{{5, 3}, {9, 11}, {9, 19}, {18, 16}, {15, 1}, {3, 7}, {19, 20}, {19, 4}, {10, 4}, {17, 12}}
+````
+
+
+
+
+<hr>
+<p>我们现在需要做这样的事情是当第一个数字是偶数，第二个数字是奇数的时候，交换他们。</p>
+<pre><code>rule={x_,y_}/;(EvenQ@x&amp;&amp;OddQ@y):&gt;{y,x};
+list1
+list1/.rule</code></pre><pre><code>{{5, 3}, {9, 11}, {9, 19}, {18, 16}, {15, 1}, {3, 7}, {19, 20}, {19,4}, {10, 4}, {17, 12}}
+{{5, 3}, {9, 11}, {9, 19}, {18, 16}, {15, 1}, {3, 7}, {19, 20}, {19,4}, {10, 4}, {17, 12}}</code></pre><h3 id="1-2-7-选择模式"><a href="#1-2-7-选择模式" class="headerlink" title="1.2.7 选择模式"></a>1.2.7 选择模式</h3><p>通常，相同类型的转换不得不使用不同的表达式来执行。<br>这意味着，对于不同类型的表达式，我们通常需要几个本质上不同的规则。<br>例如，我们需要对整数或有理数应用一些规则，并取这些数的平方根。</p>
+<pre><code>Clear@l;
+l={x,2,Pi,3/2,2/5,4,Sin@y,8,Cos@z}</code></pre><p>我们使用带有条件的模式去解决这个问题：</p>
+<pre><code>l/.x_/;Head[x]==Integer||Head@x==Rational:&gt;Sqrt@x</code></pre><pre><code>{x, Sqrt[2], \[Pi], Sqrt[3/2], Sqrt[2/5], 2, Sin[y], 2 Sqrt[2], 
+ Cos[z]}</code></pre><p>然而，这个解决方案不是最优雅和简洁的，更重要的是，不是效率最高的的。<br>Mathematica提供了一种机制来将不同的模式组合在一起并形成可选模式。<br>内置的命令有一个字面上等价的替代和一个简写符号 |</p>
+<pre><code>Alternatives[a,b]</code></pre><pre><code>a|b</code></pre><pre><code>{x,2,Pi,3/2,2/5,4,Sin@y,8,Cos@z}/.x_Integer|x_Rational:&gt;Sqrt@x</code></pre><pre><code>{x, Sqrt[2], \[Pi], Sqrt[3/2], Sqrt[2/5], 2, Sin[y], 2 Sqrt[2],Cos[z]}</code></pre><p><code>Alternative</code> 模式经常被用到。在后面我们会慢慢看到。</p>
+<h3 id="1-2-8-为整个模式命名"><a href="#1-2-8-为整个模式命名" class="headerlink" title="1.2.8 为整个模式命名"></a>1.2.8 为整个模式命名</h3><p>为整个模式命名是可以的，而且通常非常有用。<br>为了做到这一点，一个被经常用的的命令是用<code>:</code></p>
+<pre><code>{x,2,Pi,3/2,2/5,4,Sin@y,8,Cos@z}/.x:(_Integer|_Rational):&gt;Sqrt@x</code></pre><pre><code>{x, Sqrt[2], \[Pi], Sqrt[3/2], Sqrt[2/5], 2, Sin[y], 2 Sqrt[2],Cos[z]}</code></pre><p>我们将在后面的章节中经常使用这种形式</p>
+<h3 id="1-2-9-默认选项模式"><a href="#1-2-9-默认选项模式" class="headerlink" title="1.2.9 默认选项模式"></a>1.2.9 默认选项模式</h3><p>默认模式是这样一种构造，它不仅允许修改给定的模式来匹配它通常匹配的内容，而且还允许修改某些表达式，这些表达式中模式的某些部分将完全丢失，但是模式“知道”如何替换它们。这对于定义带有某些特殊情况(某些输入参数的默认值)的函数通常很有用。<br>默认模式是使用<code>Optional</code>关键字构建的，并使用冒号作为简写符号。它的使用方式是<code>pattern:defvalue</code>，如果表达式中缺少该模式的特定部分，则使用defvalue，否则该表达式将与该模式匹配。<br>下面举例子说明。<br>例如，在这里，我们希望将f中的所有参数序列替换为它们的和，对于单个参数，加1。</p>
+<pre><code>f[{a},{a,b},{a,b,c}]
+f[{a},{a,b},{a,b,c}]/.{{x_}:>{x+1},{x__}:>{Plus[x]}}</code></pre><pre><code>f[{a}, {a, b}, {a, b, c}]
+f[{1 + a}, {a + b}, {a + b + c}]</code></pre><p>下面是带有可选模式的解决方案</p>
+<pre><code>f[{a},{a,b},{a,b,c}]/.{x__,y_:1}:&gt;{x+y}</code></pre><pre><code>f[{1 + a}, {a + b}, {a + b + c}]</code></pre><h3 id="1-2-10重复模式-Repeated"><a href="#1-2-10重复模式-Repeated" class="headerlink" title="1.2.10重复模式 Repeated"></a>1.2.10重复模式 Repeated</h3><p>如果我们必须匹配一个表达式序列时，这些模式是有用的，每个表达式都由给定的模式匹配，但是我们不知道在一个序列中将有多少项。<br>在这里，我们创建一个重复的模式，它匹配以任何方式混合的任何有理数或整数序列。</p>
+<pre><code>f[3/5,4,5,2/3]/f[x:(_Integer|_Rational)..]:{x}</code></pre><p>在这里，我们将所有表示二进制数字的列表转换为数字,也就是说，所有包含任意数量的1和0的列表都转换为二进制数字。</p>
+<pre><code>{{1,0,0},{0,1,0},{1,1,1},{2,0,1},{1,0},{1,0,3}}/.x:{(1|0)..}:&gt;FromDigits[x,1]</code></pre><pre><code>{4, 2, 7, {2, 0, 1}, 2, {1, 0, 3}}</code></pre>
             </div>
             <hr/>
 
@@ -555,7 +552,7 @@ Plot[0.5 Sin[2 x], {x, 0, 2 Pi}, Evaluate@op]</code></pre><p><img src="3tu13.svg
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="wxyhgk.xyz/posts/mma_base2Dplot3.html">wxyhgk.xyz/posts/mma_base2Dplot3.html</a>
+                    <a href="wxyhgk.xyz/posts/8d8b45f6">wxyhgk.xyz/posts/8d8b45f6</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -764,44 +761,30 @@ Plot[0.5 Sin[2 x], {x, 0, 2 Pi}, Evaluate@op]</code></pre><p><img src="3tu13.svg
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/posts/mma_rulepatten1.html">
+                <a href="/posts/8d8b45f6">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="Mathematica——模式，规则1">
+                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="Mathematica——规则模式2">
                         
-                        <span class="card-title">Mathematica——模式，规则1</span>
+                        <span class="card-title">Mathematica——规则模式2</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            
-
-p {font-size:18px;}
-
-
-
-
- 写在前面的话本次的mma教程，有以下改进：1.代码的输入和结果分开 2.提供了在线运行，不过速度很慢。3.其他小改动
-
-
-
-1.1介绍
-
-
-
- 在这一章中，我们将 在Mathematic
+                            1.2.5 反复应用规则——ReplaceRepeated函数由于任何给定的规则或规则列表通常只在表达式的任何元素上作用一次，所以它们不会“跟踪”由它们自己的操作导致的表达式中的更改。通过反复将规则或规则列表应用于表达式直到其停止更改，可以
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2020-03-14
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-03-20
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -810,6 +793,7 @@ p {font-size:18px;}
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -832,27 +816,28 @@ p {font-size:18px;}
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/posts/mma_base2Dplot2.html">
+                <a href="/posts/a42197e6">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="Mathematica——画图2">
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="Mathematica——代数操作">
                         
-                        <span class="card-title">Mathematica——画图2</span>
+                        <span class="card-title">Mathematica——代数操作</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            极坐标绘图问题你想去画一个极坐标图
-解决方案使用PolarPlot，它以极坐标系中的角度为半径，在 (x) 轴上以0为轴，在 (y) 轴上以(\dfrac{\pi}{2})为轴画图。
-GraphicsGrid[{
-{PolarPlot[1,
+                            0介绍
+
+
+
+ 代数可分为初等代数和抽象代数。初等代数是我们在高中都学过的。Mathematica可以很好地解决初等代数中的问题，本章中的许多案例向您展示了如何利用这些特性。Mathematica目前还没有对抽象代数的深入支持，抽象代数涉及
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-03-13
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-03-15
                             </span>
                         <span class="publish-author">
                             
@@ -1000,13 +985,6 @@ GraphicsGrid[{
 
 </main>
 
-
-<script src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-<script>
-    MathJax.Hub.Config({
-        tex2jax: {inlineMath: [['$', '$'], ['\(', '\)']]}
-    });
-</script>
 
 
     <footer class="page-footer bg-color">
