@@ -4,6 +4,27 @@
   
     
     <entry>
+      <title>hexo配置评论回复</title>
+      <link href="pinglun/"/>
+      <url>pinglun/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>这个是关于如何配置hexo评论回复的文章</p></blockquote><p>你写完一个hexo文章然后推送到git平台，如果有人给你文章评论了，你如何才能第一时间收到消息，并且你评论他之后，他怎么及时得到消息呢<br><strong>效果图</strong>：<br><img src="tu1.png"></p><h3 id="一-准备工作"><a href="#一-准备工作" class="headerlink" title="一.准备工作"></a>一.准备工作</h3><h4 id="1-开启qq的SMPT服务"><a href="#1-开启qq的SMPT服务" class="headerlink" title="1.开启qq的SMPT服务"></a>1.开启qq的SMPT服务</h4><p>这里我用的qq邮箱的服务，你也可以用163什么的，只是我感觉qq邮箱翻方便点，每天qq里面自带，可以随时查看，不需要下载其他软件或者登陆网页什么的。</p><p>先到qq邮箱里面，点<strong>设置</strong>，然后<strong>账户</strong>里面，在<strong>账户</strong>里面拉到下面可以看到那个<strong>POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服务</strong>，这里我们开启<strong>IMAP/SMTP服务</strong>。</p><p>图示：<br><img src="tu2.png"><br>开启<strong>SMPT</strong>服务后你会得到一串代码，记住复制保留着，这个代码只显示一次，后面要用。</p><h4 id="2-设置leancloud"><a href="#2-设置leancloud" class="headerlink" title="2.设置leancloud"></a>2.设置leancloud</h4><p>到leancloud网站 <a href="https://console.leancloud.app/apps">https://console.leancloud.app/apps</a> 然后注册，登陆什么的，我们选择开发者，然后选择<strong>国际节点</strong>（选国内节点也可以，速度都一样，只不过国际节点没那么多限制，不需要备案什么的）<br><img src="tu3.png"></p><p>然后<strong>创建应用</strong><br><img src="tu4.png"></p><p>进入应用之后,选择<strong>云引擎</strong>，下面的<strong>WEB</strong>里面的<strong>部署</strong>，选择<strong>部署项目</strong>，然后选择<strong>Git部署</strong><br><img src="tu5.png"><br><img src="tu6.png"><br>然后在<strong>配置git</strong>里面，填入网址 <a href="https://github.com/zhaojun1998/Valine-Admin.git">https://github.com/zhaojun1998/Valine-Admin.git</a><br><img src="tu7.png"><br>然后在<strong>分支或提交</strong>哪里填入<code>master</code>,最后部署即可<br><img src="tu8.png"><br>紧接着在<strong>云引擎</strong>，下面的<strong>WEB</strong>里面的<strong>设置</strong>里面填入环境变量<br><img src="tu9.png"></p><table><thead><tr><th align="left">环境变量</th><th align="left">说明</th></tr></thead><tbody><tr><td align="left">ADMIN_URL</td><td align="left">云引擎域名</td></tr><tr><td align="left">SITE_URL</td><td align="left">网站地址, 最后不要加 /</td></tr><tr><td align="left">SITE_NAME</td><td align="left">网站名称</td></tr><tr><td align="left">SENDER_NAME</td><td align="left">发件人名字</td></tr><tr><td align="left">SMTP_USER</td><td align="left">填你的邮箱账户即可</td></tr><tr><td align="left">SMTP_PASS</td><td align="left">这是第一步里面得到的那个STMP代码</td></tr><tr><td align="left">SMTP_SERVICE</td><td align="left">邮件服务提供商，支持 QQ、163、126、Gmail、”Yahoo”、……</td></tr><tr><td align="left">TEMPLATE_NAME</td><td align="left">设置提醒邮件的主题，目前内置了两款主题，分别为 default 与 rainbow（rainbow好看一些）。默认为 default。</td></tr><tr><td align="left">云引擎域名哪里我们随便搞一个域名就行了</td><td align="left"></td></tr><tr><td align="left"><img src="tu10.png"></td><td align="left"></td></tr></tbody></table><p>设置好上面的之后，不意味着大功告成了，因为我们使用的开发者，所以leancloud会时不时休眠，因此我们需要部署定时任务让他不休眠。<br>我们到<strong>云引擎</strong>的<strong>定时任务</strong>哪里创建定时任务。<br><img src="tu11.png"><br>然后我们填这个定时任务，名称随便填，生产环境这里填<strong>self_wake</strong>，Cron表达式这里填0 0/30 7-23 * * ?<br><img src="tu12.png"><br>然后再建一个定时任务检查这个。<br><img src="tu13.png"></p><p>完成上面的以后，然后到<strong>设置</strong>，<strong>应用key</strong>里面记录下<strong>AppID</strong>和<strong>AppKey</strong><br><img src="tu14.png"><br>至此我们的准备工作全部做完了。</p><h3 id="二-配置评论Valine"><a href="#二-配置评论Valine" class="headerlink" title="二.配置评论Valine"></a>二.配置评论Valine</h3><p>首先你要确定你hexo主题里面有valine这个功能，据我所知大部分都有这个功能，然后到主题文件的<code>_config.yml</code>里面配置,找到valine评论哪里，enable选择true，填入记录下的appid和appkey。注意这里的<strong>notify</strong>需要填成<code>false</code>，如果填成<code>true</code>,到时候会收到两份邮件。<br><img src="tu15.png"></p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 教程 </tag>
+            
+            <tag> hexo </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>矩阵的合同变换</title>
       <link href="hetong/"/>
       <url>hetong/</url>
