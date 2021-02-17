@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>群晖docker搭建sharelatex服务</title>
+      <link href="nas-sharelatex/"/>
+      <url>nas-sharelatex/</url>
+      
+        <content type="html"><![CDATA[<h2 id="群晖docker搭建sharelatex服务"><a href="#群晖docker搭建sharelatex服务" class="headerlink" title="群晖docker搭建sharelatex服务"></a>群晖docker搭建sharelatex服务</h2><h3 id="一-前言"><a href="#一-前言" class="headerlink" title="一.前言"></a>一.前言</h3><p>效果图：（可以看到是支持中文的）<br> <img src="tu1.jpg"><br>为什么要搭建一个在线的Latex服务呢?</p><p> 1.便携性：只要有网就可以直接用latex，不需要在其他的电脑上再安装latex软件，要知道一个texlive安装包好几个G,非常费时间，这样可以省去很多步骤，再就是跨平台，不需要再下专门的软件，直接在web端访问即可。<br> 2.协同性：自己写的latex可以在线分享给其他人，一起编辑一起写作。<br> 3.免费性：我们看看overleaf的情况<br> <img src="tu2.jpg"><br>可以看到，免费版的基本就是一个弱鸡，啥也干不了，不能合作编辑，编译时间只有一分钟，其他的什么都高级功能都不能搞，overleaf本来网速就卡，现在限制这么多还不如自己搞一个服务器，划算多了。</p><h3 id="二-安装sharelatex（overleaf）"><a href="#二-安装sharelatex（overleaf）" class="headerlink" title="二.安装sharelatex（overleaf）"></a>二.安装sharelatex（overleaf）</h3><p>这个我在网上查过很多资料，官方也是有相关的教程的，但是官方的教程，<code>sharelatex</code>、<code>mongo</code> 和 <code>redis</code>要同时配置，特别特别的麻烦，开始的时候我确实用的这些来搞得，但是搞得人很憔悴很麻烦！完全是折磨人，而且后来还不能支持编辑中文，后来的话我找到一篇<a href="https://blog.csdn.net/kingsleyluoxin/article/details/105613144?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_title-2&spm=1001.2101.3001.4242">csdn的博客</a>是可以一键部署而且可以编译中文，很爽的。</p><hr><p>下面是具体的步骤<br>打开群晖docker，<br><img src="tu3.jpg"><br>选择用<code>URL</code>添加加入这个：<a href="https://registry.hub.docker.com/r/kingsleyluoxin/sharelatex">https://registry.hub.docker.com/r/kingsleyluoxin/sharelatex</a> 链接然后下载就行了。（这个完整包贴别大所以需要耐心等待）</p><details><summary><font color="#f7971d">下载速度慢解决办法</font></summary><p>在docker注册表哪里<br><img src="tu4.png"><br>输入国内的镜像：<br> 1.网易<br><a href="http://hub-mirror.c.163.com/">http://hub-mirror.c.163.com</a><br> 2.Docker中国区官方镜像<br><a href="https://registry.docker-cn.com/">https://registry.docker-cn.com</a><br> 3.中国科技大学<br><a href="https://docker.mirrors.ustc.edu.cn/">https://docker.mirrors.ustc.edu.cn</a><br> 4.阿里云容器  服务<br><a href="https://cr.console.aliyun.com/">https://cr.console.aliyun.com</a><br>我自己用感觉网易的和中国科技大学的比较快。</p></details><p>安装好之后再就是设置端口<br><img src="tu5.png"><br>红线部分的必须填80和443，其他地方都是可以填随便填。设置好端口之后就可以启动了。</p><h3 id="三-设置sharelatex（overleaf）"><a href="#三-设置sharelatex（overleaf）" class="headerlink" title="三.设置sharelatex（overleaf）"></a>三.设置sharelatex（overleaf）</h3><h4 id="1-设置管理员"><a href="#1-设置管理员" class="headerlink" title="1.设置管理员"></a>1.设置管理员</h4><p>我这里设置的80对应的端口号是7777，所以我输入我的192.168.1.108:7777//launchpad (前面的<code>192.168.1.108</code>是群晖的本地域名,每个人都不一样)设置管理员账号，需要注意的是<strong>必须</strong>用<code>****@****.com</code>的类型的邮箱，用其他类型的邮箱，比如<code>****@****.cn</code>这种就不行，设置好了之后就可以开始操作了，可以写文章了</p><h4 id="2-域名设置"><a href="#2-域名设置" class="headerlink" title="2.域名设置"></a>2.域名设置</h4><p>这里假设你开启了外网的服务，如果没有外网的服务那就不用设置，在docker的环境变量填入<br><code>SHARELATEX_SITE_URL</code>后面跟着你的域名<br><img src="tu6.png"></p><h4 id="3-设置邮箱注册"><a href="#3-设置邮箱注册" class="headerlink" title="3.设置邮箱注册"></a>3.设置邮箱注册</h4><p>我这里用的qq的smtp服务，具体的怎么开启可以百度。<br>(下面这些都是要必填的)</p><ul><li>SHARELATEX_EMAIL_SMTP_HOST: SMTP的的域名，qq的是 smtp.qq.com</li><li>SHARELATEX_EMAIL_SMTP_PORT: SMTP的端口号，qq的是465</li><li>SHARELATEX_EMAIL_SMTP_SECURE: 填<code>true</code>开启ssl</li><li>SHARELATEX_EMAIL_SMTP_USER: 你的SMTP的用户名，如果是qq就是你的qq邮箱用户名<code>****@qq.com</code></li><li>SHARELATEX_EMAIL_SMTP_PASS: SMTP的密码，不是qq密码</li><li>SHARELATEX_EMAIL_SMTP_TLS_REJECT_UNAUTH: 填<code>true</code></li></ul><p>更多的可以看官方的说明 <a href="https://github.com/overleaf/overleaf/wiki/Configuring-SMTP-Email">https://github.com/overleaf/overleaf/wiki/Configuring-SMTP-Email</a></p><h4 id="4-内网穿透的反向代理设置"><a href="#4-内网穿透的反向代理设置" class="headerlink" title="4.内网穿透的反向代理设置"></a>4.内网穿透的反向代理设置</h4><p>在宝塔面板里面的反向代理哪里这样填</p><pre><code>#PROXY-START/location ~* \.(php|jsp|cgi|asp|aspx)$&#123;    proxy_pass 你的域名:端口号;    proxy_set_header Host $host;    proxy_set_header X-Real-IP $remote_addr;    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;    proxy_set_header REMOTE-HOST $remote_addr;&#125;location /&#123;    proxy_pass 你的域名:端口号;    proxy_set_header Host $host;    proxy_set_header X-Real-IP $remote_addr;    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;    proxy_set_header REMOTE-HOST $remote_addr;    proxy_http_version 1.1;    proxy_set_header Upgrade $http_upgrade;    proxy_set_header Connection &#39;Upgrade&#39;;    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;    proxy_read_timeout 3m;    proxy_send_timeout 3m;    add_header X-Cache $upstream_cache_status;    #Set Nginx Cache    proxy_ignore_headers Set-Cookie Cache-Control expires;    add_header Cache-Control no-cache;    expires 12h;&#125;#PROXY-END/</code></pre><p>上面的只有<code>你的域名:端口号</code>需要改，其他的都别改。</p><h4 id="5-注意事项"><a href="#5-注意事项" class="headerlink" title="5.注意事项"></a>5.注意事项</h4><p>不要用不规范的邮箱注册，只能用：结尾是<code>@example.com</code>这种的域名不能是别的！</p><h3 id="四-参考文章"><a href="#四-参考文章" class="headerlink" title="四.参考文章"></a>四.参考文章</h3><ul><li><a href="https://www.bilibili.com/read/cv6547551">https://www.bilibili.com/read/cv6547551</a></li><li><a href="https://blog.csdn.net/qq_32460819/article/details/109328424">https://blog.csdn.net/qq_32460819/article/details/109328424</a></li><li><a href="https://www.cryogeny.cn/428.html">https://www.cryogeny.cn/428.html</a></li><li><a href="https://blog.csdn.net/kingsleyluoxin/article/details/105613144?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_title-2&amp;spm=1001.2101.3001.4242">https://blog.csdn.net/kingsleyluoxin/article/details/105613144?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_title-2&amp;spm=1001.2101.3001.4242</a></li><li><a href="https://github.com/overleaf/overleaf/wiki/Configuring-SMTP-Email">https://github.com/overleaf/overleaf/wiki/Configuring-SMTP-Email</a></li><li><a href="https://github.com/overleaf/overleaf/wiki/Configuring-Overleaf">https://github.com/overleaf/overleaf/wiki/Configuring-Overleaf</a></li></ul>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 分享 </tag>
+            
+            <tag> 教程 </tag>
+            
+            <tag> nas </tag>
+            
+            <tag> latex </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>hexo页面仿信纸作业纸样式</title>
       <link href="hexo-xf/"/>
       <url>hexo-xf/</url>
