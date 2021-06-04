@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="利用frp内网穿透实现外网访问群晖, 我心永恆的小站">
+    <meta name="keywords" content="猫盘nas的一些事(1), 我心永恆的小站">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>利用frp内网穿透实现外网访问群晖 | 我心永恆的小站</title>
+    <title>猫盘nas的一些事(1) | 我心永恆的小站</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -241,12 +241,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/15.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">利用frp内网穿透实现外网访问群晖</h1>
+                    <h1 class="description center-align post-title">猫盘nas的一些事(1)</h1>
                 </div>
             </div>
         </div>
@@ -389,21 +389,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2020-07-08
+                    2021-06-02
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.1k
+                    2.9k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    4 分
+                    14 分
                 </div>
                 
 
@@ -414,52 +414,63 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <blockquote>
-<p>由于我这里没有公网ip和ipv6因此网上的ddns方法上面的我都不能用，查了不少资料，最后选择frp来搭建。</p>
-</blockquote>
-<h3 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h3><p>可以使用花生壳等frp来内穿透，操作起来虽然很简单，但是有许多问题：</p>
+                <h1 id="数学物理方法——基础知识（1）"><a href="#数学物理方法——基础知识（1）" class="headerlink" title="数学物理方法——基础知识（1）"></a>数学物理方法——基础知识（1）</h1><p>本科期间学过数学物理方程，现在准备读研究生了，以后涉及到计算的方面比较多，因此现在我需要重新学习数学物理方程，捡回来原来的知识。</p>
+<p>主要的参考书籍《数学物理方法》顾樵</p>
+<p>[TOC]</p>
+<h2 id="第一章——基础理论知识"><a href="#第一章——基础理论知识" class="headerlink" title="第一章——基础理论知识"></a>第一章——基础理论知识</h2><h3 id="1-1常微分方程模型和求解（略过）"><a href="#1-1常微分方程模型和求解（略过）" class="headerlink" title="1.1常微分方程模型和求解（略过）"></a>1.1常微分方程模型和求解（略过）</h3><h3 id="1-2-矢量微分算子和拉普拉斯算子"><a href="#1-2-矢量微分算子和拉普拉斯算子" class="headerlink" title="1.2 矢量微分算子和拉普拉斯算子"></a>1.2 矢量微分算子和拉普拉斯算子</h3><h4 id="1-2-1矢量微分算子-mathrm-nabla"><a href="#1-2-1矢量微分算子-mathrm-nabla" class="headerlink" title="1.2.1矢量微分算子$\mathrm{\nabla}$"></a>1.2.1矢量微分算子$\mathrm{\nabla}$</h4><p>形如：<br>$$<br>\nabla=\frac{\part}{\part x}\vec{i}+\frac{\part}{\part y}\vec{j}+\frac{\part}{\part z}\vec{k}<br>$$<br>被称为<strong>矢量微分算子</strong>。</p>
+<p>如果函数$u(x,y,z)$和矢量函数$\vec{E}(x,y,z)$,有连续的一阶偏导数，那么就有：</p>
 <ul>
-<li>隐私方面：需要进行实名认证，操作麻烦，需要审核。</li>
-<li>速度方面：速度感人，很慢，和群晖的<code>Quickconnect</code>有的一拼，都很慢</li>
-<li>流量方面：免费版的流量很少</li>
-<li>费用方面：如果选择付费版，那么一年需要花费200多人民币，<strong>我是来白嫖的，怎么能花钱呢？</strong></li>
+<li>梯度：<br>$$<br>\nabla u=\frac{\part u}{\part x}\vec{i}+\frac{\part u}{\part y}\vec{j}+\frac{\part u}{\part z}\vec{k}<br>$$</li>
 </ul>
-<h3 id="二、Skura-Frp的配置"><a href="#二、Skura-Frp的配置" class="headerlink" title="二、Skura Frp的配置"></a>二、Skura Frp的配置</h3><h4 id="1、准备工作"><a href="#1、准备工作" class="headerlink" title="1、准备工作"></a>1、准备工作</h4><p>（1）首先到自己的群晖的<strong>控制面板</strong>的<strong>网络</strong>的<strong>DSM设置</strong>这里，看看<code>HTTP</code>和<code>HTTPS</code>的端口这里，一般是不需要设置的，但是为了以防万一，这里自己检查一下，如果不一样就改成如图所示的情况<br><img src="tu1.png"></p>
-<p>（2）到自己的群晖的<strong>控制面板</strong>的<strong>终端机和SNMP</strong>的<strong>终端机</strong>这里启动<code>SSH</code>功能，并设置<strong>端口</strong>为22,如下图所示：<br><img src="tu2.png"></p>
-<p>（3）到<a target="_blank" rel="noopener" href="https://www.natfrp.com/" title="Skura Frp">Skura Frp</a>注册账号</p>
-<p>（4）下载如下软件</p>
 <ul>
-<li>Putty<br> 下载链接：<a target="_blank" rel="noopener" href="https://service-6auzzhuo-1301574629.hk.apigw.tencentcs.com/release/onedrive/three/software/web-software/ssh/putty-green/" title="Putty">Putty</a><br> 备用：<a target="_blank" rel="noopener" href="https://www.onlinedown.net/soft/2186.htm" title="Putty">Putty备用</a></li>
-<li>WinSCP<br>  下载链接：<a target="_blank" rel="noopener" href="https://service-6auzzhuo-1301574629.hk.apigw.tencentcs.com/release/onedrive/three/software/web-software/ssh/winSCP/" title="winSCP">winSCP</a><br>  备用：<a target="_blank" rel="noopener" href="https://www.onlinedown.net/soft/20088.htm" title="winSCP">winSCP备用</a></li>
+<li><p>散度：<br>$$<br>\nabla \cdot \vec{E}(x,y,z)=\frac{\part \vec{E}_x}{\part x}\vec{i}+\frac{\part \vec{E}_y}{\part y}\vec{j}+\frac{\part \vec{E}_z}{\part z}\vec{k}<br>$$</p>
+</li>
+<li><p>旋度：<br>$$<br>\nabla \times \vec{E}(x,y,z)= \begin{equation}<br>\left|\begin{array}{cc}<br>\vec{i} &amp; \vec{j} &amp; \vec{k}\<br>\frac{\part}{\part x} &amp; \frac{\part}{\part y} &amp;\frac{\part}{\part z}\<br>\vec{E}_x &amp;\vec{E}_y &amp;\vec{E}_z<br>\end{array}\right|<br>\end{equation}<br>$$</p>
+</li>
 </ul>
-<h4 id="2、用SSH登陆群晖"><a href="#2、用SSH登陆群晖" class="headerlink" title="2、用SSH登陆群晖"></a>2、用SSH登陆群晖</h4><p>这里Putty和WinSCP都打开，Putty是cli界面（说人话就是看不见操作的界面），Wincsp是gui界面（说人话就是看的见具体的文件夹上面的，好操作一点），我这里主要用Putty操作，然后用Winscp看是否操作成功了。</p>
-<p>打开putty软件，如图所示<br><img src="tu3.png"><br>这里的<code>198.168.1.100</code>是我的本地群晖的地址，不带端口的，这里的<code>22</code>就是我们能准备工作里面的第二步的端口。</p>
-<p>我们打开后，输入你的群晖用户名和密码<br><img src="tu4.png"><br>紧接着你需要用这个命令</p>
-<pre><code class="Shell">sudo -i</code></pre>
-<p>取得超级管理员权限，然后会提示你输入密码，密码和上面的密码是一样的<br>同时我们打开winSCP软件，和putty类似，需要注意的是<strong>文件协议</strong>这里需要选择<code>SCP</code>，如图所示：<br><img src="tu5.png"></p>
-<h4 id="3、创建隧道"><a href="#3、创建隧道" class="headerlink" title="3、创建隧道"></a>3、创建隧道</h4><p>按照下图创建隧道<br><img src="tu6.png"></p>
-<p>高级设置这里不用管，设置完这些保存就行了。</p>
-<h4 id="4、设置映射"><a href="#4、设置映射" class="headerlink" title="4、设置映射"></a>4、设置映射</h4><p>映射创建完之后，选择对应的客户端下载，到网上查询自己的cpu然后按照需求下载，我是猫盘，猫盘是arm64位的cpu。这里需要注意的是安装路径的问题，打开winSCP可以看到有很多文件夹，如图所示<br><img src="tu7.png"><br>我这里是安装在红色部分的文件夹里面，也就是etc文件夹。<br>我们使用命令：</p>
-<pre><code class="shell">cd /etc</code></pre>
-<p>进入etc目录，然后使用</p>
-<pre><code class="shell">mkdir skurafrp</code></pre>
-<p>建立一个<code>skurafrp</code>的文件夹，你刷新一下winSCP软件是可以看到新建立了这个文件夹的，紧接着，我们进入这个文件夹，用</p>
-<pre><code class="shell">cd skurafrp</code></pre>
-<p>就进入了skurafrp文件夹了，我们在这个文件夹里面安装文件，直接用命令</p>
-<pre><code class="shell">wget https://qianqu.me/frp/frpc_linux_arm64</code></pre>
-<p>稍等片刻就可以安装成功了。<br>紧接着</p>
-<pre><code class="shell">chmod +x frpc_linux_arm64</code></pre>
-<pre><code class="shell">./frpc_linux_arm64</code></pre>
-<p>接下的只需要按照提示提供访问密钥即可，密匙就是SkuraFrp后台的管理界面的用户信息那里有，如图所示<br><img src="tu8.png"><br>并选择对应的节点，注意<strong>请选择与你创建的隧道相同的节点</strong>,选择完节点后，如果出现<strong>“start proxy success”</strong>字样，则说明映射成功.<br>此时访问上面给出的地址，应当能够打开群辉的管理页面,此时说明映射已经测试成功，按<code>Ctrl</code>+<code>C</code>组合键来退出程序。<br>然后执行如下命令来让客户端后台保持运行：</p>
-<pre><code class="shell">nohup ./frpc_linux_arm64 &amp;</code></pre>
-<p>到这一步即可关闭SSH客户端，并继续使用之前给出的地址来访问你的群辉NAS。</p>
-<h4 id="5-设置内网穿透开机自启"><a href="#5-设置内网穿透开机自启" class="headerlink" title="5.设置内网穿透开机自启"></a>5.设置内网穿透开机自启</h4><p>上面设置完了有个问题就是如果突然断电什么的，群晖nas再次开机的时候就不能连接外网访问了，因此需要设置开机自启。<br>打开群晖的<strong>控制面板</strong>选择高级模式，这样就会出现<strong>任务计划</strong><br><img src="tu9.png"> <img src="tu10.png"><br>然后点击新增脚本，自定义用户脚本，开机脚本<br><img src="tu11.png"><br><img src="tu12.png"><br>然后写入下面的代码<br><img src="tu13.png"></p>
-<pre><code class="shell">cd /etc/skurafrp/ 
-
-sleep 60
-
-nohup ./frpc_linux_arm64 -t 你的密匙 -s 隧道节点 &amp;</code></pre>
-<p>然后就大功告成了</p>
+<p>拉普拉斯算子：<br>$$<br>\nabla ^2=\frac{\part ^2}{\part x^2}+\frac{\part ^2}{\part y^2}+\frac{\part ^2}{\part z^2}<br>$$</p>
+<h4 id="1-2-2-拉普拉斯算子"><a href="#1-2-2-拉普拉斯算子" class="headerlink" title="1.2.2 拉普拉斯算子"></a>1.2.2 拉普拉斯算子</h4><p>$$<br>\nabla ^2=\frac{\part ^2}{\part x^2}+\frac{\part ^2}{\part y^2}<br>$$</p>
+<ul>
+<li>极坐标中的拉普拉斯算子<br>$$<br>x=r\cos\mathrm{\theta},y=r\sin\theta<br>$$</li>
+</ul>
+<p>$$<br>\nabla ^2 =\frac{1}{r}\frac{\part}{\part r}(r\frac{\part }{\part r})+\frac{1}{r^2}\frac{\part^2}{\part \theta^2}<br>$$</p>
+<ul>
+<li><p>柱坐标系中的拉普拉斯算子<br>$$<br>x=\rho \cos \phi ,y=\rho \sin \phi ,z=z<br>$$</p>
+<p>$$<br>\nabla ^2=\frac{\part ^2}{\part \rho^2}+\frac{1}{\rho}\frac{\part}{\part \phi}+\frac{1}{\rho^2}\frac{\part^2}{\part \phi^2}+\frac{\part ^2}{\part z^2}<br>$$</p>
+</li>
+</ul>
+<ul>
+<li>球坐标系中的拉普拉斯算子</li>
+</ul>
+<p>$$<br>x=r\cos \phi \sin \theta ,y=r\sin \phi \sin \theta ,z=r\cos \theta<br>$$</p>
+<p>$$<br>\nabla ^2=\frac{1}{r^2}\frac{\part}{\part r}(r^2\frac{\part}{\part r})+\frac{1}{r^2 \sin \theta}\frac{\part}{\part \theta}(\sin\theta\frac{\part}{\part \theta})+\frac{1}{r^2\sin^2\theta}\frac{\part^2}{\part \phi^2}<br>$$</p>
+<h2 id="第二章——基本的数学物理方程的建立-基础知识"><a href="#第二章——基本的数学物理方程的建立-基础知识" class="headerlink" title="第二章——基本的数学物理方程的建立(基础知识)"></a>第二章——基本的数学物理方程的建立(基础知识)</h2><h3 id="2-1-波动方程"><a href="#2-1-波动方程" class="headerlink" title="2.1 波动方程"></a>2.1 波动方程</h3><h4 id="2-1-1-弦振动问题"><a href="#2-1-1-弦振动问题" class="headerlink" title="2.1.1 弦振动问题"></a>2.1.1 弦振动问题</h4><p>$$<br>T_2\sin\alpha_2-T_1\sin \alpha_1=T(\sin \alpha_2-\sin\alpha_1)=m\frac{\part^2 u}{\part t^2}<br>$$</p>
+<p>当$\alpha_1,\alpha_1$趋于0的时候，我们就有：<br>$$<br>\frac{\part u}{\part x}|<em>x=\tan \alpha_1=\sin \alpha_1 (\text{用的是等价无穷小})\<br>\frac{\part u}{\part x}|</em>{x+\Delta x}=\tan \alpha_2=\sin \alpha_2 (\text{用的是等价无穷小})<br>$$<br>上面两者相减之后可以得到：<br>$$<br>\Delta(\frac{\part u}{\part x})=\frac{\frac{\part u}{\part x}}{\Delta x}\Delta x=\frac{\part^2 u}{\part x^2}\Delta x<br>$$</p>
+<p>$$<br>T\frac{\part^2 u}{\part x^2}\Delta x=\rho\Delta x\frac{\part^2 u}{\part x^2}<br>$$</p>
+<p>最后一个式子就是弦振动的运动方程，其中</p>
+<h4 id="2-1-2-强迫振动和阻尼振动"><a href="#2-1-2-强迫振动和阻尼振动" class="headerlink" title="2.1.2 强迫振动和阻尼振动"></a>2.1.2 强迫振动和阻尼振动</h4><p>$$<br>\frac{\part^2 u}{\part t^2}=a^2(\frac{\part^2 u}{\part x^2}+\frac{\part ^2u}{\part y}+\frac{\part ^2u}{\part z^2})<br>$$</p>
+<h4 id="2-1-3-高频传输线问题"><a href="#2-1-3-高频传输线问题" class="headerlink" title="2.1.3 高频传输线问题"></a>2.1.3 高频传输线问题</h4><p>$$<br>\frac{\part^2u}{\part t^2}=a^2\frac{\part^2 u}{\part x^2}<br>$$</p>
+<h3 id="2-2-热传导方程"><a href="#2-2-热传导方程" class="headerlink" title="2.2 热传导方程"></a>2.2 热传导方程</h3><p>$$<br>\frac{\part u}{\part t}=a^2(\frac{\part ^2u}{\part x^2}+\frac{\part ^2u}{\part y^2}+\frac{\part ^2u}{\part z^2})+f(x,y,z,t)<br>$$</p>
+<h3 id="2-3-拉普拉斯方程"><a href="#2-3-拉普拉斯方程" class="headerlink" title="2.3 拉普拉斯方程"></a>2.3 拉普拉斯方程</h3><p>在二维新式的热传导方程中<br>$$<br>\frac{\part u}{\part t}=a^2(\frac{\part ^2u}{\part x^2}+\frac{\part ^2u}{\part y^2})+f(x,y,t)<br>$$<br>让稳态$\part u/\part t=0$,并且$f(x,z,t)=0$的情况下可以给出：<br>$$<br>\frac{\part^2 u}{\part x^2}+\frac{\part ^2u}{\part y^2}=0<br>$$</p>
+<h3 id="2-4-二阶偏微分方程（重点）"><a href="#2-4-二阶偏微分方程（重点）" class="headerlink" title="2.4 二阶偏微分方程（重点）"></a>2.4 二阶偏微分方程（重点）</h3><h4 id="2-4-1-分类与标准形式"><a href="#2-4-1-分类与标准形式" class="headerlink" title="2.4.1 分类与标准形式"></a>2.4.1 分类与标准形式</h4><p>一维波动方程<br>$$<br>\frac{\part^2 u}{\part t^2}=a^2\frac{\part^2 u}{\part x^2}<br>$$<br>一维有缘波动方程<br>$$<br>\frac{\part^2 u}{\part t^2}=a^2\frac{\part^2 u}{\part x^2}+f(x,t)<br>$$<br>一维阻尼波动方程<br>$$<br>\frac{\part^2 u}{\part t^2}-a^2\frac{\part^2 u}{\part x^2}+2b\frac{\part u}{\part t}=0<br>$$<br>电报方程<br>$$<br>\frac{\part ^2 u}{\part t^2}-a^2\frac{\part ^2 u}{\part x^2}+2b\frac{\part u}{\part t}+cu =0<br>$$<br>一维热传导方程<br>$$<br>\frac{\part u}{\part t}=a^2\frac{\part^2 u}{\part x^2}<br>$$<br>一维有源热传导方程<br>$$<br>\frac{\part u}{\part t}=a^2\frac{\part ^2u}{\part x^2}+f(x,t)<br>$$<br>二维拉普拉斯方程<br>$$<br>\frac{\part^2 u}{\part x^2}+\frac{\part ^2u}{\part y^2}=0<br>$$<br>二维泊松方程<br>$$<br>\frac{\part^2 u}{\part x^2}+\frac{\part^2 u}{\part y^2}=f(x,y)<br>$$<br>通过以上式子我们可以整理出二阶线性双变量微分方程的 <span id = "anchor"><strong>通式</strong></span><br>$$<br>A\frac{\part^2 u}{\part x^2}+2B\frac{\part ^2 u}{\part x\part y}+C\frac{\part ^2u}{\part y^2}+D\frac{\part u}{\part x}+E\frac{\part u}{\part y}+Fu=G<br>$$<br>这里的$A,B,C,D,E,F,G$都是$x$和$y$的函数，但不包含$u$。</p>
+<p>按照：<br>$$<br>\Delta=B^2-4AC<br>$$<br>可以把方程分成三类：</p>
+<p>双曲线形状$\Delta &gt;0$：<br>$$<br>\frac{\part u}{\part x \part y}=[….]\<br>\text{或}\<br>\frac{\part ^2 u}{\part x^2}-\frac{\part^2 u}{\part y^2}=[….]<br>$$<br>抛物线形$\Delta =0$：<br>$$<br>\frac{\part ^2 u}{\part x^2}=[….]\<br>\text{或}\<br>\frac{\part ^2 u}{\part y^2}=[…]<br>$$<br>椭圆形$\Delta &lt;0$：<br>$$<br>\frac{\part ^2u}{\part x^2}+\frac{\part^2 u}{\part y^2}=[…]<br>$$<br>上面式子中的$[…]$代表不含有二阶偏导数项。</p>
+<p>为了化简$A\frac{\part^2 u}{\part x^2}+2B\frac{\part ^2 u}{\part x\part y}+C\frac{\part ^2u}{\part y^2}+D\frac{\part u}{\part x}+E\frac{\part u}{\part y}+Fu=G$这个式子，我们引入以下变换：<br>$$<br>\xi=\xi(x,y),\eta=\eta(x,y)<br>$$<br>根据线性代数的知识为了保证其逆变换成立我们要求雅可比行列式满足：<br>$$<br>\begin{equation}<br>\left|\begin{matrix}<br>\frac{\part \xi}{\part x} &amp; \frac{\part \xi}{\part y}\<br>\frac{\part \eta}{\part x} &amp; \frac{\part \eta}{\part y}<br>\end{matrix}\right|<br>\end{equation}\ne 0<br>$$<br>我们现在要把上面的的$u(x,y)$变成$u(\xi,\eta)$的形式，那么:<br>$$<br>\frac{\part u}{\part x}=\frac{\part u}{\part \xi}\frac{\part \xi}{\part x}+\frac{\part u}{\part \eta}\frac{\part \eta}{\part x}\<br>\frac{\part u}{\part y}=\frac{\part u}{\part \xi}\frac{\part \xi}{\part y}+\frac{\part u}{\part \eta}\frac{\part \eta}{\part y}<br>$$<br>带入到原方程中可以得到<br>$$<br>a\frac{\part^2 u}{\part\xi^2}+b\frac{\part^2 u}{\part\xi\part\eta}+c\frac{\part^2 u}{\part\eta^2}+d\frac{\part u}{\part\eta}+fu=g<br>$$<br>其中<br>$$<br>\begin{array}{c}<br>a=A\left(\frac{\partial \xi}{\partial x}\right)^{2}+2 B \frac{\partial \xi}{\partial x} \frac{\partial \xi}{\partial y}+C\left(\frac{\partial \xi}{\partial y}\right)^{2} \<br>b=A \frac{\partial \xi}{\partial x} \frac{\partial \eta}{\partial x}+B\left(\frac{\partial \xi}{\partial x} \frac{\partial \eta}{\partial y}+\frac{\partial \xi}{\partial y} \frac{\partial \eta}{\partial x}\right)+C \frac{\partial \xi}{\partial y} \frac{\partial \eta}{\partial y} \<br>c=A\left(\frac{\partial \eta}{\partial x}\right)^{2}+2 B \frac{\partial \eta}{\partial x} \frac{\partial \eta}{\partial y}+C\left(\frac{\partial \eta}{\partial y}\right)^{2} \<br>d=A \frac{\partial^{2} \xi}{\partial x^{2}}+2 B \frac{\partial^{2} \xi}{\partial x \partial y}+C \frac{\partial^{2} \xi}{\partial y^{2}}+D \frac{\partial \xi}{\partial x}+E \frac{\partial \xi}{\partial y} \<br>e=A \frac{\partial^{2} \eta}{\partial x^{2}}+2 B \frac{\partial^{2} \eta}{\partial x \partial y}+C \frac{\partial^{2} \eta}{\partial y^{2}}+D \frac{\partial \eta}{\partial x}+E \frac{\partial \eta}{\partial y} \<br>f=F \<br>g=G<br>\end{array}<br>$$<br>可以看到，$a$和$c$有相同的形式，我们从这个特点中入手化简方程，为此我们考察相应的微分方程：<br>$$<br>A\left(\frac{\partial W}{\partial x}\right)^{2}+2 B \frac{\partial W}{\partial x} \frac{\partial W}{\partial y}+C\left(\frac{\partial W}{\partial y}\right)^{2}=0<br>$$<br>由于式子中平方项的存在，$W(x,y)$有两个特解，而且可以看出来，他们有常数解：<br>$$<br>W(x,y)=\gamma(常数)<br>$$<br>如果让两个常数解作为$\xi$和$\eta$,也就是说$\xi(x,y)=\gamma_1,\eta(x,y)=\gamma_2$,则$a=0,c=0$,在$W(x,y)=\gamma$中我们把$y$视为$x$的函数，利用隐函数求导法则:<br>$$<br>\frac{dy}{dx}=-\frac{\part W}{\part x}/\frac{\part W}{\part y}<br>$$<br>方程两边同时除以$(\frac{\part W}{\part y})^2$,利用带入到$A\left(\frac{\partial W}{\partial x}\right)^{2}+2 B \frac{\partial W}{\partial x} \frac{\partial W}{\partial y}+C\left(\frac{\partial W}{\partial y}\right)^{2}=0$可以得到：<br>$$<br>A(\frac{d y}{d x})^2-2B\frac{dy}{dx}+C=0<br>$$<br>这个方程被称为是二阶线性方程$A\frac{\part^2 u}{\part x^2}+2B\frac{\part ^2 u}{\part x\part y}+C\frac{\part ^2u}{\part y^2}+D\frac{\part u}{\part x}+E\frac{\part u}{\part y}+Fu=G$的特征方程，曲线$\xi(x,y)=\gamma_1$和$\eta(x,y)=\gamma_2$，称为特征线，特征方程可以分解为两个方程：<br>$$<br>\frac{dy}{dx}=\frac{B+\sqrt{B^2-4AC}}{A}\<br>\frac{dy}{dx}=\frac{B-\sqrt{B^2-4AC}}{A}<br>$$<br>我们按照$\Delta =B^2-AC$的取值分为三种情况讨论：</p>
+<p>(1)$\Delta =B^2-AC&gt;0$</p>
+<p>这种情况则，$a=c=0$,于是就可以直接化简了。</p>
+<p>(2)$\Delta =B^2-AC=0$</p>
+<p>这种情况可以推出来$a=b=0$,于是也可以化简了.</p>
+<p>(3)$\Delta =B^2-AC&lt;0$</p>
+<p>这种情况，我们就令他的复数解为：<br>$$<br>\psi(x,y)=\psi_1(x,y)+i\psi_2(x,y)=\gamma<br>$$<br>然后取变换<br>$$<br>\xi=\psi_1(x,y),\eta=\psi_2(x,y)<br>$$<br>可以推出$a=c,b=0$,然后就可以化简了。</p>
+<p>【例】将下面特里科密方程化为标准型<br>$$<br>y\frac{\part^2 u}{\part x^2}+\frac{\part u}{\part y^2}=0<br>$$<br>Solution:</p>
+<p>对比<a href="#anchor">通式</a>可以知道：$A=y,B=0,C=1$，那么$\Delta =-y$.</p>
+<p>（1）$y&lt;0,\Delta &gt;0$，此时有：<br>$$<br>\frac{dy}{dx}=\pm \frac{1}{\sqrt{-y}}<br>$$<br>可以解知：<br>$$<br>\frac{2}{3}(-y)^{3/2}=\pm x+\gamma<br>$$<br>我们就令:<br>$$<br>\xi(x,y)=\frac{2}{3}(-y)^{3/2}+ x,\eta(x,y)=\frac{2}{3}(-y)^{3/2}- x<br>$$<br>然后反解出$x,y$带入式子中就可以了，利用链式求导法则。</p>
+<p>其他的情况同样的道理</p>
+<h4 id="2-4-2-常系数方程"><a href="#2-4-2-常系数方程" class="headerlink" title="2.4.2 常系数方程"></a>2.4.2 常系数方程</h4><p>若方程<br>$$<br>A\frac{\part^2 u}{\part x^2}+2B\frac{\part ^2 u}{\part x\part y}+C\frac{\part ^2u}{\part y^2}+D\frac{\part u}{\part x}+E\frac{\part u}{\part y}+Fu=G<br>$$<br>中的$A,B,C$均为常数，则$\Delta $也是常数，在这种情况下我我们就说二阶偏微方程是常系数二阶偏微分方程。化简方法和上述的例题一样。</p>
+<p>【例】将非齐次方程<br>$$<br>\frac{\part ^2 u}{\part x^2}-4\frac{\part ^2 u}{\part x \part y}+4\frac{\part^2u}{\part y^2}=e^y<br>$$<br>化成标准型。</p>
+<p>Solution:观察可以知道$A=1,B=-2,C=4$，则$\Delta =0$.<br>$$<br>\frac{dy}{dx}=-2<br>$$<br>那么就有</p>
+<p>$y=-2x+c $  $\Longrightarrow $$\xi(x,y)=y+2x,\eta(x,y)=y$,需要说明的是这里$\eta(x,y)$要取和$\xi(x,y)$无关的函数,并且要满足其雅可比行列式不等于0.紧接着利用链式法则求导就行了，很简单。</p>
+<h4 id="2-4-5-定解问题"><a href="#2-4-5-定解问题" class="headerlink" title="2.4.5 定解问题"></a>2.4.5 定解问题</h4><p>我们在推导弦振动方程时,假定弦的两个端点固定在z=0和z=L而弦在初始t=0时刻的位移是$\phi$(z),最终得到弦的运动方程。利用这些条件还不能完全确定任意位置r(0&lt;1&lt;L)的弦点在任意t时刻离开其平衡位置的位移山(zt),根据常微分方程的知识我们知道,方程的时间导数是二阶的,要确定问题的特解还需要知道弦的初始速度。如果进一步知道弦的初始速度为$\psi(x)$,我们把方程与所有的条件列出来,便是<br>$$<br>\left{\begin{array}{ll}<br>\text{范定方程}\frac{\partial^{2} u}{\partial t^{2}}=a^{2} \frac{\partial^{2} u}{\partial x^{2}} &amp; (0&lt;x&lt;L, t&gt;0) \<br>\text{初始条件}\left.u\right|<em>{t=0}=\phi(x),\left.\quad \frac{\partial u}{\partial t}\right|</em>{t=0}=\psi(x) &amp; (0 \leqslant x \leqslant L) \<br>\text{边界条件}\left.\quad u\right|<em>{x=0}=0\left.\quad u\right|</em>{x=L}=0 &amp; (t&gt;0)<br>\end{array}\right.<br>$$</p>
 
             </div>
             <hr/>
@@ -485,7 +496,7 @@ nohup ./frpc_linux_arm64 -t 你的密匙 -s 隧道节点 &amp;</code></pre>
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://wxyhgk.gitee.io/mpnas2/">https://wxyhgk.gitee.io/mpnas2/</a>
+                    <a href="https://wxyhgk.gitee.io/mmfp(1)/">https://wxyhgk.gitee.io/mmfp(1)/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -964,19 +975,22 @@ nohup ./frpc_linux_arm64 -t 你的密匙 -s 隧道节点 &amp;</code></pre>
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/nas-sharelatex/">
+                <a href="/mpnas/">
                     <div class="card-image">
                         
-                        <img src="/medias/featureimages/nas-sharelatex/tu-f.jpg" class="responsive-img" alt="群晖docker搭建sharelatex服务">
                         
-                        <span class="card-title">群晖docker搭建sharelatex服务</span>
+                        <img src="/medias/featureimages/15.jpg" class="responsive-img" alt="猫盘nas的一些事(1)">
+                        
+                        <span class="card-title">猫盘nas的一些事(1)</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            群晖docker搭建sharelatex服务一.前言效果图：（可以看到是支持中文的） 为什么要搭建一个在线的Latex服务呢?
- 1.便携性：只要有网就可以直接用latex，不需要在其他的电脑上再安装latex软件，要知道一个texlive
+                            
+其实在一个月前我就想搞一个nas，只是因为毕业论文和其他的一些事情的原因，没什么时间折腾，这段时间还算可以，于是咸鱼入手了一个猫盘搞nas，在网上也是参考了不少资料，最后决定入手这个搭建自己的私人网盘。
+
+这个是我入手的猫盘，下面是他的盒
                         
                     </div>
                     <div class="publish-info">
@@ -998,16 +1012,8 @@ nohup ./frpc_linux_arm64 -t 你的密匙 -s 隧道节点 &amp;</code></pre>
                         <span class="chip bg-color">分享</span>
                     </a>
                     
-                    <a href="/tags/%E6%95%99%E7%A8%8B/">
-                        <span class="chip bg-color">教程</span>
-                    </a>
-                    
-                    <a href="/tags/nas/">
-                        <span class="chip bg-color">nas</span>
-                    </a>
-                    
-                    <a href="/tags/latex/">
-                        <span class="chip bg-color">latex</span>
+                    <a href="/tags/%E6%97%A5%E8%AE%B0/">
+                        <span class="chip bg-color">日记</span>
                     </a>
                     
                 </div>
@@ -1021,22 +1027,22 @@ nohup ./frpc_linux_arm64 -t 你的密匙 -s 隧道节点 &amp;</code></pre>
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/mpnas/">
+                <a href="/mma-rulepatten3/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/15.jpg" class="responsive-img" alt="猫盘nas的一些事(1)">
+                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="Mathematica——模式规则3">
                         
-                        <span class="card-title">猫盘nas的一些事(1)</span>
+                        <span class="card-title">Mathematica——模式规则3</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
                             
-其实在一个月前我就想搞一个nas，只是因为毕业论文和其他的一些事情的原因，没什么时间折腾，这段时间还算可以，于是咸鱼入手了一个猫盘搞nas，在网上也是参考了不少资料，最后决定入手这个搭建自己的私人网盘。
+说明最近心里总是很烦，不知道为什么，可能大学要毕业了，对未来还是很迷茫，不知道怎么办，很难受。希望以后能好起来吧。 
 
-这个是我入手的猫盘，下面是他的盒
+1.3 自带模式的内置函数1.3.1 Cases这个函数通常用在表达式的结构上。更准确地说，它用于表达式中与特定模式匹
                         
                     </div>
                     <div class="publish-info">
@@ -1054,12 +1060,12 @@ nohup ./frpc_linux_arm64 -t 你的密匙 -s 隧道节点 &amp;</code></pre>
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E5%88%86%E4%BA%AB/">
-                        <span class="chip bg-color">分享</span>
+                    <a href="/tags/%E6%95%99%E7%A8%8B/">
+                        <span class="chip bg-color">教程</span>
                     </a>
                     
-                    <a href="/tags/%E6%97%A5%E8%AE%B0/">
-                        <span class="chip bg-color">日记</span>
+                    <a href="/tags/Mathematica/">
+                        <span class="chip bg-color">Mathematica</span>
                     </a>
                     
                 </div>
@@ -1305,6 +1311,13 @@ body.dark .ipage {
 
 </main>
 
+
+<script src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script>
+    MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$', '$'], ['\(', '\)']]}
+    });
+</script>
 
 
     <footer class="page-footer bg-color">
