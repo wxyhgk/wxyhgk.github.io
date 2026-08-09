@@ -1,0 +1,65 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import ChemistryRenderers from '../components/ChemistryRenderers.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+
+interface Heading {
+	depth: number;
+	slug: string;
+	text: string;
+}
+
+type Props = CollectionEntry<'blog'>['data'] & { headings?: Heading[] };
+const { title, description, pubDate, updatedDate, heroImage, tags, headings = [] } = Astro.props;
+---
+
+<html lang="zh-CN">
+	<head><BaseHead title={title} description={description} /></head>
+	<body>
+		<Header />
+		<main>
+			<article>
+				{heroImage && <div class="cover"><Image width={1600} height={620} src={heroImage} alt="" /></div>}
+				<div class="breadcrumb"><a href="/blog">文章</a><span>/</span><span>{title}</span></div>
+				<header class="article-header">
+					<p class="date"><FormattedDate date={pubDate} />{updatedDate && <> · 更新于 <FormattedDate date={updatedDate} /></>}</p>
+					<h1>{title}</h1>
+					<p class="description">{description}</p>
+					<div class="tags">{tags.map((tag) => <span>{tag}</span>)}</div>
+				</header>
+				<div class="prose"><slot /></div>
+			</article>
+			<TableOfContents headings={headings} />
+			<ChemistryRenderers />
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	main { width: 100%; max-width: none; padding: 0; }
+	.cover { width: 100%; max-height: 390px; overflow: hidden; background: var(--surface-soft); }
+	.cover img { width: 100%; height: 390px; object-fit: cover; border-radius: 0; }
+	.breadcrumb { width: 960px; max-width: calc(100% - 2em); margin: 1em auto 0; color: rgb(var(--gray)); font-size: 0.72em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+	.breadcrumb a { color: rgb(var(--gray)); text-decoration: none; }
+	.breadcrumb span { margin-left: 0.55em; }
+	.article-header, .prose { width: 760px; max-width: calc(100% - 3em); margin-inline: auto; }
+	.article-header { padding: 4.5em 0 2.5em; border-bottom: 1px solid rgb(var(--gray-light)); }
+	.article-header h1 { max-width: 840px; margin: 0.2em 0 0.35em; font-size: clamp(2.4em, 6vw, 4.35em); line-height: 1.08; letter-spacing: -0.055em; }
+	.date { margin: 0; color: rgb(var(--gray)); font-size: 0.78em; }
+	.description { max-width: 680px; color: rgb(var(--gray)); font-size: 1.05em; }
+	.tags { display: flex; flex-wrap: wrap; gap: 0.45em; }
+	.tags span { padding: 0.2em 0.65em; border-radius: 999px; background: var(--surface-soft); color: rgb(var(--gray-dark)); font-size: 0.72em; }
+	.prose { padding: 3.5em 0 6em; }
+	.prose :global(h2) { margin-top: 2.2em; scroll-margin-top: 100px; font-size: 1.75em; }
+	.prose :global(h3) { margin-top: 1.8em; scroll-margin-top: 100px; font-size: 1.3em; }
+	@media (max-width: 720px) {
+		.article-header { padding-top: 3.5em; }
+		.prose { padding-top: 2.5em; }
+	}
+</style>

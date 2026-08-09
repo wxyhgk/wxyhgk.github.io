@@ -1,0 +1,132 @@
+---
+interface Heading {
+	depth: number;
+	slug: string;
+	text: string;
+}
+
+const { headings } = Astro.props as { headings: Heading[] };
+const visibleHeadings = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
+
+{
+	visibleHeadings.length > 0 && (
+		<details class="toc" data-toc>
+			<summary aria-label="打开文章目录" title="文章目录">
+				<span class="mobile-label">目录</span>
+				<span class="rail" aria-hidden="true">
+					{visibleHeadings.slice(0, 8).map((heading) => (
+						<i class:list={{ child: heading.depth === 3 }} />
+					))}
+				</span>
+			</summary>
+			<nav aria-label="文章目录">
+				<p>本页目录</p>
+				<ol>
+					{visibleHeadings.map((heading) => (
+						<li class:list={{ child: heading.depth === 3 }}>
+							<a href={`#${heading.slug}`} data-toc-link={heading.slug}>{heading.text}</a>
+						</li>
+					))}
+				</ol>
+			</nav>
+		</details>
+	)
+}
+
+<script>
+	const toc = document.querySelector<HTMLDetailsElement>('[data-toc]');
+	if (toc) {
+		const summary = toc.querySelector('summary');
+		let pinned = false;
+		const desktop = () => window.matchMedia('(min-width: 1100px)').matches;
+
+		summary?.addEventListener('click', (event) => {
+			if (!desktop()) return;
+			event.preventDefault();
+			pinned = !toc.open;
+			toc.open = pinned;
+		});
+		toc.addEventListener('pointerenter', () => {
+			if (desktop()) toc.open = true;
+		});
+		toc.addEventListener('pointerleave', () => {
+			if (desktop() && !pinned) toc.open = false;
+		});
+
+		const links = [...toc.querySelectorAll<HTMLAnchorElement>('[data-toc-link]')];
+		const sections = links
+			.map((link) => document.getElementById(link.dataset.tocLink ?? ''))
+			.filter((section): section is HTMLElement => Boolean(section));
+
+		const updateCurrent = () => {
+			let current = sections[0]?.id;
+			for (const section of sections) {
+				if (section.getBoundingClientRect().top <= 180) current = section.id;
+			}
+			for (const link of links) {
+				if (link.dataset.tocLink === current) link.setAttribute('aria-current', 'location');
+				else link.removeAttribute('aria-current');
+			}
+		};
+
+		updateCurrent();
+		document.addEventListener('scroll', updateCurrent, { passive: true });
+	}
+</script>
+
+<style>
+	.toc {
+		position: fixed;
+		top: 42%;
+		right: 22px;
+		z-index: 20;
+	}
+	summary {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 34px;
+		padding: 10px 4px;
+		cursor: pointer;
+		list-style: none;
+	}
+	summary::-webkit-details-marker { display: none; }
+	.rail { display: grid; justify-items: end; gap: 8px; }
+	.rail i { display: block; width: 20px; height: 2px; border-radius: 2px; background: rgb(var(--gray-light)); }
+	.rail i.child { width: 12px; opacity: 0.62; }
+	.mobile-label { display: none; }
+	nav {
+		width: 270px;
+		max-height: min(62vh, 520px);
+		overflow-y: auto;
+		margin-right: 44px;
+		padding: 18px 16px;
+		border: 1px solid rgba(15, 23, 20, 0.1);
+		border-radius: 14px;
+		background: color-mix(in srgb, var(--surface) 96%, transparent);
+		box-shadow: 0 18px 45px rgba(22, 32, 30, 0.12);
+		backdrop-filter: blur(14px);
+	}
+	nav p { margin: 0 0 10px; color: rgb(var(--gray)); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; }
+	ol { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+	li a { display: block; padding: 6px 8px; border-radius: 6px; color: rgb(var(--gray)); font-size: 0.82rem; line-height: 1.35; text-decoration: none; }
+	li.child a { padding-left: 22px; font-size: 0.78rem; }
+	li a:hover { background: var(--surface-soft); color: rgb(var(--black)); }
+	li a[aria-current='location'] { background: var(--surface-soft); color: var(--accent); font-weight: 700; }
+	@media (max-width: 1099px) {
+		.toc { top: auto; right: 18px; bottom: 18px; }
+		summary {
+			position: relative;
+			width: auto;
+			padding: 10px 14px;
+			border: 1px solid rgb(var(--gray-light));
+			border-radius: 999px;
+			background: var(--surface);
+			box-shadow: 0 8px 24px rgba(22, 32, 30, 0.14);
+		}
+		.mobile-label { display: inline; color: rgb(var(--gray-dark)); font-size: 0.82rem; font-weight: 700; }
+		.rail { display: none; }
+		nav { position: absolute; right: 0; bottom: 52px; margin: 0; }
+	}
+</style>

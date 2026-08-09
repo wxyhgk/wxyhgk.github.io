@@ -1,0 +1,73 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+const posts = (await getCollection('blog'))
+	.filter((post) => !post.data.draft)
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 3);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main class="home">
+			<section class="hero">
+				<p class="eyebrow">COMPUTATIONAL CHEMISTRY NOTES</p>
+				<h1>从方程到可复现的计算</h1>
+				<p class="lede">{SITE_DESCRIPTION}</p>
+				<div class="topics" aria-label="主要主题">
+					<span>量子化学</span><span>电子结构</span><span>科研计算</span>
+				</div>
+			</section>
+
+			<section class="latest">
+				<div class="section-heading">
+					<h2>最新文章</h2>
+					<a href="/blog">查看全部 →</a>
+				</div>
+				<div class="post-list">
+					{posts.map((post) => (
+						<article>
+							<p class="date"><FormattedDate date={post.data.pubDate} /></p>
+							<h3><a href={`/blog/${post.id}/`}>{post.data.title}</a></h3>
+							<p>{post.data.description}</p>
+							<div class="tags">{post.data.tags.map((tag) => <span>{tag}</span>)}</div>
+						</article>
+					))}
+				</div>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.home { width: 880px; }
+	.hero { padding: 5.5em 0 4.5em; border-bottom: 1px solid rgb(var(--gray-light)); }
+	.eyebrow { margin: 0 0 1em; color: var(--accent); font-size: 0.72em; font-weight: 700; letter-spacing: 0.16em; }
+	.hero h1 { max-width: 720px; margin-bottom: 0.35em; font-size: clamp(2.6em, 8vw, 5.2em); letter-spacing: -0.055em; }
+	.lede { max-width: 650px; color: rgb(var(--gray)); font-size: 1.15em; }
+	.topics, .tags { display: flex; flex-wrap: wrap; gap: 0.5em; }
+	.topics span, .tags span { padding: 0.25em 0.7em; border: 1px solid rgb(var(--gray-light)); border-radius: 999px; font-size: 0.78em; }
+	.latest { padding-top: 3em; }
+	.section-heading { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1em; }
+	.section-heading h2 { font-size: 1.65em; }
+	.post-list { border-top: 1px solid rgb(var(--gray-light)); }
+	.post-list article { padding: 1.5em 0.25em; border-bottom: 1px solid rgb(var(--gray-light)); }
+	.post-list h3 { margin-bottom: 0.35em; font-size: 1.25em; }
+	.post-list h3 a { color: rgb(var(--black)); text-decoration: none; }
+	.post-list article > p:not(.date) { color: rgb(var(--gray)); font-size: 0.9em; }
+	.date { margin: 0 0 0.6em; color: rgb(var(--gray)); font-size: 0.75em; }
+	@media (max-width: 720px) {
+		.hero { padding-top: 3.5em; }
+	}
+</style>

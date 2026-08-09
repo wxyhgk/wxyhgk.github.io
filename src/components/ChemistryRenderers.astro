@@ -1,0 +1,250 @@
+<script>
+	type RDKitMol = {
+		is_valid(): boolean;
+		get_svg(width: number, height: number): string;
+		delete(): void;
+	};
+	type RDKitModule = {
+		version(): string;
+		get_mol(source: string): RDKitMol | null;
+	};
+	type ThreeDMolViewer = {
+		addModel(source: string, format: string): unknown;
+		setStyle(selection: object, style: object): void;
+		setBackgroundColor(color: string): void;
+		zoomTo(): void;
+		render(): void;
+		resize(): void;
+	};
+	type ChemistryWindow = Window & {
+		initRDKitModule?: (options: { locateFile: (file: string) => string }) => Promise<RDKitModule>;
+		$3Dmol?: { createViewer: (element: HTMLElement, config: object) => ThreeDMolViewer };
+		__rdkitPromise?: Promise<RDKitModule>;
+		__threeDMolPromise?: Promise<ChemistryWindow['$3Dmol']>;
+	};
+
+	const chemistryWindow = window as ChemistryWindow;
+
+	function loadScript(src: string): Promise<void> {
+		const loaded = document.querySelector<HTMLScriptElement>(`script[data-chem-src="${src}"]`);
+		if (loaded?.dataset.loaded === 'true') return Promise.resolve();
+		return new Promise((resolve, reject) => {
+			const script = loaded ?? document.createElement('script');
+			script.addEventListener('load', () => {
+				script.dataset.loaded = 'true';
+				resolve();
+			}, { once: true });
+			script.addEventListener('error', () => reject(new Error(`无法加载 ${src}`)), { once: true });
+			if (!loaded) {
+				script.src = src;
+				script.dataset.chemSrc = src;
+				document.head.append(script);
+			}
+		});
+	}
+
+	function loadRDKit(): Promise<RDKitModule> {
+		if (!chemistryWindow.__rdkitPromise) {
+			chemistryWindow.__rdkitPromise = loadScript('/vendor/rdkit/RDKit_minimal.js').then(() => {
+				if (!chemistryWindow.initRDKitModule) throw new Error('RDKit 初始化函数不存在');
+				return chemistryWindow.initRDKitModule({
+					locateFile: (file) => `/vendor/rdkit/${file}`,
+				});
+			});
+		}
+		return chemistryWindow.__rdkitPromise;
+	}
+
+	function load3Dmol(): Promise<NonNullable<ChemistryWindow['$3Dmol']>> {
+		if (!chemistryWindow.__threeDMolPromise) {
+			chemistryWindow.__threeDMolPromise = loadScript('/vendor/3dmol/3Dmol-min.js').then(() => {
+				if (!chemistryWindow.$3Dmol) throw new Error('3Dmol.js 初始化失败');
+				return chemistryWindow.$3Dmol;
+			});
+		}
+		return chemistryWindow.__threeDMolPromise as Promise<NonNullable<ChemistryWindow['$3Dmol']>>;
+	}
+
+	function createFigure(kind: string, source: string, loadingText: string) {
+		const figure = document.createElement('figure');
+		figure.className = `chem-viewer ${kind}`;
+		const stage = document.createElement('div');
+		stage.className = 'chem-stage';
+		stage.setAttribute('role', 'img');
+		stage.setAttribute('aria-label', loadingText);
+		stage.textContent = loadingText;
+		const caption = document.createElement('figcaption');
+		caption.textContent = source;
+		figure.append(stage, caption);
+		return { figure, stage };
+	}
+
+	function sdfHas3DCoordinates(source: string): boolean {
+		const lines = source.split(/\r?\n/);
+		if (lines.slice(0, 3).some((line) => /\b3D\b/i.test(line))) return true;
+
+		const countsIndex = lines.findIndex((line) => /V2000|V3000/.test(line));
+		if (countsIndex < 0) return false;
+
+		if (lines[countsIndex].includes('V3000')) {
+			return lines.some((line) => {
+				const match = line.match(/^M\s+V30\s+\d+\s+\S+\s+([-+\d.eE]+)\s+([-+\d.eE]+)\s+([-+\d.eE]+)/);
+				return match ? Math.abs(Number(match[3])) > 1e-6 : false;
+			});
+		}
+
+		const atomCount = Number.parseInt(lines[countsIndex].slice(0, 3).trim(), 10);
+		if (!Number.isFinite(atomCount)) return false;
+		return lines.slice(countsIndex + 1, countsIndex + 1 + atomCount).some((line) => {
+			const z = Number.parseFloat(line.slice(20, 30));
+			return Number.isFinite(z) && Math.abs(z) > 1e-6;
+		});
+	}
+
+	const elementSymbols = [
+		'', 'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si',
+		'P', 'S', 'Cl', 'Ar', 'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni',
+		'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr',
+	];
+
+	function gaussianToXyz(source: string): string {
+		const lines = source.split(/\r?\n/);
+		const chargeMultiplicityIndex = lines.findIndex((line) => /^\s*[+-]?\d+\s+\d+\s*$/.test(line));
+		if (chargeMultiplicityIndex < 0) throw new Error('GJF 中没有找到电荷与多重度行');
+
+		const atoms: string[] = [];
+		for (const line of lines.slice(chargeMultiplicityIndex + 1)) {
+			if (!line.trim()) break;
+			const parts = line.trim().replaceAll(',', ' ').split(/\s+/);
+			const coordinateValues = parts.slice(1)
+				.map((value) => value.replace(/[dD]/g, 'E'))
+				.filter((value) => Number.isFinite(Number(value)));
+			if (coordinateValues.length < 3) {
+				throw new Error('GJF 暂时只支持笛卡尔坐标，不支持 Z-matrix');
+			}
+
+			const atomicNumber = Number.parseInt(parts[0], 10);
+			const symbolMatch = parts[0].match(/^[A-Za-z]{1,2}/);
+			const matchedSymbol = symbolMatch?.[0];
+			const symbol = Number.isFinite(atomicNumber)
+				? elementSymbols[atomicNumber]
+				: matchedSymbol
+					? `${matchedSymbol[0].toUpperCase()}${matchedSymbol.slice(1).toLowerCase()}`
+					: undefined;
+			if (!symbol) throw new Error(`无法识别 GJF 原子：${parts[0]}`);
+
+			const [x, y, z] = coordinateValues.slice(-3);
+			atoms.push(`${symbol} ${x} ${y} ${z}`);
+		}
+
+		if (!atoms.length) throw new Error('GJF 中没有找到笛卡尔坐标');
+		return `${atoms.length}\nGaussian input\n${atoms.join('\n')}`;
+	}
+
+	const blocks = [...document.querySelectorAll<HTMLElement>('pre > code[class*="language-"]')];
+	const explicitTwoDFormats = new Set(['smiles', 'sdf-2d', 'mol-2d']);
+	const threeDFormats: Record<string, string> = {
+		xyz: 'xyz',
+		gjf: 'xyz',
+		com: 'xyz',
+		pdb: 'pdb',
+		mol2: 'mol2',
+		cif: 'cif',
+		cube: 'cube',
+		'sdf-3d': 'sdf',
+		'mol-3d': 'sdf',
+		'xyz-3d': 'xyz',
+		'pdb-3d': 'pdb',
+		'mol2-3d': 'mol2',
+		'cif-3d': 'cif',
+		'cube-3d': 'cube',
+	};
+
+	for (const block of blocks) {
+		const languageClass = [...block.classList].find((name) => name.startsWith('language-'));
+		const language = languageClass?.replace('language-', '') ?? '';
+		const source = block.textContent?.trim() ?? '';
+		if (!source) continue;
+
+		const isAutoSdf = language === 'sdf' || language === 'mol';
+		const renderAs3D = isAutoSdf ? sdfHas3DCoordinates(source) : language in threeDFormats;
+		const renderAs2D = explicitTwoDFormats.has(language) || (isAutoSdf && !renderAs3D);
+
+		if (renderAs2D) {
+			const { figure, stage } = createFigure('chem-2d', language === 'smiles' ? `SMILES · ${source}` : language.toUpperCase(), '正在生成二维结构…');
+			block.parentElement?.replaceWith(figure);
+			loadRDKit().then((RDKit) => {
+				const molecule = RDKit.get_mol(source);
+				if (!molecule || !molecule.is_valid()) throw new Error('无法解析分子结构');
+				try {
+					stage.innerHTML = molecule.get_svg(720, 360);
+					stage.setAttribute('aria-label', `${language} 二维分子结构`);
+				} finally {
+					molecule.delete();
+				}
+			}).catch((error) => {
+				stage.textContent = error instanceof Error ? error.message : '二维结构渲染失败';
+				figure.classList.add('chem-error');
+			});
+		}
+
+		if (renderAs3D) {
+			const format = isAutoSdf ? 'sdf' : threeDFormats[language];
+			const { figure, stage } = createFigure('chem-3d', language.toUpperCase(), '正在加载三维结构…');
+			block.parentElement?.replaceWith(figure);
+			load3Dmol().then(($3Dmol) => {
+				const modelSource = language === 'gjf' || language === 'com' ? gaussianToXyz(source) : source;
+				stage.textContent = '';
+				const viewer = $3Dmol.createViewer(stage, {
+					backgroundColor: document.documentElement.dataset.theme === 'dark' ? '#181c1b' : '#ffffff',
+				});
+				viewer.addModel(modelSource, format);
+				viewer.setStyle({}, { stick: { radius: 0.16 }, sphere: { scale: 0.28 } });
+				viewer.zoomTo();
+				viewer.render();
+				viewer.resize();
+				stage.setAttribute('aria-label', `${format} 三维分子结构，可拖动旋转和滚轮缩放`);
+				window.addEventListener('themechange', ((event: CustomEvent<string>) => {
+					viewer.setBackgroundColor(event.detail === 'dark' ? '#181c1b' : '#ffffff');
+					viewer.render();
+				}) as EventListener);
+			}).catch((error) => {
+				stage.textContent = error instanceof Error ? error.message : '三维结构渲染失败';
+				figure.classList.add('chem-error');
+			});
+		}
+	}
+</script>
+
+<style is:global>
+	.chem-viewer {
+		margin: 2em 0;
+		border: 1px solid rgb(var(--gray-light));
+		border-radius: 10px;
+		overflow: hidden;
+		background: var(--surface);
+	}
+	.chem-stage {
+		display: grid;
+		place-items: center;
+		min-height: 360px;
+		color: rgb(var(--gray));
+		font-size: 0.85em;
+	}
+	.chem-2d .chem-stage { background: #fff; }
+	.chem-stage svg { display: block; width: 100%; height: auto; max-height: 420px; border-radius: 0; }
+	.chem-3d .chem-stage { position: relative; height: 430px; }
+	.chem-viewer figcaption {
+		padding: 0.65em 0.9em;
+		border-top: 1px solid rgb(var(--gray-light));
+		color: rgb(var(--gray));
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		font-size: 0.7em;
+		overflow-wrap: anywhere;
+	}
+	.chem-error .chem-stage { color: #b42318; }
+	@media (max-width: 640px) {
+		.chem-stage { min-height: 280px; }
+		.chem-3d .chem-stage { height: 340px; }
+	}
+</style>
