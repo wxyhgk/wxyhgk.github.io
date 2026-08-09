@@ -25,8 +25,8 @@ import { SITE_TITLE } from '../consts';
 			</aside>
 
 			<section class="editor-panel" aria-label="Markdown 编辑器">
-				<div class="panel-label"><span id="editor-path">选择一篇文章</span><span>MARKDOWN</span></div>
-				<textarea id="editor" spellcheck="false" disabled aria-label="Markdown 内容"></textarea>
+				<div class="panel-label"><span id="editor-path">选择一篇文章</span><span>MARKDOWN · / 命令</span></div>
+				<div id="editor" role="textbox" aria-multiline="true" aria-label="Markdown 内容"></div>
 			</section>
 
 			<section class="preview-panel" aria-label="实时预览">
@@ -36,193 +36,7 @@ import { SITE_TITLE } from '../consts';
 		</main>
 		<ChemistryRenderers />
 
-		<script>
-			type ArticleSummary = { slug: string; title: string };
-			type ArticlePayload = {
-				slug: string;
-				content: string;
-				hash: string;
-				files: { img: string[]; assets: string[]; ai: string[] };
-			};
-
-			const articleList = document.querySelector<HTMLElement>('#article-list')!;
-			const bundleFiles = document.querySelector<HTMLElement>('#bundle-files')!;
-			const editor = document.querySelector<HTMLTextAreaElement>('#editor')!;
-			const preview = document.querySelector<HTMLElement>('#preview')!;
-			const editorPath = document.querySelector<HTMLElement>('#editor-path')!;
-			const saveStatus = document.querySelector<HTMLElement>('#save-status')!;
-			const previewStatus = document.querySelector<HTMLElement>('#preview-status')!;
-			const saveButton = document.querySelector<HTMLButtonElement>('#save-button')!;
-			const newArticleButton = document.querySelector<HTMLButtonElement>('#new-article')!;
-			const openArticle = document.querySelector<HTMLAnchorElement>('#open-article')!;
-
-			let current: ArticlePayload | null = null;
-			let dirty = false;
-			let previewTimer: number | undefined;
-			let previewVersion = 0;
-
-			async function api<T>(url: string, options?: RequestInit): Promise<T> {
-				const response = await fetch(url, options);
-				const data = await response.json();
-				if (!response.ok) throw new Error(data.error || '请求失败');
-				return data;
-			}
-
-			function setSaveState(text: string, state = '') {
-				saveStatus.textContent = text;
-				saveStatus.dataset.state = state;
-			}
-
-			function renderFiles(files: ArticlePayload['files']) {
-				const sections = [
-					['img', files.img], ['assets', files.assets], ['ai', files.ai],
-				] as const;
-				bundleFiles.replaceChildren();
-				for (const [name, entries] of sections) {
-					const section = document.createElement('section');
-					const heading = document.createElement('h2');
-					heading.textContent = `${name}/`;
-					section.append(heading);
-					if (entries.length) {
-						for (const file of entries) {
-							const item = document.createElement('p');
-							item.textContent = file;
-							section.append(item);
-						}
-					} else {
-						const empty = document.createElement('p');
-						empty.className = 'muted';
-						empty.textContent = '空';
-						section.append(empty);
-					}
-					bundleFiles.append(section);
-				}
-			}
-
-			async function renderPreview() {
-				if (!current) return;
-				const version = ++previewVersion;
-				previewStatus.textContent = 'RENDERING';
-				try {
-					const result = await api<{ html: string }>('/api/studio/preview', {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ slug: current.slug, content: editor.value }),
-					});
-					if (version !== previewVersion) return;
-					preview.innerHTML = result.html;
-					document.dispatchEvent(new CustomEvent('chemistry:render', { detail: preview }));
-					previewStatus.textContent = 'LIVE';
-				} catch (error) {
-					if (version !== previewVersion) return;
-					preview.textContent = error instanceof Error ? error.message : '预览失败';
-					previewStatus.textContent = 'ERROR';
-				}
-			}
-
-			function schedulePreview() {
-				window.clearTimeout(previewTimer);
-				previewTimer = window.setTimeout(renderPreview, 280);
-			}
-
-			async function loadArticle(slug: string) {
-				if (dirty && !confirm('当前文章尚未保存，确定要切换吗？')) return;
-				setSaveState('正在载入…');
-				current = await api<ArticlePayload>(`/api/studio/articles/${encodeURIComponent(slug)}`);
-				editor.value = current.content;
-				editor.disabled = false;
-				editorPath.textContent = `blog/${current.slug}/index.md`;
-				openArticle.href = `/blog/${current.slug}/`;
-				dirty = false;
-				saveButton.disabled = false;
-				setSaveState('已载入', 'saved');
-				renderFiles(current.files);
-				for (const button of articleList.querySelectorAll('button')) {
-					button.classList.toggle('active', button.dataset.slug === slug);
-				}
-				await renderPreview();
-			}
-
-			async function loadArticleList(selectSlug?: string) {
-				const { articles } = await api<{ articles: ArticleSummary[] }>('/api/studio/articles');
-				articleList.replaceChildren();
-				for (const article of articles) {
-					const button = document.createElement('button');
-					button.type = 'button';
-					button.dataset.slug = article.slug;
-					button.innerHTML = `<strong></strong><span></span>`;
-					button.querySelector('strong')!.textContent = article.title;
-					button.querySelector('span')!.textContent = article.slug;
-					button.addEventListener('click', () => loadArticle(article.slug));
-					articleList.append(button);
-				}
-				const initial = selectSlug ?? articles[0]?.slug;
-				if (initial) await loadArticle(initial);
-				else setSaveState('还没有文章');
-			}
-
-			async function saveArticle() {
-				if (!current || !dirty) return;
-				saveButton.disabled = true;
-				setSaveState('正在保存…', 'saving');
-				try {
-					const result = await api<{ hash: string }>(`/api/studio/articles/${encodeURIComponent(current.slug)}`, {
-						method: 'PUT',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ content: editor.value, expectedHash: current.hash }),
-					});
-					current.hash = result.hash;
-					current.content = editor.value;
-					dirty = false;
-					setSaveState('已保存', 'saved');
-				} catch (error) {
-					setSaveState(error instanceof Error ? error.message : '保存失败', 'error');
-				} finally {
-					saveButton.disabled = false;
-				}
-			}
-
-			editor.addEventListener('input', () => {
-				dirty = true;
-				setSaveState('未保存', 'dirty');
-				schedulePreview();
-			});
-			editor.addEventListener('keydown', (event) => {
-				if (event.key === 'Tab') {
-					event.preventDefault();
-					const start = editor.selectionStart;
-					editor.setRangeText('\t', start, editor.selectionEnd, 'end');
-					editor.dispatchEvent(new Event('input'));
-				}
-				if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') {
-					event.preventDefault();
-					saveArticle();
-				}
-			});
-			saveButton.addEventListener('click', saveArticle);
-			newArticleButton.addEventListener('click', async () => {
-				const slug = prompt('文章 slug（小写字母、数字和连字符）');
-				if (!slug) return;
-				const title = prompt('文章标题');
-				if (!title) return;
-				try {
-					await api('/api/studio/articles', {
-						method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slug, title }),
-					});
-					await loadArticleList(slug);
-				} catch (error) {
-					setSaveState(error instanceof Error ? error.message : '新建失败', 'error');
-				}
-			});
-			window.addEventListener('beforeunload', (event) => {
-				if (!dirty) return;
-				event.preventDefault();
-			});
-
-			loadArticleList().catch((error) => {
-				setSaveState(error instanceof Error ? error.message : '无法连接本地 Studio', 'error');
-			});
-		</script>
+		<script>import '../studio/main';</script>
 	</body>
 </html>
 
@@ -261,8 +75,7 @@ import { SITE_TITLE } from '../consts';
 	.bundle-files :global(p) { padding-left: 9px; color: rgb(var(--gray)); overflow-wrap: anywhere; }
 	.bundle-files :global(.muted) { opacity: 0.55; }
 	.editor-panel, .preview-panel { display: grid; grid-template-rows: 38px 1fr; }
-	#editor { box-sizing: border-box; width: 100%; height: 100%; padding: 22px; border: 0; outline: 0; resize: none; background: var(--surface); color: rgb(var(--gray-dark)); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace; font-size: 14px; line-height: 1.65; tab-size: 2; }
-	#editor:disabled { opacity: 0.55; }
+	#editor { box-sizing: border-box; width: 100%; height: 100%; min-height: 0; overflow: hidden; background: var(--surface); }
 	.preview-content { padding: 34px clamp(24px, 5vw, 64px) 100px; overflow-y: auto; font-size: 17px; }
 	.preview-content :global(h1) { font-size: 2.3em; }
 	.preview-content :global(h2) { margin-top: 1.8em; font-size: 1.65em; }
