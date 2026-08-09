@@ -14,8 +14,12 @@ interface Heading {
 	text: string;
 }
 
-type Props = CollectionEntry<'blog'>['data'] & { headings?: Heading[] };
-const { title, description, pubDate, updatedDate, heroImage, tags, headings = [] } = Astro.props;
+type Props = CollectionEntry<'blog'>['data'] & {
+	headings?: Heading[];
+	chemistryViews?: Record<string, { format: string; view: number[]; display?: unknown }>;
+	articleSlug: string;
+};
+const { title, description, pubDate, updatedDate, heroImage, tags, headings = [], chemistryViews = {}, articleSlug } = Astro.props;
 ---
 
 <html lang="zh-CN">
@@ -35,7 +39,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags, headings = []
 				<div class="prose"><slot /></div>
 			</article>
 			<TableOfContents headings={headings} />
-			<ChemistryRenderers />
+			<ChemistryRenderers views={chemistryViews} articleSlug={articleSlug} />
 		</main>
 		<Footer />
 	</body>

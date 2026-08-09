@@ -11,9 +11,17 @@ draft: false
 
 Hartree–Fock 方法用单个 Slater 行列式近似多电子波函数。轨道满足自洽场方程
 
+
+$$
+\sin x + \cos x
+$$
+
 $$
 \hat{f}(i)\,\phi_p(i)=\varepsilon_p\,\phi_p(i),
 $$
+
+
+测试表格
 
 其中 Fock 算符写成
 

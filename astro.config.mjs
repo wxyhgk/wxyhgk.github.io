@@ -5,6 +5,7 @@ import { unified } from '@astrojs/markdown-remark';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
 import remarkMath from 'remark-math';
+import articleAssets from './src/plugins/article-assets.mjs';
 import rehypeKatexMhchem from './src/plugins/rehype-katex-mhchem.mjs';
 import studioDev from './src/plugins/studio-dev.mjs';
 
@@ -33,7 +34,7 @@ const chemistryLanguages = [
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://example.com',
-	integrations: [mdx(), sitemap()],
+	integrations: [mdx(), sitemap(), articleAssets()],
 	markdown: {
 		processor: unified({
 			remarkPlugins: [remarkMath],
@@ -46,6 +47,11 @@ export default defineConfig({
 	},
 	vite: {
 		plugins: [studioDev({ chemistryLanguages })],
+		define: {
+			__VUE_OPTIONS_API__: false,
+			__VUE_PROD_DEVTOOLS__: false,
+			__VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
+		},
 	},
 	fonts: [
 		{
