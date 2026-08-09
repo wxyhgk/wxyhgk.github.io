@@ -141,7 +141,6 @@
 		return `${atoms.length}\nGaussian input\n${atoms.join('\n')}`;
 	}
 
-	const blocks = [...document.querySelectorAll<HTMLElement>('pre > code[class*="language-"]')];
 	const explicitTwoDFormats = new Set(['smiles', 'sdf-2d', 'mol-2d']);
 	const threeDFormats: Record<string, string> = {
 		xyz: 'xyz',
@@ -160,6 +159,8 @@
 		'cube-3d': 'cube',
 	};
 
+	function renderChemistry(root: ParentNode = document) {
+	const blocks = [...root.querySelectorAll<HTMLElement>('pre > code[class*="language-"]')];
 	for (const block of blocks) {
 		const languageClass = [...block.classList].find((name) => name.startsWith('language-'));
 		const language = languageClass?.replace('language-', '') ?? '';
@@ -214,6 +215,12 @@
 			});
 		}
 	}
+	}
+
+	renderChemistry();
+	document.addEventListener('chemistry:render', ((event: CustomEvent<ParentNode>) => {
+		renderChemistry(event.detail ?? document);
+	}) as EventListener);
 </script>
 
 <style is:global>

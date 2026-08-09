@@ -1,0 +1,281 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import ChemistryRenderers from '../components/ChemistryRenderers.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head><BaseHead title={`Studio · ${SITE_TITLE}`} description="本地文章工作台" /></head>
+	<body class="studio-body">
+		<header class="studio-bar">
+			<div class="studio-brand"><a href="/">{SITE_TITLE}</a><span>Studio</span></div>
+			<div class="studio-actions">
+				<span id="save-status" class="save-status">正在连接…</span>
+				<a id="open-article" href="/blog" target="_blank">打开博客</a>
+				<button id="save-button" type="button" disabled>保存</button>
+			</div>
+		</header>
+
+		<main class="studio-shell">
+			<aside class="article-sidebar">
+				<div class="panel-heading"><h1>文章</h1><button id="new-article" type="button" title="新建文章">＋</button></div>
+				<nav id="article-list" aria-label="文章列表"></nav>
+				<div id="bundle-files" class="bundle-files"></div>
+			</aside>
+
+			<section class="editor-panel" aria-label="Markdown 编辑器">
+				<div class="panel-label"><span id="editor-path">选择一篇文章</span><span>MARKDOWN</span></div>
+				<textarea id="editor" spellcheck="false" disabled aria-label="Markdown 内容"></textarea>
+			</section>
+
+			<section class="preview-panel" aria-label="实时预览">
+				<div class="panel-label"><span>实时预览</span><span id="preview-status">PREVIEW</span></div>
+				<article id="preview" class="preview-content"><p class="empty-state">从左侧选择一篇文章。</p></article>
+			</section>
+		</main>
+		<ChemistryRenderers />
+
+		<script>
+			type ArticleSummary = { slug: string; title: string };
+			type ArticlePayload = {
+				slug: string;
+				content: string;
+				hash: string;
+				files: { img: string[]; assets: string[]; ai: string[] };
+			};
+
+			const articleList = document.querySelector<HTMLElement>('#article-list')!;
+			const bundleFiles = document.querySelector<HTMLElement>('#bundle-files')!;
+			const editor = document.querySelector<HTMLTextAreaElement>('#editor')!;
+			const preview = document.querySelector<HTMLElement>('#preview')!;
+			const editorPath = document.querySelector<HTMLElement>('#editor-path')!;
+			const saveStatus = document.querySelector<HTMLElement>('#save-status')!;
+			const previewStatus = document.querySelector<HTMLElement>('#preview-status')!;
+			const saveButton = document.querySelector<HTMLButtonElement>('#save-button')!;
+			const newArticleButton = document.querySelector<HTMLButtonElement>('#new-article')!;
+			const openArticle = document.querySelector<HTMLAnchorElement>('#open-article')!;
+
+			let current: ArticlePayload | null = null;
+			let dirty = false;
+			let previewTimer: number | undefined;
+			let previewVersion = 0;
+
+			async function api<T>(url: string, options?: RequestInit): Promise<T> {
+				const response = await fetch(url, options);
+				const data = await response.json();
+				if (!response.ok) throw new Error(data.error || '请求失败');
+				return data;
+			}
+
+			function setSaveState(text: string, state = '') {
+				saveStatus.textContent = text;
+				saveStatus.dataset.state = state;
+			}
+
+			function renderFiles(files: ArticlePayload['files']) {
+				const sections = [
+					['img', files.img], ['assets', files.assets], ['ai', files.ai],
+				] as const;
+				bundleFiles.replaceChildren();
+				for (const [name, entries] of sections) {
+					const section = document.createElement('section');
+					const heading = document.createElement('h2');
+					heading.textContent = `${name}/`;
+					section.append(heading);
+					if (entries.length) {
+						for (const file of entries) {
+							const item = document.createElement('p');
+							item.textContent = file;
+							section.append(item);
+						}
+					} else {
+						const empty = document.createElement('p');
+						empty.className = 'muted';
+						empty.textContent = '空';
+						section.append(empty);
+					}
+					bundleFiles.append(section);
+				}
+			}
+
+			async function renderPreview() {
+				if (!current) return;
+				const version = ++previewVersion;
+				previewStatus.textContent = 'RENDERING';
+				try {
+					const result = await api<{ html: string }>('/api/studio/preview', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ slug: current.slug, content: editor.value }),
+					});
+					if (version !== previewVersion) return;
+					preview.innerHTML = result.html;
+					document.dispatchEvent(new CustomEvent('chemistry:render', { detail: preview }));
+					previewStatus.textContent = 'LIVE';
+				} catch (error) {
+					if (version !== previewVersion) return;
+					preview.textContent = error instanceof Error ? error.message : '预览失败';
+					previewStatus.textContent = 'ERROR';
+				}
+			}
+
+			function schedulePreview() {
+				window.clearTimeout(previewTimer);
+				previewTimer = window.setTimeout(renderPreview, 280);
+			}
+
+			async function loadArticle(slug: string) {
+				if (dirty && !confirm('当前文章尚未保存，确定要切换吗？')) return;
+				setSaveState('正在载入…');
+				current = await api<ArticlePayload>(`/api/studio/articles/${encodeURIComponent(slug)}`);
+				editor.value = current.content;
+				editor.disabled = false;
+				editorPath.textContent = `blog/${current.slug}/index.md`;
+				openArticle.href = `/blog/${current.slug}/`;
+				dirty = false;
+				saveButton.disabled = false;
+				setSaveState('已载入', 'saved');
+				renderFiles(current.files);
+				for (const button of articleList.querySelectorAll('button')) {
+					button.classList.toggle('active', button.dataset.slug === slug);
+				}
+				await renderPreview();
+			}
+
+			async function loadArticleList(selectSlug?: string) {
+				const { articles } = await api<{ articles: ArticleSummary[] }>('/api/studio/articles');
+				articleList.replaceChildren();
+				for (const article of articles) {
+					const button = document.createElement('button');
+					button.type = 'button';
+					button.dataset.slug = article.slug;
+					button.innerHTML = `<strong></strong><span></span>`;
+					button.querySelector('strong')!.textContent = article.title;
+					button.querySelector('span')!.textContent = article.slug;
+					button.addEventListener('click', () => loadArticle(article.slug));
+					articleList.append(button);
+				}
+				const initial = selectSlug ?? articles[0]?.slug;
+				if (initial) await loadArticle(initial);
+				else setSaveState('还没有文章');
+			}
+
+			async function saveArticle() {
+				if (!current || !dirty) return;
+				saveButton.disabled = true;
+				setSaveState('正在保存…', 'saving');
+				try {
+					const result = await api<{ hash: string }>(`/api/studio/articles/${encodeURIComponent(current.slug)}`, {
+						method: 'PUT',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ content: editor.value, expectedHash: current.hash }),
+					});
+					current.hash = result.hash;
+					current.content = editor.value;
+					dirty = false;
+					setSaveState('已保存', 'saved');
+				} catch (error) {
+					setSaveState(error instanceof Error ? error.message : '保存失败', 'error');
+				} finally {
+					saveButton.disabled = false;
+				}
+			}
+
+			editor.addEventListener('input', () => {
+				dirty = true;
+				setSaveState('未保存', 'dirty');
+				schedulePreview();
+			});
+			editor.addEventListener('keydown', (event) => {
+				if (event.key === 'Tab') {
+					event.preventDefault();
+					const start = editor.selectionStart;
+					editor.setRangeText('\t', start, editor.selectionEnd, 'end');
+					editor.dispatchEvent(new Event('input'));
+				}
+				if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') {
+					event.preventDefault();
+					saveArticle();
+				}
+			});
+			saveButton.addEventListener('click', saveArticle);
+			newArticleButton.addEventListener('click', async () => {
+				const slug = prompt('文章 slug（小写字母、数字和连字符）');
+				if (!slug) return;
+				const title = prompt('文章标题');
+				if (!title) return;
+				try {
+					await api('/api/studio/articles', {
+						method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slug, title }),
+					});
+					await loadArticleList(slug);
+				} catch (error) {
+					setSaveState(error instanceof Error ? error.message : '新建失败', 'error');
+				}
+			});
+			window.addEventListener('beforeunload', (event) => {
+				if (!dirty) return;
+				event.preventDefault();
+			});
+
+			loadArticleList().catch((error) => {
+				setSaveState(error instanceof Error ? error.message : '无法连接本地 Studio', 'error');
+			});
+		</script>
+	</body>
+</html>
+
+<style>
+	:global(body.studio-body) { height: 100vh; overflow: hidden; font-size: 16px; }
+	.studio-bar { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; height: 52px; padding: 0 14px; border-bottom: 1px solid rgb(var(--gray-light)); background: var(--surface); }
+	.studio-brand, .studio-actions { display: flex; align-items: center; gap: 10px; }
+	.studio-brand a { color: rgb(var(--black)); font-weight: 700; text-decoration: none; }
+	.studio-brand span { padding: 2px 7px; border-radius: 5px; background: var(--surface-soft); color: rgb(var(--gray)); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; }
+	.studio-actions a, .studio-actions button { padding: 6px 11px; border: 1px solid rgb(var(--gray-light)); border-radius: 6px; background: var(--surface); color: rgb(var(--gray-dark)); font: inherit; font-size: 13px; text-decoration: none; cursor: pointer; }
+	.studio-actions button { border-color: var(--accent); background: var(--accent); color: white; }
+	.studio-actions button:disabled { opacity: 0.5; cursor: default; }
+	.save-status { max-width: 360px; color: rgb(var(--gray)); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	.save-status[data-state='dirty'] { color: #a15c00; }
+	.save-status[data-state='error'] { color: #b42318; }
+	.save-status[data-state='saved'] { color: var(--accent); }
+	.studio-shell { display: grid; grid-template-columns: 250px minmax(360px, 1fr) minmax(380px, 1fr); width: 100%; max-width: none; height: calc(100vh - 52px); margin: 0; padding: 0; }
+	.article-sidebar, .editor-panel, .preview-panel { min-width: 0; overflow: hidden; background: var(--surface); }
+	.article-sidebar, .editor-panel { border-right: 1px solid rgb(var(--gray-light)); }
+	.article-sidebar { display: flex; flex-direction: column; }
+	.panel-heading, .panel-label { display: flex; align-items: center; justify-content: space-between; height: 38px; padding: 0 12px; border-bottom: 1px solid rgb(var(--gray-light)); background: var(--surface-soft); }
+	.panel-heading h1 { margin: 0; font-size: 13px; }
+	.panel-heading button { width: 25px; height: 25px; border: 0; border-radius: 5px; background: transparent; color: rgb(var(--gray-dark)); font-size: 18px; cursor: pointer; }
+	.panel-heading button:hover { background: rgb(var(--gray-light)); }
+	.panel-label { color: rgb(var(--gray)); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; letter-spacing: 0.04em; }
+	#article-list { flex: 0 1 auto; padding: 7px; overflow-y: auto; }
+	#article-list :global(button) { display: block; width: 100%; padding: 8px 9px; border: 0; border-radius: 6px; background: transparent; color: rgb(var(--gray-dark)); text-align: left; cursor: pointer; }
+	#article-list :global(button:hover), #article-list :global(button.active) { background: var(--surface-soft); }
+	#article-list :global(strong), #article-list :global(span) { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	#article-list :global(strong) { font-size: 12px; }
+	#article-list :global(span) { margin-top: 2px; color: rgb(var(--gray)); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; }
+	.bundle-files { flex: 1; padding: 10px 15px; border-top: 1px solid rgb(var(--gray-light)); overflow-y: auto; }
+	.bundle-files :global(section) { margin-bottom: 13px; }
+	.bundle-files :global(h2), .bundle-files :global(p) { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; }
+	.bundle-files :global(h2) { margin-bottom: 3px; color: rgb(var(--gray-dark)); }
+	.bundle-files :global(p) { padding-left: 9px; color: rgb(var(--gray)); overflow-wrap: anywhere; }
+	.bundle-files :global(.muted) { opacity: 0.55; }
+	.editor-panel, .preview-panel { display: grid; grid-template-rows: 38px 1fr; }
+	#editor { box-sizing: border-box; width: 100%; height: 100%; padding: 22px; border: 0; outline: 0; resize: none; background: var(--surface); color: rgb(var(--gray-dark)); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace; font-size: 14px; line-height: 1.65; tab-size: 2; }
+	#editor:disabled { opacity: 0.55; }
+	.preview-content { padding: 34px clamp(24px, 5vw, 64px) 100px; overflow-y: auto; font-size: 17px; }
+	.preview-content :global(h1) { font-size: 2.3em; }
+	.preview-content :global(h2) { margin-top: 1.8em; font-size: 1.65em; }
+	.preview-content :global(h3) { margin-top: 1.5em; font-size: 1.3em; }
+	.empty-state { color: rgb(var(--gray)); }
+	@media (max-width: 980px) {
+		.studio-shell { grid-template-columns: 210px 1fr; }
+		.preview-panel { display: none; }
+	}
+	@media (max-width: 640px) {
+		.studio-shell { grid-template-columns: 1fr; }
+		.article-sidebar { display: none; }
+		.studio-brand a { display: none; }
+		.save-status { max-width: 130px; }
+	}
+</style>

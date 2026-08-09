@@ -6,6 +6,7 @@ import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
 import remarkMath from 'remark-math';
 import rehypeKatexMhchem from './src/plugins/rehype-katex-mhchem.mjs';
+import studioDev from './src/plugins/studio-dev.mjs';
 
 const chemistryLanguages = [
 	'smiles',
@@ -42,6 +43,9 @@ export default defineConfig({
 			type: 'shiki',
 			excludeLangs: chemistryLanguages,
 		},
+	},
+	vite: {
+		plugins: [studioDev({ chemistryLanguages })],
 	},
 	fonts: [
 		{
