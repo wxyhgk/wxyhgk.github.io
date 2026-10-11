@@ -1,0 +1,6209 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ORCA 量子化学教程 / Quantum chemistry tutorials">
+      
+      
+      
+      
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../../../zh/manual/contents/essentialelements/integralhandling/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Integralhandling - ORCA 6.1 Tutorials</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../../stylesheets/mol-embed.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#integral-handling" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="ORCA 6.1 Tutorials" class="md-header__button md-logo" aria-label="ORCA 6.1 Tutorials" data-md-component="logo">
+      
+  <img src="../../../../assets/fastmol-logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ORCA 6.1 Tutorials
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Integralhandling
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../zh/manual/contents/essentialelements/integralhandling/" hreflang="zh" class="md-select__link">
+              中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../first_steps/howtocite/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../" class="md-tabs__link">
+          
+  
+  
+  Manual
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../bib/" class="md-tabs__link">
+          
+  
+  
+  Appendix
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="ORCA 6.1 Tutorials" class="md-nav__button md-logo" aria-label="ORCA 6.1 Tutorials" data-md-component="logo">
+      
+  <img src="../../../../assets/fastmol-logo.svg" alt="logo">
+
+    </a>
+    ORCA 6.1 Tutorials
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First steps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    First steps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/howtocite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to Cite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installing ORCA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/first_calc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello water!
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/input_output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input and Output
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/parallel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running in Parallel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Graphical User Interfaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/trouble_install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Solving common issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Workflows
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/compound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound Jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/extrapol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extrapolation Techniques
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/extopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    External Methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/opi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ORCA Python Interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Properties
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Properties
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/single_point/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single point energies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/geoopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/freq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibrational frequencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/thermo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thermodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/cpcm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implicit Solvation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/solvator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explicit Solvation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/goat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformer Search (GOAT)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/relativistic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relativistic corrections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/disp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dispersion corrections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/bonds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bond Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/led/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/fod/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FOD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/charges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Charge Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/esp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ESP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/corren/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Correlated Energies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reactivity
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reactivity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/nebts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/tsopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transition State Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/tsconf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transition State Conformers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/irc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IRC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/actibar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accurate energy barriers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/KIE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KIE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/FUKUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fukui functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DOCKER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectroscopy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Spectroscopy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/IR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Infrared and Raman
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/UVVis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UV/Vis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/ECD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/vcd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VCD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/NMR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NMR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/EPR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/SOC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spin-Orbit Coupling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Multiscale
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/XTB ONIOM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/basics-otheroniom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ONIOM beyond QM/XTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/oniom-nebts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/ionic_crystal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ionic-Crystal-QM/MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/fragmentator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fragmentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Manual
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Manual
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Suggested Topics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Preface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Preface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/foreword/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foreword
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/changes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/howtocite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Howtocite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/howtousethismanual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Howtousethismanual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Quick Start
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/index_quickstartguide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/hellowater/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello water
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/recommendations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Essential Elements
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Essential Elements
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index_essentialelements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Essential Calculation Elements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../input/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coordinates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coordinates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parallel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../initialguess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Initial guess
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basisset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basis sets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../solvationmodels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Solvation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../relativistic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relativistic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../symmetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Symmetry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Chemistries
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Model Chemistries
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/index_modelchemistries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Chemistries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/hartreefock/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hartree-Fock
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/DensityFunctionalTheory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DFT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/MP2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MP2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/3cmethods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3c methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/dispersioncorrections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dispersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/CASSCF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CASSCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/NEVPT2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEVPT2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mrci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MRCI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mdci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DLPNO methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/semiempirical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Semiempirical
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecular mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structure & Reactivity
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Structure & Reactivity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/index_structurereactivity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structure and Reactivity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimizations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations_TS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transition states
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations_scans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scans
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/irc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IRC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/neb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/frequencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frequencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/thermochemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thermochemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/solvator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SOLVATOR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/goat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GOAT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DOCKER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/mecp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MECP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/conicalintersections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conical intersections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectroscopy & Properties
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Spectroscopy & Properties
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/index_spectroscopyproperties/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectroscopy and Properties
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/vibrations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibrations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/excitedstates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Excited states
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/tddft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TD-DFT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/esd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UV/Vis & ESD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/nmr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NMR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/epr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/led/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/nbo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NBO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/spinorbit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spin-orbit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/magnx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Magnetic properties
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Multiscale
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/index_multiscalesimulations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale Simulations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-general/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM general
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-molecules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM molecules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-crystal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Crystal QM/MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecular Dynamics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Molecular Dynamics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../moleculardynamics/index_moleculardynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecular Dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../moleculardynamics/moldyn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Workflows
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/index_workflowsautomatization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows and Automatization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/compound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/compound_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/orcapythoninterface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Utilities
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/index_utilitiesvisualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities and Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/index_orcaarchitecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture of ORCA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_13" id="__nav_3_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/public/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Public
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bibliography/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bibliography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../bib/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bibliography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../genindex/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#compression-and-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compression and Storage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#distance-dependent-pre-screening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distance Dependent Pre-Screening
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-bubblepole-approximation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The "BubblePole" Approximation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#angular-momentum-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Angular Momentum Limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#keywords" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keywords
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<p><a id="sec:essentialelements.integralhandling"></a></p>
+<h1 id="integral-handling">Integral Handling<a class="headerlink" href="#integral-handling" title="Permanent link">&para;</a></h1>
+<p>As the number of nonzero integrals grows very rapidly and reaches easily
+hundreds of millions even with medium sized basis sets in medium sized
+molecules, storage of all integrals is not generally feasible. This
+desperate situation prevented SCF calculations on larger molecules for
+quite some time, so that Almlöf
+<a href="../../../bibliography/">almloef1982comp,almloef1984advanced,almloef1995modern</a> made the
+insightful suggestion to repeat the integral calculation, which was
+already the dominant step, in <em>every SCF cycle</em> to solve the storage
+problem. Naively, one would think that this raises the effort for the
+calculation to <span class="arithmatex">\(n_{\text{iter} }t_{\text{integrals} }\)</span> (where
+<span class="arithmatex">\(n_{\text{iter} }\)</span> is the number of iterations and
+<span class="arithmatex">\(t_{\text{integrals} }\)</span> is the time needed to generate the nonzero
+integrals). However, this is not the case because only the change in the
+Fock matrix is required from one iteration to the next, but not the Fock
+matrix itself. As the calculations starts to converge, more and more
+integrals can be skipped. The integral calculation time will still
+dominate the calculation quite strongly, so that ways to reduce this
+burden are clearly called for. As integrals are calculated in
+<em>batches</em><sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> the cost of evaluating the given batch of shells
+<span class="arithmatex">\(p, q, r, s\)</span> may be estimated as:</p>
+<div class="arithmatex">\[
+\text{cost}\approx n_{p} n_{q} n_{r} n_{s} \left({ 2l_{p} +1} \right)\left({ 2l_{q}
++1} \right)\left({ 2l_{r} +1} \right)\left({ 2l_{s} +1} \right)\qquad \text{(eqn:51)}
+\]</div>
+<p>Here, <span class="arithmatex">\(n_{p}\)</span> is the number of primitives involved in shell <span class="arithmatex">\(p\)</span>, and
+<span class="arithmatex">\(l_{p}\)</span> is the angular momentum for this shell. <em>Large</em> integrals are
+also good candidates for storage, because small changes in the density
+that multiply large integrals are likely to give a nonzero contribution
+to the changes in the Fock matrix.</p>
+<p>ORCA thus features two possibilities for integral handling, which are
+controlled by the variable <code>SCFMode</code>. In the mode <code>Conventional</code>, all
+integrals above a given threshold are stored on disk (in a compressed
+format that saves much disk space). In the mode <code>Direct</code>, all
+two-electron integrals are recomputed in each iteration.</p>
+<p>Two further variables are of importance: In the <code>Conventional</code> mode the
+program may write enormous amounts of data to disk. To ensure this stays
+within bounds, the program first performs a so-called "statistics run"
+that gives a pessimistic estimate of how large the integral files will
+be. Oftentimes, the program will overestimate the amount of disk space
+required by a factor of two or more. The maximum amount of disk space
+that is allowed for the integral files is given by <code>MaxDisk</code> (in
+Megabytes).</p>
+<p>On the other hand, if the integral files in <code>Conventional</code> run are small
+enough to fit into the central memory, it is faster to do this since it
+avoids I/O bottlenecks. The maximum amount of memory allocated for
+integrals in this way is specified by <code>MaxIntMem</code> (in Megabytes). If the
+integral files are larger than <code>MaxIntMem</code>, no integrals will be read
+into memory.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>%scf
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  MaxIter   100    # Max. no. of SCF iterations
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  SCFMode Direct   # default, other choice: Conventional
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  Thresh  1e-8     # Threshold for neglecting integrals / Fock matrix contributions
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                   # Depends on the chosen convergence tolerance (in Eh).
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  TCut    1e-10    # Threshold for neglecting primitive batches. If the prefactor
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                   # in the integral is smaller than TCut, the contribution of the
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                   # primitive batch to the total batch is neglected.
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>  DirectResetFreq 20   # default: 15
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  MaxDisk  2500        # Max. amount of disk for 2 el. ints. (MB)
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>  MaxIntMem 400        # Max. amount of RAM for 2 el. ints. (MB)
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>end
+</code></pre></div>
+<p>The value of <code>DirectResetFreq</code> sets the number of incremental Fock
+matrix builds after which the program should perform a full Fock matrix
+build in a <code>Direct</code> SCF calculation. To prevent numerical instabilities
+that arise from accumulated errors in the recursively build Fock matrix,
+the value should not be too large, since this will adversely affect the
+SCF convergence. If the value is too small, the program will update more
+frequently, but the calculation will take considerably longer, since a
+full Fock matrix build is more expensive than a recursive one.</p>
+<p>The thresholds <code>TCut</code> and <code>Thresh</code> also deserve a closer explanation.
+<code>Thresh</code> is a threshold that determines when to neglect two-electron
+integrals. If a given integral is smaller than <code>Thresh</code> Eh, it will not
+be stored or used in Fock matrix construction. Additionally,
+contributions to the Fock matrix that are smaller than <code>Thresh</code> Eh will
+not be calculated in a <code>Direct</code> SCF.</p>
+<p>Clearly, it would be wasteful to calculate an integral, then find out it
+is good for nothing and thus discard it. A useful feature would be an
+efficient way to estimate the size of the integral <em>before it is even
+calculated</em>, or even have an estimate that is a <em>rigorous upper bound</em>
+on the value of the integral. Häser and Ahlrichs <a href="../../../bibliography/">haeser1989comp</a> were
+the first to recognize that such an upper bound is actually rather easy
+to calculate. They showed that:</p>
+<div class="arithmatex">\[
+\left|{ \left\langle { ij\left|{ kl} \right.} \right\rangle}
+\right|\leq slant \sqrt{ \left\langle { ij\left|{ ij} \right.} \right\rangle}
+\sqrt{ \left\langle { kl\left|{ kl} \right.} \right\rangle}\qquad \text{(eqn:52)}
+\]</div>
+<p>where:</p>
+<div class="arithmatex">\[
+\left\langle { ij\left|{ kl} \right.} \right\rangle=\in t{ \in t{ \phi_{i}
+\left({ \vec{{r} }_{1} } \right)\phi_{j} \left({ \vec{{r} }_{1} }
+\right)r_{12}^{-1} \phi_{k} \left({ \vec{{r} }_{2} } \right)\phi_{l} \left({\vec{{r} }_{2} } \right)d\vec{{r} }_{1} d\vec{{r} }_{2} } }\qquad \text{(eqn:53)}
+\]</div>
+<p>Thus, in order to compute an upper bound for the integral only the right
+hand side of this equation must be known. This involves only two index
+quantities, namely the matrix of two center exchange integrals
+<span class="arithmatex">\(\left\langle { ij\left|{ ij} \right.} \right\rangle\)</span>. These integrals
+are easy and quick to calculate and they are all
+<span class="arithmatex">\(\geq slant\)</span>0 so that there is no trouble with the
+square root. Thus, one has a powerful device to avoid computation of
+small integrals. In an actual calculation, the Schwartz prescreening is
+not used on the level of individual basis functions but on the level of
+shell batches because integrals are always calculated in batches. To
+realize this, the largest exchange integral of a given exchange integral
+block is looked for and its square root is stored in the so called
+<em>pre-screening</em> matrix <strong>K</strong> (that is stored on disk in ORCA). In a
+<code>Direct</code> SCF this matrix is not recalculated in every cycle, but simply
+read from disk whenever it is needed. The matrix of exchange integrals
+on the level of individual basis function is used in <code>Conventional</code>
+calculations to estimate the disk requirements (the "statistics" run).</p>
+<p>Once it has been determined that a given integral batch survives it may
+be calculated as:</p>
+<div class="arithmatex">\[
+\left\langle { ij\left|{ kl} \right.} \right\rangle=\sum\limits_p { d_{pi}
+\sum\limits_q { d_{qj} \sum\limits_r { d_{kr} \sum\limits_s { d_{sl}
+\left\langle { i_{p} j_{q} \left|{ k_{r} l_{s} } \right.} \right\rangle} } }
+}\qquad \text{(eqn:54)}
+\]</div>
+<p>where the sums <span class="arithmatex">\(p,q,r,s\)</span> run over the primitive Gaussians in each basis
+function <span class="arithmatex">\(i,j,k,l\)</span> and the <span class="arithmatex">\(d\)</span>'s are the contraction coefficients. There
+are more powerful algorithms than this one and they are also used in
+ORCA. However, if many terms in the sum can be skipped and the total
+angular momentum is low, it is still worthwhile to compute contracted
+integrals in this straightforward way. In equation
+<a href="#eqn:54">Eq</a>, each
+primitive integral batch
+<span class="arithmatex">\(\left\langle { i_{p} j_{q} \left|{ k_{r} l_{s} } \right.} \right\rangle\)</span>
+contains a prefactor <span class="arithmatex">\(I_{Gaussians}\)</span> that depends on the position of the
+four Gaussians and their orbital exponents. Since a contracted Gaussian
+usually has orbital exponents over a rather wide range, it is clear that
+many of these primitive integral batches will contribute negligibly to
+the final integral values. In order to reduce the overhead, the
+parameter <code>TCut</code> is introduced. If the common prefactor <span class="arithmatex">\(I_{pqrs}\)</span> is
+smaller than <code>TCut</code>, the primitive integral batch is skipped. However,
+<span class="arithmatex">\(I_{pqrs}\)</span> is <em>not</em> a rigorous upper bound to the true value of the
+primitive integral. Thus, one has to be more conservative with <code>TCut</code>
+than with <code>Thresh</code>. In practice it appears that choosing
+<code>TCut=0.01*Thresh</code> provides sufficient accuracy, but the user is
+encouraged to determine the influence of <code>TCut</code> if it is suspected that
+the accuracy reached in the integrals is not sufficient.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>If the direct SCF calculation is close to convergence but fails to
+    finally converge, this maybe related to a numerical problem with the
+    Fock matrix update procedure -- the accumulated numerical noise from
+    the update procedure prevents sharp convergence. In this case, set
+    <code>Thresh</code> and <code>TCut</code> lower and/or let the calculation more frequently
+    reset the Fock matrix (<code>DirectResetFreq</code>).</li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>
+<p>For a <code>Direct</code> calculation, there is no way to have <code>Thresh</code> larger
+    than <code>TolE</code>. If the errors in the Fock matrix are larger than the
+    requested convergence of the energy, the change in energy can never
+    reach <code>TolE</code>. The program checks for that.</p>
+</li>
+<li>
+<p>The actual disk space used for <em>all</em> temporary files may easily be
+    larger than <code>MaxDisk</code>. <code>MaxDisk</code> only pertains to the two-electron
+    integral files. Other disk requirements are not currently checked by
+    the program and appear to be uncritical.</p>
+</li>
+</ul>
+</div>
+<p><a id="sec:essentialelements.integralhandling.compression"></a></p>
+<h2 id="compression-and-storage">Compression and Storage<a class="headerlink" href="#compression-and-storage" title="Permanent link">&para;</a></h2>
+<p>The data compression and storage options
+deserve some comment: in a number of modules including RI-MP2, MDCI,
+CIS, (D) correction to CIS, etc. the program uses so called "Matrix
+Containers". This means that the data to be processed is stored in terms
+of matrices in files and is accessed by a double label. A typical
+example is the exchange operator <strong>K<span class="arithmatex">\(^{ij }\)</span></strong> with matrix
+elements <span class="arithmatex">\(K^{ij}(a,b)=(ia|jb)\)</span>. Here the indices <span class="arithmatex">\(i\)</span> and <span class="arithmatex">\(j\)</span> refer to
+occupied orbitals of the reference state and <span class="arithmatex">\(a\)</span> and <span class="arithmatex">\(b\)</span> are empty
+orbitals of the reference state. Data of this kind may become quite
+large (formally <span class="arithmatex">\(N^4\)</span> scaling). To store the numbers in single precision
+cuts down the memory requirements by a factor of two with (usually very)
+slight loss in precision. For larger systems one may also gain
+advantages by also compressing the data (e.g. use a "packed" storage
+format on disk). This option leads to additional packing/unpacking work
+and adds some overhead.
+The simple keywords to control this behavior are given in
+<a href="#tab:essentialelements.integralhandling.keywords.simple">tab:essentialelements.integralhandling.keywords.simple</a>.
+For small molecules <code>UCDOUBLE</code> is probably the
+best option, while for larger molecules <code>UCFLOAT</code> or particularly <code>CFLOAT</code>
+may be the best choice. Compression does not necessarily slow the
+calculation down for larger systems since the total I/O load may be
+substantially reduced and thus (since CPU is much faster than disk) the
+work of packing and unpacking takes less time than to read much larger
+files (the packing may reduce disk requirements for larger systems by
+approximately a factor of 4 but it has not been extensively tested so
+far). There are many factors contributing to the overall wall clock time
+in such cases including the total system load. It may thus require some
+experimentation to find out with which set of options the program runs
+fastest with.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<ul>
+<li>It is possible that <code>FLOAT</code> may lead to unacceptable errors. Thus
+  it is not the recommended option when MP2 or RI-MP2 gradients or
+  relaxed densities are computed. For this reason the default is
+  DOUBLE.</li>
+<li>If you have convinced yourself that <code>FLOAT</code> is OK, it may save you
+  a factor of two in both storage and CPU.</li>
+</ul>
+</div>
+<p><a id="sec:essentialelements.integralhandling.prescreening"></a></p>
+<h2 id="distance-dependent-pre-screening">Distance Dependent Pre-Screening<a class="headerlink" href="#distance-dependent-pre-screening" title="Permanent link">&para;</a></h2>
+<p>The "Direct" SCF procedure consists of re-calculating the
+electron-electron repulsion integrals in every SCF iteration. Avoiding
+to store these integrals is what made SCF calculations on large
+molecules feasible and therefore is a cornerstone of modern quantum
+chemistry. The recalculation is only feasible in reasonable turnaround
+times of the calculation of negligibly small integrals is avoided before
+calculation. Thus, there needs to be a reasonably cheap to compute
+estimate for these integrals that programs rely on for avoiding the
+actual integral calculation. This is the important subject of
+pre-screening. Pre-screening reduces the number of integrals to be
+calculated from O(N<span class="arithmatex">\(^4\)</span>) (exact integrals) or O(N<span class="arithmatex">\(^3\)</span>) (RI integrals) to
+O(N<span class="arithmatex">\(^2\)</span>) because in a large molecule, there are only O(N) significant
+charge distributions. Of course, it is beneficial if the integral
+estimate provides a rigorous upper bound to the actual integral because
+in this case it is guaranteed that no contribution to the Fock or
+Kohn-Sham matrix that exceeds a pre-defined accuracy threshold is being
+missed.</p>
+<p>The by far most popular integral estimate is the Schwartz estimator
+introduced by Häser and Ahlrichs:</p>
+<div class="arithmatex">\[
+\left| (\mu\nu|\kappa\tau) \right|_{Schwartz} \leq \sqrt{\left( \mu\nu|\mu\nu \right)}\sqrt{\left( \kappa\tau|\kappa\tau \right)}
+\]</div>
+<p>Thus, all that is required in order to compute this estimate is the
+pre-screening matrix</p>
+<div class="arithmatex">\[
+Q_{\mu\nu} = \sqrt{\left( \mu\nu|\mu\nu \right)}
+\]</div>
+<p>Which is cheap and not memory consuming. We note in passing that, since
+integrals are calculated in batches involving four shells, the
+pre-screening matrix is also shell contracted, meaning the maximum
+element over the members of both shells is taken as actual pre-screening
+element. The extension to RI integrals is trivial and will therefore not
+be written our here.</p>
+<p>The Schwartz estimate is used in practically every quantum chemistry
+program. Despite it's success, it also has shortcomings. These
+shortcomings are best understood by considering that a given charge
+distribution <span class="arithmatex">\(\mu\nu\)</span> has a multipole structure. At sufficient distance,
+the interaction of the distributions <span class="arithmatex">\(\mu\nu\)</span> and <span class="arithmatex">\(\kappa\tau\)</span> therefore
+have a distance dependence that depends on the multipolar structure of
+the two distributions. For example, the monopole-monopole interaction
+goes as R<span class="arithmatex">\({-1}\)</span> (R being the distance between the centers of the two
+distributions), dipole-dipole interaction fall off as R<span class="arithmatex">\(^{-3}\)</span> etc.
+Evidently, there is no distance dependence in the Schwartz estimate and
+consequently, it will have a tendency to strongly overestimate integrals
+that involve non-negligible but distant charge distributions.</p>
+<p><a id="fig:integralhandling.distdepprescrI1"></a>
+<img alt="FN25_image1" src="../../../../images/manual/FN25_image1.png" /></p>
+<p><em>Demonstration how the Schwartz-estimate can drastically
+overestimate integrals. The red trace Is the Schwartz-estimate while the
+black trace is the actual interaction of two one-center fs charge
+distributions as a function of distance.</em></p>
+<p>Historically, a different, related estimator has been popular in the
+early days of direct SCF. This is the overlap estimator (OVLR-estimate).
+Consider the two-electron integral:</p>
+<div class="arithmatex">\[
+\left( \mu\nu \mid dle| \kappa\tau \right) = \in t_{}^{}{\in t_{}^{}{\frac{\mu(r_{1})\nu(r_{1})\kappa(r_{2})\tau(r_{2})}{\left| r_{1} - r_{2} \right|}dr_{1}dr_{2}}}
+\]</div>
+<p>And pretend that we can replace the inverse electronic distance by an
+effective distance between the two charge distributions:</p>
+<div class="arithmatex">\[
+\left| r_{1} - r_{2} \right| \rightarrow R_{eff}
+\]</div>
+<p>In this case, the integral simply becomes:</p>
+<div class="arithmatex">\[
+\left( \mu\nu \mid dle| \kappa\tau \right) = \frac{S_{\mu\nu}S_{\kappa\tau}}{R_{eff}}
+\]</div>
+<p>With S being the overlap integral. The estimator is then obtained by
+taking the maximum absolute element of the overlap matrix elements over
+the members of the involved shells.</p>
+<div class="arithmatex">\[
+\left| (\mu\nu|\kappa\tau) \right|_{OVLR} = \frac{{\widetilde{S}}_{\mu\nu}{\widetilde{S}}_{\kappa\tau}}{R_{eff}}
+\]</div>
+<p>The effective distance is:</p>
+<div class="arithmatex">\[
+R_{eff} = R_{\mu\nu,\kappa\tau} - {ext}_{\mu\nu} - {ext}_{\mu\nu,\kappa\tau}
+\]</div>
+<p>The estimator is applied if</p>
+<div class="arithmatex">\[
+R_{eff} &gt; 1
+\]</div>
+<p>And defaults back to the Schwartz estimate otherwise. In this equation
+<span class="arithmatex">\(R_{\mu\nu,\kappa\tau} = \left| R_{\mu\nu} - R_{\kappa\tau} \right|\)</span> is
+the distance between the centers of the two charge distributions
+(<span class="arithmatex">\(R_{\mu\nu} = \left\langle \mu \vee r \vee \nu \right\rangle\)</span>) and
+<span class="arithmatex">\({ext}_{\mu\nu}\)</span> is the extent of a charge distribution which is
+discussed in detail in the section on multipole approximations. In a
+nutshell <span class="arithmatex">\({ext}_{\mu\nu}\)</span> defines a radius outside of which the product
+<span class="arithmatex">\(\mu(r)\nu(r)\)</span> is zero. Thus, the condition <span class="arithmatex">\(R_{eff} &gt; 1\)</span> is the
+multipole permissible criterion. If it is met, the charge distributions
+are non-overlapping and the multipole estimate is convergent.</p>
+<p>Based on this realization, Ochsenfeld and co-workers have developed a
+series of integral estimators that are designed to take this distance
+dependence into account. In their initial work, Lambrecht and Ochsenfeld
+provided a concise analysis of the multipolar structure of the charge
+distribution. After some experimentation, they settled on proposing
+<strong>the QQR-estimator</strong> which is a good compromise in terms of
+computational cost and efficiency in eliminating small contributions:</p>
+<div class="arithmatex">\[
+\left| (\mu\nu|\kappa\tau) \right|_{QQR} = \frac{Q_{\mu\nu}Q_{\kappa\tau}}{R_{eff}}
+\]</div>
+<p>Which is applied if <span class="arithmatex">\(R_{eff} &gt; 1\)</span>, as above. This estimate is not
+completely rigorous, but still very safe because it assumes monopole
+moments on the two charge distributions. The Schwartz-integral instead
+of the overlap integral is assumed to mimic the multipole structure of
+the charge distributions.</p>
+<p>Since experience indicates that the QQR estimator is not eliminating
+significantly more integrals than the Schwartz-estimate, Thomson and
+Ochenseld proposed a refined estimator that they refer to as "CSAM". It
+is given by:</p>
+<div class="arithmatex">\[
+\left| (\mu\nu|\kappa\tau) \right|_{CSAM} = Q_{\mu\nu}Q_{\kappa\tau}\max\left( T_{\mu\kappa}T_{\nu\tau},T_{\mu\tau}T_{\nu\kappa} \right)
+\]</div>
+<p>Where the T-matrix elements are shell maxima of the two-center Coulomb
+pre-screening integrals:</p>
+<div class="arithmatex">\[
+T_{\mu\kappa} = \frac{\sqrt{(\mu\mu|\kappa\kappa)}}{\sqrt{Q_{\mu\mu}Q_{\kappa\kappa}}}
+\]</div>
+<p>The T-factors bring in the distance dependence of the estimated
+integral.</p>
+<p>Finally, there is a multipole estimator that takes the lowest multipole
+moment of each charge distribution into account.</p>
+<div class="arithmatex">\[
+\left| (\mu\nu|\kappa\tau) \right|_{multipole} = max\left( \frac{M_{Lmin,m}^{\mu\nu}M_{Lmin',m'}^{\kappa\tau}}{R^{Lmin + Lmin^{'} + 1}} \right)
+\]</div>
+<p>Some idea about the tightness of the estimators can be seen from the
+following plot:</p>
+<p><a id="fig:integralhandling.distdepprescrI2"></a>
+<img alt="FN25_image2" src="../../../../images/manual/FN25_image2.png" /></p>
+<p><em>Tightness of various integral estimators for the model system
+(glycine)<span class="arithmatex">\(_3\)</span> with the def2-SVP basis set.</em></p>
+<p>One can see that the Schwartz-estimator is rigorous and the QQR
+estimator is nearly rigorous but not very much tighter. The OVLR
+estimator appears to be the by far tightest estimate but is scattering
+evenly above and below the correct value. CSAM leads to some
+underestimation of the integral values and appears to be slightly
+tighter than QQR. The lowest multipole estimate is ridiculous and of
+unusable quality.</p>
+<p>Whether the revised estimators leads to actual computational savings can
+be seen in a model calculation on (glycine)<span class="arithmatex">\(_{15}\)</span>/def2-SVP :</p>
+<p><a id="fig:integralhandling.distdepprescrI3"></a>
+<img alt="FN25_image3.png" src="../../../../images/manual/FN25_image3.png" />
+<img alt="FN25_image4.png" src="../../../../images/manual/FN25_image4.png" /></p>
+<p><em>actual computation times and total Hartree-Fock energies for (glycine)<span class="arithmatex">\(_{15}\)</span> under the influence of different integral estimators.</em></p>
+<p>The results show that only CSAM leads to savings on the order of 10%,
+although at the loss of some accuracy which in this example amounts to
+about 0.01 micro-Eh. The origin of the limited savings are certainly
+related to the fact that the lowest multipole of a two-center charge
+distribution is equal to the overlap integral between the two
+distributions. Thus, as soon as two basis functions have an overlap,
+they will have a monopole moment and the decay of the interaction
+between two such charge distributions is only R^-1^ which falls off so
+slowly that it is not of practical relevance in the elimination of small
+integrals.</p>
+<p>The following input triggers the different estimates:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>%shark Prescreening Schwartz
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a> OVLR
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a> QQR
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a> CSAM
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a> Multipole
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>End
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>In practice OVLR and Multipole are highly unstable and are not
+    recommended</li>
+<li>The integral estimates are NOT yet available for RI integrals.</li>
+</ul>
+</div>
+<p><strong>Relevant Papers:</strong></p>
+<ol>
+<li><a href="../../../bibliography/">haeserahlrichsJCompChem1989</a></li>
+<li><a href="../../../bibliography/">LambrechtOchsenfeldJCP2005</a></li>
+<li><a href="../../../bibliography/">ThompsonOchsenfeldJCP2017</a></li>
+</ol>
+<p><a id="sec:essentialelements.integralhandling.bubblepole"></a></p>
+<h2 id="the-bubblepole-approximation">The "BubblePole" Approximation<a class="headerlink" href="#the-bubblepole-approximation" title="Permanent link">&para;</a></h2>
+<p>The algorithms for Fock matrix construction in ORCA have been optimized
+to the point where the COSX approximation scales linearly with system
+size and so does the XC integration. Thus, asymptotically the quadratic
+scaling of the Coulomb term is dominating the Fock matrix construction
+time in very large systems. It is well-known that the introduction of
+hierarchical multipole approximations to the integrals can bring down
+the scaling of the Coulomb term to linear or near linear. This is the
+subject of the fast multipole method (FMM) approximation. The FMM
+approximation has been introduced in ORCA for the calculation of the
+point charge contribution to embedding calculations and significantly
+brings down the execution time.</p>
+<p>While it may seem tempting to also introduce the FMM approximation in
+the quantum-quantum charge interactions, the ORCA developers have taken
+a different route. In FMM algorithms, real space is divided into
+hierarchical boxes followed by the calculation of the multipole
+interaction between boxes provided that a multipole allowedness
+criterion is met.</p>
+<p>While it has been proven to work by several authors, it appeared to us
+that the boxing algorithm is not very natural to chemistry and leads to
+a number of problems that we intended to avoid in our alternative
+development.</p>
+<p>The Bubblepole (BUPO) approximation is based on a different partitioning
+that is based on spheres ("Bubbles"). These bubbles fully enclose
+collections of "quantum objects". These quantum objects may be
+shell-pairs, auxiliary basis function shells or also point charges. The
+criterion for grouping a number of such objects together is spatial
+proximity. Since shell pairs and auxiliary shells are charge
+distributions, they have a spatial extent which must be taken into
+account in the group assembly algorithm. Taking the example of shell
+pairs, each surviving shell is assigned a shell pair center <span class="arithmatex">\(R_{\mu\nu}\)</span>
+and an extent <span class="arithmatex">\({ext}_{\mu\nu}\)</span>. The precise definition of these
+quantities is unique to ORCA and are fully discussed in the literature.</p>
+<p>The BUPO algorithm then uses a variant of the Kmeans algorithm to group
+a predefined number of objects (e.g. 150) into each "bottom level"
+bubble. The bubble center is the arithmetic mean of all enclosed objects
+and the bubble radius is adjusted such that all objects are fully
+enclosed together with their extents. This ensures that there is no
+"leakage" of probability density outside of each bubble.</p>
+<p>After setting up the bottom level bubbles, a bubble hierarchy is created
+in which multipoles are translated from the one bubble layer to the
+next. Super-bubbles contain lower-level bubbles (typically around
+three), until at the top layer, there only is a single bubble that
+encloses the entire molecule. This only happens one initially during
+system setup).</p>
+<p>In the present ORCA implementation, the BUPO algorithm has been combined
+with ORCA's most efficient Coulomb-construction algorithm -- the
+Split-RI-J algorithm. In the resulting RI-BUPO-J algorithm, the
+near-field is treated with the Split-RI-J method and the far-field by
+the hierarchical construction. The RI-J method generally contains three
+significant steps</p>
+<p>"Projection" of the density on the auxiliary basis set:</p>
+<div class="arithmatex">\[
+g_{K} = \sum_{\mu\nu}^{}{P_{\mu\nu}\left( \mu\nu|K \right)}
+\]</div>
+<p>Solution of linear equations to get the aux-basis density:</p>
+<div class="arithmatex">\[
+P_{K} = \sum_{L}^{}{\left( V^{- 1} \right)_{KL}g_{L}}
+\]</div>
+<p>Assembly of the Coulomb matrix:</p>
+<div class="arithmatex">\[
+J_{\mu\nu} = \sum_{K}^{}{P_{K}\left( \mu\nu|K \right)}
+\]</div>
+<p>The second step is computationally negligible and proceeds very
+efficienctly via the Cholesky decomposition. It is not linear scaling
+but about three to four orders of magnitude cheaper than the other steps
+such that for all treatable system sizes, it is insignificant. In the
+first step, the multipole approximation is applied to the density in the
+orbital basis and therefore the bubbles contain shell-pairs from the
+basis sets and multipoles derived from the molecular density expanded in
+the basis set. In the third step, the bubbles contain auxiliary basis
+shell pairs and multipoles derived from the aux-basis density. The
+subtleties that derive from this construction are discussed in detail in
+the original publication.</p>
+<p>The numerical results indicate that RI-BUPO-J is asymptotically linear
+scaling with system size. On linear chains, the crossover with the
+Split-RI-J algorithm occurs at around 30-40 glycine units. In three
+dimensional systems, it will be significantly later. Hence, a real
+advantage of the RI-BUPO/J algorithm over Split-RI-J will only occur for
+very large systems. This is not due to shortcomings of the BUPO
+construction but is testimony of the exceptional efficiency of
+Split-RI-J.</p>
+<p><a id="fig:integralhandling.distdepprescrI5"></a>
+<img alt="FN25_image5" src="../../../../images/manual/FN25_image5.png" /></p>
+<p><em>Numerical results for the regular RI-J algorithm, Split-RI-J
+and RI-BUPO-J on linear glycine chains with basis sets of increasing
+quality.</em></p>
+<p>There is a significant number of options for BUPO. However, we do NOT
+recommend to change the defaults. This is expert territory.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Simple Keyword line:
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>! RI-BUPO/J
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>Detailed parameter definitions: 
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>%shark ExtentOpt Ext_SemiNumeric. # default: how to calculate the extents
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>Ext_analytic
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>Ext_Numeric
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>TSphere 1e-15     # shell pair extent cut-off
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>MP_LAbsMax_BAS 32 # Max L allowed in BAS multipoles
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>MP_LAbsMin_BAS 0  # Min L allowed in BAS multipoles
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>MP_Lmax_BAS 10    # Bottom level expansion length
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>MP_Lincr_BAS 4    # Expansion length increase for
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>                  # subsequent bubble levels
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>MP_Rallow_BAS 1.0 # Far field met if effective bubble
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>                  # distance larger than this (Bohrs)
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>MP_TScreen_BAS 1e-10  # Multipole elimination threshold
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>MP_ClusterDim_BAS 150 # Number of objects bottom level bubble
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>MP_ClusterDim2_BAS 3  # Number of bubbles in super-bubble
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>                      # in higher level of the hierarchy
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>MP_NLevels_BAS 15     # Max number of bubble levels in the
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>                      # hierarchy
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a># these parameters apply to the first step of RI-BUPO-J
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a># the same variables exist w.r.t. the auxbasis using the
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a># postfix \_AUX and apply to the second step of RI-BUPO-J
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>End
+</code></pre></div>
+<p><strong>Relevant Papers:</strong></p>
+<ol>
+<li><a href="../../../bibliography/">WHITE19948</a></li>
+<li><a href="../../../bibliography/">colinet2025fmm</a></li>
+<li><a href="../../../bibliography/">neese2025bupo</a></li>
+</ol>
+<p><a id="sec:essentialelements.integralhandling.angmomlimits"></a></p>
+<h2 id="angular-momentum-limits">Angular Momentum Limits<a class="headerlink" href="#angular-momentum-limits" title="Permanent link">&para;</a></h2>
+<p>Energies and gradients in ORCA can now (starting from ORCA 6.1) be performed up to L=10 in
+the orbital and aux basis sets. Note that the nomenclature changed to the
+accepted spectroscopic notation:</p>
+<table>
+<thead>
+<tr>
+<th>L=0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S</td>
+<td>P</td>
+<td>D</td>
+<td>F</td>
+<td>G</td>
+<td>H</td>
+<td>I</td>
+<td>K</td>
+<td>L</td>
+<td>M</td>
+<td>N</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>no j-functions! The program will reject it.</li>
+<li>L is reserved for combined s,p shells for historical reasons.
+    If you want to input L=8 functions, simply use the symbol "8"
+    instead of "L"</li>
+</ul>
+</div>
+<p>Here is an example of how to use the angular momentum definition
+in an example of a user-specified basis set:</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 1">
+<pre class="mol-xyz" data-format="xyz">1
+structure (0 1)
+Ne            0            0            0</pre>
+<pre class="mol-input">! RHF cc-pV6Z VeryTightSCF PrintBasis PModel
+%basis
+
+# Basis set for element : Ne
+NewGTO Ne
+S 11
+  1 902400.0000000000 0.0000064569
+  2 135100.0000000000 0.0000501790
+  3 30750.0000000000 0.0002638325
+  4 8710.0000000000 0.0011134543
+  5 2842.0000000000 0.0040396234
+  6 1026.0000000000 0.0130374676
+  7 400.1000000000 0.0377405416
+  8 165.9000000000 0.0967943419
+  9 72.2100000000 0.2108241400
+ 10 32.6600000000 0.3586501519
+ 11 15.2200000000 0.3985795167
+S 11
+  1 902400.0000000000 -0.0000045125
+  2 135100.0000000000 -0.0000351554
+  3 30750.0000000000 -0.0001851517
+  4 8710.0000000000 -0.0007804845
+  5 2842.0000000000 -0.0028452422
+  6 1026.0000000000 -0.0092079116
+  7 400.1000000000 -0.0271417038
+  8 165.9000000000 -0.0715447701
+  9 72.2100000000 -0.1678190251
+ 10 32.6600000000 -0.3267206864
+ 11 15.2200000000 -0.4994236511
+S 1
+  1 7.1490000000 1.0000000000
+S 1
+  1 2.9570000000 1.0000000000
+S 1
+  1 1.3350000000 1.0000000000
+S 1
+  1 0.5816000000 1.0000000000
+S 1
+  1 0.2463000000 1.0000000000
+P 5
+  1 815.6000000000 0.0014608751
+  2 193.3000000000 0.0126013201
+  3 62.6000000000 0.0668956161
+  4 23.6100000000 0.2559896696
+  5 9.7620000000 0.7470043852
+P 1
+  1 4.2810000000 1.0000000000
+P 1
+  1 1.9150000000 1.0000000000
+P 1
+  1 0.8476000000 1.0000000000
+P 1
+  1 0.3660000000 1.0000000000
+P 1
+  1 0.1510000000 1.0000000000
+D 1
+  1 13.3170000000 1.0000000000
+D 1
+  1 5.8030000000 1.0000000000
+D 1
+  1 2.5290000000 1.0000000000
+D 1
+  1 1.1020000000 1.0000000000
+D 1
+  1 0.4800000000 1.0000000000
+F 1
+  1 10.3560000000 1.0000000000
+F 1
+  1 4.5380000000 1.0000000000
+F 1
+  1 1.9890000000 1.0000000000
+F 1
+  1 0.8710000000 1.0000000000
+G 1
+  1 8.3450000000 1.0000000000
+G 1
+  1 3.4170000000 1.0000000000
+G 1
+  1 1.3990000000 1.0000000000
+H 1
+  1 6.5190000000 1.0000000000
+H 1
+  1 2.4470000000 1.0000000000
+I 1
+  1 4.4890000000 1.0000000000
+K 1
+  1 3.0000000000 1.0000000000
+# This would be L, but we cannot use the letter L
+# because this is used for combined S-P shells
+  8 1
+  1 3.5000000000 1.0000000000
+  M 1
+1 2.0000000000 1.0000000000
+  N 1
+1 1.0000000000 1.0000000000
+ end;
+end
+
+%shark FockFlag Force_SHARK
+       end
+
+* xyz 0 1
+Ne 0 0 0
+*</pre>
+</div>
+
+<p><a id="sec:essentialelements.integralhandling.keywords"></a></p>
+<h2 id="keywords">Keywords<a class="headerlink" href="#keywords" title="Permanent link">&para;</a></h2>
+<p><a id="tab:essentialelements.integralhandling.keywords.simple"></a></p>
+<div class="admonition note">
+<p class="admonition-title">Simple input keywords related to integral handling</p>
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Direct</code></td>
+<td>Selects an integral direct calculation</td>
+</tr>
+<tr>
+<td><code>Conv</code></td>
+<td>Selects an integral conventional calculation</td>
+</tr>
+<tr>
+<td><code>CheapInts</code></td>
+<td>Use the cheap integral feature in direct SCF calculations</td>
+</tr>
+<tr>
+<td><code>NoCheapInts</code></td>
+<td>Turn that feature off</td>
+</tr>
+<tr>
+<td><code>KeepInts</code></td>
+<td>Do not delete the integrals from disk after a calculation in conventional mode</td>
+</tr>
+<tr>
+<td><code>ReadInts</code></td>
+<td>Read the existing integrals from a previous calculation in conventional mode</td>
+</tr>
+<tr>
+<td><code>Float</code></td>
+<td>Set storage format for numbers to single precision (SCF, RI-MP2, CIS, CIS(D), MDCI)</td>
+</tr>
+<tr>
+<td><code>Double</code></td>
+<td>Set storage format for numbers to double precision (default)</td>
+</tr>
+<tr>
+<td><code>UCFloat</code></td>
+<td>Use float storage in the matrix containers without data compression</td>
+</tr>
+<tr>
+<td><code>CFloat</code></td>
+<td>Use float storage in the matrix containers with data compression</td>
+</tr>
+<tr>
+<td><code>UCDouble</code></td>
+<td>Use double storage in the matrix containers without data compression</td>
+</tr>
+<tr>
+<td><code>CDouble</code></td>
+<td>Use double storage in the matrix containers with data compression</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>A <em>batch</em> is a set of integrals that arises from all components of
+the shells involved in the integral. For example a
+<span class="arithmatex">\(\left\langle pp|pp \right\rangle\)</span> batch gives rise to
+<span class="arithmatex">\(3 \times 3\times 3 \times 3 = 81\)</span> integrals due to all possible
+combinations of <span class="arithmatex">\(p_{x}\)</span>, <span class="arithmatex">\(p_{y}\)</span> and <span class="arithmatex">\(p_{z}\)</span> functions in the four
+shells. Computations based on batches lead to great computational
+advantages because the 81 integrals involved in the
+<span class="arithmatex">\(\left\langle pp|pp \right\rangle\)</span> batch share many common
+intermediate quantities.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "toc.follow"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../../javascripts/mathjax.js"></script>
+      
+        <script src="../../../../javascripts/mathjax/tex-mml-chtml.js"></script>
+      
+        <script src="../../../../javascripts/math-instant.js"></script>
+      
+        <script src="../../../../javascripts/fast-mol-viewer.iife.js"></script>
+      
+        <script src="../../../../javascripts/mol-embed.js"></script>
+      
+        <script src="../../../../javascripts/tabs-pin.js"></script>
+      
+    
+  </body>
+</html>

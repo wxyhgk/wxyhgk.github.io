@@ -1,0 +1,6496 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ORCA 量子化学教程 / Quantum chemistry tutorials">
+      
+      
+      
+      
+        <link rel="prev" href="../basics-otheroniom/">
+      
+      
+        <link rel="next" href="../ionic_crystal/">
+      
+      
+        
+          <link rel="alternate" href="../../../multi/oniom-nebts/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>用于过渡态的多尺度 NEB-TS - ORCA 6.1 Tutorials</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/mol-embed.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#neb-ts" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../" title="ORCA 6.1 Tutorials" class="md-header__button md-logo" aria-label="ORCA 6.1 Tutorials" data-md-component="logo">
+      
+  <img src="../../../assets/fastmol-logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ORCA 6.1 Tutorials
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              用于过渡态的多尺度 NEB-TS
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../multi/oniom-nebts/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh" class="md-select__link">
+              中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  首页
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../first_steps/howtocite/" class="md-tabs__link">
+          
+  
+  
+  教程
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../manual/" class="md-tabs__link">
+          
+  
+  
+  手册
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../bib/" class="md-tabs__link">
+          
+  
+  
+  附录
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="ORCA 6.1 Tutorials" class="md-nav__button md-logo" aria-label="ORCA 6.1 Tutorials" data-md-component="logo">
+      
+  <img src="../../../assets/fastmol-logo.svg" alt="logo">
+
+    </a>
+    ORCA 6.1 Tutorials
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    教程
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    教程
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    入门
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    入门
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/howtocite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    如何引用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    安装 ORCA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/first_calc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello water！
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/input_output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    输入与输出
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/parallel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    并行运行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    内存设置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    图形界面
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/trouble_install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    常见问题
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工作流
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    工作流
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflows/compound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    复合作业
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflows/extrapol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    外推技术
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflows/extopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    外部方法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflows/opi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python 接口
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    性质
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    性质
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../prop/single_point/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    单点能
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../prop/geoopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    几何优化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../prop/freq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    振动频率
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../prop/thermo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    热力学
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../prop/cpcm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    隐式溶剂化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../prop/solvator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    显式溶剂化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../prop/goat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    构象搜索
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../prop/relativistic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    相对论校正
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../prop/disp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    色散校正
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../prop/bonds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    化学键分析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../prop/led/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../prop/fod/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分数占据密度
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../prop/charges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    电荷模型
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../prop/esp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    静电势
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../prop/corren/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    相关能
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    反应性
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    反应性
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../react/nebts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../react/tsopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    过渡态优化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../react/tsconf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    过渡态构象
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../react/irc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IRC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../react/actibar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    精确能垒
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../react/KIE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    动力学同位素效应
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../react/FUKUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    福井函数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../react/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DOCKER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    波谱
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    波谱
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spec/IR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    红外与拉曼
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spec/UVVis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    紫外-可见
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spec/ECD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    电子圆二色
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spec/vcd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    振动圆二色
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spec/NMR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NMR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spec/EPR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spec/SOC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    自旋轨道耦合
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多尺度
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    多尺度
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/XTB ONIOM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics-otheroniom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ONIOM 进阶
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多尺度 NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多尺度 NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#neb-ts_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为 NEB-TS 计算准备输入文件
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oniom-neb-ts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        用 ONIOM 运行 NEB-TS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dft" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        与完整 DFT 结果的比较
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        一个来自文献的大体系例子
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="一个来自文献的大体系例子">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        设置更复杂的输入——电荷
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        减小活性区域的大小
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        结构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        反应物——第一个反应
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        产物——第一个反应
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        反应物——第二个反应
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        产物——第二个反应
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ionic_crystal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    离子晶体 QM/MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fragmentator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    碎片化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    手册
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    手册
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    推荐主题
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    前言
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    前言
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/preface/foreword/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foreword
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/preface/changes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/preface/howtocite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Howtocite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/preface/howtousethismanual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Howtousethismanual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    快速入门
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    快速入门
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/quickstartguide/index_quickstartguide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    快速入门指南
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/quickstartguide/about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    简介
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/quickstartguide/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    安装
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/quickstartguide/gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    图形界面
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/quickstartguide/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    运行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/quickstartguide/hellowater/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello water
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/quickstartguide/recommendations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    建议
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/quickstartguide/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    故障排除
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    核心要素
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    核心要素
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/essentialelements/index_essentialelements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    基本计算要素（Essential Calculation Elements）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/essentialelements/input/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    输入
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/essentialelements/coordinates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    坐标
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/essentialelements/basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/essentialelements/output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    输出
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/essentialelements/parallel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    并行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/essentialelements/scf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/essentialelements/initialguess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    初始猜测
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/essentialelements/basisset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    基组
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/essentialelements/RI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/essentialelements/solvationmodels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    溶剂化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/essentialelements/relativistic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    相对论
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/essentialelements/symmetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    对称性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模型方法
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    模型方法
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/modelchemistries/index_modelchemistries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模型化学（Model Chemistries）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/modelchemistries/hartreefock/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hartree-Fock
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/modelchemistries/DensityFunctionalTheory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    密度泛函
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/modelchemistries/MP2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MP2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/modelchemistries/3cmethods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3c 方法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/modelchemistries/dispersioncorrections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    色散
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/modelchemistries/CASSCF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CASSCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/modelchemistries/NEVPT2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEVPT2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/modelchemistries/mrci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MRCI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/modelchemistries/mdci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DLPNO 方法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/modelchemistries/semiempirical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    半经验
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/modelchemistries/mm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分子力学
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    结构与反应性
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    结构与反应性
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/structurereactivity/index_structurereactivity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    结构与反应性（Structure and Reactivity）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/structurereactivity/optimizations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    优化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/structurereactivity/optimizations_TS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    过渡态
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/structurereactivity/optimizations_scans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    势能面扫描
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/structurereactivity/irc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IRC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/structurereactivity/neb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/structurereactivity/frequencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    频率
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/structurereactivity/thermochemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    热化学
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/structurereactivity/solvator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SOLVATOR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/structurereactivity/goat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GOAT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/structurereactivity/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DOCKER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/structurereactivity/mecp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MECP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/structurereactivity/conicalintersections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    圆锥交叉
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    波谱与性质
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    波谱与性质
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/spectroscopyproperties/index_spectroscopyproperties/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    光谱与性质（Spectroscopy and Properties）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/spectroscopyproperties/vibrations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    振动
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/spectroscopyproperties/excitedstates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    激发态
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/spectroscopyproperties/tddft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TD-DFT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/spectroscopyproperties/esd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UV/Vis 与 ESD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/spectroscopyproperties/nmr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NMR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/spectroscopyproperties/epr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/spectroscopyproperties/led/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/spectroscopyproperties/nbo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NBO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/spectroscopyproperties/spinorbit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    自旋轨道
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/spectroscopyproperties/magnx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    磁性质
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多尺度
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    多尺度
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/multiscalesimulations/index_multiscalesimulations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多尺度模拟（Multiscale Simulations）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/multiscalesimulations/qmmm-general/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM 总论
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/multiscalesimulations/qmmm-molecules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM 分子体系
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/multiscalesimulations/qmmm-crystal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    晶体 QM/MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分子动力学
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    分子动力学
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/moleculardynamics/index_moleculardynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分子动力学（Molecular Dynamics）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/moleculardynamics/moldyn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分子动力学
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工作流
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    工作流
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/workflowsautomatization/index_workflowsautomatization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工作流与自动化（Workflows and Automatization）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/workflowsautomatization/compound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/workflowsautomatization/compound_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound 示例
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/workflowsautomatization/orcapythoninterface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工具
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    工具
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/utilitiesvisualization/index_utilitiesvisualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    辅助工具与可视化（Utilities and Visualization）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/utilitiesvisualization/utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工具
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/utilitiesvisualization/plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    绘图
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    架构
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    架构
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/orcaarchitecture/index_orcaarchitecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ORCA 的体系结构（Architecture of ORCA）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/orcaarchitecture/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/orcaarchitecture/components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    组件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_13" id="__nav_3_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    附录
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/appendix/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    术语表（Glossary）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/contents/appendix/public/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Public
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/bibliography/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    参考文献
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    附录
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bib/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    参考文献
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../genindex/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    索引
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#neb-ts_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为 NEB-TS 计算准备输入文件
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oniom-neb-ts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        用 ONIOM 运行 NEB-TS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dft" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        与完整 DFT 结果的比较
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        一个来自文献的大体系例子
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="一个来自文献的大体系例子">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        设置更复杂的输入——电荷
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        减小活性区域的大小
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        结构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        反应物——第一个反应
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        产物——第一个反应
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        反应物——第二个反应
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        产物——第二个反应
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="neb-ts">用于过渡态的多尺度 NEB-TS<a class="headerlink" href="#neb-ts" title="Permanent link">&para;</a></h1>
+<p>现在让我们进一步探索多尺度（multilevel）方法的高级用法，并将其与 ORCA 的另一个重要特性结合起来：用于自动寻找过渡态（transition states）的 NEB-TS 方法。如果你还不了解 NEB-TS，请先查看上一篇教程"<a href="../../react/nebts/#nebts">用 NEB-TS 寻找过渡态</a>"，从现在起我们将假定你已经理解它。</p>
+<p>在本教程中，我们将使用常规 r^2SCAN-3c 与 XTB 的混合来寻找过渡态<strong>并</strong>计算其能垒。为了让事情不那么简单、也更有趣一些：我们的目标反应是下面所示的 Diels-Alder 反应：</p>
+<p><a href="../../images/reaction1.png"><img alt="reaction1" src="../../images/reaction1.png" /></a></p>
+<p>r2SCAN-3c 是 Stefan Grimme 课题组最近开发的另一种"3c"方法，它基于 meta-GGA 泛函 r^2SCAN，已经实现在 ORCA 中，并表现出非常优秀的基准测试结果 <a href="../../bib/#grimme2021">[Grimme2021]</a>。</p>
+<h2 id="neb-ts_1">为 NEB-TS 计算准备输入文件<a class="headerlink" href="#neb-ts_1" title="Permanent link">&para;</a></h2>
+<p>为了运行 NEB-TS，我们需要反应物和产物，最好已经用某种方法优化过。可以直接采用本页末尾的结构，并用以下方式优化：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>!R2SCAN-3C OPT FREQ
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>* XYZ 0 1
+</code></pre></div>
+<p>它们应该会在几步后收敛。在这里，使用 !PAL16 时，每个体系的完整优化加频率计算只花了大约 25 分钟。</p>
+<p>这样我们就有了排布为反应物（educt）的反应体系以及产物。如前所述，成功进行 ONIOM 计算的第一个挑战是 QM1 和 QM2 区域的选择。由于我们的反应发生在二烯（diene）和亲双烯体（dienophile）之间，把两者都包含在较高水平的 r^2SCAN-3c 区域中是合理的。下面是一张 3D 图像，显示了其中一个分子的 ORCA 原子编号：</p>
+<p><a href="../../images/split.png"><img alt="split" src="../../images/split.png" /></a></p>
+<p>请注意，这里我们还把与乙烯基团相连的酯类吸电子基团也包含在内。它们之间有很强的电子关联，在这种情况下把它从主 QM1 区域中移除并不是明智之举。</p>
+<h2 id="oniom-neb-ts">用 ONIOM 运行 NEB-TS<a class="headerlink" href="#oniom-neb-ts" title="Permanent link">&para;</a></h2>
+<p>NEB-TS 的 ORCA 输入一如既往地简单，只是必须显式指定 <em>%QMATOMS</em>：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>!QM/XTB R2SCAN-3C NEB-TS NUMFREQ
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>%QMMM QMATOMS {0:6 8 22:31} END END
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>%NEB PREOPT TRUE PRODUCT &quot;product.xyz&quot; END
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>* XYZFILE 0 1 reactant.xyz
+</code></pre></div>
+<p>这里有一些重要的说明：</p>
+<blockquote>
+<ol>
+<li>我们必须使用 NUMFREQ，因为 ORCA 中的 ONIOM 方法目前还没有解析 Hessian，而我们想在最后计算频率以确认确实找到了过渡态。</li>
+<li>我们的反应物/产物结构是用纯 r^2SCAN-3c 优化的。由于现在使用的是 ONIOM（它代表不同的势能面），在 NEB 之前对这些结构重新优化是合理的，因此我们设置 <em>PREOPT TRUE</em>。</li>
+</ol>
+</blockquote>
+<p>完整的计算使用 !PAL8，包括数值频率计算在内只花了约 1 小时 20 分钟——对于这样一次从寻找过渡态一直到计算频率的完整计算来说，速度快得令人印象深刻。最终找到的过渡态只有一个虚频，为 <span class="arithmatex">\(-358.36\)</span> <span class="arithmatex">\(cm^{-1}\)</span>。</p>
+<p>下面是所找到的最小能量路径（Minimum Energy Path, MEP）的动画版本：</p>
+<p><a href="../../images/MEP.gif"><img alt="MEP" src="../../images/MEP.gif" /></a></p>
+<p>以及具有虚频的振动模式，它清楚地显示了 Diels-Alder 反应的预期反应坐标：</p>
+<p><a href="../../images/vib.gif"><img alt="vib" src="../../images/vib.gif" /></a></p>
+<p>作为 NEB-TS 输出的一部分，在给出 MEP 能量的同时，我们也得到了反应能，这里为 <span class="arithmatex">\(E_{barrier}^{ONIOM}=9.37\)</span> <span class="arithmatex">\(kcal/mol\)</span>：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>                      PATH SUMMARY FOR NEB-TS
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>---------------------------------------------------------------
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>All forces in Eh/Bohr. Global forces for TS.
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>Image     E(Eh)   dE(kcal/mol)  max(|Fp|)  RMS(Fp)
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>  0    -495.04184     0.00       0.00007   0.00003
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>  1    -495.04118     0.41       0.00204   0.00031
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>  2    -495.03976     1.31       0.00375   0.00057
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>  3    -495.03781     2.53       0.00454   0.00071
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>  4    -495.03476     4.44       0.00318   0.00052
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>  5    -495.02943     7.78       0.00166   0.00032
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>  6    -495.02579    10.07       0.00173   0.00033 &lt;= CI
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a> TS    -495.02690     9.37       0.00063   0.00009 &lt;= TS
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>  7    -495.03697     3.06       0.00168   0.00046
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>  8    -495.07669   -21.87       0.00524   0.00143
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>  9    -495.08248   -25.50       0.00009   0.00002
+</code></pre></div>
+<h2 id="dft">与完整 DFT 结果的比较<a class="headerlink" href="#dft" title="Permanent link">&para;</a></h2>
+<p>我们也可以将 ONIOM 结果与完整 DFT 结果进行比较，以作检查：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>!R2SCAN-3C NEB-TS FREQ
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>%NEB PRODUCT &quot;product.xyz&quot; END
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>* XYZFILE 0 1 reactant.xyz
+</code></pre></div>
+<p>NEB 收敛后找到了过渡态，能垒为 <span class="arithmatex">\(E_{barrier}^{ONIOM}=10.25\)</span> <span class="arithmatex">\(kcal/mol\)</span>。这意味着在这个例子中，我们的 ONIOM 相对于完整计算只有 10% 的误差。</p>
+<p>取这些 ONIOM 结构并重新计算 DFT 能量，得到的能垒为 <span class="arithmatex">\(E_{barrier}^{DFT/ONIOM}=10.63\)</span> <span class="arithmatex">\(kcal/mol\)</span>，与精确结果相当接近。</p>
+<p>将所找到的两个过渡态结构叠合在一起也表明，结果非常相似：</p>
+<p><a href="../../images/overlay.png"><img alt="overlay" src="../../images/overlay.png" /></a></p>
+<p>作为本节的总结，过渡态的完整 DFT 频率为 <span class="arithmatex">\(-370.80\)</span> <span class="arithmatex">\(cm^{-1}\)</span>，也与之前用多尺度方法得到的结果一致。</p>
+<h2 id="_1">一个来自文献的大体系例子<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>为了展示多尺度方法在非常大的体系上的表现，让我们以 Frank Neese 教授课题组与 Benjamin List 教授（2022 年诺贝尔化学奖得主！）课题组合作的一篇近期论文为例。</p>
+<p>List 教授的课题组以其使用有机分子作为催化剂的反应而闻名，其中一种反应就是下面这个立体选择性 Diels-Alder 反应 <a href="../../bib/#bistoni2020">[Bistoni2020]</a>：</p>
+<p><a href="../../images/list.png"><img alt="list" src="../../images/list.png" /></a></p>
+<p>该文献非常详细地描述了用 DFT 和 DLPNO-CCSD(T) 研究这个反应的工作。我们<strong>不</strong>打算复现其中的任何结果，而只是展示如何将 NEB-TS 与 ORCA 的 ONIOM 结合使用，来寻找这个 206 个原子的大体系的过渡态。</p>
+<p>一如既往，NEB-TS 需要反应物和产物。这些结构由原作者友情提供，已经过预优化，起始结构打印在本页末尾。</p>
+<h3 id="_2">设置更复杂的输入——电荷<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>现在我们可以运行 NEB-TS 计算来寻找该反应涉及的过渡态。采用 QM/XTB 方法并以 PBE/def2-SVP 作为 QM 方法，输入文件如下：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>! QM/XTB PBE D3BJ def2-SVP NEB-TS NUMFREQ
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>%NEB
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a> product &quot;product.xyz&quot;
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a> preopt true
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>END
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>%QMMM
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a> QMAtoms { 151:205 } end
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a> Charge_Total 0
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>END
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>* XYZFILE 1 1 reactant.xyz
+</code></pre></div>
+<p>这对应于下图所示的区域划分，其中实心球代表较高水平的 DFT 区域：</p>
+<p><a href="../../images/rot.gif"><img alt="rot" src="../../images/rot.gif" /></a></p>
+<p>这里有几个要点：</p>
+<blockquote>
+<ol>
+<li>我们把 !NEB-TS 与 <code>!NUMFREQ?</code> 一起使用，以便在最后计算频率来验证过渡态。请记住，ORCA 目前只能对多尺度计算进行数值频率计算。</li>
+<li>建议使用 <code>PREOPT TRUE</code>，以便对反应物和产物进行预优化，因为它们之前是用另一种方法优化的。</li>
+</ol>
+</blockquote>
+<p>请注意，现在在 <em>QMAtoms</em> 之后还有 <em>Charge_Total 0</em>。这是<strong>整个体系（QM1 + QM2，即 DFT + XTB）</strong>的电荷，在本例中是中性的。在上面的 Lewis 结构式中可以看到，反应物实际上是一个阳离子，而催化剂是一个阴离子。</p>
+<p>总电荷为零，然而由于我们选择了反应物（educt）作为较高水平的 QM 区域，输入文件末尾在 <em>xyzfile</em> 之后给出的电荷必须是 +1。在那里必须给出<strong>较高水平 QM 体系的总电荷</strong>，而较低水平 XTB 的电荷将由此值与 <em>Charge_Total</em> 推导得出。</p>
+<blockquote>
+<p><strong>重要</strong>
+与多重度一起写在坐标段中的电荷，<strong>始终是最高水平区域的电荷</strong>。多重度也是如此：它可以通过 <em>%QMMM</em> 下的 <em>Mult_Total</em> 为整个体系设置，同时也必须为较高水平的体系设置。</p>
+<p><strong>注意</strong>
+如果没有给出 <em>Charge_Total</em> 或 <em>Mult_Total</em>，则假定为一个所有电子都配对的中性体系。</p>
+</blockquote>
+<p>使用 !PAL16（16 个核心）时，这次计算花了 15 个小时，只找到一个虚频，为 <span class="arithmatex">\(-384.94\)</span> <span class="arithmatex">\(cm^{-1}\)</span>。NEB-TS 的总体结果如下：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>---------------------------------------------------------------
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>                      PATH SUMMARY FOR NEB-TS
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>---------------------------------------------------------------
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>All forces in Eh/Bohr. Global forces for TS.
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>Image     E(Eh)   dE(kcal/mol)  max(|Fp|)  RMS(Fp)
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>  0   -1627.03519     0.00       0.00012   0.00002
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>  1   -1627.03314     1.29       0.00380   0.00030
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>  2   -1627.03058     2.90       0.00195   0.00026
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>  3   -1627.02792     4.56       0.00318   0.00036
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>  4   -1627.02388     7.10       0.00578   0.00058
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>  5   -1627.01743    11.15       0.00186   0.00027 &lt;= CI
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a> TS   -1627.02210     8.22       0.00009   0.00001 &lt;= TS
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>  6   -1627.02306     7.62       0.00419   0.00055
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>  7   -1627.03571    -0.32       0.01194   0.00094
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>  8   -1627.05101    -9.93       0.00263   0.00029
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>  9   -1627.05229   -10.73       0.00009   0.00001
+</code></pre></div>
+<p>预测的电子能垒为 <span class="arithmatex">\(E_{barrier}^{ONIOM}=8.22\)</span> <span class="arithmatex">\(kcal/mol\)</span>。最小能量路径保存为 <em>basename_MEP_trj.xyz</em>，如下所示：</p>
+<p><a href="../../images/list_MEP_fullactive.gif"><img alt="list_MEP_fullactive" src="../../images/list_MEP_fullactive.gif" /></a></p>
+<h3 id="_3">减小活性区域的大小<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>从上面的 MEP 可以看出，实际上大部分变化都发生在非常靠近反应物（educt）的位置。这在预期之中，因为在这种情况下催化剂的作用只是把反应物拉到一起并正确定位。我们可以在近似上再进一步，限制这次优化的<em>活性区域（Active Region）</em>。</p>
+<p>这里我们所说的<em>活性区域</em>，是指分子/体系中实际移动并被优化的部分。对于具有局域键断裂/形成的较大体系，在几何优化中我们基本上可以忽略周围环境，只把中心相关的部分纳入 NEB-TS。</p>
+<p>为此，需要使用如下输入：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>! QM/XTB PBE D3BJ def2-SVP NEB-TS NUMFREQ
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>%NEB
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a> product &quot;product.xyz&quot;
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a> preopt true
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>END
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>%QMMM
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a> QMAtoms { 151:205 } end
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a> ActiveAtoms {151:205} end
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a> Charge_Total 0
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>END
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>* XYZFILE 1 1 reactant.xyz
+</code></pre></div>
+<p>这基本上与之前相同，只是现在还有一个 <em>ActiveAtoms</em> 列表。在这个例子中，我们选择它与较高水平的 DFT 区域一致，但原则上它可以是任意的。现在再看 QMMM 输出的最后一部分：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Size of region for optimizer           ... 59
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>        optimized atoms = activeRegion ... 55
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>        fixed atoms (distance cutoff)  ... 4 ( 1.0)
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>Composition of different systems (atoms start counting at 0):
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>QM1 Subsystem                          ... 151 152 153 154 155 156 157 158 159 160
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>                                           161 162 163 164 165 166 167 168 169 170
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>                                           171 172 173 174 175 176 177 178 179 180
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>                                           181 182 183 184 185 186 187 188 189 190
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>                                           191 192 193 194 195 196 197 198 199 200
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>                                           201 202 203 204 205
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>Active atoms                           ... 151 152 153 154 155 156 157 158 159 160
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>                                           161 162 163 164 165 166 167 168 169 170
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>                                           171 172 173 174 175 176 177 178 179 180
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>                                           181 182 183 184 185 186 187 188 189 190
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>                                           191 192 193 194 195 196 197 198 199 200
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>                                           201 202 203 204 205
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>Fixed atoms used in optimizer          ... 104 106 109 143
+</code></pre></div>
+<p>可以看到，<em>Active atoms</em> 的数目与我们所选择的一致，但优化器中还会加入另外 4 个 <em>Fixed atoms</em>。这些原子是根据它们与活性原子的距离选出的，对稳定几何优化很重要。它们只是笛卡尔坐标被完全固定的原子。</p>
+<p>原则上，这四个额外的原子不会带来太大差别（在某些情况下可能会多得多），但它们对于避免 <em>Active atoms</em> 移动到被忽略原子所在的空间区域确实是必要的。不需要对这些设置做额外调整，但更多信息可以在 <a href="https://www.faccts.de/docs/orca/6.0/manual">ORCA 手册</a>中找到。</p>
+<p>这次计算用 16 个核心现在只需约三个小时，还包括频率计算！虚频模式基本相同，为 <span class="arithmatex">\(-372.29\)</span> <span class="arithmatex">\(cm^{-1}\)</span>，MEP 如下所示：</p>
+<p><a href="../../images/list_MEP_reducedactive.gif"><img alt="list_MEP_reducedactive" src="../../images/list_MEP_reducedactive.gif" /></a></p>
+<p>NEB-TS 的总结如下：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>---------------------------------------------------------------
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>                      PATH SUMMARY FOR NEB-TS
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>---------------------------------------------------------------
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>All forces in Eh/Bohr. Global forces for TS.
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>Image     E(Eh)   dE(kcal/mol)  max(|Fp|)  RMS(Fp)
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>  0   -1626.95773     0.00       0.05123   0.00546
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>  1   -1626.95627     0.92       0.05121   0.00547
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>  2   -1626.95362     2.58       0.05120   0.00548
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>  3   -1626.95029     4.67       0.05113   0.00549
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>  4   -1626.94563     7.59       0.05094   0.00552
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>  5   -1626.94303     9.23       0.05056   0.00547 &lt;= CI
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a> TS   -1626.94483     8.10       0.05053   0.00547 &lt;= TS
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>  6   -1626.94614     7.27       0.05034   0.00547
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>  7   -1626.95464     1.94       0.05001   0.00563
+<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>  8   -1626.97407   -10.25       0.04976   0.00564
+<a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a>  9   -1626.97568   -11.26       0.04984   0.00541
+</code></pre></div>
+<p>电子能垒为 <span class="arithmatex">\(E_{barrier}^{ONIOM, reduced}=8.10\)</span> <span class="arithmatex">\(kcal/mol\)</span>，与我们用整个分子作为活性区域时得到的结果极其接近。</p>
+<blockquote>
+<p><strong>重要</strong>
+活性区域的选择对于获得良好的计算结果可能至关重要。如果减小它是合理的，只要你始终保持审慎，就没有理由不这样做。</p>
+</blockquote>
+<h3 id="_4">结构<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<h3 id="_5">反应物——第一个反应<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="360px" data-mol-repr="ball-stick" data-mol-title="oniom-nebts #10">
+<pre class="mol-xyz" data-format="xyz">48
+structure
+C     -0.959170    1.357710    0.849530
+C     -1.209220   -0.099150    1.125410
+C     -1.020360   -0.792050   -0.010410
+C     -0.447780    0.072990   -1.016570
+C     -0.282210    1.295860   -0.498460
+H     -1.152820   -1.853560   -0.134070
+H     -0.116330   -0.245620   -1.990700
+C     -2.339380    1.987020    0.683280
+H     -0.337470    1.847770    1.611490
+C     -2.248950    3.395110    0.185170
+H     -2.901170    1.934260    1.623080
+H     -2.928910    1.405700   -0.041820
+C     -2.186770    3.649880   -1.194570
+C     -2.053620    4.950230   -1.656980
+C     -1.998930    5.997850   -0.741190
+C     -2.152360    4.441550    1.097760
+C     -2.042890    5.744340    0.631740
+H     -1.992580    5.140040   -2.724560
+H     -1.917590    7.018790   -1.098690
+H     -2.206360    2.826900   -1.909090
+H     -2.160560    4.236900    2.165340
+H     -1.991120    6.561960    1.342860
+C      1.758570   -0.240400    1.806570
+H     -1.508010   -0.494900    2.085180
+C      2.254780    0.581810    0.876060
+H      2.513270    0.204680   -0.110980
+H      2.256010    1.655530    1.023140
+H      0.218730    2.134490   -0.964520
+C      1.617970   -1.679900    1.488880
+H      1.369350    0.120320    2.750720
+O      1.135080   -2.286530    2.601380
+O      1.969400   -2.213850    0.460030
+C      1.347740   -3.701960    2.651880
+C      2.037140   -4.011320    3.987890
+H      1.958980   -4.073300    1.820920
+H      0.366660   -4.185080    2.584810
+C      3.565200   -3.787240    3.937590
+C      3.998870   -2.361970    3.631780
+H      4.014530   -4.457460    3.194300
+H      3.992120   -4.063440    4.908950
+H      3.818310   -2.111390    2.586420
+H      5.075790   -2.248480    3.785800
+H      3.481960   -1.639680    4.271050
+C      1.750940   -5.457390    4.388300
+H      1.624820   -3.351270    4.763030
+H      0.674370   -5.616750    4.511420
+H      2.234130   -5.700050    5.339940
+H      2.114640   -6.157110    3.628730</pre>
+<pre class="mol-input"></pre>
+</div>
+
+<h3 id="_6">产物——第一个反应<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="360px" data-mol-repr="ball-stick" data-mol-title="oniom-nebts #11">
+<pre class="mol-xyz" data-format="xyz">48
+structure
+C     -0.737196    1.403177    0.989584
+C     -0.618249   -0.085793    1.354168
+C     -0.852079   -0.732487    0.014079
+C     -0.351356    0.075705   -0.910834
+C      0.225931    1.272089   -0.203167
+H     -1.288752   -1.705720   -0.115453
+H     -0.282193   -0.088821   -1.970037
+C     -2.152823    1.873670    0.651875
+H     -0.326752    2.050689    1.768333
+C     -2.127122    3.294013    0.165082
+H     -2.767493    1.799866    1.552333
+H     -2.580061    1.222755   -0.112145
+C     -2.087052    3.576779   -1.194068
+C     -2.020960    4.884301   -1.641606
+C     -1.993421    5.928815   -0.733499
+C     -2.098809    4.349545    1.067753
+C     -2.033976    5.658002    0.623515
+H     -1.991462    5.089395   -2.702015
+H     -1.942930    6.949926   -1.081887
+H     -2.111239    2.763534   -1.905541
+H     -2.133469    4.143325    2.128542
+H     -2.016305    6.468786    1.337510
+C      0.919141   -0.179358    1.598814
+H     -1.216246   -0.455788    2.183181
+C      1.492793    0.746289    0.513478
+H      2.136317    0.190920   -0.168157
+H      2.062566    1.565946    0.949390
+H      0.391014    2.160114   -0.807510
+C      1.382635   -1.613838    1.482688
+H      1.146808    0.167446    2.608645
+O      1.032440   -2.295373    2.575254
+O      1.972282   -2.085265    0.545235
+C      1.361068   -3.682967    2.649381
+C      2.048610   -4.001062    3.982150
+H      1.995994   -3.945721    1.797590
+H      0.417620   -4.234230    2.572749
+C      3.564854   -3.782141    3.926193
+C      3.971075   -2.349291    3.600810
+H      3.994093   -4.457226    3.182191
+H      3.981519   -4.055042    4.898803
+H      3.727461   -2.094270    2.573290
+H      5.044497   -2.227649    3.728709
+H      3.464743   -1.648481    4.261491
+C      1.746479   -5.443895    4.383874
+H      1.622991   -3.326413    4.732911
+H      0.676972   -5.596645    4.506155
+H      2.235620   -5.683831    5.324523
+H      2.109242   -6.131980    3.623461</pre>
+<pre class="mol-input"></pre>
+</div>
+
+<h3 id="_7">反应物——第二个反应<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="360px" data-mol-repr="ball-stick" data-mol-title="oniom-nebts #12">
+<pre class="mol-xyz" data-format="xyz">206
+structure
+P   0.916540   -1.446915    -0.319940
+O   2.371689   -0.759534     0.092738
+O   0.757312   -2.624241     0.830064
+C   3.424107   -1.513413     0.600201
+C   4.601756   -1.616396    -0.198660
+C   5.654349   -2.382135     0.279295
+C   5.574035   -3.072225     1.519527
+C   6.644233   -3.895980     1.976074
+C   6.542851   -4.603066     3.163608
+C   5.353751   -4.519092     3.933852
+C   4.300040   -3.714908     3.523431
+C   4.381496   -2.952449     2.320644
+C   3.309095   -2.106095     1.858576
+C   2.086336   -1.901706     2.682513
+C   2.149623   -1.371833     4.020418
+C   3.357817   -0.872255     4.590832
+C   3.377330   -0.354237     5.878000
+C   2.197907   -0.343563     6.669067
+C   1.005220   -0.811527     6.138662
+C   0.939076   -1.301039     4.800643
+C   -0.29459    -1.71597      4.22743
+C   -0.37893    -2.16984      2.91371
+C   0.834583   -2.225332     2.158796
+C   4.710423   -0.920983    -1.507929
+H   6.573936   -2.466560    -0.319659
+H   7.551361   -3.968163     1.356325
+H   7.373611   -5.239805     3.502683
+H   5.262066   -5.102616     4.862336
+H   3.381935   -3.672022     4.124449
+H   4.276104   -0.882571     3.989665
+H   4.316741    0.048319     6.284977
+H   2.231999    0.042133     7.699243
+H   0.081163   -0.799654     6.735099
+H   -1.20194    -1.68274      4.84936
+C   -1.66996    -2.64261      2.35073
+C   4.650292    0.482034    -1.582299
+C   4.830403    1.135713    -2.813629
+C   5.054553    0.401861    -3.984779
+C   5.080086   -1.001951    -3.917445
+C   4.919055   -1.661606    -2.691409
+C   -2.86470    -1.94773      2.62676
+C   -4.10108    -2.46212      2.20367
+C   -4.16805    -3.66753      1.48952
+C   -2.98138    -4.35769      1.20172
+C   -1.74308    -3.84912      1.62007
+H   4.470387    1.065209    -0.668426
+H   5.182774    0.918236    -4.945377
+H   4.907411   -2.758422    -2.648989
+H   -2.82717    -0.99836      3.18032
+H   -5.13604    -4.07516      1.17340
+H   -0.82670    -4.41393      1.40619
+N   -0.13760    -0.30734     -0.10383
+P   -1.11716     0.84307     -0.52955
+O   -0.86292     2.21936      0.36552
+O   -2.57781     0.33507      0.05903
+C   -0.99952     2.14893      1.74493
+C   0.187340    2.254363     2.537791
+C   0.059383    2.089838     3.914637
+C   -1.19602     1.81551      4.52419
+C   -1.30988     1.61067      5.93106
+C   -2.52824     1.28457      6.50764
+C   -3.68590     1.15709      5.69466
+C   -3.61931     1.40154      4.33045
+C   -2.38345     1.75042      3.70931
+C   -2.27530     1.99194      2.29410
+C   -3.47851     2.08063      1.42171
+C   -4.51475     3.05388      1.66124
+C   -4.43717     4.03015      2.69741
+C   -5.46126     4.94562      2.89566
+C   -6.61363     4.93236      2.06746
+C   -6.70810     4.01382      1.03394
+C   -5.66792     3.06852      0.79414
+C   -5.73701     2.16335     -0.30057
+C   -4.71616     1.26354     -0.57110
+C   -3.59436     1.24775      0.31211
+C   1.497070    2.633715     1.943844
+H   0.948307    2.186260     4.556414
+H   -0.40307     1.70365      6.54660
+H   -2.59970     1.11782      7.59310
+H   -4.64531     0.86440      6.14649
+H   -4.51949     1.30450      3.70928
+H   -3.54674     4.06077      3.33952
+H   -5.37453     5.69262      3.69908
+H   -7.42132     5.65978      2.23806
+H   -7.58590     4.00681      0.36940
+H   -6.62166     2.18859     -0.95500
+C   -4.74641     0.37537     -1.75661
+C   1.587359    3.721436     1.044844
+C   2.835496    4.184339     0.608214
+C   4.018065    3.557099     1.034349
+C   3.934033    2.469870     1.913820
+C   2.685175    2.007033     2.365504
+C   -5.04627     0.89481     -3.03265
+C   -5.04801     0.05656     -4.15897
+C   -4.74087    -1.30622     -4.03597
+C   -4.42670    -1.81895     -2.77042
+C   -4.43782    -0.99326     -1.63800
+H   0.675241    4.231162     0.709859
+H   4.994598    3.919111     0.688111
+H   2.634057    1.154539     3.057707
+H   -5.22010     1.97400     -3.14419
+H   -4.71726    -1.95250     -4.92191
+H   -4.18767    -1.41095     -0.65409
+N   0.873504   -2.167366    -1.757367
+N   -1.09279     1.26973     -2.07667
+S   1.808817   -3.398539    -2.225292
+O   2.092018   -3.259925    -3.678636
+O   2.928958   -3.743659    -1.317722
+S   -1.75776     2.59220     -2.73710
+O   -1.68433     2.45266     -4.21201
+O   -3.02132     3.05419     -2.11734
+C   -0.52341     3.99163     -2.33414
+C   0.644415   -4.882681    -2.101455
+F   0.729296    3.514442    -2.290286
+F   -0.60864     4.92727     -3.29108
+F   -0.83052     4.55556     -1.16036
+F   -0.45331    -4.69511     -2.84683
+F   0.288702   -5.064743    -0.823796
+F   1.291438   -5.968586    -2.540237
+C   5.192754    1.796225     2.408800
+C   2.934804    5.460725    -0.200433
+C   4.721390    2.641232    -2.852077
+C   5.234315   -1.781031    -5.203879
+F   5.206130    1.701634     3.762311
+F   6.309693    2.455705     2.034292
+F   5.302189    0.524016     1.931633
+F   3.076358    6.529362     0.627439
+F   1.833844    5.688669    -0.950334
+F   4.006422    5.459748    -1.025178
+F   3.460905    3.044032    -2.523146
+F   4.992896    3.152663    -4.075670
+F   5.563898    3.224405    -1.967565
+F   4.215300   -1.499275    -6.066313
+F   6.382445   -1.451951    -5.845450
+F   5.238364   -3.113368    -5.006944
+C   -3.02552    -5.69794      0.49584
+C   -5.36705    -1.70698      2.53462
+C   -3.97906    -3.24648     -2.59146
+C   -5.30714     0.66172     -5.51911
+F   -5.33625    -0.27572     -6.49940
+F   -6.48519     1.32707     -5.55472
+F   -4.34016     1.55585     -5.85334
+F   -4.74679    -3.91115     -1.69246
+F   -4.01076    -3.95377     -3.75008
+F   -2.70307    -3.28314     -2.12987
+F   -5.49414    -0.58164      1.77722
+F   -6.47562    -2.44985      2.32760
+F   -5.38043    -1.30188      3.83003
+F   -4.29137    -6.15315      0.35700
+F   -2.33063    -6.62953      1.19617
+F   -2.47472    -5.64864     -0.73929
+C   1.155646    0.166147    -5.793662
+C   2.721219    2.452084    -8.138136
+C   -0.41783     2.72241     -8.42839
+H   -0.60514     1.77909     -8.94466
+H   -0.15917     3.44935     -9.19924
+C   1.010667    3.674443    -5.732567
+H   0.036290    3.566447    -5.254043
+O   0.813838    0.848100    -6.820561
+O   1.508592    0.873232    -4.748569
+Si  1.038945    2.501060    -7.217859
+H   2.976447    3.453654    -8.483171
+H   2.639880    1.830136    -9.031107
+C   1.646025    0.286420    -3.465817
+H   0.669869   -0.023013    -3.092706
+H   2.322221   -0.567760    -3.472660
+H   2.025061    1.075376    -2.822243
+C   -1.70568     3.17588     -7.73771
+H   -2.53448     3.17848     -8.44248
+H   -1.96035     2.52627     -6.90597
+H   -1.59330     4.18195     -7.34479
+C   3.864246    1.922008    -7.274127
+H   3.648258    0.906989    -6.945738
+H   4.794725    1.905611    -7.838628
+H   4.005370    2.554371    -6.401758
+C   1.233311    5.141535    -6.099683
+H   2.228596    5.291075    -6.511106
+H   0.507994    5.472241    -6.837522
+H   1.129038    5.766357    -5.216856
+H   1.752137    3.385937    -4.986940
+C   1.249962   -1.251680    -5.902304
+C   0.908114   -1.820168    -7.137152
+C   -1.51427    -2.31699     -6.73757
+C   -1.70407    -0.47019     -5.35988
+C   -1.91187    -0.99093     -6.69137
+C   -1.23208    -1.49189     -4.55096
+H   -2.05199    -3.41513     -4.99108
+H   -1.00323    -1.43925     -3.47532
+H   -1.86082     0.57669     -5.04595
+H   -2.28337    -0.39909     -7.53878
+H   -1.60264    -2.99563     -7.59713
+C   -1.21260    -2.76653     -5.33724
+H   -0.30867    -3.38863     -5.18320
+H   1.617135   -1.859476    -5.052770
+H   0.564628   -1.132627    -7.928863
+C   1.241506   -3.174011    -7.575174
+C   1.838539   -4.115887    -6.730312
+C   1.052550   -3.496709    -8.924919
+C   2.264638   -5.326977    -7.239584
+H   1.996561   -3.893845    -5.687836
+C   1.483944   -4.707408    -9.424893
+H   0.584062   -2.776219    -9.580217
+C   2.099227   -5.623783    -8.584070
+H   2.741592   -6.039624    -6.584255
+H   1.353008   -4.938006   -10.471775
+H   2.449888   -6.565802    -8.977882</pre>
+<pre class="mol-input"></pre>
+</div>
+
+<h3 id="_8">产物——第二个反应<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="360px" data-mol-repr="ball-stick" data-mol-title="oniom-nebts #13">
+<pre class="mol-xyz" data-format="xyz">206
+structure
+P   0.916540    -1.446915    -0.319940
+O   2.371689    -0.759534     0.092738
+O   0.757312    -2.624241     0.830064
+C   3.424107    -1.513413     0.600201
+C   4.601756    -1.616396    -0.198660
+C   5.654349    -2.382135     0.279295
+C   5.574035    -3.072225     1.519527
+C   6.644233    -3.895980     1.976074
+C   6.542851    -4.603066     3.163608
+C   5.353751    -4.519092     3.933852
+C   4.300040    -3.714908     3.523431
+C   4.381496    -2.952449     2.320644
+C   3.309095    -2.106095     1.858576
+C   2.086336    -1.901706     2.682513
+C   2.149623    -1.371833     4.020418
+C   3.357817    -0.872255     4.590832
+C   3.377330    -0.354237     5.878000
+C   2.197907    -0.343563     6.669067
+C   1.005220    -0.811527     6.138662
+C   0.939076    -1.301039     4.800643
+C   -0.29459     -1.71597      4.22743
+C   -0.37893     -2.16984      2.91371
+C   0.834583    -2.225332     2.158796
+C   4.710423    -0.920983    -1.507929
+H   6.573936    -2.466560    -0.319659
+H   7.551361    -3.968163     1.356325
+H   7.373611    -5.239805     3.502683
+H   5.262066    -5.102616     4.862336
+H   3.381935    -3.672022     4.124449
+H   4.276104    -0.882571     3.989665
+H   4.316741     0.048319     6.284977
+H   2.231999     0.042133     7.699243
+H   0.081163    -0.799654     6.735099
+H   -1.20194     -1.68274      4.84936
+C   -1.66996     -2.64261      2.35073
+C   4.650292     0.482034    -1.582299
+C   4.830403     1.135713    -2.813629
+C   5.054553     0.401861    -3.984779
+C   5.080086    -1.001951    -3.917445
+C   4.919055    -1.661606    -2.691409
+C   -2.86470     -1.94773      2.62676
+C   -4.10108     -2.46212      2.20367
+C   -4.16805     -3.66753      1.48952
+C   -2.98138     -4.35769      1.20172
+C   -1.74308     -3.84912      1.62007
+H   4.470387     1.065209    -0.668426
+H   5.182774     0.918236    -4.945377
+H   4.907411    -2.758422    -2.648989
+H   -2.82717     -0.99836      3.18032
+H   -5.13604     -4.07516      1.17340
+H   -0.82670     -4.41393      1.40619
+N   -0.13760     -0.30734     -0.10383
+P   -1.11716      0.84307     -0.52955
+O   -0.86292      2.21936      0.36552
+O   -2.57781      0.33507      0.05903
+C   -0.99952      2.14893      1.74493
+C   0.187340     2.254363     2.537791
+C   0.059383     2.089838     3.914637
+C   -1.19602      1.81551      4.52419
+C   -1.30988      1.61067      5.93106
+C   -2.52824      1.28457      6.50764
+C   -3.68590      1.15709      5.69466
+C   -3.61931      1.40154      4.33045
+C   -2.38345      1.75042      3.70931
+C   -2.27530      1.99194      2.29410
+C   -3.47851      2.08063      1.42171
+C   -4.51475      3.05388      1.66124
+C   -4.43717      4.03015      2.69741
+C   -5.46126      4.94562      2.89566
+C   -6.61363      4.93236      2.06746
+C   -6.70810      4.01382      1.03394
+C   -5.66792      3.06852      0.79414
+C   -5.73701      2.16335     -0.30057
+C   -4.71616      1.26354     -0.57110
+C   -3.59436      1.24775      0.31211
+C   1.497070     2.633715     1.943844
+H   0.948307     2.186260     4.556414
+H   -0.40307      1.70365      6.54660
+H   -2.59970      1.11782      7.59310
+H   -4.64531      0.86440      6.14649
+H   -4.51949      1.30450      3.70928
+H   -3.54674      4.06077      3.33952
+H   -5.37453      5.69262      3.69908
+H   -7.42132      5.65978      2.23806
+H   -7.58590      4.00681      0.36940
+H   -6.62166      2.18859     -0.95500
+C   -4.74641      0.37537     -1.75661
+C   1.587359     3.721436     1.044844
+C   2.835496     4.184339     0.608214
+C   4.018065     3.557099     1.034349
+C   3.934033     2.469870     1.913820
+C   2.685175     2.007033     2.365504
+C   -5.04627      0.89481     -3.03265
+C   -5.04801      0.05656     -4.15897
+C   -4.74087     -1.30622     -4.03597
+C   -4.42670     -1.81895     -2.77042
+C   -4.43782     -0.99326     -1.63800
+H   0.675241     4.231162     0.709859
+H   4.994598     3.919111     0.688111
+H   2.634057     1.154539     3.057707
+H   -5.22010      1.97400     -3.14419
+H   -4.71726     -1.95250     -4.92191
+H   -4.18767     -1.41095     -0.65409
+N   0.873504    -2.167366    -1.757367
+N   -1.09279      1.26973     -2.07667
+S   1.808817    -3.398539    -2.225292
+O   2.092018    -3.259925    -3.678636
+O   2.928958    -3.743659    -1.317722
+S   -1.75776      2.59220     -2.73710
+O   -1.68433      2.45266     -4.21201
+O   -3.02132      3.05419     -2.11734
+C   -0.52341      3.99163     -2.33414
+C   0.644415    -4.882681    -2.101455
+F   0.729296     3.514442    -2.290286
+F   -0.60864      4.92727     -3.29108
+F   -0.83052      4.55556     -1.16036
+F   -0.45331     -4.69511     -2.84683
+F   0.288702    -5.064743    -0.823796
+F   1.291438    -5.968586    -2.540237
+C   5.192754     1.796225     2.408800
+C   2.934804     5.460725    -0.200433
+C   4.721390     2.641232    -2.852077
+C   5.234315    -1.781031    -5.203879
+F   5.206130     1.701634     3.762311
+F   6.309693     2.455705     2.034292
+F   5.302189     0.524016     1.931633
+F   3.076358     6.529362     0.627439
+F   1.833844     5.688669    -0.950334
+F   4.006422     5.459748    -1.025178
+F   3.460905     3.044032    -2.523146
+F   4.992896     3.152663    -4.075670
+F   5.563898     3.224405    -1.967565
+F   4.215300    -1.499275    -6.066313
+F   6.382445    -1.451951    -5.845450
+F   5.238364    -3.113368    -5.006944
+C   -3.02552     -5.69794      0.49584
+C   -5.36705     -1.70698      2.53462
+C   -3.97906     -3.24648     -2.59146
+C   -5.30714      0.66172     -5.51911
+F   -5.33625     -0.27572     -6.49940
+F   -6.48519      1.32707     -5.55472
+F   -4.34016      1.55585     -5.85334
+F   -4.74679     -3.91115     -1.69246
+F   -4.01076     -3.95377     -3.75008
+F   -2.70307     -3.28314     -2.12987
+F   -5.49414     -0.58164      1.77722
+F   -6.47562     -2.44985      2.32760
+F   -5.38043     -1.30188      3.83003
+F   -4.29137     -6.15315      0.35700
+F   -2.33063     -6.62953      1.19617
+F   -2.47472     -5.64864     -0.73929
+C   1.141889     0.131145    -5.786190
+C   2.713551     2.443019    -8.133458
+C   -0.41688      2.71408     -8.42594
+H   -0.60740      1.77839     -8.95444
+H   -0.14737      3.44707     -9.18712
+C   1.006055     3.661088    -5.734153
+H   0.032637     3.558995    -5.253286
+O   0.771942     0.823170    -6.811350
+O   1.595724     0.850478    -4.774151
+Si  1.032906     2.470258    -7.208538
+H   2.958554     3.449220    -8.473849
+H   2.636708     1.826117    -9.030304
+C   1.671368     0.289183    -3.477331
+H   0.678125     0.010405    -3.125420
+H   2.323107    -0.583753    -3.447224
+H   2.050708     1.078516    -2.834933
+C   -1.70496      3.17165     -7.73953
+H   -2.53320      3.17684     -8.44519
+H   -1.96193      2.52374     -6.90705
+H   -1.58981      4.17761     -7.34734
+C   3.862498     1.919605    -7.273819
+H   3.651734     0.903918    -6.945663
+H   4.792115     1.908999    -7.840013
+H   4.000709     2.551715    -6.400830
+C   1.229923     5.126886    -6.107408
+H   2.225624     5.275880    -6.517963
+H   0.505323     5.457320    -6.846272
+H   1.125640     5.754911    -5.226303
+H   1.748089     3.376573    -4.987987
+C   1.039692    -1.269981    -5.814425
+C   0.493261    -1.897043    -7.055037
+C   -1.10705     -2.23921     -6.80226
+C   -1.72802     -0.46808     -5.40818
+C   -1.83893     -0.95365     -6.70276
+C   -1.07065     -1.46633     -4.61626
+H   -2.08839     -3.27912     -5.15728
+H   -0.88673     -1.40709     -3.53016
+H   -1.96686      0.55345     -5.05936
+H   -2.24083     -0.39216     -7.55665
+H   -1.43992     -2.93808     -7.59118
+C   -1.12471     -2.76034     -5.35603
+H   -0.31741     -3.46601     -5.08773
+H   1.560507    -1.880683    -5.053891
+H   0.514749    -1.171637    -7.892292
+C   1.134126    -3.191265    -7.549291
+C   1.779904    -4.098173    -6.720714
+C   1.014883    -3.490317    -8.904583
+C   2.271965    -5.287102    -7.236108
+H   1.924464    -3.891685    -5.673537
+C   1.503691    -4.678257    -9.416381
+H   0.534383    -2.785436    -9.568955
+C   2.124281    -5.589447    -8.578538
+H   2.767662    -5.983446    -6.576870
+H   1.395670    -4.896729   -10.469020
+H   2.491749    -6.526037    -8.971060</pre>
+<pre class="mol-input"></pre>
+</div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../basics-otheroniom/" class="md-footer__link md-footer__link--prev" aria-label="上一页: ONIOM 进阶">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                ONIOM 进阶
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../ionic_crystal/" class="md-footer__link md-footer__link--next" aria-label="下一页: 离子晶体 QM/MM">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                离子晶体 QM/MM
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "toc.follow"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="../../../javascripts/mathjax/tex-mml-chtml.js"></script>
+      
+        <script src="../../../javascripts/math-instant.js"></script>
+      
+        <script src="../../../javascripts/fast-mol-viewer.iife.js"></script>
+      
+        <script src="../../../javascripts/mol-embed.js"></script>
+      
+        <script src="../../../javascripts/tabs-pin.js"></script>
+      
+    
+  </body>
+</html>

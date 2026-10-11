@@ -1,0 +1,8117 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ORCA 量子化学教程 / Quantum chemistry tutorials">
+      
+      
+      
+      
+        <link rel="prev" href="../3cmethods/">
+      
+      
+        <link rel="next" href="../CASSCF/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../../../zh/manual/contents/modelchemistries/dispersioncorrections/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Dispersion - ORCA 6.1 Tutorials</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../../stylesheets/mol-embed.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dispersion-corrections" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="ORCA 6.1 Tutorials" class="md-header__button md-logo" aria-label="ORCA 6.1 Tutorials" data-md-component="logo">
+      
+  <img src="../../../../assets/fastmol-logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ORCA 6.1 Tutorials
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Dispersion
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../zh/manual/contents/modelchemistries/dispersioncorrections/" hreflang="zh" class="md-select__link">
+              中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../first_steps/howtocite/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../" class="md-tabs__link">
+          
+  
+  
+  Manual
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../bib/" class="md-tabs__link">
+          
+  
+  
+  Appendix
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="ORCA 6.1 Tutorials" class="md-nav__button md-logo" aria-label="ORCA 6.1 Tutorials" data-md-component="logo">
+      
+  <img src="../../../../assets/fastmol-logo.svg" alt="logo">
+
+    </a>
+    ORCA 6.1 Tutorials
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First steps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    First steps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/howtocite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to Cite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installing ORCA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/first_calc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello water!
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/input_output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input and Output
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/parallel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running in Parallel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Graphical User Interfaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/trouble_install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Solving common issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Workflows
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/compound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound Jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/extrapol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extrapolation Techniques
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/extopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    External Methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/opi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ORCA Python Interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Properties
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Properties
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/single_point/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single point energies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/geoopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/freq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibrational frequencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/thermo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thermodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/cpcm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implicit Solvation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/solvator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explicit Solvation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/goat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformer Search (GOAT)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/relativistic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relativistic corrections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/disp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dispersion corrections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/bonds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bond Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/led/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/fod/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FOD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/charges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Charge Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/esp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ESP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/corren/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Correlated Energies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reactivity
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reactivity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/nebts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/tsopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transition State Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/tsconf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transition State Conformers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/irc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IRC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/actibar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accurate energy barriers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/KIE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KIE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/FUKUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fukui functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DOCKER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectroscopy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Spectroscopy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/IR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Infrared and Raman
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/UVVis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UV/Vis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/ECD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/vcd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VCD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/NMR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NMR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/EPR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/SOC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spin-Orbit Coupling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Multiscale
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/XTB ONIOM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/basics-otheroniom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ONIOM beyond QM/XTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/oniom-nebts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/ionic_crystal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ionic-Crystal-QM/MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/fragmentator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fragmentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Manual
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Manual
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Suggested Topics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Preface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Preface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/foreword/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foreword
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/changes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/howtocite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Howtocite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/howtousethismanual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Howtousethismanual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Quick Start
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/index_quickstartguide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/hellowater/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello water
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/recommendations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Essential Elements
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Essential Elements
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/index_essentialelements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Essential Calculation Elements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/input/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/coordinates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coordinates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/parallel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parallel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/scf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/initialguess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Initial guess
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/basisset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basis sets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/RI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/solvationmodels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Solvation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/relativistic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relativistic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/symmetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Symmetry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Chemistries
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Model Chemistries
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index_modelchemistries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Chemistries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hartreefock/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hartree-Fock
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DensityFunctionalTheory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DFT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MP2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MP2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3cmethods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3c methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dispersion
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dispersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#grimmes-dft-d3-and-dft-d4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Grimme's DFT-D3 and DFT-D4
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Grimme&#39;s DFT-D3 and DFT-D4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#damping-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Damping Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#three-body-term" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three-body term
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keywords" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keywords
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#available-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#non-local-dispersion-correction-vv10-dft-nl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-Local Dispersion Correction (VV10): DFT-NL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Non-Local Dispersion Correction (VV10): DFT-NL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-parameters_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keywords_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keywords
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CASSCF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CASSCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NEVPT2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEVPT2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mrci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MRCI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mdci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DLPNO methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../semiempirical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Semiempirical
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecular mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structure & Reactivity
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Structure & Reactivity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/index_structurereactivity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structure and Reactivity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimizations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations_TS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transition states
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations_scans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scans
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/irc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IRC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/neb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/frequencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frequencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/thermochemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thermochemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/solvator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SOLVATOR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/goat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GOAT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DOCKER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/mecp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MECP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/conicalintersections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conical intersections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectroscopy & Properties
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Spectroscopy & Properties
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/index_spectroscopyproperties/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectroscopy and Properties
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/vibrations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibrations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/excitedstates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Excited states
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/tddft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TD-DFT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/esd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UV/Vis & ESD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/nmr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NMR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/epr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/led/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/nbo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NBO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/spinorbit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spin-orbit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/magnx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Magnetic properties
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Multiscale
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/index_multiscalesimulations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale Simulations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-general/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM general
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-molecules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM molecules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-crystal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Crystal QM/MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecular Dynamics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Molecular Dynamics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../moleculardynamics/index_moleculardynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecular Dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../moleculardynamics/moldyn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_10" id="__nav_3_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Workflows
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/index_workflowsautomatization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows and Automatization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/compound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/compound_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/orcapythoninterface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_11" id="__nav_3_11_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Utilities
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/index_utilitiesvisualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities and Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/index_orcaarchitecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture of ORCA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_13" id="__nav_3_13_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/public/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Public
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bibliography/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bibliography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../bib/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bibliography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../genindex/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#grimmes-dft-d3-and-dft-d4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Grimme's DFT-D3 and DFT-D4
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Grimme&#39;s DFT-D3 and DFT-D4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#damping-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Damping Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#three-body-term" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three-body term
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keywords" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keywords
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#available-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#non-local-dispersion-correction-vv10-dft-nl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-Local Dispersion Correction (VV10): DFT-NL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Non-Local Dispersion Correction (VV10): DFT-NL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-parameters_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keywords_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keywords
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<p><a id="sec:modelchemistries.dispersioncorrections"></a></p>
+<h1 id="dispersion-corrections">Dispersion Corrections<a class="headerlink" href="#dispersion-corrections" title="Permanent link">&para;</a></h1>
+<p>A major weakness of conventional density functional theory (and Hartee-Fock) is the lacking description of long-range correlation effects including London dispersion. London dispersion represents the attractive component of the van-der-Waals interaction and even though it is a rather weak interaction, its correct description can be crucial for many cases. This is specifically the case for non-covalent interactions and extended molecules. However, there are several well-established dispersion-corrections available to largely correct for this shortcoming. Within ORCA various options are available that include Grimme's D3 <a href="../../../bibliography/">grimme2010chem, grimme2011comp</a> and D4 <a href="../../../bibliography/">caldeweyher2017, caldeweyher2019</a> corrections as well as the non-local variant of VV10 (NL, <a href="../../../bibliography/">vydrov2010chem, hujo2011chem</a> ) are available.</p>
+<div class="admonition note">
+<p class="admonition-title">Some notes on dispersion corrections</p>
+<ul>
+<li>
+<p>Dispersion corrections do not only affect non-covalent complexes,
+    but also conformational energies and structures which are heavily influenced by intramolecular dispersion. Therefore, 
+    including the dispersion correction is almost always recommended or 
+    even required (except for a handful of cases where it cannot, should not or need not be used, see below).</p>
+</li>
+<li>
+<p>DFT calculations with small basis sets (such as double-<span class="arithmatex">\(\zeta\)</span> basis
+    sets) often yield attractive potential energy surfaces even without the
+    dispersion correction. However, this is due to basis set superposition
+    error (BSSE), and the interaction energy brought about by the BSSE
+    frequently does not match the true interaction energy due to dispersion
+    (because they have completely different origins). Therefore, although
+    a DFT double zeta calculation without the dispersion correction may
+    appear to give qualitatively correct results, or occasionally even better results than
+    a double zeta calculation with dispersion corrections (because in the latter case
+    one typically overestimates the total attraction), it is still highly
+    recommended to "get the right answer for the right reason" by reducing
+    the BSSE and turning on the dispersion correction. The BSSE can be
+    corrected by a variety of means, for example (1) by using a larger
+    basis set; (2) by using the counterpoise correction
+    (<a href="../../essentialelements/counterpoise/#sec:essentialelements.counterpoise">essentialelements.counterpoise</a>); or (3) by using the
+    geometrical counterpoise correction (section <a href="../../essentialelements/counterpoise/#sec:essentialelements.counterpoise.gcp">counterpoise.gcp</a>).
+    Of these, (3) is available at almost no cost (including analytic gradient
+    contributions), and is especially suitable for geometry optimization of
+    large molecules. Otherwise (1) (or its combination with (2)) may be
+    more appropriate due to its higher accuracy.</p>
+</li>
+<li>
+<p>Functionals that contain VV10-type non-local dispersion (in general,
+    these are the functionals whose names end with "-V") do not need
+    (and cannot be used together with) dispersion corrections. The same
+    holds for post-HF and multireference methods, like MP2, CCSD(T), CASSCF
+    and NEVPT2. However, one can add a dispersion correction on top of HF.</p>
+</li>
+<li>
+<p>Certain functionals, especially the Minnesota family of functionals
+    (e.g. M06-2X), describe medium-range dispersion but miss long-range dispersion.
+    They give reasonable dispersion energies for small to medium systems but
+    may slightly underestimate the dispersion energies for large systems.
+    As the uncorrected functional already accounts for the bulk of
+    the dispersion in this case, the dispersion correction is much less
+    important than e.g. the case of B3LYP, and should in general be considered
+    as beneficial but not mandatory.</p>
+</li>
+</ul>
+</div>
+<p><a id="sec:modelchemistries.dispersioncorrections.dftd.theory"></a></p>
+<h2 id="grimmes-dft-d3-and-dft-d4">Grimme's DFT-D3 and DFT-D4<a class="headerlink" href="#grimmes-dft-d3-and-dft-d4" title="Permanent link">&para;</a></h2>
+<p>DFT-D3 and DFT-D4 are atom-pairwise (atom-triplewise) dispersion corrections which
+can be added to the KS-DFT energies and gradient <a href="../../../bibliography/">grimme2010chem</a>. In ORCA, D3 is available for all elements
+up to Pu (Z = 94) and D4 up to Lr (Z = 103).</p>
+<p><a id="eqn:modelchemistries.dispersioncorrections.dftd.theory.edftd"></a></p>
+<div class="arithmatex">\[
+E_{\text{DFT-D}} = E_{\text{KS-DFT}} + E_{\text{disp}}\qquad \text{(eqn:modelchemistries.dispersioncorrections.dftd.theory.edftd)}
+\]</div>
+<p><span class="arithmatex">\(E_{\text{disp}}\)</span> is then the sum of the two- and three-body
+contributions to the dispersion energy,
+<span class="arithmatex">\(E_{\text{disp} } =E^{(2) }+E^{(3) }\)</span>. Most important is the
+two-body term, which is given at long range by:</p>
+<p><a id="eqn:modelchemistries.dispersioncorrections.dftd.theory.twobody"></a></p>
+<div class="arithmatex">\[
+E_{\text{disp} } = - \sum_{A &lt; B} \sum_{n=6,8} s_{n} \frac{C_{n}^{AB} }{r_{AB}^{n} }\qquad \text{(eqn:modelchemistries.dispersioncorrections.dftd.theory.twobody)}
+\]</div>
+<p>where<span class="arithmatex">\(C_{n}^{AB}\)</span> denotes the averaged (isotropic)<span class="arithmatex">\(n^{\text{th}}\)</span>-order dispersioncoefficient for atom pair <em>AB</em> and<span class="arithmatex">\(r_{AB}\)</span> is their internuclear
+distance.<span class="arithmatex">\(s_{n}\)</span> is a functional-dependent scaling factor (see below).
+In the general case, an adequate damping function must be employed. The more recent D4 model basically 
+uses a similar theory but further introduces an atomic partial charge
+dependence of the atomic reference polarizabilities.</p>
+<p><a id="sec:modelchemistries.dispersioncorrections.dftd.theory.damping"></a></p>
+<h3 id="damping-functions">Damping Functions<a class="headerlink" href="#damping-functions" title="Permanent link">&para;</a></h3>
+<p>In order to avoid near-singularities for small<span class="arithmatex">\(r_{AB}\)</span>, the dispersion
+contribution needs to be damped at short distances. One possible way is
+to use rational damping as proposed by Becke and Johnson
+<a href="../../../bibliography/">becke2005chem,johnson2005chem,johnson2006chem</a>:</p>
+<p><a id="eqn:modelchemistries.dispersioncorrections.dftd.theory.bj"></a></p>
+<div class="arithmatex">\[
+E^{(2) }= - \sum_{A &lt; B} \sum_{n=6,8} s_{n} \frac{C_{n}^{AB} }{r_{AB}^{n} +f(R_{0}^{AB} )^{n} }\qquad \text{(eqn:modelchemistries.dispersioncorrections.dftd.theory.bj)}
+\]</div>
+<p>with <a href="../../../bibliography/">johnson2006chem</a></p>
+<p><a id="eqn:modelchemistries.dispersioncorrections.dftd.theory.r0ab"></a></p>
+<div class="arithmatex">\[
+R_{0}^{AB} =\sqrt{ \frac{C_{8}^{AB} }{C_{6}^{AB} } }\qquad \text{(eqn:modelchemistries.dispersioncorrections.dftd.theory.r0ab)}
+\]</div>
+<p>and</p>
+<p><a id="eqn:modelchemistries.dispersioncorrections.dftd.theory.fbj"></a></p>
+<div class="arithmatex">\[
+f(R_{0}^{AB} )=a_{1} R_{0}^{AB} +a_{2} .\qquad \text{(eqn:modelchemistries.dispersioncorrections.dftd.theory.fbj)}
+\]</div>
+<p>Damping the dispersion contribution to zero for short ranges (as in Ref.
+<a href="../../../bibliography/">grimme2010chem</a>) is also possible:</p>
+<p><a id="eqn:modelchemistries.dispersioncorrections.dftd.theory.zero"></a></p>
+<div class="arithmatex">\[
+E^{(2) }= - \sum_{A &lt; B}  \sum_{n=6,8} s_{n} \frac{C_{n}^{AB} }{r_{AB}^{n} }f_{d,n} (r_{AB} )\qquad \text{(eqn:modelchemistries.dispersioncorrections.dftd.theory.zero)}
+\]</div>
+<p>with</p>
+<p><a id="eqn:modelchemistries.dispersioncorrections.dftd.theory.fzero"></a></p>
+<div class="arithmatex">\[
+f_{d,n} =\frac{1}{1+6(\frac{r_{AB} }{s_{r,n} R_{0}^{AB} })^{-\alpha_{n} } }\qquad \text{(eqn:modelchemistries.dispersioncorrections.dftd.theory.fzero)}
+\]</div>
+<p>Note that the<span class="arithmatex">\(R_{0}^{AB}\)</span> used with this damping are from Ref.
+<a href="../../../bibliography/">grimme2010chem</a>. For more information on the supported damping
+functions, see Ref <a href="../../../bibliography/">grimme2011comp</a>. </p>
+<p><a id="sec:modelchemistries.dispersioncorrections.dftd.theory.atm"></a></p>
+<h3 id="three-body-term">Three-body term<a class="headerlink" href="#three-body-term" title="Permanent link">&para;</a></h3>
+<p>It is possible to calculate the three-body dispersion contributions according to</p>
+<p><a id="eqn:modelchemistries.dispersioncorrections.dftd.theory.abc"></a></p>
+<div class="arithmatex">\[
+E^{(3) }= - \sum_{A &lt; B &lt; C} \frac{C_{9}^{ABC} (3\cos{\theta_{a} } \cos{\theta_{b} } \cos{\theta_{c} } +1) }{(r_{AB} r_{BC} r_{CA} )^{3} } f_{d,(3) }(\overline{r}_{ABC})\qquad \text{(eqn:modelchemistries.dispersioncorrections.dftd.theory.abc)}
+\]</div>
+<p>where<span class="arithmatex">\(\theta_{a}\)</span>,<span class="arithmatex">\(\theta_{b}\)</span> and<span class="arithmatex">\(\theta_{c}\)</span> are the internal
+angles of the triangle formed by<span class="arithmatex">\(r_{AB}\)</span>,<span class="arithmatex">\(r_{BC}\)</span> and<span class="arithmatex">\(r_{CA}\)</span>. The<span class="arithmatex">\(C_{9}\)</span> coefficient is approximated by</p>
+<p><a id="eqn:modelchemistries.dispersioncorrections.dftd.theory.c9abc"></a></p>
+<div class="arithmatex">\[
+C_{9}^{ABC} \approx -\sqrt{ C_{6}^{AB} C_{6}^{AC} C_{6}^{BC} }\qquad \text{(eqn:modelchemistries.dispersioncorrections.dftd.theory.c9abc)}
+\]</div>
+<p>The three-body contribution has a small effect on medium-sized molecules
+and is damped according to equation <a href="#eqn:modelchemistries.dispersioncorrections.dftd.theory.abc">Eq</a>. The
+damping function<span class="arithmatex">\(f_{d,(3) }(\overline{r}_{ABC})\)</span> is similar to the oneshown in equation <a href="#eqn:modelchemistries.dispersioncorrections.dftd.theory.fzero">Eq</a> with<span class="arithmatex">\(\overline{r}_{ABC}\)</span> being the geometric mean
+of<span class="arithmatex">\(r_{AB}\)</span>,<span class="arithmatex">\(r_{BC}\)</span> and<span class="arithmatex">\(r_{CA}\)</span>. It can be used with both variants ofthe<span class="arithmatex">\(E^{(2) }\)</span> term, although the three-body term itself will always be
+calculated using the zero damping scheme. Adding the three-body
+correction has proven to give quite accurate results for the
+thermochemistry of supramolecular systems<a href="../../../bibliography/">grimme2012chemeurj</a>. Note that the three-body term
+is included in D4 by default.</p>
+<p><a id="sec:modelchemistries.dispersioncorrections.dftd.basicusage"></a></p>
+<h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
+<p>The D3 correction can be invoked by the <code>!D3</code> keyword that will automatically make
+use of the default Becke-Johnson damping and is thus equivalent to <code>!D3BJ</code>. The zero
+damping scheme can be used with <code>!D3ZERO</code>. Note that the Becke-Johnson scheme is generally
+recommended.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>!PBE D3
+</code></pre></div>
+<p>The three-body term can be invoked via the keyword <code>!ABC</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>!PBE D3 ABC
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that not all methods are parameterized for all damping options. E.g. Hartree-Fock (HF) is only parametrized with
+BJ-damping, while M06 is only parameterized with zero damping.</p>
+</div>
+<p>The more recent and generally recommended D4 correction can be used with the <code>!D4</code> keyword. Note that D4 uses Becke-Johnson damping and the three-body term
+by default.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>!PBE D4
+</code></pre></div>
+<p>The D4 correction can also be defined in the <code>%method</code> block of the input:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>! PBE def2-TZVP
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>%method
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>  DFTDOpt     5     # 5 = D4; 4 = D3(BJ)
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>end
+</code></pre></div>
+<p><a id="sec:modelchemistries.dispersioncorrections.dftd.customparams"></a></p>
+<h3 id="custom-parameters">Custom parameters<a class="headerlink" href="#custom-parameters" title="Permanent link">&para;</a></h3>
+<p>If there is a functional for which parameters are known but not yet implemented into ORCA,
+they can be sepcified manually via the <code>%method</code> block.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Usage of custom parameters is at own risk and is generally not recommended. A list of some
+available parameters for D3 can be found at the <a href="https://www.chemie.uni-bonn.de/grimme/de/software/dft-d3">website of the Grimme group</a>.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">GGA and hybrid functionals should only be used with</p>
+</div>
+<p><span class="arithmatex">\(s_{6}=1.0\)</span> to ensure asymptotically correct behavior. Double-hybrid
+    functionals already account for parts of the dispersion interaction and
+    should therefore be used with<span class="arithmatex">\(s_{6} &lt; 1.0\)</span>.</p>
+<p>For D3 with Becke-Johnson damping, the<span class="arithmatex">\(s_6\)</span>,<span class="arithmatex">\(a_1\)</span>,<span class="arithmatex">\(s_8\)</span>, and<span class="arithmatex">\(a_2\)</span> parameters can be adjusted:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>!B2PLYP D3
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>%method
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>  D3S6 0.6400
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>  D3S8 0.9147
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>  D3A1 0.3065
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>  D3A2 5.0570
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>end
+</code></pre></div>
+<p>For D4, the<span class="arithmatex">\(s_9\)</span> parameter of the three-body term can be adjusted as well.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>!B2PLYP D4
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>%method
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  D4S6 0.6400
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>  D4S8 1.1689
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>  D4A1 0.4415
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>  D4A2 4.7311
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>  D4S9 1.0000
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>end
+</code></pre></div>
+<p>For the D3 variant with zero damping the parameters<span class="arithmatex">\(s_6\)</span>,<span class="arithmatex">\(rs_6\)</span>,<span class="arithmatex">\(s_8\)</span>, and
+<span class="arithmatex">\(\alpha_{6}\)</span> can be adjusted.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>!BLYP D3ZERO
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>%method
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  D3S6     1.000
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>  D3RS6    1.094
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>  D3S8     1.682
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>  D3alpha6 14
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>end
+</code></pre></div>
+<p>For some functionals, there are also special parameters, which were optimized for use with the def2-TZVPP triple-zeta basis set.
+This option is only available with zero damping and can be invoked by
+the keywords <code>!D3ZERO D3TZ</code>. Preliminary results in the SI of Ref.
+<a href="../../../bibliography/">grimme2010chem</a> indicate that results are only slightly worse than
+with quadruple-zeta basis sets using the default parameters. This option should be
+carefully tested for future use in large computations.</p>
+<p><a id="sec:modelchemistries.dispersioncorrections.dftd.example1"></a></p>
+<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
+<p>In this first example, the DFT-D4 dispersion correction is used.</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 1">
+<pre class="mol-xyz" data-format="xyz">3
+structure (0 1)
+C      0.000000     0.000000     0.000000
+O      0.000000     0.000000     1.400000
+O      0.000000     0.000000    -1.400000</pre>
+<pre class="mol-input">!PBE def2-TZVP D4
+
+* xyz 0 1
+  C     0.000000     0.000000     0.000000
+  O     0.000000     0.000000     1.400000
+  O     0.000000     0.000000    -1.400000
+*</pre>
+</div>
+
+<p>The output for the D4 dispersion correction in the ORCA output will look
+like this:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>-------------------------------------------------------------------------------
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>                          DFT DISPERSION CORRECTION                            
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>                                DFTD4 V3.4.0                                   
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>-------------------------------------------------------------------------------
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>The PBE functional is recognized
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>Active option DFTDOPT                   ...         5   
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>-------------------------   ----------------
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>Dispersion correction           -0.000936618
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>-------------------------   ----------------
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>-------------------------   --------------------
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>FINAL SINGLE POINT ENERGY      -188.360452990031
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>-------------------------   --------------------
+</code></pre></div>
+<p>The total dispersion energy<span class="arithmatex">\(E_{\text{disp} }\)</span> is given as the <code>Dispersion correction</code> and is
+automatically included in the final single point energy. As discussed above,
+the individual parameters may be adjusted manually.</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 2">
+<pre class="mol-xyz" data-format="xyz">3
+structure (0 1)
+C      0.000000     0.000000     0.000000
+O      0.000000     0.000000     1.400000
+O      0.000000     0.000000    -1.400000</pre>
+<pre class="mol-input">!PBE def2-TZVP D4
+
+%method
+  D4S6 1.0
+  D4A1 0.4289
+  D4S8 0.7875
+  D4A2 4.4407
+  D4S9 0.9000
+end
+
+* xyz 0 1
+  C     0.000000     0.000000     0.000000
+  O     0.000000     0.000000     1.400000
+  O     0.000000     0.000000    -1.400000
+*</pre>
+</div>
+
+<p>This results in the same output as above, but with additional
+messages that user inputs were found for the parameters:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>A user input s6-coefficient scaling factor has been recognized
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>A user input a1-coefficient scaling factor has been recognized
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>A user input s8-coefficient scaling factor has been recognized
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>A user input a2-coefficient scaling factor has been recognized
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>A user input s9-coefficient scaling factor has been recognized
+</code></pre></div>
+<p><a id="sec:modelchemistries.dispersioncorrections.dftd.keywords"></a></p>
+<h3 id="keywords">Keywords<a class="headerlink" href="#keywords" title="Permanent link">&para;</a></h3>
+<p><a id="tab:modelchemistries.dispersioncorrections.dftd.keywords.simple"></a></p>
+<div class="admonition note">
+<p class="admonition-title">Simple input keywords for the DFT-D corrections.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Keyword</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>D2</code></td>
+<td style="text-align: left;">Activates D2 correction</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>D3</code></td>
+<td style="text-align: left;">Activates D3 correction with BJ damping (D3(BJ))</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>D3BJ</code></td>
+<td style="text-align: left;">Activates D3 correction with BJ damping (D3(BJ))</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>D3ZERO</code></td>
+<td style="text-align: left;">Activates D3 correction with zero damping (D3(0))</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>D30</code></td>
+<td style="text-align: left;">Activates D3 correction with zero damping (D3(0)), equivalent to <code>D3ZERO</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>D3TZ</code></td>
+<td style="text-align: left;">Activates special triple-<span class="arithmatex">\(\zeta\)</span> D3 parameterization (only with <code>D3ZERO</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>D4</code></td>
+<td style="text-align: left;">Activates D4 correction (BJ and ATM included)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ABC</code></td>
+<td style="text-align: left;">Activates three-body term</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ATM</code></td>
+<td style="text-align: left;">Activates three-body term, equivalent to <code>ABC</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>NOVDW</code></td>
+<td style="text-align: left;">Deactivates DFT-D dispersion corrections</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a id="tab:modelchemistries.dispersioncorrections.dftd.keywords.block"></a></p>
+<div class="admonition note">
+<p class="admonition-title"><code>%method</code> block input keywords for the DFT-D corrections.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Keyword</th>
+<th style="text-align: left;">Options</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>DFTDOPT</code></td>
+<td style="text-align: left;"><code>1</code></td>
+<td style="text-align: left;">Activate the original D correction<a href="../../../bibliography/">GrimmeVDW04</a> (deprecated)</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>2</code></td>
+<td style="text-align: left;">Activate the D2 correction (deprecated)</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>3</code></td>
+<td style="text-align: left;">Activate the D3ZERO correction</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>4</code></td>
+<td style="text-align: left;">Activate the D3BJ correction</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>5</code></td>
+<td style="text-align: left;">Activate the D4 correction</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>D3S6</code></td>
+<td style="text-align: left;"><code>&lt;real&gt;</code></td>
+<td style="text-align: left;">Controls<span class="arithmatex">\(s_6\)</span> parameter for D3</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>D3A1</code></td>
+<td style="text-align: left;"><code>&lt;real&gt;</code></td>
+<td style="text-align: left;">Controls<span class="arithmatex">\(a_1\)</span> parameter for D3</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>D3RS6</code></td>
+<td style="text-align: left;"><code>&lt;real&gt;</code></td>
+<td style="text-align: left;">Controls<span class="arithmatex">\(rs_6\)</span> parameter for zero damping</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>D4S6</code></td>
+<td style="text-align: left;"><code>&lt;real&gt;</code></td>
+<td style="text-align: left;">Controls<span class="arithmatex">\(s_6\)</span> parameter for D4</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>D4A1</code></td>
+<td style="text-align: left;"><code>&lt;real&gt;</code></td>
+<td style="text-align: left;">Controls<span class="arithmatex">\(a_1\)</span> parameter for D4</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>D4S9</code></td>
+<td style="text-align: left;"><code>&lt;real&gt;</code></td>
+<td style="text-align: left;">Controls<span class="arithmatex">\(s_9\)</span> parameter of ABC term for D4</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>DFTDScaleC6</code></td>
+<td style="text-align: left;"><code>&lt;real&gt;</code></td>
+<td style="text-align: left;">Defines the C6 scaling coefficient</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a id="sec:modelchemistries.dispersioncorrections.dftd.params"></a></p>
+<h3 id="available-parameters">Available Parameters<a class="headerlink" href="#available-parameters" title="Permanent link">&para;</a></h3>
+<p><a id="tab:modelchemistries.dispersioncorrections.dftd.params.d4"></a></p>
+<div class="admonition note">
+<p class="admonition-title">DFT-D4 (<code>!D4</code>) parameters used for various functionals.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Functional</th>
+<th style="text-align: center;"><span class="arithmatex">\(s_{6}\)</span></th>
+<th style="text-align: center;"><span class="arithmatex">\(s_{8}\)</span></th>
+<th style="text-align: center;"><span class="arithmatex">\(a_{1}\)</span></th>
+<th style="text-align: center;"><span class="arithmatex">\(a_{2}\)</span></th>
+<th style="text-align: center;"><span class="arithmatex">\(s_{9}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">HF</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.61679827</td>
+<td style="text-align: center;">0.44959224</td>
+<td style="text-align: center;">3.35743605</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">BLYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">2.34076671</td>
+<td style="text-align: center;">0.44488865</td>
+<td style="text-align: center;">4.09330090</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">BPBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">3.64405246</td>
+<td style="text-align: center;">0.52905620</td>
+<td style="text-align: center;">4.11311891</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">BP86</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">3.35497927</td>
+<td style="text-align: center;">0.43645861</td>
+<td style="text-align: center;">4.92406854</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">BPW91</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">3.24571506</td>
+<td style="text-align: center;">0.50050454</td>
+<td style="text-align: center;">4.12346483</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">GLYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">4.23798924</td>
+<td style="text-align: center;">0.38426465</td>
+<td style="text-align: center;">4.38412863</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">LB94</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">2.59538499</td>
+<td style="text-align: center;">0.42088944</td>
+<td style="text-align: center;">3.28193223</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">mPWLYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.25842942</td>
+<td style="text-align: center;">0.25773894</td>
+<td style="text-align: center;">5.02319542</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">mPWPW</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.82596836</td>
+<td style="text-align: center;">0.34526745</td>
+<td style="text-align: center;">4.84620734</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">OLYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">2.74836820</td>
+<td style="text-align: center;">0.60184498</td>
+<td style="text-align: center;">2.53292167</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">OPBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">3.06917417</td>
+<td style="text-align: center;">0.68267534</td>
+<td style="text-align: center;">2.22849018</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">PBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.95948085</td>
+<td style="text-align: center;">0.38574991</td>
+<td style="text-align: center;">4.80688534</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">RPBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.31183787</td>
+<td style="text-align: center;">0.46169493</td>
+<td style="text-align: center;">3.15711757</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">REVPBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.74676530</td>
+<td style="text-align: center;">0.53634900</td>
+<td style="text-align: center;">3.07261485</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">PW86PBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.21362856</td>
+<td style="text-align: center;">0.40510366</td>
+<td style="text-align: center;">4.66737724</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">RPW86PBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.12624034</td>
+<td style="text-align: center;">0.38151218</td>
+<td style="text-align: center;">4.75480472</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">PW91</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.77283111</td>
+<td style="text-align: center;">0.39581542</td>
+<td style="text-align: center;">4.93405761</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">PW91P86</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.32801227</td>
+<td style="text-align: center;">0.35874687</td>
+<td style="text-align: center;">6.05861168</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">XLYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.62972054</td>
+<td style="text-align: center;">0.11268673</td>
+<td style="text-align: center;">5.40786417</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B97BECKE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.87854260</td>
+<td style="text-align: center;">0.29319126</td>
+<td style="text-align: center;">4.51647719</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">TPSS</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.76596355</td>
+<td style="text-align: center;">0.42822303</td>
+<td style="text-align: center;">4.54257102</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">revTPSS</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.53089454</td>
+<td style="text-align: center;">0.44880597</td>
+<td style="text-align: center;">4.64042317</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">SCAN</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.46126056</td>
+<td style="text-align: center;">0.62930855</td>
+<td style="text-align: center;">6.31284039</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B1LYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.98553711</td>
+<td style="text-align: center;">0.39309040</td>
+<td style="text-align: center;">4.55465145</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B3LYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">2.02929367</td>
+<td style="text-align: center;">0.40868035</td>
+<td style="text-align: center;">4.53807137</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">BHANDHLYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.65281646</td>
+<td style="text-align: center;">0.27263660</td>
+<td style="text-align: center;">5.48634586</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B1P</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">3.36115015</td>
+<td style="text-align: center;">0.48665293</td>
+<td style="text-align: center;">5.05219572</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B3P86</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">3.08822155</td>
+<td style="text-align: center;">0.47324238</td>
+<td style="text-align: center;">4.98682134</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B1PW91</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">3.02227550</td>
+<td style="text-align: center;">0.47396846</td>
+<td style="text-align: center;">4.49845309</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B3PW91</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">2.88364295</td>
+<td style="text-align: center;">0.46990860</td>
+<td style="text-align: center;">4.51641422</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">O3LYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.75762508</td>
+<td style="text-align: center;">0.10348980</td>
+<td style="text-align: center;">6.16233282</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">REVPBE0</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.57185414</td>
+<td style="text-align: center;">0.38705966</td>
+<td style="text-align: center;">4.11028876</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">REVPBE38</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.66597472</td>
+<td style="text-align: center;">0.39476833</td>
+<td style="text-align: center;">4.39026628</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">PBE0</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.20065498</td>
+<td style="text-align: center;">0.40085597</td>
+<td style="text-align: center;">5.02928789</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">PWP1</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.60492565</td>
+<td style="text-align: center;">0.46855837</td>
+<td style="text-align: center;">5.76921413</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">PW1PW</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.96850170</td>
+<td style="text-align: center;">0.42427511</td>
+<td style="text-align: center;">5.02060636</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">mPW1PW</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.80841716</td>
+<td style="text-align: center;">0.42961819</td>
+<td style="text-align: center;">4.68892341</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">mPW1LYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.15591153</td>
+<td style="text-align: center;">0.25603493</td>
+<td style="text-align: center;">5.32083895</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">PW6B95</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">-0.31926054</td>
+<td style="text-align: center;">0.04142919</td>
+<td style="text-align: center;">5.84655608</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">TPSSh</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.85897750</td>
+<td style="text-align: center;">0.44286966</td>
+<td style="text-align: center;">4.60230534</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">TPSS0</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.62438102</td>
+<td style="text-align: center;">0.40329022</td>
+<td style="text-align: center;">4.80537871</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">X3LYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.54701429</td>
+<td style="text-align: center;">0.20318443</td>
+<td style="text-align: center;">5.61852648</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">M06L</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.59493760</td>
+<td style="text-align: center;">0.71422359</td>
+<td style="text-align: center;">6.35314182</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">M06</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.16366729</td>
+<td style="text-align: center;">0.53456413</td>
+<td style="text-align: center;">6.06192174</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">wB97</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">6.55792598</td>
+<td style="text-align: center;">0.76666802</td>
+<td style="text-align: center;">8.36027334</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">wB97X</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">-0.07519516</td>
+<td style="text-align: center;">0.45094893</td>
+<td style="text-align: center;">6.78425255</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B97M-D4</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.66330000</td>
+<td style="text-align: center;">0.42880000</td>
+<td style="text-align: center;">3.99350000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">CAM-B3LYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.66041301</td>
+<td style="text-align: center;">0.40267156</td>
+<td style="text-align: center;">5.17432195</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">LC-BLYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.60344180</td>
+<td style="text-align: center;">0.45769839</td>
+<td style="text-align: center;">7.86924893</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B2PLYP</td>
+<td style="text-align: center;">0.6400</td>
+<td style="text-align: center;">1.16888646</td>
+<td style="text-align: center;">0.44154604</td>
+<td style="text-align: center;">4.73114642</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B2GP-PLYP</td>
+<td style="text-align: center;">0.5600</td>
+<td style="text-align: center;">0.94633372</td>
+<td style="text-align: center;">0.42907301</td>
+<td style="text-align: center;">5.18802602</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">mPW2PLYP</td>
+<td style="text-align: center;">0.7500</td>
+<td style="text-align: center;">0.45788846</td>
+<td style="text-align: center;">0.42997704</td>
+<td style="text-align: center;">5.07650682</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">PWPB95</td>
+<td style="text-align: center;">0.8200</td>
+<td style="text-align: center;">-0.34639127</td>
+<td style="text-align: center;">0.41080636</td>
+<td style="text-align: center;">3.83878274</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B97-D</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.69460052</td>
+<td style="text-align: center;">0.28904684</td>
+<td style="text-align: center;">4.13407323</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">RSCAN</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.87728975</td>
+<td style="text-align: center;">0.49116966</td>
+<td style="text-align: center;">5.75859346</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">r2SCAN</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.60187490</td>
+<td style="text-align: center;">0.51559235</td>
+<td style="text-align: center;">5.77342911</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">r2SCANh</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.83240000</td>
+<td style="text-align: center;">0.49440000</td>
+<td style="text-align: center;">5.90190000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">r2SCAN0</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.89920000</td>
+<td style="text-align: center;">0.47780000</td>
+<td style="text-align: center;">5.87790000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">r2SCAN50</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.04710000</td>
+<td style="text-align: center;">0.45740000</td>
+<td style="text-align: center;">5.89690000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">wB97X-D4rev</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.44850000</td>
+<td style="text-align: center;">0.33060000</td>
+<td style="text-align: center;">4.27900000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">wB97M-D4rev</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.84200000</td>
+<td style="text-align: center;">0.35900000</td>
+<td style="text-align: center;">4.66800000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">wR2SCAN</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.00000000</td>
+<td style="text-align: center;">0.38340000</td>
+<td style="text-align: center;">5.78890000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">r2SCAN0-DH</td>
+<td style="text-align: center;">0.9424</td>
+<td style="text-align: center;">0.38560000</td>
+<td style="text-align: center;">0.42710000</td>
+<td style="text-align: center;">5.85650000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">r2SCAN-CIDH</td>
+<td style="text-align: center;">0.8666</td>
+<td style="text-align: center;">0.53360000</td>
+<td style="text-align: center;">0.41710000</td>
+<td style="text-align: center;">5.91250000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">r2SCAN-QIDH</td>
+<td style="text-align: center;">0.7867</td>
+<td style="text-align: center;">0.29550000</td>
+<td style="text-align: center;">0.40010000</td>
+<td style="text-align: center;">5.83000000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">r2SCAN0-2</td>
+<td style="text-align: center;">0.7386</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">0.40300000</td>
+<td style="text-align: center;">5.51420000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">Pr2SCAN50</td>
+<td style="text-align: center;">0.7964</td>
+<td style="text-align: center;">0.34210000</td>
+<td style="text-align: center;">0.46630000</td>
+<td style="text-align: center;">5.79160000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">kPr2SCAN50</td>
+<td style="text-align: center;">0.8402</td>
+<td style="text-align: center;">0.12120000</td>
+<td style="text-align: center;">0.43820000</td>
+<td style="text-align: center;">5.82320000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">wPr2SCAN50</td>
+<td style="text-align: center;">0.8143</td>
+<td style="text-align: center;">0.38420000</td>
+<td style="text-align: center;">0.41350000</td>
+<td style="text-align: center;">5.87730000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">Pr2SCAN69</td>
+<td style="text-align: center;">0.7167</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">0.46440000</td>
+<td style="text-align: center;">5.25630000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">revDSD-PBEP86/2021</td>
+<td style="text-align: center;">0.5917</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">0.37100000</td>
+<td style="text-align: center;">4.20140000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">revDOD-PBEP86/2021</td>
+<td style="text-align: center;">0.6158</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">0.34400000</td>
+<td style="text-align: center;">4.24270000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">LRC-PBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.17000000</td>
+<td style="text-align: center;">0.37800000</td>
+<td style="text-align: center;">4.81600000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a id="tab:modelchemistries.dispersioncorrections.dftd.params.d3bj"></a></p>
+<div class="admonition note">
+<p class="admonition-title">DFT-D3(BJ) (<code>!D3BJ</code>) parameters used for various functionals.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Functional</th>
+<th style="text-align: center;"><span class="arithmatex">\(s_{6}\)</span></th>
+<th style="text-align: center;"><span class="arithmatex">\(s_{8}\)</span></th>
+<th style="text-align: center;"><span class="arithmatex">\(a_{1}\)</span></th>
+<th style="text-align: center;"><span class="arithmatex">\(a_{2}\)</span></th>
+<th style="text-align: center;"><span class="arithmatex">\(s_{9}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">HF</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.91710000</td>
+<td style="text-align: center;">0.33850000</td>
+<td style="text-align: center;">2.88300000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">BP86</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">3.28220000</td>
+<td style="text-align: center;">0.39460000</td>
+<td style="text-align: center;">4.85160000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">BLYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">2.69960000</td>
+<td style="text-align: center;">0.42980000</td>
+<td style="text-align: center;">4.23590000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">REVPBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">2.35500000</td>
+<td style="text-align: center;">0.52380000</td>
+<td style="text-align: center;">3.50160000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B97-D</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">2.26090000</td>
+<td style="text-align: center;">0.55450000</td>
+<td style="text-align: center;">3.22970000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">PBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.78750000</td>
+<td style="text-align: center;">0.42890000</td>
+<td style="text-align: center;">4.44070000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">RPBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.83180000</td>
+<td style="text-align: center;">0.18200000</td>
+<td style="text-align: center;">4.00940000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">RPW86PBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.38450000</td>
+<td style="text-align: center;">0.46130000</td>
+<td style="text-align: center;">4.50620000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B3LYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.98890000</td>
+<td style="text-align: center;">0.39810000</td>
+<td style="text-align: center;">4.42110000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">BHANDHLYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.03540000</td>
+<td style="text-align: center;">0.27930000</td>
+<td style="text-align: center;">4.96150000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">TPSS</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.94350000</td>
+<td style="text-align: center;">0.45350000</td>
+<td style="text-align: center;">4.47520000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">TPSS0</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.25760000</td>
+<td style="text-align: center;">0.37680000</td>
+<td style="text-align: center;">4.58650000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">PBE0</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.21770000</td>
+<td style="text-align: center;">0.41450000</td>
+<td style="text-align: center;">4.85930000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">REVPBE38</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.47600000</td>
+<td style="text-align: center;">0.43090000</td>
+<td style="text-align: center;">3.94460000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">PW6B95</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.72570000</td>
+<td style="text-align: center;">0.20760000</td>
+<td style="text-align: center;">6.37500000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B2PLYP</td>
+<td style="text-align: center;">0.6400</td>
+<td style="text-align: center;">0.91470000</td>
+<td style="text-align: center;">0.30650000</td>
+<td style="text-align: center;">5.05700000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">mPWLYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">2.00770000</td>
+<td style="text-align: center;">0.48310000</td>
+<td style="text-align: center;">4.53230000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">OLYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">2.62050000</td>
+<td style="text-align: center;">0.52990000</td>
+<td style="text-align: center;">2.80650000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">BPBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">4.07280000</td>
+<td style="text-align: center;">0.45670000</td>
+<td style="text-align: center;">4.39080000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">OPBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">3.38160000</td>
+<td style="text-align: center;">0.55120000</td>
+<td style="text-align: center;">2.94440000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B3PW91</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">2.85240000</td>
+<td style="text-align: center;">0.43120000</td>
+<td style="text-align: center;">4.46930000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">REVPBE0</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.75880000</td>
+<td style="text-align: center;">0.46790000</td>
+<td style="text-align: center;">3.76190000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">TPSSh</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">2.23820000</td>
+<td style="text-align: center;">0.45290000</td>
+<td style="text-align: center;">4.65500000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">CAM-B3LYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">2.06740000</td>
+<td style="text-align: center;">0.37080000</td>
+<td style="text-align: center;">5.47430000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B2GP-PLYP</td>
+<td style="text-align: center;">0.5600</td>
+<td style="text-align: center;">0.25970000</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">6.33320000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">PWPB95</td>
+<td style="text-align: center;">0.8200</td>
+<td style="text-align: center;">0.29040000</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">7.31410000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">SCAN</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">0.53800000</td>
+<td style="text-align: center;">5.42000000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">RSCAN</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.08860000</td>
+<td style="text-align: center;">0.47020000</td>
+<td style="text-align: center;">5.73410000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">R2SCAN</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.78980000</td>
+<td style="text-align: center;">0.49480000</td>
+<td style="text-align: center;">5.73080000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">R2SCANh</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.12360000</td>
+<td style="text-align: center;">0.47090000</td>
+<td style="text-align: center;">5.91570000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">R2SCAN0</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.18460000</td>
+<td style="text-align: center;">0.45340000</td>
+<td style="text-align: center;">5.89720000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">R2SCAN50</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.32940000</td>
+<td style="text-align: center;">0.43110000</td>
+<td style="text-align: center;">5.92400000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">WR2SCAN</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.00000000</td>
+<td style="text-align: center;">0.38340000</td>
+<td style="text-align: center;">5.78890000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">r2SCAN0-DH</td>
+<td style="text-align: center;">0.9424</td>
+<td style="text-align: center;">0.38560000</td>
+<td style="text-align: center;">0.42710000</td>
+<td style="text-align: center;">5.85650000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">r2SCAN-CIDH</td>
+<td style="text-align: center;">0.8666</td>
+<td style="text-align: center;">0.53360000</td>
+<td style="text-align: center;">0.41710000</td>
+<td style="text-align: center;">5.91250000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">r2SCAN-QIDH</td>
+<td style="text-align: center;">0.7867</td>
+<td style="text-align: center;">0.29550000</td>
+<td style="text-align: center;">0.40010000</td>
+<td style="text-align: center;">5.83000000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">r2SCAN0-2</td>
+<td style="text-align: center;">0.7386</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">0.40300000</td>
+<td style="text-align: center;">5.51420000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">Pr2SCAN50</td>
+<td style="text-align: center;">0.7964</td>
+<td style="text-align: center;">0.34210000</td>
+<td style="text-align: center;">0.46630000</td>
+<td style="text-align: center;">5.79160000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">kPr2SCAN50</td>
+<td style="text-align: center;">0.8402</td>
+<td style="text-align: center;">0.12120000</td>
+<td style="text-align: center;">0.43820000</td>
+<td style="text-align: center;">5.82320000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">wPr2SCAN50</td>
+<td style="text-align: center;">0.8143</td>
+<td style="text-align: center;">0.38420000</td>
+<td style="text-align: center;">0.41350000</td>
+<td style="text-align: center;">5.87730000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">Pr2SCAN69</td>
+<td style="text-align: center;">0.7167</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">0.46440000</td>
+<td style="text-align: center;">5.25630000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">revDSD-PBEP86/2021</td>
+<td style="text-align: center;">0.5917</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">0.37100000</td>
+<td style="text-align: center;">4.20140000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">revDOD-PBEP86/2021</td>
+<td style="text-align: center;">0.6158</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">0.34400000</td>
+<td style="text-align: center;">4.24270000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">DSD-BLYP</td>
+<td style="text-align: center;">0.5000</td>
+<td style="text-align: center;">0.21300000</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">6.05200000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">DSD-BLYP/2013</td>
+<td style="text-align: center;">0.5700</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">5.40000000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">DSD-PBEB95</td>
+<td style="text-align: center;">0.6100</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">6.20000000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">DSD-PBEP86</td>
+<td style="text-align: center;">0.4180</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">5.65000000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">DSD-PBEP86/2013</td>
+<td style="text-align: center;">0.4800</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">5.60000000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">B97M-D3BJ</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.13840000</td>
+<td style="text-align: center;">-0.07800000</td>
+<td style="text-align: center;">5.59460000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">wB97X-D3BJ</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.26410000</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">5.49590000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">wB97M-D3BJ</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.39080000</td>
+<td style="text-align: center;">0.56600000</td>
+<td style="text-align: center;">3.12800000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">wB97X-2</td>
+<td style="text-align: center;">0.5470</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">3.52000000</td>
+<td style="text-align: center;">7.79500000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">PBE0DH</td>
+<td style="text-align: center;">0.8800</td>
+<td style="text-align: center;">1.08900000</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">6.38500000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">PBE02</td>
+<td style="text-align: center;">0.5400</td>
+<td style="text-align: center;">0.51500000</td>
+<td style="text-align: center;">0.00000000</td>
+<td style="text-align: center;">8.34500000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+<tr>
+<td style="text-align: left;">PBE-QIDH</td>
+<td style="text-align: center;">0.6100</td>
+<td style="text-align: center;">0.56600000</td>
+<td style="text-align: center;">0.11400000</td>
+<td style="text-align: center;">7.53800000</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a id="tab:modelchemistries.dispersioncorrections.dftd.params.d3zero"></a></p>
+<div class="admonition note">
+<p class="admonition-title">DFT-D3(0) (<code>!D3ZERO</code>) parameters used for various functionals.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Functional</th>
+<th style="text-align: center;"><span class="arithmatex">\(s_{6}\)</span></th>
+<th style="text-align: center;"><span class="arithmatex">\(rs_{6}\)</span></th>
+<th style="text-align: center;"><span class="arithmatex">\(s_{8}\)</span></th>
+<th style="text-align: center;"><span class="arithmatex">\(\alpha_{6}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">HF</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.1580</td>
+<td style="text-align: center;">1.7460</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">BLYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.0940</td>
+<td style="text-align: center;">1.6820</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">BP86</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.1390</td>
+<td style="text-align: center;">1.6830</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">B97-D</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.8920</td>
+<td style="text-align: center;">0.9090</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">REVPBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.9230</td>
+<td style="text-align: center;">1.0100</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">PBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.2170</td>
+<td style="text-align: center;">0.7220</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">RPBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.8720</td>
+<td style="text-align: center;">0.5140</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">TPSS</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.1660</td>
+<td style="text-align: center;">1.1050</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">B3LYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.2610</td>
+<td style="text-align: center;">1.7030</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">PBE0</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.2870</td>
+<td style="text-align: center;">0.9280</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">PW6B95</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.5230</td>
+<td style="text-align: center;">0.8620</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">TPSS0</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.2520</td>
+<td style="text-align: center;">1.2420</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">B2PLYP</td>
+<td style="text-align: center;">0.6400</td>
+<td style="text-align: center;">1.4270</td>
+<td style="text-align: center;">1.0220</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">B2GP-PLYP</td>
+<td style="text-align: center;">0.5600</td>
+<td style="text-align: center;">1.5860</td>
+<td style="text-align: center;">0.7600</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">PWPB95</td>
+<td style="text-align: center;">0.8200</td>
+<td style="text-align: center;">1.5570</td>
+<td style="text-align: center;">0.7050</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">mPWLYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.2390</td>
+<td style="text-align: center;">1.0980</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">BPBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.0870</td>
+<td style="text-align: center;">2.0330</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">BHANDHLYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.3700</td>
+<td style="text-align: center;">1.4420</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">TPSSh</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.2230</td>
+<td style="text-align: center;">1.2190</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">REVPBE0</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">0.9490</td>
+<td style="text-align: center;">0.7920</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">REVPBE38</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.0210</td>
+<td style="text-align: center;">0.8620</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">RPW86PBE</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.2240</td>
+<td style="text-align: center;">0.9010</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">B3PW91</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.1760</td>
+<td style="text-align: center;">1.7750</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">M06L</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.5810</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">M06</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.3250</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">M062X</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.6190</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">wB97X-D3</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.2810</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">CAM-B3LYP</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.3780</td>
+<td style="text-align: center;">1.2170</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">SCAN</td>
+<td style="text-align: center;">1.0000</td>
+<td style="text-align: center;">1.3240</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">wB97X-2</td>
+<td style="text-align: center;">0.5470</td>
+<td style="text-align: center;">4.7330</td>
+<td style="text-align: center;">-0.1090</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">PBE0DH</td>
+<td style="text-align: center;">0.8800</td>
+<td style="text-align: center;">1.1280</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">PBE02</td>
+<td style="text-align: center;">0.5400</td>
+<td style="text-align: center;">1.2430</td>
+<td style="text-align: center;">-0.2280</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">PBE-QIDH</td>
+<td style="text-align: center;">0.4000</td>
+<td style="text-align: center;">1.1140</td>
+<td style="text-align: center;">0.0540</td>
+<td style="text-align: center;">14</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a id="sec:modelchemistries.dispersioncorrections.nl.theory"></a></p>
+<h2 id="non-local-dispersion-correction-vv10-dft-nl">Non-Local Dispersion Correction (VV10): DFT-NL<a class="headerlink" href="#non-local-dispersion-correction-vv10-dft-nl" title="Permanent link">&para;</a></h2>
+<p>A different route to correct for London dispersion is followed by the van der Waals Density Functional
+(vdW-DF) as pioneered by Langreth and Lundquist <a href="../../../bibliography/">lee2010phys</a>. These
+methods use only the electron density to include such
+dispersion/correlation effects and can be used in a self-consistent way also correction the molecular orbitals
+and not only energies. The vdW correlation functional VV10 of
+Vydrov and Van Voorhis <a href="../../../bibliography/">vydrov2010chem</a> currently seems to be the most
+promising candidate for a general and accurate electronic structure method.</p>
+<p>We use the term DFT-NL for any density functional in combination with
+the non-local part of the VV10 functional with an optimized parameter
+<span class="arithmatex">\(b\)</span>, which will be defined below. The performance of these methods has
+been evaluated in Ref. <a href="../../../bibliography/">hujo2011chem</a> using the GMTKN30
+<a href="../../../bibliography/">goerigk2010chem,goerigk2011chem,goerigk2011phys</a> database and the
+S66 set <a href="../../../bibliography/">resac2011chem</a>. The performance of weak hydrogen bonds were
+evaluated in Ref. <a href="../../../bibliography/">hujo2011phys</a>.</p>
+<p>DFT-NL and DFT-D3/D4 perform very similarly, but NL is to be preferred for
+metallic systems or when the basic electronic structure changes
+significantly (e.g. oxidations or ionizations). As a recent example,
+Janes and Iron showed that for functionals such as wB97X-V, including VV10
+correlation results in very high quality reaction barriers when
+metals are involved <a href="../../../bibliography/">iron_evaluating_2019</a>.</p>
+<p>The total exchange-correlation (XC) energy of VV10-type functionals is
+defined in eq. <a href="#eqn:modelchemistries.dispersioncorrections.dftnl.theory.exc-dftnl">Eq</a>. It is composed of standard exchange (X) and
+correlation (C) parts and the non-local (NL) term, which covers (mainly)
+long-range dispersive energy:</p>
+<p><a id="eqn:modelchemistries.dispersioncorrections.dftnl.theory.exc-dftnl"></a></p>
+<div class="arithmatex">\[
+E_{\text{XC} }^{\text{DFT-NL} } = E_{\text{X} }^{\text{(hybrid)GGA} } +E_{\text{C} }^{\text{GGA} }
++E_{\text{C-NL} }^{\text{VV10} }\qquad \text{(eqn:modelchemistries.dispersioncorrections.dftnl.theory.exc-dftnl)}
+\]</div>
+<p>The NL term is given by the following double integral:</p>
+<p><a id="eqn:modelchemistries.dispersioncorrections.dftnl.theory.ec-vv10"></a></p>
+<div class="arithmatex">\[
+E_{\text{C-NL} }^{\text{VV10} }  = \in t dr\rho (r)\left[{ \beta
++\frac{1}{2}\mathop \in t\nolimits dr'\rho ( { r'}
+) \varphi (r,r') } \right]\qquad \text{(eqn:modelchemistries.dispersioncorrections.dftnl.theory.ec-vv10)}
+\]</div>
+<p>where<span class="arithmatex">\(\rho\)</span> is the total electron density, and the definitions of thekernel<span class="arithmatex">\(\varphi (r,r')\)</span> and<span class="arithmatex">\(\beta\)</span> are as follows (in a.u.):</p>
+<p><a id="eqn:modelchemistries.dispersioncorrections.dftnl.theory.vv10-phi"></a></p>
+<div class="arithmatex">\[
+\varphi \left({ r,r'} \right) = -\frac{3}{2gg'\left({ g+g'} \right)}\qquad \text{(eqn:modelchemistries.dispersioncorrections.dftnl.theory.vv10-phi)}
+\]</div>
+<p><a id="eqn:modelchemistries.dispersioncorrections.dftnl.theory.vv10-beta"></a></p>
+<div class="arithmatex">\[
+\beta = \frac{1}{32}\left[{ \frac{3}{b^{2} }} \right]^{3/4}\qquad \text{(eqn:modelchemistries.dispersioncorrections.dftnl.theory.vv10-beta)}
+\]</div>
+<p>with</p>
+<p><a id="eqc:modelchemistries.dispersioncorrections.dftnl.theory.grw0k"></a></p>
+<div class="arithmatex">\[
+\begin{aligned}
+  g\left( r \right) &amp;= \omega_{0} \left( r \right)R^{2}+\kappa (r) \\ 
+  R &amp;= \left|{ r-r'} \right| \\ 
+  \omega_{0} \left( r \right) &amp;= \sqrt{ C\left|{ \frac{\nabla \rho (r) }{\rho (r) }} \right|^{4}+\frac{4\pi }{3}\rho (r) } \\ 
+  \kappa \left( r \right) &amp;= b\frac{3\pi }{2}\left[{ \frac{\rho (r) }{9\pi } } \right]^{1/6}
+\end{aligned}\qquad \text{(eqc:modelchemistries.dispersioncorrections.dftnl.theory.grw0k)}
+\]</div>
+<p>In the original definition, the short-range attenuation parameter<span class="arithmatex">\(b\)</span>
+appearing in<span class="arithmatex">\(\kappa\)</span> and<span class="arithmatex">\(\beta\)</span> was fitted to the S22 set
+<a href="../../../bibliography/">jurecka2006phys</a> of non-covalent interactions (<span class="arithmatex">\(b = 5.9\)</span> for therPW86PBE GGA). The other parameter<span class="arithmatex">\(C = 0.0093\)</span>, appearing in<span class="arithmatex">\(\omega_{0}\)</span>, determines the long-range behavior, and was set to its
+original value. Other DFT-NL functionals are constructed analogously.
+For a detailed discussion of the derivation of the formulas and their
+physical meaning and basis, see the references given above.</p>
+<p>The defined energy of the non-local DFT-NL exchange-correlation
+functional can be computed in two ways: as a post-SCF addition based on a
+converged SCF density or in a self-consistent treatment. In our implementation 
+of the non-self-consistent DFT-NL functional,
+a self-consistent DFT computation is performed as the first step. In the
+second step, the optimized electron density from the DFT computation is
+taken as input for the energy calculation of the non-local part. In the self-consistent
+treatment, the orbitals and density are optimized in the presence of
+the full DFT + VV10 exchange-correlation potential.
+According to many test calculations, an self-consistent treatment is rarely
+necessary for normal energy evaluations.
+The computation of the double integral given in eq. <a href="#eqn:modelchemistries.dispersioncorrections.dftnl.theory.ec-vv10">Eq</a> 
+requires using an integration grid, just like for normal exchange-correlation
+functionals. This grid is built similarly to the regular grids available
+in the ORCA, see Sec. <a href="../../essentialelements/numericalintegration/#sec:essentialelements.numericalintegration">essentialelements.numericalintegration</a>.</p>
+<p><a id="sec:modelchemistries.dispersioncorrections.nl.basicusage"></a></p>
+<h3 id="basic-usage_1">Basic usage<a class="headerlink" href="#basic-usage_1" title="Permanent link">&para;</a></h3>
+<p>The non-self-consistent variant of NL can be invoked by the <code>!NL</code> keyword.</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>!B3LYP NL
+</code></pre></div>
+The self-consistent variant by <code>!SCNL</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>!B3LYP SCNL
+</code></pre></div>
+<p>In the current version of ORCA, NL parameters are implemented for various functionals and HF:</p>
+<p><a id="tab:modelchemistries.dispersioncorrections.nl.params"></a></p>
+<div class="admonition note">
+<p class="admonition-title">Methods with available NL parameters. If no values are given, the default parameters are used.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Method</th>
+<th style="text-align: center;"><span class="arithmatex">\(b\)</span></th>
+<th style="text-align: center;"><span class="arithmatex">\(C\)</span></th>
+<th style="text-align: center;"><span class="arithmatex">\(NLScal\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Hartree-Fock</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>HF</code></td>
+<td style="text-align: center;">3.9</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>(meta-)GGA</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>BLYP</code></td>
+<td style="text-align: center;">4.0</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>BP86</code></td>
+<td style="text-align: center;">4.4</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>PBE</code></td>
+<td style="text-align: center;">6.4</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>REVPBE</code></td>
+<td style="text-align: center;">3.7</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>RPBE</code></td>
+<td style="text-align: center;">4.0</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>RPW86PBE</code></td>
+<td style="text-align: center;">5.9</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>SCANfunc</code></td>
+<td style="text-align: center;">6.4</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>RSCAN</code></td>
+<td style="text-align: center;">10.8</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>R2SCAN</code></td>
+<td style="text-align: center;">12.3</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TPSS</code></td>
+<td style="text-align: center;">5.0</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>B97M-V</code></td>
+<td style="text-align: center;">6.0</td>
+<td style="text-align: center;">0.01</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Hybrid</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>B3LYP</code></td>
+<td style="text-align: center;">4.8</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>B3LYP/G</code></td>
+<td style="text-align: center;">4.8</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>B3P86</code></td>
+<td style="text-align: center;">5.3</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>B3PW91</code></td>
+<td style="text-align: center;">4.5</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>mPW1PW</code></td>
+<td style="text-align: center;">5.3</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>PBE0</code></td>
+<td style="text-align: center;">6.9</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>PW1PW</code></td>
+<td style="text-align: center;">7.7</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>PW6B95</code></td>
+<td style="text-align: center;">9.0</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>REVPBE0</code></td>
+<td style="text-align: center;">4.3</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>REVPBE38</code></td>
+<td style="text-align: center;">4.7</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TPSSh</code></td>
+<td style="text-align: center;">5.2</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TPSS0</code></td>
+<td style="text-align: center;">5.5</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>R2SCANh</code> (see <a href="../../../bibliography/">bursch_r2scanhybrids_2022</a>)</td>
+<td style="text-align: center;">11.9</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>R2SCAN0</code> (see <a href="../../../bibliography/">bursch_r2scanhybrids_2022</a>)</td>
+<td style="text-align: center;">11.4</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>R2SCAN50</code> (see <a href="../../../bibliography/">bursch_r2scanhybrids_2022</a>)</td>
+<td style="text-align: center;">10.8</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Range-separated hybrid</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>LRC-PBE</code></td>
+<td style="text-align: center;">6.4</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>WR2SCAN</code> (see <a href="../../../bibliography/">Wittmann2023</a>)</td>
+<td style="text-align: center;">9.2612</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>WB97X-V</code></td>
+<td style="text-align: center;">6.0</td>
+<td style="text-align: center;">0.01</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>WB97M-V</code></td>
+<td style="text-align: center;">6.0</td>
+<td style="text-align: center;">0.01</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Double-hybrid</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>B2PLYP</code> (see <a href="../../../bibliography/">arago_nonlocal_2013</a>)</td>
+<td style="text-align: center;">7.8</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>DSD-BLYP</code> (see <a href="../../../bibliography/">yu_spin-component-scaled_2014</a>)</td>
+<td style="text-align: center;">12.0</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>DSD-PBEP86</code> (see <a href="../../../bibliography/">yu_spin-component-scaled_2014</a>)</td>
+<td style="text-align: center;">14.2</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>DSD-BLYP/2013</code></td>
+<td style="text-align: center;">12.0</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>DSD-PBEP86/2013</code></td>
+<td style="text-align: center;">14.2</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>PWPB95</code> (see <a href="../../../bibliography/">yu_spin-component-scaled_2014</a>)</td>
+<td style="text-align: center;">11.1</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>PR2SCAN50</code> (see <a href="../../../bibliography/">Wittmann2023</a>)</td>
+<td style="text-align: center;">10.9207</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">0.75</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>KPR2SCAN50</code> (see <a href="../../../bibliography/">Wittmann2023</a>)</td>
+<td style="text-align: center;">10.6723</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">0.70</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>PR2SCAN69</code> (see <a href="../../../bibliography/">Wittmann2023</a>)</td>
+<td style="text-align: center;">9.0691</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">0.5556</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Range-separated double-hybrid</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>WPR2SCAN50</code> (see <a href="../../../bibliography/">Wittmann2023</a>)</td>
+<td style="text-align: center;">9.4149</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">0.65</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>WB97M(2)</code></td>
+<td style="text-align: center;">10.0</td>
+<td style="text-align: center;">0.01</td>
+<td style="text-align: center;">0.65904</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Head-Gordon's<span class="arithmatex">\(\omega\)</span>B97X-V<a href="../../../bibliography/">headgordon2014wB97XV</a>, B97M-V <a href="../../../bibliography/">headgordon2015B97MV</a>, and<span class="arithmatex">\(\omega\)</span>B97M-V<a href="../../../bibliography/">headgordon2016wB97MV</a> functionals are specially fitted variants that use the non-local VV10 kernel to capture London-dispersion effects.
+They employ the non-self-consistent NL correction by default and no additional NL keywords have to be used! A self-consistent treatment can be invoked by the <code>!SCNL</code> 
+keyword.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Some notes on the NL corrections in ORCA</p>
+<ul>
+<li>
+<p>Self-consistent calculations are not possible with the Hartree-Fock method.</p>
+</li>
+<li>
+<p>Analytic gradients are available, thus geometry
+  optimizations with numerical frequencies can be computed.</p>
+</li>
+<li>
+<p>TD-DFT calculations are not yet available.</p>
+</li>
+<li>
+<p>Any calculations that require second derivatives of the NL
+  functional are not yet possible. These are needed for real type
+  perturbations in the CP-SCF solutions, e.g. for analytic Hessians,
+  dipole polarizabilities, and double-hybrid gradients.</p>
+</li>
+<li>
+<p>Strictly imaginary perturbations such as NMR shielding and EPR
+  g-tensors (both also with GIAOs), and hyperfine couplings are
+  available.</p>
+</li>
+</ul>
+</div>
+<p><a id="sec:modelchemistries.dispersioncorrections.nl.customparams"></a></p>
+<h3 id="custom-parameters_1">Custom parameters<a class="headerlink" href="#custom-parameters_1" title="Permanent link">&para;</a></h3>
+<p>For NL, the parameters<span class="arithmatex">\(b\)</span>,<span class="arithmatex">\(C\)</span>, and a global scaling parameter of the NL correlation energy term
+can be adjusted via the <code>%method</code> block. The global scaling parameter <code>NLScal</code> should be used to scale the NL correction
+for methods that already partly cover long-range correlatione like double-hybrids.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>!B3LYP NL
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>%method
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>  NLb    5.0
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>  NLC    0.0083
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>  NLScal 1.0
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>end
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In order to improve the scaling for larger systems,
+a distance cutoff was also introduced, controlled by the <code>vdWdistTCUT</code> flag in the
+<code>%method</code> block. The default value is 10 Å, so two grid points more than 10 Å away from each other
+do not correlate via the VV10 potential. This is already very conservative
+and has practically zero effect on the final energy, but can be altered if needed.</p>
+</div>
+<p><a id="sec:modelchemistries.dispersioncorrections.nl.example"></a></p>
+<h3 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h3>
+<p>In the following, we compute the energy of the argon dimer at a
+distance of 3.76 Å with the def2-TZVP basis set and using the B3LYP
+hybrid functional as an example. Here, we choose the non-self-consistent
+variant of the DFT-NL dispersion correction.</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 3">
+<pre class="mol-xyz" data-format="xyz">2
+structure (0 1)
+Ar          0.0          0.0          0.0
+Ar          0.0          0.0         3.76</pre>
+<pre class="mol-input">!B3LYP NL def2-TZVP
+
+*xyz 0 1
+  Ar  0.0 0.0 0.0
+  Ar  0.0 0.0 3.76
+*</pre>
+</div>
+
+<p>The DFT-NL output for this example is shown below:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>-------------------------------------------------------------------------------
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>                    post-SCF DFT-NL dispersion correction                      
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>-------------------------------------------------------------------------------
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>SCF Energy:    -1054.960511496 
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>NL    Energy:      0.209449910 
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>SC+NL Energy:  -1054.751061586 
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>NL done in  :              0.7 sec
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>-------------------------------------------------------------------------------
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>[...]
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>----------------
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>TOTAL SCF ENERGY
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>----------------
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>
+<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>[...]
+<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>
+<a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a>DFT components:
+<a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a>N(Alpha)           :       17.999996328440 electrons
+<a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a>N(Beta)            :       17.999996328440 electrons
+<a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a>N(Total)           :       35.999992656880 electrons
+<a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a>E(X)               :      -47.880920358714 Eh       
+<a id="__codelineno-12-24" name="__codelineno-12-24" href="#__codelineno-12-24"></a>E(C)               :       -1.761923687962 Eh       
+<a id="__codelineno-12-25" name="__codelineno-12-25" href="#__codelineno-12-25"></a>NL Energy, E(C,NL) :        0.209449910227 Eh       
+<a id="__codelineno-12-26" name="__codelineno-12-26" href="#__codelineno-12-26"></a>E(XC)              :      -49.433394136450 Eh
+</code></pre></div>
+<p>Here, we find the B3LYP total energy (<code>SCF Energy</code>), the
+non-local contribution (<code>NL Energy</code>), and their sum (<code>SC+NL Energy</code>), 
+which is the final total energy. In the <code>DFT components</code> section, the non-local contribution is
+listed separately (<code>NL Energy, E(C,NL)</code>) in order to be consistent with the <code>!SCNL</code> output.</p>
+<p><a id="sec:modelchemistries.dispersioncorrections.nl.keywords"></a></p>
+<h3 id="keywords_1">Keywords<a class="headerlink" href="#keywords_1" title="Permanent link">&para;</a></h3>
+<p><a id="tab:modelchemistries.dispersioncorrections.nl.keywords.simple"></a></p>
+<div class="admonition note">
+<p class="admonition-title">Simple input keywords for the NL correction.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Keyword</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>NL</code></td>
+<td style="text-align: left;">Activates non-self-consistent NL correction</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>SCNL</code></td>
+<td style="text-align: left;">Activates self-consistent NL correction</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a id="tab:modelchemistries.dispersioncorrections.nl.keywords.block"></a></p>
+<div class="admonition note">
+<p class="admonition-title"><code>%method</code> block input keywords for the NL correction.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Keyword</th>
+<th style="text-align: left;">Options</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>NLb</code></td>
+<td style="text-align: left;"><code>&lt;real&gt;</code></td>
+<td style="text-align: left;">Controls<span class="arithmatex">\(b\)</span> parameter for NL</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>NLScal</code></td>
+<td style="text-align: left;"><code>&lt;real&gt;</code></td>
+<td style="text-align: left;">Controls the global scaling parameter for NL</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>vdWdistTCUT</code></td>
+<td style="text-align: left;"><code>&lt;real&gt;</code></td>
+<td style="text-align: left;">Controls the correlation distance cutoff for NL</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../3cmethods/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 3c methods">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                3c methods
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../CASSCF/" class="md-footer__link md-footer__link--next" aria-label="Next: CASSCF">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                CASSCF
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "toc.follow"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../../javascripts/mathjax.js"></script>
+      
+        <script src="../../../../javascripts/mathjax/tex-mml-chtml.js"></script>
+      
+        <script src="../../../../javascripts/math-instant.js"></script>
+      
+        <script src="../../../../javascripts/fast-mol-viewer.iife.js"></script>
+      
+        <script src="../../../../javascripts/mol-embed.js"></script>
+      
+        <script src="../../../../javascripts/tabs-pin.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,6400 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ORCA 量子化学教程 / Quantum chemistry tutorials">
+      
+      
+      
+      
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../../../zh/manual/contents/spectroscopyproperties/eom/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Eom - ORCA 6.1 Tutorials</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../../stylesheets/mol-embed.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#excited-states-via-eom-ccsd" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="ORCA 6.1 Tutorials" class="md-header__button md-logo" aria-label="ORCA 6.1 Tutorials" data-md-component="logo">
+      
+  <img src="../../../../assets/fastmol-logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ORCA 6.1 Tutorials
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Eom
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../zh/manual/contents/spectroscopyproperties/eom/" hreflang="zh" class="md-select__link">
+              中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../first_steps/howtocite/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../" class="md-tabs__link">
+          
+  
+  
+  Manual
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../bib/" class="md-tabs__link">
+          
+  
+  
+  Appendix
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="ORCA 6.1 Tutorials" class="md-nav__button md-logo" aria-label="ORCA 6.1 Tutorials" data-md-component="logo">
+      
+  <img src="../../../../assets/fastmol-logo.svg" alt="logo">
+
+    </a>
+    ORCA 6.1 Tutorials
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First steps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    First steps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/howtocite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to Cite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installing ORCA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/first_calc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello water!
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/input_output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input and Output
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/parallel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running in Parallel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Graphical User Interfaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/trouble_install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Solving common issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Workflows
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/compound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound Jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/extrapol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extrapolation Techniques
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/extopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    External Methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/opi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ORCA Python Interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Properties
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Properties
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/single_point/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single point energies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/geoopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/freq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibrational frequencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/thermo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thermodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/cpcm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implicit Solvation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/solvator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explicit Solvation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/goat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformer Search (GOAT)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/relativistic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relativistic corrections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/disp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dispersion corrections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/bonds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bond Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/led/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/fod/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FOD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/charges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Charge Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/esp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ESP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/corren/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Correlated Energies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reactivity
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reactivity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/nebts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/tsopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transition State Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/tsconf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transition State Conformers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/irc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IRC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/actibar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accurate energy barriers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/KIE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KIE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/FUKUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fukui functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DOCKER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectroscopy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Spectroscopy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/IR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Infrared and Raman
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/UVVis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UV/Vis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/ECD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/vcd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VCD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/NMR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NMR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/EPR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/SOC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spin-Orbit Coupling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Multiscale
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/XTB ONIOM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/basics-otheroniom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ONIOM beyond QM/XTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/oniom-nebts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/ionic_crystal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ionic-Crystal-QM/MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/fragmentator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fragmentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Manual
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Manual
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Suggested Topics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Preface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Preface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/foreword/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foreword
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/changes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/howtocite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Howtocite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/howtousethismanual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Howtousethismanual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Quick Start
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/index_quickstartguide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/hellowater/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello water
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/recommendations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Essential Elements
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Essential Elements
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/index_essentialelements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Essential Calculation Elements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/input/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/coordinates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coordinates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/parallel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parallel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/scf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/initialguess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Initial guess
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/basisset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basis sets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/RI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/solvationmodels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Solvation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/relativistic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relativistic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/symmetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Symmetry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Chemistries
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Model Chemistries
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/index_modelchemistries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Chemistries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/hartreefock/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hartree-Fock
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/DensityFunctionalTheory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DFT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/MP2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MP2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/3cmethods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3c methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/dispersioncorrections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dispersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/CASSCF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CASSCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/NEVPT2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEVPT2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mrci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MRCI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mdci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DLPNO methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/semiempirical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Semiempirical
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecular mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structure & Reactivity
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Structure & Reactivity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/index_structurereactivity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structure and Reactivity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimizations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations_TS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transition states
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations_scans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scans
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/irc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IRC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/neb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/frequencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frequencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/thermochemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thermochemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/solvator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SOLVATOR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/goat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GOAT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DOCKER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/mecp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MECP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/conicalintersections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conical intersections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectroscopy & Properties
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Spectroscopy & Properties
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index_spectroscopyproperties/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectroscopy and Properties
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vibrations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibrations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../excitedstates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Excited states
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tddft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TD-DFT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../esd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UV/Vis & ESD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nmr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NMR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../epr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../led/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nbo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NBO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spinorbit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spin-orbit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../magnx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Magnetic properties
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Multiscale
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/index_multiscalesimulations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale Simulations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-general/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM general
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-molecules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM molecules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-crystal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Crystal QM/MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecular Dynamics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Molecular Dynamics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../moleculardynamics/index_moleculardynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecular Dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../moleculardynamics/moldyn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Workflows
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/index_workflowsautomatization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows and Automatization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/compound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/compound_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/orcapythoninterface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Utilities
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/index_utilitiesvisualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities and Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/index_orcaarchitecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture of ORCA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_13" id="__nav_3_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/public/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Public
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bibliography/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bibliography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../bib/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bibliography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../genindex/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#theory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Theory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initial-guess" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Initial Guess
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hamiltonian-construction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hamiltonian Construction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#solution-of-the-nonsymmetric-eigenproblem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Solution of the (Nonsymmetric) Eigenproblem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#convergence-restart-preconditioning-and-subspace-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Convergence, Restart, Preconditioning and Subspace Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#properties-in-the-rhf-eom-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Properties in the RHF EOM implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#general-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General Use
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="General Use">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Capabilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#memory-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Management
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#some-tips-and-tricks-for-eom-cc-calculation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Some tips and tricks for EOM-CC calculation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#full-keyword-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full keyword list
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<p><a id="sec:spectroscopyproperties.eom"></a></p>
+<h1 id="excited-states-via-eom-ccsd">Excited States via EOM-CCSD<a class="headerlink" href="#excited-states-via-eom-ccsd" title="Permanent link">&para;</a></h1>
+<p>Many of the previously described methods are based on the
+single excitation framework. For a more accurate treatment, double
+excitations should also be considered. The equation of motion (EOM) CCSD
+method (and the closely related family of linear response CC methods)
+provides an accurate way of describing excited, ionized, and electron-attached
+states based on singles and doubles excitations within the
+coupled-cluster framework.</p>
+<p><a id="sec:spectroscopyproperties.eom.theory"></a></p>
+<h2 id="theory">Theory<a class="headerlink" href="#theory" title="Permanent link">&para;</a></h2>
+<p>The EOM wave function is parametrized in the following manner</p>
+<div class="arithmatex">\[
+\mathcal{R}|\Psi_{CC}\rangle,
+\]</div>
+<p>i.e. via the action of a linear excitation operator <span class="arithmatex">\(\mathcal{R}\)</span> on the
+coupled-cluster ground state wave function <span class="arithmatex">\(\Psi_{CC}\)</span>. Here,
+<span class="arithmatex">\(\mathcal{R}\)</span> is a particle conserving operator, in the case of the
+excitation energy problem. However, this is not true for the ionization
+or electron attachment problems, where <span class="arithmatex">\(\mathcal{R}\)</span> is a net
+annihilation or net creation operator, respectively. The ground state
+coupled-cluster T-amplitudes are obtained from a CCSD calculation, and
+our task is to obtain <span class="arithmatex">\(\mathcal{R}\)</span>. Note that since the CC Hamiltonian
+is nonsymmetric, a left hand solution (<span class="arithmatex">\(\mathcal{L}\)</span>) would also be
+needed to evaluate properties. For the calculation of excitation,
+ionization or electron attachment energies, however, it is enough to
+obtain the right hand solutions (<span class="arithmatex">\(\mathcal{R}\)</span>). In principle, this is
+done by building the Hamiltonian and diagonalizing it in order to obtain
+energy expectation values.</p>
+<p>In practice, the size of the CCSD Hamiltonian matrix is prohibitively
+large and thus, various methods have been devised to obtain its lowest
+few eigenvalues and eigenstates. One of the most popular of these
+approaches is the Davidson method, which can be summarized as follows:</p>
+<ul>
+<li>
+<p>Construct an initial guess of orthogonal trial vectors, <span class="arithmatex">\(C\)</span>.</p>
+</li>
+<li>
+<p>Evaluate the sigma vectors <span class="arithmatex">\(\sigma=HC\)</span>.</p>
+</li>
+<li>
+<p>Build model Hamiltonian <span class="arithmatex">\(\mathcal{H}=C^T\sigma\)</span>.</p>
+</li>
+<li>
+<p>Diagonalize <span class="arithmatex">\(\mathcal{H}\)</span>: <span class="arithmatex">\(\mathcal{E=U}^T\mathcal{HU}\)</span>.</p>
+</li>
+<li>
+<p>Compute Ritz vectors <span class="arithmatex">\(X=C\mathcal{U}\)</span>.</p>
+</li>
+<li>
+<p>Compute residuals <span class="arithmatex">\(R=X\mathcal{E}-\sigma\mathcal{U}\)</span>, check
+    convergence: if yes, pass <span class="arithmatex">\(X,\mathcal{E}\)</span> as solutions.</p>
+</li>
+<li>
+<p>Preconditioning: <span class="arithmatex">\(T=MR\)</span> (many possible choices for the
+    preconditioner <span class="arithmatex">\(M\)</span>).</p>
+</li>
+<li>
+<p>Check if adding new trial vectors would exceed the maximum number of
+    trial vectors:</p>
+<ul>
+<li>
+<p>if no, add <span class="arithmatex">\(T\)</span> to <span class="arithmatex">\(C\)</span>, and orthonormalize the united set</p>
+</li>
+<li>
+<p>if yes, then set <span class="arithmatex">\(X\)</span> as <span class="arithmatex">\(C\)</span> (orthonormalize if <span class="arithmatex">\(H\)</span> is
+    nonsymmetric); then add <span class="arithmatex">\(T\)</span> and orthonormalize</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>The advantage of the above method is that, instead of the full
+Hamiltonian, only the sigma vectors have to be explicitly evaluated and
+stored.</p>
+<p>It is also possible to use a lower scaling version of the EOM-CCSD
+methods, which relies on the perturbative truncation of the
+coupled-cluster similarity transformed Hamiltonian. Presently, only the
+second order truncated version (CCSD(2) approximation) is available for
+closed-shell molecules (RHF). However, it is better to use the PNO based
+implementation, as it has the cost of EOM-CCSD(2), but its accuracy is
+comparable to canonical EOM-CCSD.</p>
+<p><a id="sec:spectroscopyproperties.eom.theory.initguess"></a></p>
+<h3 id="initial-guess">Initial Guess<a class="headerlink" href="#initial-guess" title="Permanent link">&para;</a></h3>
+<p>The present initial guess in the RHF EOM implementation consists of
+constructing a CIS Hamiltonian of a certain dimension, and diagonalizing
+it. The roots are preselected based on the energetic ordering of the
+diagonal elements of the Hamiltonian. In the UHF case, the guess is
+constructed from the solutions of a UHF CIS calculation. The number of
+roots in the initial guess is determined as 20 times the number of roots
+desired in EOM (<code>NRoots</code>) if <code>NDav</code> is 20 or smaller, otherwise it is
+set to <code>NDav</code> times the number of EOM roots. If the parameter <code>NInits</code>
+is larger than zero, then the number of initial guess roots will be set
+to this parameter times <code>NRoots</code>. The maximum possible number of roots
+is the full CIS dimension, (<span class="arithmatex">\(N_ON_V\)</span> (RHF) or
+<span class="arithmatex">\(N_{O_{\alpha} }N_{V_{\alpha} } + N_{O_{\beta} }N_{V_{\beta} }\)</span> (UHF)) .
+One should keep in mind, while increasing the number of initial guess
+vectors, that this corresponds to diagonalizing a matrix of increasing
+dimension. If, for example <code>NRoots</code> is 10, then by default 200 roots are
+considered in the initial guess (unless it exceeds the size of the CIS
+space), or if <code>NInits</code> is set to 100, then there will be 1000 roots in
+the guess. In some cases, the roots calculated using EOM may not be the
+lowest ones, but a few of these may be replaced by some higher roots
+which are "easier" to find. In such cases, it may help to increase
+<code>NRoots</code> or <code>NInits</code> to converge to the proper roots. The program can be
+made to follow the initial CIS guess by setting <code>FollowCIS</code> to true and is
+necessary if we wish to ionize or excite from inner-valence or core
+orbitals. In the RHF implementation, the core orbital, from which the
+ionization or excitation originates, can be specified using the keyword
+<code>CoreHole</code>, in addition to setting <code>DoCore</code> and <code>FollowCIS</code> to true. The
+<code>CoreHole</code> keyword is quite general and in principle, ionization or
+excitation processes from any occupied orbital can be specified using
+this keyword.</p>
+<p><a id="sec:spectroscopyproperties.eom.theory.hamiltonian"></a></p>
+<h3 id="hamiltonian-construction">Hamiltonian Construction<a class="headerlink" href="#hamiltonian-construction" title="Permanent link">&para;</a></h3>
+<p>The Hamiltonian construction begins by calling the sigma routines. In
+the case of the closed-shell code, the logical variables <code>UseEOMOptS</code>
+and <code>UseEOMOptD</code> choose the routines to be used in the evaluation of the
+singles and doubles sigma vectors, respectively. If true, the optimized
+sigma routine, using dressed integrals, will be used. This should not be
+changed, the option is there mainly for debugging purposes. If set to
+false, an automatically generated, and much slower serial code will be
+used instead. In the case of the open-shell UHF implementation,
+optimized sigma routines have been generated using the ORCA Automated
+Generator Environment (AGE) <a href="../../../bibliography/">krupicka2017ORCA_AGE</a>. In each early
+iteration, <span class="arithmatex">\(N_R\)</span> sigma vectors will be determined, except in the case of
+a restart, where the number of sigma vectors is <span class="arithmatex">\(2N_R\)</span>. For further
+details on convergence, see
+<a href="#sec:spectroscopyproperties.eom.theory.conv">theory.conv</a> below.</p>
+<p>The most time consuming part of the sigma vector construction is the
+formation of the external exchange contribution, which can be influenced
+via the CC keyword <code>KCOpt</code>. Currently, there are three options that are
+compatible with the RHF EOM implementation: <code>KC_MO</code>,<code>KC_AOX</code> and
+<code>KC_AOBLAS</code> and <code>KC_AOX</code> is the only option
+available in the UHF EOM code. The external exchange term can be treated
+most efficiently using COSX, which in the closed-shell case, leads to
+average speed ups of 10x for the external exchange term and an overall
+speedup of 3x for the EOM calculation. This is accompanied by a drastic
+reduction of the storage cost<a href="../../../bibliography/">Dutta2016COSX</a>. The error introduced is
+below 1 meV, which is 200-fold less than the error bar of the
+method<a href="../../../bibliography/">Dutta2016COSX</a> itself. It is the default for <code>KCOpt</code> <code>KC_AOX</code>
+and <code>KC_AOBLAS</code> and can be controlled by the keyword <code>DOCOSXEOM</code>. The
+default grid settings for EOM are <code>GridX 1</code> and <code>IntAccX 2.68</code>.</p>
+<p>Once the sigma vectors are available, they are multiplied with the trial
+vectors to yield the reduced space Hamiltonian. The Hamiltonian is built
+in a way that, in each iteration, only the new vector products are added
+to the "edge" of the old Hamiltonian, so that a full build is avoided.
+It should be clear that the parameter <code>NDav</code> plays an important role
+here, since it determines the maximum size of the Hamiltonian
+(<span class="arithmatex">\(N_DN_R\)</span>), and also controls how much memory is needed for the trial
+and sigma vectors, as seen above. Since the choice of this parameter
+influences convergence properties, it will be discussed further in
+<a href="#sec:spectroscopyproperties.eom.theory.conv">theory.conv</a>.</p>
+<p><a id="sec:spectroscopyproperties.eom.theory.nonsymmetric"></a></p>
+<h3 id="solution-of-the-nonsymmetric-eigenproblem">Solution of the (Nonsymmetric) Eigenproblem<a class="headerlink" href="#solution-of-the-nonsymmetric-eigenproblem" title="Permanent link">&para;</a></h3>
+<p>Following the construction of the Hamiltonian, a nonsymmetric
+eigensolver is called. In this case, it is possible to have complex
+eigenvalues. In practice, this is rarely the case, and indicates a
+problem of some kind. A warning will be given if this happens, however,
+one may get away with this if it only happens in an isolated iteration
+step.</p>
+<p>Once the eigenvectors are available, they are compared with those of the
+previous iteration, if root homing is turned on, i.e. if the
+<code>RootHoming</code> keyword is set to true. This means evaluating the overlap
+of the old and new eigenvectors, in order to keep track of the possible
+movement of the eigenvectors if root flipping occurs. If converged roots
+are removed from further iterations (see next section), it is important
+to keep track of changes in ordering, especially if a converged and a
+non-converged root is swapped. After diagonalization, the Ritz vectors
+and residuals can be evaluated.</p>
+<p><a id="sec:spectroscopyproperties.eom.theory.conv"></a></p>
+<h3 id="convergence-restart-preconditioning-and-subspace-expansion">Convergence, Restart, Preconditioning and Subspace Expansion<a class="headerlink" href="#convergence-restart-preconditioning-and-subspace-expansion" title="Permanent link">&para;</a></h3>
+<p>Convergence is signaled once a residual square norm based criteria is
+fulfilled. This criteria is determined by the <code>CheckEachRoot</code> keyword.
+If it is true (default), the convergence of the residual square norm of
+each root is checked separately. This is due to the fact that different
+roots converge at a different rate. Once a root is converged, no new
+trial vectors will be generated, belonging to that vector. This means
+that the EOM iterations will progressively become faster (until
+restart). Turning off the rootwise convergence check is possible, but
+not recommended. In this case, the maximum of all residual square norms
+is checked for convergence, and all iterations will take roughly the
+same amount of time since no vectors are removed in any iteration.
+However, this procedure can be numerically unstable, since the residuals
+of some roots might become very close to zero, and trying to generate
+new vectors, which are orthogonal to these, may lead to numerical
+disaster. In short, the recommended default is having both
+<code>CheckEachRoot</code> and <code>RootHoming</code> set to true. If <code>CheckEachRoot</code> is
+false, then <code>RootHoming</code> should also be set to false, as it may cause
+problems if <code>NDav</code> is too small. The convergence threshold of the
+residual in Davidson's method can be larger than that for the ground
+state CC residual threshold in order to obtain converged results.
+Namely, a value of <code>DTol</code> of 1e-5 is almost always enough to get well
+converged energies.</p>
+<p>At this point it is worth discussing the role of the keyword <code>NDav</code>.
+This keyword determines at what point the Davidson algorithm should be
+restarted. If it is chosen too small, it may cause slow convergence. If
+this value is too large, this may result in overwhelming demands on
+memory/disk space requirements. The default value (20) is chosen with
+the hope that no, or maybe one restart will be required. It should only
+be changed if computational resources demand it. However, the treatment
+of core ionization or core excitation processes often requires a large
+value of <code>NDav</code>. At restart, the Ritz vectors are copied as new trial vectors
+for all roots, which will then be orthonormalized, while new vectors
+will only be generated for the non-converged roots. This means that the
+step after the rebuilding of the expansion space will be 1-2 times as
+expensive as one of the initial steps.</p>
+<p>New directions (trial vectors) are generated from the preconditioned
+residual vectors. If no preconditioning is applied (the preconditioner
+is taken to be a unit matrix), one falls back to the Lanczos algorithm,
+which is inferior to the Davidson algorithm. This happens if the keyword
+<code>DoLanczos</code> is true. This is not recommended, as the Lanczos algorithm
+converges several times slower than Davidson's, and is there for
+debugging mainly. The original Davidson preconditioner is the inverse of
+a diagonal matrix which contains the difference of the diagonal elements
+of the Hamiltonian and the current approximation to the eigenvalue
+belonging to the given root. Let us consider the closed-shell RHF
+implementation for simplicity. If <span class="arithmatex">\(R_{ia}\)</span> and <span class="arithmatex">\(R_{ijab}\)</span> are elements
+of the singles and doubles amplitudes, respectively, then the updated
+vectors (<span class="arithmatex">\(T_{ia}\)</span>, <span class="arithmatex">\(T_{ijab}\)</span>) have the form</p>
+<div class="arithmatex">\[
+T_{ia}=\frac{R_{ia} }{D_{ia}+\mathcal{E}_R}
+\]</div>
+<p>for singles, and</p>
+<div class="arithmatex">\[
+T_{ijab}=\frac{R_{ia} }{D_{ijab}+\mathcal{E}_R}
+\]</div>
+<p>for doubles. Here, <span class="arithmatex">\(D_{ia}\)</span> and <span class="arithmatex">\(D_{ijab}\)</span> are related to, and possibly
+approximations of, the respective diagonal Hamiltonian elements. The
+simplest approximation is just to construct these from diagonal Fock
+matrix elements (i.e. orbital energies) as
+<span class="arithmatex">\(D_{ia}=\varepsilon_a-\varepsilon_i\)</span> and
+<span class="arithmatex">\(D_{ijab}=\varepsilon_a+\varepsilon_b-\varepsilon_i-\varepsilon_j\)</span>. A
+slightly better preconditioning can be obtained as follows. For singles,
+take the exact CIS diagonal elements,
+<span class="arithmatex">\(D_{ia}=\varepsilon_a-\varepsilon_i+\overline{g}_{iiaa}\)</span>, where the last
+term is the respective antisymmetrized integral; and construct the
+doubles as <span class="arithmatex">\(D_{ijab}=D_{ia}+D_{jb}\)</span>. This is the default, and can be
+changed back to the simple Fock matrix guess by setting <code>UseCISUpdate</code>
+to false.</p>
+<p>Following the preconditioning step, the resulting vectors are
+orthogonalized to the previous set of trial vectors, and orthonormalized
+among themselves. Since, the trial vectors do not change once they are
+generated (unless a restart occurs), only the new elements of the
+overlap matrix need to be generated for the orthonormalization. The
+numerical threshold for the inversion (and other division steps) is
+controlled by the parameter <code>OTol</code>. Finally, the amount of printed
+information can be controlled via the <code>PrintLevel</code> keyword. If not given
+or equal to 2, only basic iteration information will be printed. If set
+to 3, detailed iteration information will be printed (recommended if
+timing results for individual steps are required), while 4 or higher
+triggers additional (and very verbose) information from other
+subroutines as well.</p>
+<p>The default solver is a multi-root Davidson procedure. The single-root
+solver can be initiated by setting <code>DoRootwise</code> and <code>FollowCIS</code> to true.
+The latter is more stable when a large number of roots are requested.</p>
+<p><a id="sec:spectroscopyproperties.eom.theory.properties"></a></p>
+<h3 id="properties-in-the-rhf-eom-implementation">Properties in the RHF EOM implementation<a class="headerlink" href="#properties-in-the-rhf-eom-implementation" title="Permanent link">&para;</a></h3>
+<p>The only property that can be calculated with the current RHF EOM
+implementation is the transition moment. It is calculated as a CI-like
+expectation value, as proposed by Stanton and Bartlett. The right and
+left transition density are defined as</p>
+<div class="arithmatex">\[
+\rho_{pq}^{Gr\rightarrow Ex} =\langle\phi_{0}|(1+\Lambda)[e^{-T}\{p^{+}q^{-}\}e^{T},R]|\phi_{0}\rangle
+\]</div>
+<div class="arithmatex">\[
+\rho_{pq}^{Ex\rightarrow Gr} =\langle\phi_{0}|Le^{-T}\{p^{+}q^{-}\}e^{T}|\phi_{0}\rangle
+\]</div>
+<p>In the above equation, <span class="arithmatex">\(\Lambda\)</span> corresponds to the ground state left
+vector, which needs to be solved once and <span class="arithmatex">\(L\)</span> is the left vector, which
+needs to be solved separately for each root. Once the right and left
+vectors have been obtained, the left and right transition densities are
+constructed and the oscillator strength is calculated using the following
+formula</p>
+<div class="arithmatex">\[
+f=\frac{2}{3}\varepsilon|\mu_{pq}\rho_{pq}^{Ex\rightarrow Gr}||\mu_{pq}\rho_{pq}^{Gr\rightarrow Ex}|
+\]</div>
+<p>The oscillator strength, calculated by default, employs a linear
+approximation for <span class="arithmatex">\(\Lambda\)</span>. The <span class="arithmatex">\(L\)</span> vectors are, on the other hand,
+calculated as a general inverse of the corresponding <span class="arithmatex">\(R\)</span> vectors. This
+approximation requires no additional effort over the energy calculation
+and gives similar accuracy as that of the exact oscillator strength
+calculation, which is at least twice the cost of the energy calculation.
+Exact EOM-CC transition moments can, however, be calculated by setting
+<code>DoLeft</code> and <code>DoTDM</code> to true. Please note that transition moments have not
+yet been implemented for the UHF EOM-CCSD approach.</p>
+<p><a id="sec:spectroscopyproperties.eom.use"></a></p>
+<h2 id="general-use">General Use<a class="headerlink" href="#general-use" title="Permanent link">&para;</a></h2>
+<p>The EOM-CCSD routine is part of the <code>orca_mdci</code> module of the ORCA
+program package. It is called after a successful coupled-cluster
+calculation, if the appropriate flags and the number of roots have been
+set. In the following chapter, the general program flow and the input
+parameters of the EOM routine will be described. For an RHF or UHF reference, the EE-, IP-
+and EA-EOM-CCSD approaches are available for the computation of
+excitation energies, ionization potentials and electron affinities,
+respectively. Currently, the following simple input keywords are available:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>!EOM-CCSD      # same as !EE-EOM-CCSD
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>!EE-EOM-CCSD   # EOM for electronically excited states
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>!IP-EOM-CCSD   # IP version
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>!EA-EOM-CCSD   # EA version
+</code></pre></div>
+<p>The simplest way to perform an EOM calculation is via the usage of the
+<code>EOM-CCSD</code> keyword, together with the specification of the desired
+number of roots:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>!EOM-CCSD      # same as !EE-EOM-CCSD
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>!EE-EOM-CCSD   # EOM for electronically excited states
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>!IP-EOM-CCSD   # IP version
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>!EA-EOM-CCSD   # EA version
+</code></pre></div>
+<p>The above input will call the EOM routine with default settings. The
+main output is a list of excitation energies, augmented with some
+further state-specific data. For the above input, the following output
+is obtained:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>----------------------
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>EOM-CCSD RESULTS (RHS)
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>----------------------
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>IROOT=  1:  0.147823 au     4.022 eV   32443.5 cm**-1
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>  Amplitude    Excitation
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>   0.107945     4 -&gt;   8
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>   0.665496     7 -&gt;   8
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>   0.104633     7 -&gt;   8     6 -&gt;   8
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>  Ground state amplitude:  0.000000
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>Percentage singles character=     92.32
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>IROOT=  2:  0.314133 au     8.548 eV   68944.3 cm**-1
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>  Amplitude    Excitation
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>   0.671246     7 -&gt;   9
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>  Ground state amplitude: -0.000000
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>Percentage singles character=     90.42
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>IROOT=  3:  0.343833 au     9.356 eV   75462.6 cm**-1
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>  Amplitude    Excitation
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>  -0.670633     5 -&gt;   8
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>  -0.112538     6 -&gt;   8     5 -&gt;   8
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>  Ground state amplitude:  0.000000
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>Percentage singles character=     92.00
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>IROOT=  4:  0.364199 au     9.910 eV   79932.5 cm**-1
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>  Amplitude    Excitation
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>   0.102777     4 -&gt;  10
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>  -0.484661     6 -&gt;   8
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>   0.438311     7 -&gt;  10
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a>  -0.167512     6 -&gt;   8     6 -&gt;   8
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>  Ground state amplitude: -0.021060
+<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a>Percentage singles character=     87.22
+<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a>
+<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a>IROOT=  5:  0.389398 au    10.596 eV   85463.0 cm**-1
+<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a>  Amplitude    Excitation
+<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a>   0.646812     4 -&gt;   8
+<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a>  -0.122387     7 -&gt;   8
+<a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a>   0.171366     7 -&gt;   8     6 -&gt;   8
+<a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a>  Ground state amplitude:  0.000000
+<a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a>Percentage singles character=     87.47
+<a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a>
+<a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a>IROOT=  6:  0.414587 au    11.281 eV   90991.4 cm**-1
+<a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a>  Amplitude    Excitation
+<a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a>  -0.378418     6 -&gt;   8
+<a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a>  -0.537292     7 -&gt;  10
+<a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a>  -0.124246     6 -&gt;   8     6 -&gt;   8
+<a id="__codelineno-2-48" name="__codelineno-2-48" href="#__codelineno-2-48"></a>  Ground state amplitude: -0.061047
+<a id="__codelineno-2-49" name="__codelineno-2-49" href="#__codelineno-2-49"></a>Percentage singles character=     89.13
+<a id="__codelineno-2-50" name="__codelineno-2-50" href="#__codelineno-2-50"></a>
+<a id="__codelineno-2-51" name="__codelineno-2-51" href="#__codelineno-2-51"></a>IROOT=  7:  0.423861 au    11.534 eV   93026.7 cm**-1
+<a id="__codelineno-2-52" name="__codelineno-2-52" href="#__codelineno-2-52"></a>  Amplitude    Excitation
+<a id="__codelineno-2-53" name="__codelineno-2-53" href="#__codelineno-2-53"></a>   0.673806     7 -&gt;  11
+<a id="__codelineno-2-54" name="__codelineno-2-54" href="#__codelineno-2-54"></a>  Ground state amplitude:  0.000000
+<a id="__codelineno-2-55" name="__codelineno-2-55" href="#__codelineno-2-55"></a>Percentage singles character=     93.14
+<a id="__codelineno-2-56" name="__codelineno-2-56" href="#__codelineno-2-56"></a>
+<a id="__codelineno-2-57" name="__codelineno-2-57" href="#__codelineno-2-57"></a>IROOT=  8:  0.444201 au    12.087 eV   97490.8 cm**-1
+<a id="__codelineno-2-58" name="__codelineno-2-58" href="#__codelineno-2-58"></a>  Amplitude    Excitation
+<a id="__codelineno-2-59" name="__codelineno-2-59" href="#__codelineno-2-59"></a>   0.664877     6 -&gt;   9
+<a id="__codelineno-2-60" name="__codelineno-2-60" href="#__codelineno-2-60"></a>   0.130475     6 -&gt;   9     6 -&gt;   8
+<a id="__codelineno-2-61" name="__codelineno-2-61" href="#__codelineno-2-61"></a>  Ground state amplitude: -0.000000
+<a id="__codelineno-2-62" name="__codelineno-2-62" href="#__codelineno-2-62"></a>Percentage singles character=     87.17
+<a id="__codelineno-2-63" name="__codelineno-2-63" href="#__codelineno-2-63"></a>
+<a id="__codelineno-2-64" name="__codelineno-2-64" href="#__codelineno-2-64"></a>IROOT=  9:  0.510514 au    13.892 eV  112044.8 cm**-1
+<a id="__codelineno-2-65" name="__codelineno-2-65" href="#__codelineno-2-65"></a>  Amplitude    Excitation
+<a id="__codelineno-2-66" name="__codelineno-2-66" href="#__codelineno-2-66"></a>  -0.665791     6 -&gt;  10
+<a id="__codelineno-2-67" name="__codelineno-2-67" href="#__codelineno-2-67"></a>   0.114259     6 -&gt;  15
+<a id="__codelineno-2-68" name="__codelineno-2-68" href="#__codelineno-2-68"></a>  -0.124374     6 -&gt;  10     6 -&gt;   8
+<a id="__codelineno-2-69" name="__codelineno-2-69" href="#__codelineno-2-69"></a>  Ground state amplitude: -0.000000
+</code></pre></div>
+<p>The IP and EA versions can be called using the keywords <code>IP-EOM-CCSD</code>
+and <code>EA-EOM-CCSD</code>, respectively. For open-shell systems (UHF reference
+wavefunction), IP/EA-EOM-CCSD calculations require an additional
+keyword. Namely, an IP/EA calculation involving the removal/attachment
+of an <span class="arithmatex">\(\alpha\)</span> electron is requested by setting the <code>DoAlpha</code> keyword to
+true in the %mdci block, while setting the <code>DoBeta</code> keyword to true
+selects an IP/EA calculation for the removal/attachment of a <span class="arithmatex">\(\beta\)</span>
+electron. Note that <code>DoAlpha</code> and <code>DoBeta</code> cannot simultaneously be true
+and that the calculation defaults to one in which <code>DoAlpha</code> is true if
+no keyword is specified on input. A simple example of the input for a
+UHF IP-EOM-CCSD calculation for the removal of an <span class="arithmatex">\(\alpha\)</span> electron is
+given below.</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 1">
+<pre class="mol-xyz" data-format="xyz">2
+structure (0 3)
+O           0.0          0.0          0.0
+O           0.0          0.0        1.207</pre>
+<pre class="mol-input">! IP-EOM-CCSD cc-pVDZ 
+%mdci
+  DoAlpha true
+  NRoots 7
+end
+
+*xyz 0 3
+  O      0.0 0.0 0.0
+  O      0.0 0.0 1.207
+*</pre>
+</div>
+
+<p><a id="sec:spectroscopyproperties.excitedstates.eom.capabilities"></a></p>
+<h3 id="capabilities">Capabilities<a class="headerlink" href="#capabilities" title="Permanent link">&para;</a></h3>
+<p>At present, the EOM routine is able to perform excited, ionized and
+electron attached state calculations, for both closed- or open-shell
+systems, using RHF or UHF reference wave functions, respectively. It can
+be used for serial and parallel calculations. The method is available in
+the back-transformed PNO and DLPNO framework enabling the calculation of
+large molecules - see Section
+<a href="#sec:spectroscopyproperties.dleom">spectroscopyproperties.dleom</a> and Section
+<a href="#sec:spectroscopyproperties.excitedstates.dlpnoeom">excitedstates.dlpnoeom</a>. In the closed-shell case (RHF), a
+lower-scaling version can be invoked by setting the <code>CCSD2</code> keyword to
+true in the %mdci section. The latter is a second-order approximation to
+the conventional EOM-CCSD. For the time being, the most useful
+information provided is the list of the excitation energies, the
+ionization potentials or the electron affinities. The ground to excited
+state transition moments are also available for the closed-shell
+implementation of EE-EOM-CCSD.</p>
+<p><a id="sec:spectroscopyproperties.eom.memory"></a></p>
+<h2 id="memory-management">Memory Management<a class="headerlink" href="#memory-management" title="Permanent link">&para;</a></h2>
+<p>The most important data coming from the coupled-cluster routine are the
+ground state energy and wave function, and the molecular integrals. The
+integrals are then used to create "dressed" integral containers, which
+allows for an efficient factorization of the EOM equations, since these
+dressed quantities do not change during the calculation. Most of these
+are written on disk, with the possible exception of the integral
+container which has three external labels. This, and the solver files
+may remain in core if enough memory is available. The program
+sequentially tries to allocate memory for the files in the order of
+their importance, and what cannot be kept in core, goes on disk. The
+order of allocation is as follows: 1. residual vectors, 2. Ritz vectors,
+3. three external integrals, 4. sigma vectors and 5. state (trial)
+vectors, as seen in the example below:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>--------------------------------
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>AUTOMATIC CHOICE OF INCORE LEVEL
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>--------------------------------
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>Memory available                           ...   6512.00 MB
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>Memory needed for Residual-vectors         ...     71.27 MB
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>Memory needed for Ritz-vectors             ...     71.27 MB
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>Memory needed for 3-ext integrals          ...     92.05 MB
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>Memory needed for Sigma-vectors            ...   1425.31 MB
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>Memory needed for State-vectors            ...   1425.31 MB
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a> -&gt; Final InCoreLevel    ... 5
+</code></pre></div>
+<p>Half of the memory specified with the keyword <code>MaxCore</code> is distributed
+among the five candidates. In the above case, everything fits in memory.
+Note that these are only the largest contributors to memory consumption,
+and there should ideally be a safety margin when allocating memory.</p>
+<p>In order to estimate the amount of necessary memory, it should be kept
+in mind that, in the closed shell case, the memory requirements of the
+residual and Ritz vectors are proportional to <span class="arithmatex">\(N_RN_PN_V^2\)</span>, the three
+external integrals to <span class="arithmatex">\(N_RN_ON_V^3\)</span> and the sigma and trial vectors to
+<span class="arithmatex">\(N_DN_RN_PN_V^2\)</span>, where <span class="arithmatex">\(N_O\)</span> and <span class="arithmatex">\(N_V\)</span> are the number of occupied and
+virtual orbitals, <span class="arithmatex">\(N_P=\frac{N_O(N_O+1) }{2}\)</span> is the number of occupied
+pairs, <span class="arithmatex">\(N_R\)</span> is the number of roots, and <span class="arithmatex">\(N_D\)</span> is the maximum size of
+the reduced space. The keyword <code>NRoots</code> sets <span class="arithmatex">\(N_R\)</span>, while <code>NDav</code>
+determines <span class="arithmatex">\(N_D\)</span>. Luckily, the contributions that, in our experience,
+are the most important to keep in memory, are also the ones that require
+the smallest amount of it. It is advisable to use <code>KCOpt AOBLAS</code>, as it
+has the lowest memory requirements.</p>
+<p>Note that in the UHF EE-EOM-CCSD implementation, the memory requirements
+of the residual and Ritz vectors are proportional to
+<span class="arithmatex">\(N_R(N_{P_{\alpha} }N_{V_{\alpha} }^2 + N_{P_{\beta} }N_{V_{\beta} }^2 + N_{O_{\alpha} }N_{O_{\beta} }N_{V_{\alpha} }N_{V_{\beta} })\)</span>,
+the three external integrals to
+<span class="arithmatex">\(N_R(N_{O_{\alpha} }N_{V_{\alpha} }^2 + N_{O_{\beta} }N_{V_{\beta} }^2 + N_{O_{\alpha} }N_{V_{\alpha} }N_{V_{\beta} }^2 + N_{O_{\beta} }N_{V_{\beta} }N_{V_{\alpha} }^2)\)</span>
+and the sigma and trial vectors memory requirements are proportional to
+<span class="arithmatex">\(N_DN_R(N_{P_{\alpha} }N_{V_{\alpha} }^2 + N_{P_{\beta} }N_{V_{\beta} }^2 + N_{O_{\alpha} }N_{O_{\beta} }N_{V_{\alpha} }N_{V_{\beta} })\)</span>,
+where <span class="arithmatex">\(N_{O_{\alpha} }\)</span>, <span class="arithmatex">\(N_{O_{\beta} }\)</span>, <span class="arithmatex">\(N_{V_{\alpha} }\)</span> and
+<span class="arithmatex">\(N_{V_{\beta} }\)</span> are respectively, the number of occupied alpha,
+occupied beta, virtual alpha and virtual beta orbitals and
+<span class="arithmatex">\(N_{P_{\alpha} }=\frac{N_{O_{\alpha} }(N_{O_{\alpha} }-1) }{2}\)</span> and
+<span class="arithmatex">\(N_{P_{\beta} }=\frac{N_{O_{\beta} }(N_{O_{\beta} }-1) }{2}\)</span> are the
+number of alpha and beta occupied pairs, respectively.</p>
+<p><a id="sec:spectroscopyproperties.eom.tips"></a></p>
+<h2 id="some-tips-and-tricks-for-eom-cc-calculation">Some tips and tricks for EOM-CC calculation<a class="headerlink" href="#some-tips-and-tricks-for-eom-cc-calculation" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>The COSX approximation gives significant savings in terms of memory
+    use, disk space use and computational timings with almost no loss
+    of accuracy<a href="../../../bibliography/">Dutta2016COSX</a>. Therefore, the preferred setting for
+    large-scale calculations should include <code>DoCOSXEOM true</code>, <code>DoAOX3e true</code>
+    and <code>KCOpt KC_AOBLAS</code> (Note that <code>KC_AOX</code> is the only option available for
+    <code>KCOpt</code> in the UHF implementation).</p>
+</li>
+<li>
+<p>The EOM-CC code in ORCA has three versions of the Davidson solver.
+    The default one is the multi-root solver which does optimization of all
+    the roots together. It gives the fastest convergence and is more
+    suitable when one is interested only in a few roots of a big
+    molecule. However, the multi-root solver can run into numerical
+    issues, if more than 10 roots are desired. In that case, one can
+    invoke the root-wise solver by setting <code>DoRootwise true</code>. The single
+    root solver is very stable and should be used when a large number of
+    roots are desired. However, the convergence of the single root
+    solver is slower than the multi-root one. In the RHF implementation,
+    there is also a batchwise solver, where a subset of the total number
+    of roots is optimized together. This can be invoked by setting
+    <code>NRootsPerBatch true</code> and is intermediate between the multi-root
+    and single-root solvers in terms of stability and convergence.</p>
+</li>
+<li>
+<p>If the EOM iterations do not converge within 50 cycles, one can try
+    to increase the number of iterations by setting <code>MaxIter</code> in the <code>%mdci</code> 
+    block to a larger value. One can also try to increase the dimension of the Krylov
+    space in the Davidson solver by increasing the <code>NDav</code> value and this generally helps to
+    accelerate convergence. However, setting <code>NDav</code> to a value larger
+    than 200 can make the calculation prohibitively costly especially in terms of memory.</p>
+</li>
+<li>
+<p>Convergence thresholds of <code>DTol 1e-5</code> (Davidson convergence) and <code>STol</code>
+    <code>1e-7</code> (ground state CCSD convergence) generally yield sufficiently
+    converged energies, and are suitable for most purposes.</p>
+</li>
+<li>
+<p>The normal Davidson solver generally leads to the lowest-energy
+    solutions. This procedure can also yield roots dominated by double
+    excitations (the so-called satellite states) for the IP and EA
+    variants of EOM-CC, when one asks for a large number of roots. If one is
+    interested in the low-lying Koopman's type of IP and EA states, they
+    can be obtained by setting <code>FollowCIS</code> to true. This will follow the
+    initial guess provided by the Fock operators.</p>
+</li>
+</ul>
+<p><a id="sec:spectroscopyproperties.eom.options"></a></p>
+<h2 id="full-keyword-list">Full keyword list<a class="headerlink" href="#full-keyword-list" title="Permanent link">&para;</a></h2>
+<p>The simple input keywords related to EOM-CC are collected in <a href="#tab:spectroscopyproperties.eom.options.simple">tab:spectroscopyproperties.eom.options.simple</a>. 
+The input keywords of the <code>%mdci</code> block related to UHF EOM-CC are collected in <a href="#tab:spectroscopyproperties.eom.options.uhfmdciblock">tab:spectroscopyproperties.eom.options.uhfmdciblock</a>. 
+The input keywords of the <code>%mdci</code> block related to RHF EOM-CC are collected in <a href="#tab:spectroscopyproperties.eom.options.rhfmdciblock">tab:spectroscopyproperties.eom.options.rhfmdciblock</a>.</p>
+<p><a id="tab:spectroscopyproperties.eom.options.simple"></a></p>
+<div class="admonition note">
+<p class="admonition-title">Simple input keywords for EOM-CC.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Keyword</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>EOM-CCSD</code></td>
+<td style="text-align: left;">Same as <code>EE-EOM-CCSD</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>EE-EOM-CCSD</code></td>
+<td style="text-align: left;">EOM-CC for electronically excited states</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>IP-EOM-CCSD</code></td>
+<td style="text-align: left;">IP version</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>EA-EOM-CCSD</code></td>
+<td style="text-align: left;">EA version</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a id="tab:spectroscopyproperties.eom.options.rhfmdciblock"></a></p>
+<div class="admonition note">
+<p class="admonition-title"><code>%mdci</code> block input keywords for RHF EOM-CC with defaults in parentheses.</p>
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Options</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DoEOM</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Perform EOM?</td>
+</tr>
+<tr>
+<td><code>UseEOMOptS</code> (true)</td>
+<td><code>true/false</code></td>
+<td>Use optimized sigma routines for singles?</td>
+</tr>
+<tr>
+<td><code>UseEOMOptD</code> (true)</td>
+<td><code>true/false</code></td>
+<td>Use optimized sigma routines for doubles?</td>
+</tr>
+<tr>
+<td><code>NDav</code> (20)</td>
+<td><code>&lt;int&gt;</code></td>
+<td>Max. size of reduced space (i.e. 20×NRoots)</td>
+</tr>
+<tr>
+<td><code>CCSD2</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Use the lower scaling CCSD(2) approximation?</td>
+</tr>
+<tr>
+<td><code>CheckEachRoot</code> (true)</td>
+<td><code>true/false</code></td>
+<td>Check convergence for each root separately?</td>
+</tr>
+<tr>
+<td><code>RootHoming</code> (true)</td>
+<td><code>true/false</code></td>
+<td>Apply root homing?</td>
+</tr>
+<tr>
+<td><code>DoLanczos</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Use the Lanczos procedure rather than Davidson?</td>
+</tr>
+<tr>
+<td><code>UseCISUpdate</code> (true)</td>
+<td><code>true/false</code></td>
+<td>Use diagonal CIS for updating?</td>
+</tr>
+<tr>
+<td><code>NInits</code> (0)</td>
+<td><code>&lt;int&gt;</code></td>
+<td>Number of roots in the initial guess; if 0, use preset value</td>
+</tr>
+<tr>
+<td><code>DRESS3ES</code> (true)</td>
+<td><code>true/false</code></td>
+<td>Construct the external dressing to singles or calculate on the fly?</td>
+</tr>
+<tr>
+<td><code>DRESS3ED</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Construct the external dressing to doubles or calculate on the fly?</td>
+</tr>
+<tr>
+<td><code>DOCOSXEOM</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Use COSX approximation for external exchange term in EOM?</td>
+</tr>
+<tr>
+<td><code>DOAOX3E</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Use COSX approximation for 4 external terms contribution to 3-external intermediate?</td>
+</tr>
+<tr>
+<td><code>DoRootwise</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Solve for each root separately? More stable for large number of roots.</td>
+</tr>
+<tr>
+<td><code>DoTDM</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Option for calculation of default transition moment?</td>
+</tr>
+<tr>
+<td><code>Doleft</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Calculation of exact left vector?</td>
+</tr>
+<tr>
+<td><code>NRootsPerBatch</code> (1)</td>
+<td><code>&lt;int&gt;</code></td>
+<td>Number of roots calculated together</td>
+</tr>
+<tr>
+<td><code>FOLLOWCIS</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Follows the initial singles guess?</td>
+</tr>
+<tr>
+<td><code>DoCore</code> (true)</td>
+<td><code>true/false</code></td>
+<td>Initiates ionization or excitation from core orbital?</td>
+</tr>
+<tr>
+<td><code>CoreHole</code> (0)</td>
+<td><code>&lt;int&gt;</code></td>
+<td>Core orbital from which ionization or excitation is needed</td>
+</tr>
+<tr>
+<td><code>CVSEP</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Separate core orbitals from valence?</td>
+</tr>
+<tr>
+<td><code>DTol</code> (1e-5)</td>
+<td><code>&lt;real&gt;</code></td>
+<td>Default for EOM residual threshold</td>
+</tr>
+<tr>
+<td><code>NRoots</code> (9)</td>
+<td><code>&lt;int&gt;</code></td>
+<td>Number of roots</td>
+</tr>
+<tr>
+<td><code>OTol</code> (1e-14)</td>
+<td><code>&lt;real&gt;</code></td>
+<td>Orthogonalization threshold</td>
+</tr>
+<tr>
+<td><code>KCOpt</code></td>
+<td></td>
+<td>Method for external exchange formation</td>
+</tr>
+<tr>
+<td></td>
+<td><code>KC_MO</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>KC_AOX</code></td>
+<td>When asked for exact TDM calculation</td>
+</tr>
+<tr>
+<td></td>
+<td><code>KC_AOBLAS</code></td>
+<td>Most efficient</td>
+</tr>
+<tr>
+<td><code>PrintLevel</code> (3)</td>
+<td><code>&lt;int&gt;</code></td>
+<td>The amount of information to be printed</td>
+</tr>
+<tr>
+<td><code>MaxCore</code> (500)</td>
+<td><code>&lt;int&gt;</code></td>
+<td>Total amount of memory</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a id="tab:spectroscopyproperties.eom.options.uhfmdciblock"></a></p>
+<div class="admonition note">
+<p class="admonition-title"><code>%mdci</code> block input keywords for UHF EOM-CC with defaults in parentheses.</p>
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Options</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DoEOM</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Perform EOM?</td>
+</tr>
+<tr>
+<td><code>DoAlpha</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Removal/attachment of an alpha electron (IP/EA calculations)?</td>
+</tr>
+<tr>
+<td><code>DoBeta</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Removal/attachment of a beta electron (IP/EA calculations)?</td>
+</tr>
+<tr>
+<td><code>NDav</code> (20)</td>
+<td><code>&lt;int&gt;</code></td>
+<td>Max. size of reduced space (i.e. 20×NRoots)</td>
+</tr>
+<tr>
+<td><code>UseQROs</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Use QROs?</td>
+</tr>
+<tr>
+<td><code>CheckEachRoot</code> (true)</td>
+<td><code>true/false</code></td>
+<td>Check convergence for each root separately?</td>
+</tr>
+<tr>
+<td><code>RootHoming</code> (true)</td>
+<td><code>true/false</code></td>
+<td>Apply root homing?</td>
+</tr>
+<tr>
+<td><code>DoLanczos</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Use the Lanczos procedure rather than Davidson?</td>
+</tr>
+<tr>
+<td><code>DoOlsen</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Use the Olsen procedure rather than Davidson?</td>
+</tr>
+<tr>
+<td><code>UseCISUpdate</code> (true)</td>
+<td><code>true/false</code></td>
+<td>Use diagonal CIS for updating?</td>
+</tr>
+<tr>
+<td><code>NInits</code> (0)</td>
+<td><code>&lt;int&gt;</code></td>
+<td>Number of roots in the initial guess; if 0, use preset value</td>
+</tr>
+<tr>
+<td><code>DOCOSXEOM</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Use COSX approximation for external exchange term in EOM?</td>
+</tr>
+<tr>
+<td><code>DOAOX3E</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Use COSX approximation for 4 external terms contribution to 3-external intermediate?</td>
+</tr>
+<tr>
+<td><code>DoRootwise</code> (false)</td>
+<td><code>true/false</code></td>
+<td>Solve for each root separately? More stable for large number of roots</td>
+</tr>
+<tr>
+<td><code>NRootsPerBatch</code> (1)</td>
+<td><code>&lt;int&gt;</code></td>
+<td>Number of roots calculated together</td>
+</tr>
+<tr>
+<td><code>FOLLOWCIS</code> (true)</td>
+<td><code>true/false</code></td>
+<td>Follow the initial singles guess?</td>
+</tr>
+<tr>
+<td><code>DTol</code> (1e-5)</td>
+<td><code>&lt;real&gt;</code></td>
+<td>Default for EOM residual threshold</td>
+</tr>
+<tr>
+<td><code>NRoots</code> (9)</td>
+<td><code>&lt;int&gt;</code></td>
+<td>Number of roots</td>
+</tr>
+<tr>
+<td><code>OTol</code> (1e-14)</td>
+<td><code>&lt;real&gt;</code></td>
+<td>Orthogonalization threshold</td>
+</tr>
+<tr>
+<td><code>KCOpt</code></td>
+<td><code>KC_AOX</code></td>
+<td>AO exchange for the four external contributions</td>
+</tr>
+<tr>
+<td><code>PrintLevel</code> (3)</td>
+<td><code>&lt;int&gt;</code></td>
+<td>The amount of information to be printed</td>
+</tr>
+<tr>
+<td><code>MaxCore</code> (500)</td>
+<td><code>&lt;int&gt;</code></td>
+<td>Total amount of memory</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "toc.follow"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../../javascripts/mathjax.js"></script>
+      
+        <script src="../../../../javascripts/mathjax/tex-mml-chtml.js"></script>
+      
+        <script src="../../../../javascripts/math-instant.js"></script>
+      
+        <script src="../../../../javascripts/fast-mol-viewer.iife.js"></script>
+      
+        <script src="../../../../javascripts/mol-embed.js"></script>
+      
+        <script src="../../../../javascripts/tabs-pin.js"></script>
+      
+    
+  </body>
+</html>
