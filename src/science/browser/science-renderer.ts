@@ -24,10 +24,28 @@ export function hydrateSciencePreviews(root: ParentNode = document): void {
 
 /** Hydrate placeholders that an editor recreates after code changes. */
 export function observeSciencePreviews(root: HTMLElement): () => void {
-	hydrateSciencePreviews(root);
-	const observer = new MutationObserver(() => hydrateSciencePreviews(root));
+	// Lazy: a single article can embed multi-megabyte Cube grids whose
+	// isosurface extraction blocks the main thread, so figures hydrate only
+	// when they approach the viewport. In-view figures still resolve right
+	// after load via the observer's initial callback.
+	const pending = new IntersectionObserver((entries) => {
+		for (const entry of entries) {
+			if (!entry.isIntersecting) continue;
+			const preview = entry.target as HTMLElement;
+			pending.unobserve(preview);
+			void sciencePluginRegistry.hydratePreview(preview);
+		}
+	}, { rootMargin: '600px' });
+	const watch = (): void => {
+		for (const preview of root.querySelectorAll<HTMLElement>(PREVIEW_SELECTOR)) pending.observe(preview);
+	};
+	watch();
+	const observer = new MutationObserver(watch);
 	observer.observe(root, { childList: true, subtree: true });
-	return () => observer.disconnect();
+	return () => {
+		observer.disconnect();
+		pending.disconnect();
+	};
 }
 
 /** Replace ordinary Markdown code blocks on a generated blog page. */
