@@ -1,0 +1,383 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from './BaseHead.astro';
+import { SITE_TITLE } from '../consts';
+import { isPublishedArticle } from '../studio/server/schemas.mjs';
+
+interface Crumb {
+	label: string;
+	href?: string;
+}
+
+interface Props {
+	title: string;
+	description?: string;
+	crumbs: Crumb[];
+	editHref?: string;
+}
+
+const { title, description = '', crumbs, editHref = '/studio' } = Astro.props;
+const localStudio = import.meta.env.DEV;
+const posts = (await getCollection('blog'))
+	.filter(isPublishedArticle)
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const here = Astro.url.pathname.replace(/\/$/, '') || '/';
+const current = (href: string) => (href.replace(/\/$/, '') || '/') === here;
+---
+
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={title === SITE_TITLE ? title : `${title} · ${SITE_TITLE}`} description={description || title} />
+	</head>
+	<body class="workspace-body">
+		<div class="workspace">
+			<script is:inline>
+				(() => {
+					const workspace = document.currentScript && document.currentScript.parentElement;
+					if (!workspace) return;
+					const narrow = matchMedia('(max-width: 800px)').matches;
+					const collapsed = narrow || localStorage.getItem('workspace-sidebar') === 'collapsed';
+					if (collapsed) workspace.classList.add('sidebar-collapsed');
+				})();
+			</script>
+			<aside class="workspace-side" aria-label="页面">
+				<div class="workspace-brand">
+					<a href="/">
+						<span class="workspace-mark" aria-hidden="true">计</span>
+						<strong>{SITE_TITLE}</strong>
+					</a>
+				</div>
+				<nav class="side-nav" aria-label="工作区">
+					<a class="side-link" href="/" aria-current={current('/') ? 'page' : undefined}>
+						<svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 9.2 10 3.8l6.5 5.4V16a1 1 0 0 1-1 1h-3.4v-4.4H7.9V17H4.5a1 1 0 0 1-1-1V9.2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /></svg>
+						首页
+					</a>
+					<a class="side-link" href="/blog" aria-current={current('/blog') ? 'page' : undefined}>
+						<svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 3.2h5.4L15.2 7v9.2a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.2a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /><path d="M11.2 3.4V7.2h3.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /></svg>
+						文章
+					</a>
+					<a class="side-link" href="/about" aria-current={current('/about') ? 'page' : undefined}>
+						<svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="M10 9.1V13.6M10 6.5v.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
+						关于
+					</a>
+					{localStudio && (
+						<a class="side-link" href="/studio">
+							<svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M12.4 3.8 16.2 7.6 7.6 16.2H3.8v-3.8L12.4 3.8z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /></svg>
+							Studio
+						</a>
+					)}
+				</nav>
+				<p class="side-label">页面</p>
+				<nav class="side-pages" aria-label="文章">
+					{
+						posts.map((post) => (
+							<a class="side-link page-link" href={`/blog/${post.id}/`} aria-current={current(`/blog/${post.id}`) ? 'page' : undefined}>
+								<span class="page-glyph" aria-hidden="true">{post.data.title.slice(0, 1)}</span>
+								<span>{post.data.title}</span>
+							</a>
+						))
+					}
+				</nav>
+			</aside>
+			<button id="workspace-scrim" class="workspace-scrim" type="button" aria-label="关闭侧边栏" tabindex="-1"></button>
+			<div class="workspace-canvas">
+				<header class="workspace-top">
+					<button id="workspace-sidebar-toggle" type="button" aria-label="收起侧边栏" aria-pressed="false">
+						<svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="3.2" y="3.5" width="13.6" height="13" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="M8 3.5v13" stroke="currentColor" stroke-width="1.5" /></svg>
+					</button>
+					<nav class="crumbs" aria-label="路径">
+						{
+							crumbs.map((crumb, index) => (
+								<>
+									{index > 0 && <span aria-hidden="true">/</span>}
+									{crumb.href ? <a href={crumb.href}>{crumb.label}</a> : <strong>{crumb.label}</strong>}
+								</>
+							))
+						}
+					</nav>
+					<div class="top-actions">
+						{localStudio && <a href={editHref}>编辑</a>}
+						<button class="theme-toggle" type="button" aria-label="切换到深色模式" title="切换主题">
+							<svg class="icon light-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="M10 2.8v1.7M10 15.5v1.7M2.8 10h1.7M15.5 10h1.7M4.7 4.7l1.2 1.2M14.1 14.1l1.2 1.2M15.3 4.7l-1.2 1.2M5.9 14.1l-1.2 1.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
+							<svg class="icon dark-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M13.8 12.6A5.2 5.2 0 0 1 7.2 5.4 5.5 5.5 0 1 0 13.8 12.6z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /></svg>
+						</button>
+					</div>
+				</header>
+				<div class="workspace-scroll">
+					<slot name="cover" />
+					<article class="notion-page">
+						<h1>{title}</h1>
+						{description && <p class="notion-lead">{description}</p>}
+						<slot name="properties" />
+						<div class="notion-prose"><slot /></div>
+					</article>
+				</div>
+			</div>
+		</div>
+		<script>
+			const workspace = document.querySelector<HTMLElement>('.workspace');
+			const toggle = document.querySelector<HTMLButtonElement>('#workspace-sidebar-toggle');
+			const scrim = document.querySelector<HTMLButtonElement>('#workspace-scrim');
+			const themeToggle = document.querySelector<HTMLButtonElement>('.theme-toggle');
+			const top = document.querySelector<HTMLElement>('.workspace-top');
+			const scroller = document.querySelector<HTMLElement>('.workspace-scroll');
+			if (workspace && toggle) {
+				const narrowQuery = window.matchMedia('(max-width: 800px)');
+				const label = () => {
+					const hidden = workspace.classList.contains('sidebar-collapsed');
+					toggle.setAttribute('aria-pressed', String(hidden));
+					toggle.setAttribute('aria-label', hidden ? '展开侧边栏' : '收起侧边栏');
+				};
+				const applyStored = () => {
+					const collapsed = narrowQuery.matches || localStorage.getItem('workspace-sidebar') === 'collapsed';
+					workspace.classList.toggle('sidebar-collapsed', collapsed);
+					label();
+				};
+				const setCollapsed = (collapsed: boolean) => {
+					workspace.classList.toggle('sidebar-collapsed', collapsed);
+					if (!narrowQuery.matches) localStorage.setItem('workspace-sidebar', collapsed ? 'collapsed' : 'open');
+					label();
+				};
+				applyStored();
+				narrowQuery.addEventListener('change', applyStored);
+				toggle.addEventListener('click', () => setCollapsed(!workspace.classList.contains('sidebar-collapsed')));
+				scrim?.addEventListener('click', () => setCollapsed(true));
+			}
+			if (scroller && top) {
+				const markScrolled = () => top.classList.toggle('is-scrolled', scroller.scrollTop > 4);
+				scroller.addEventListener('scroll', markScrolled, { passive: true });
+				markScrolled();
+			}
+			if (themeToggle) {
+				const updateThemeLabel = () => {
+					const dark = document.documentElement.dataset.theme === 'dark';
+					themeToggle.setAttribute('aria-label', dark ? '切换到浅色模式' : '切换到深色模式');
+				};
+				themeToggle.addEventListener('click', () => {
+					const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+					document.documentElement.dataset.theme = next;
+					localStorage.setItem('theme', next);
+					window.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+					updateThemeLabel();
+				});
+				updateThemeLabel();
+			}
+		</script>
+	</body>
+</html>
+
+<style>
+	:global(body.workspace-body) {
+		height: 100vh;
+		overflow: hidden;
+		font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+		font-size: 16px;
+		line-height: 1.5;
+		background: var(--surface);
+	}
+	.workspace {
+		display: grid;
+		grid-template-columns: 240px minmax(0, 1fr);
+		height: 100vh;
+		overflow: hidden;
+		transition: grid-template-columns 160ms ease;
+	}
+	.workspace.sidebar-collapsed { grid-template-columns: 0 minmax(0, 1fr); }
+	.workspace-side {
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		min-width: 0;
+		overflow: hidden;
+		border-right: 1px solid color-mix(in srgb, rgb(var(--gray-dark)) 8%, transparent);
+		background: var(--surface-soft);
+		transition: transform 160ms ease, opacity 160ms ease;
+	}
+	.workspace.sidebar-collapsed .workspace-side { border-right-width: 0; opacity: 0; pointer-events: none; }
+	@media (min-width: 801px) {
+		.workspace.sidebar-collapsed .workspace-side { max-width: 0; }
+	}
+	.workspace-scrim { display: none; }
+	.workspace-brand { padding: 12px 10px 6px; }
+	.workspace-brand a {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		min-height: 32px;
+		padding: 0 6px;
+		border-radius: 6px;
+		color: rgb(var(--black));
+		font-size: 14px;
+		font-weight: 600;
+		text-decoration: none;
+	}
+	.workspace-brand a:hover { background: color-mix(in srgb, rgb(var(--gray-dark)) 6%, transparent); }
+	.workspace-mark {
+		display: grid;
+		width: 22px;
+		height: 22px;
+		flex: none;
+		place-items: center;
+		border-radius: 4px;
+		background: var(--accent);
+		color: white;
+		font-size: 12px;
+		font-weight: 700;
+	}
+	.workspace-brand strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	.side-nav, .side-pages { display: grid; align-content: start; padding: 4px 0; }
+	.side-pages { flex: 1; overflow: auto; padding-bottom: 24px; }
+	.side-label { margin: 16px 16px 2px; color: rgb(var(--gray)); font-size: 12px; font-weight: 500; }
+	.side-link {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		min-height: 30px;
+		margin: 0 8px;
+		padding: 0 8px;
+		border-radius: 6px;
+		color: rgb(var(--gray-dark));
+		font-size: 14px;
+		text-decoration: none;
+	}
+	.side-link span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	.icon { width: 16px; height: 16px; flex: none; }
+	.side-link:hover,
+	.side-link[aria-current='page'] { background: var(--surface-hover); color: rgb(var(--black)); }
+	.side-link[aria-current='page'] { font-weight: 600; }
+	.page-glyph {
+		display: grid;
+		width: 18px;
+		height: 18px;
+		flex: none;
+		place-items: center;
+		color: rgb(var(--gray));
+		font-size: 13px;
+		font-weight: 650;
+	}
+	.workspace-canvas { display: flex; flex-direction: column; min-width: 0; height: 100vh; background: var(--surface); }
+	.workspace-top {
+		display: flex;
+		flex: none;
+		align-items: center;
+		gap: 8px;
+		height: 45px;
+		padding: 0 12px;
+	}
+	#workspace-sidebar-toggle,
+	.theme-toggle {
+		display: grid;
+		width: 28px;
+		height: 28px;
+		flex: none;
+		place-items: center;
+		border: 0;
+		border-radius: 6px;
+		background: transparent;
+		color: rgb(var(--gray));
+		font: inherit;
+		cursor: pointer;
+	}
+	#workspace-sidebar-toggle:hover,
+	.theme-toggle:hover { background: var(--surface-soft); color: rgb(var(--gray-dark)); }
+	#workspace-sidebar-toggle:focus-visible,
+	.theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+	.workspace-top.is-scrolled { box-shadow: inset 0 -1px 0 rgb(var(--gray-light)); }
+	.crumbs { display: flex; min-width: 0; flex: 1; align-items: center; gap: 6px; overflow: hidden; color: rgb(var(--gray)); font-size: 14px; white-space: nowrap; }
+	.crumbs > * { flex: none; }
+	.crumbs a { color: rgb(var(--gray)); text-decoration: none; }
+	.crumbs a:hover { background: var(--surface-soft); border-radius: 4px; color: rgb(var(--gray-dark)); }
+	.crumbs strong { min-width: 0; flex: 0 1 auto; overflow: hidden; color: rgb(var(--gray-dark)); font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+	.top-actions { display: flex; flex: none; align-items: center; gap: 4px; }
+	.top-actions a {
+		padding: 4px 8px;
+		border-radius: 6px;
+		color: rgb(var(--gray-dark));
+		font-size: 14px;
+		text-decoration: none;
+	}
+	.top-actions a:hover { background: var(--surface-soft); color: rgb(var(--black)); }
+	.light-icon { display: none; }
+	:global(html[data-theme='dark']) .light-icon { display: block; }
+	:global(html[data-theme='dark']) .dark-icon { display: none; }
+	.workspace-scroll { flex: 1; overflow: auto; }
+	.workspace-scroll > :global(.notion-cover) { height: 30vh; max-height: 280px; overflow: hidden; background: var(--surface-soft); }
+	.workspace-scroll > :global(.notion-cover img) { width: 100%; height: 100%; object-fit: cover; border-radius: 0; }
+	.notion-page { width: min(708px, calc(100% - 120px)); margin: 0 auto; padding: 72px 0 160px; }
+	.workspace-scroll:has(:global(.notion-cover)) .notion-page { padding-top: 28px; }
+	.notion-page > h1 { margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; }
+	.notion-lead { margin: 8px 0 0; color: rgb(var(--gray)); font-size: 16px; line-height: 1.6; }
+	.notion-page :global(.page-meta) { margin: 6px 0 0; color: rgb(var(--gray)); font-size: 14px; line-height: 1.5; }
+	.notion-page :global(.page-meta-tags)::before { content: ' · '; }
+	.notion-prose { padding-top: 18px; }
+	.notion-prose :global(h1),
+	.notion-prose :global(h2),
+	.notion-prose :global(h3),
+	.notion-prose :global(h4) { scroll-margin-top: 72px; letter-spacing: -0.02em; line-height: 1.3; font-weight: 650; }
+	.notion-prose :global(h1) { margin: 1.4em 0 4px; font-size: 1.7em; }
+	.notion-prose :global(h2) { margin: 1.35em 0 4px; font-size: 1.5em; }
+	.notion-prose :global(h3) { margin: 1.15em 0 2px; font-size: 1.25em; }
+	.notion-prose :global(h4) { margin: 1em 0 2px; font-size: 1.1em; }
+	.notion-prose :global(p) { margin: 6px 0; padding: 1px 0; line-height: 1.65; }
+	.notion-prose :global(a:not(.page-row)) { text-decoration-thickness: 1px; text-underline-offset: 3px; }
+	.notion-prose :global(ul),
+	.notion-prose :global(ol) { margin: 6px 0; padding-left: 1.5em; }
+	.notion-prose :global(li) { margin: 2px 0; padding: 1px 0; }
+	.notion-prose :global(blockquote) { margin: 8px 0; padding: 2px 14px; border-left: 3px solid rgb(var(--gray-light)); font-size: 1em; }
+	.notion-prose :global(code) { padding: 0.12em 0.35em; border-radius: 4px; background: color-mix(in srgb, rgb(var(--gray)) 14%, transparent); color: #eb5757; font-size: 0.86em; }
+	:global(html[data-theme='dark']) .notion-prose :global(code) { color: #ff8f88; background: rgb(255 255 255 / 8%); }
+	:global(html[data-theme='dark']) .notion-prose :global(pre code) { background: transparent; color: inherit; }
+	.notion-prose :global(pre) {
+		margin: 14px 0 !important;
+		padding: 18px 20px !important;
+		border-radius: 12px !important;
+		font-size: 13.5px !important;
+		line-height: 1.55 !important;
+	}
+	:global(html[data-theme='dark']) .notion-prose :global(pre) { background-color: #2f2f2f !important; }
+	.notion-prose :global(pre code) { padding: 0; border-radius: 0; background: transparent; color: inherit; font-size: inherit; }
+	.notion-prose :global(.page-rows) { display: grid; margin-top: 18px; }
+	.notion-prose :global(.page-row) {
+		display: grid;
+		grid-template-columns: 22px minmax(0, 1fr) auto;
+		gap: 8px;
+		align-items: center;
+		min-height: 32px;
+		margin: 0 -8px;
+		padding: 2px 8px;
+		border-radius: 6px;
+		color: rgb(var(--gray-dark));
+		text-decoration: none;
+	}
+	.notion-prose :global(.page-row:hover) { background: var(--surface-hover); color: rgb(var(--black)); }
+	.notion-prose :global(.page-row-title) { overflow: hidden; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+	.notion-prose :global(.page-row-meta) { color: rgb(var(--gray)); font-size: 12px; white-space: nowrap; }
+	@media (max-width: 800px) {
+		.workspace,
+		.workspace.sidebar-collapsed { grid-template-columns: minmax(0, 1fr); }
+		.workspace-side {
+			position: fixed;
+			z-index: 40;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			width: min(280px, 86vw);
+			opacity: 1;
+			box-shadow: 0 12px 40px rgb(0 0 0 / 16%);
+		}
+		.workspace:not(.sidebar-collapsed) .workspace-scrim {
+			display: block;
+			position: fixed;
+			z-index: 30;
+			inset: 0;
+			border: 0;
+			background: rgb(0 0 0 / 32%);
+			cursor: pointer;
+		}
+		.workspace.sidebar-collapsed .workspace-side { transform: translateX(-105%); opacity: 0; box-shadow: none; }
+		.notion-page { width: min(708px, calc(100% - 40px)); padding-top: 28px; }
+		.notion-page > h1 { font-size: 28px; }
+	}
+</style>

@@ -11,17 +11,8 @@ const visibleHeadings = headings.filter((heading) => heading.depth === 2 || head
 
 {
 	visibleHeadings.length > 0 && (
-		<details class="toc" data-toc>
-			<summary aria-label="打开文章目录" title="文章目录">
-				<span class="mobile-label">目录</span>
-				<span class="rail" aria-hidden="true">
-					{visibleHeadings.slice(0, 8).map((heading) => (
-						<i class:list={{ child: heading.depth === 3 }} />
-					))}
-				</span>
-			</summary>
-			<nav aria-label="文章目录">
-				<p>本页目录</p>
+		<nav class="outline-rail" data-toc aria-label="文章目录">
+			<div class="outline-pop">
 				<ol>
 					{visibleHeadings.map((heading) => (
 						<li class:list={{ child: heading.depth === 3 }}>
@@ -29,104 +20,113 @@ const visibleHeadings = headings.filter((heading) => heading.depth === 2 || head
 						</li>
 					))}
 				</ol>
-			</nav>
-		</details>
+			</div>
+			<div class="outline-marks" aria-hidden="true">
+				{visibleHeadings.map((heading) => (
+					<i class:list={{ child: heading.depth === 3 }} data-toc-mark={heading.slug} />
+				))}
+			</div>
+		</nav>
 	)
 }
 
 <script>
-	const toc = document.querySelector<HTMLDetailsElement>('[data-toc]');
+	const toc = document.querySelector<HTMLElement>('[data-toc]');
 	if (toc) {
-		const summary = toc.querySelector('summary');
-		let pinned = false;
-		const desktop = () => window.matchMedia('(min-width: 1100px)').matches;
-
-		summary?.addEventListener('click', (event) => {
-			if (!desktop()) return;
-			event.preventDefault();
-			pinned = !toc.open;
-			toc.open = pinned;
-		});
-		toc.addEventListener('pointerenter', () => {
-			if (desktop()) toc.open = true;
-		});
-		toc.addEventListener('pointerleave', () => {
-			if (desktop() && !pinned) toc.open = false;
-		});
-
 		const links = [...toc.querySelectorAll<HTMLAnchorElement>('[data-toc-link]')];
+		const marks = [...toc.querySelectorAll<HTMLElement>('[data-toc-mark]')];
 		const sections = links
 			.map((link) => document.getElementById(link.dataset.tocLink ?? ''))
 			.filter((section): section is HTMLElement => Boolean(section));
+		const scroller = toc.closest<HTMLElement>('.workspace-scroll') ?? document.documentElement;
 
 		const updateCurrent = () => {
-			let current = sections[0]?.id;
+			const limit = scroller.getBoundingClientRect().top + 88;
+			let current: string | undefined;
 			for (const section of sections) {
-				if (section.getBoundingClientRect().top <= 180) current = section.id;
+				if (section.getBoundingClientRect().top <= limit) current = section.id;
 			}
 			for (const link of links) {
 				if (link.dataset.tocLink === current) link.setAttribute('aria-current', 'location');
 				else link.removeAttribute('aria-current');
 			}
+			for (const mark of marks) {
+				mark.toggleAttribute('data-current', mark.dataset.tocMark === current);
+			}
 		};
 
+		for (const link of links) {
+			link.addEventListener('click', (event) => {
+				const section = document.getElementById(link.dataset.tocLink ?? '');
+				if (!section) return;
+				event.preventDefault();
+				section.scrollIntoView({ block: 'start' });
+				const hash = `#${link.dataset.tocLink}`;
+				if (location.hash !== hash) history.replaceState(null, '', hash);
+				updateCurrent();
+			});
+		}
+
 		updateCurrent();
-		document.addEventListener('scroll', updateCurrent, { passive: true });
+		scroller.addEventListener('scroll', updateCurrent, { passive: true });
+		const hash = decodeURIComponent(location.hash.slice(1));
+		if (hash) document.getElementById(hash)?.scrollIntoView({ block: 'start' });
 	}
 </script>
 
 <style>
-	.toc {
+	.outline-rail {
 		position: fixed;
-		top: 42%;
-		right: 22px;
-		z-index: 20;
+		z-index: 12;
+		top: 118px;
+		right: 8px;
+		display: flex;
+		align-items: flex-start;
+		pointer-events: none;
 	}
-	summary {
-		position: absolute;
-		top: 0;
-		right: 0;
-		width: 34px;
-		padding: 10px 4px;
-		cursor: pointer;
-		list-style: none;
+	.outline-pop {
+		width: 220px;
+		max-height: min(68vh, 520px);
+		margin-right: 2px;
+		overflow: auto;
+		opacity: 0;
+		pointer-events: none;
 	}
-	summary::-webkit-details-marker { display: none; }
-	.rail { display: grid; justify-items: end; gap: 8px; }
-	.rail i { display: block; width: 20px; height: 2px; border-radius: 2px; background: rgb(var(--gray-light)); }
-	.rail i.child { width: 12px; opacity: 0.62; }
-	.mobile-label { display: none; }
-	nav {
-		width: 270px;
-		max-height: min(62vh, 520px);
-		overflow-y: auto;
-		margin-right: 44px;
-		padding: 18px 16px;
-		border: 1px solid rgba(15, 23, 20, 0.1);
-		border-radius: 14px;
-		background: color-mix(in srgb, var(--surface) 96%, transparent);
-		box-shadow: 0 18px 45px rgba(22, 32, 30, 0.12);
-		backdrop-filter: blur(14px);
+	.outline-rail:hover .outline-pop,
+	.outline-rail:focus-within .outline-pop { opacity: 1; pointer-events: auto; }
+	.outline-pop ol { display: grid; gap: 1px; margin: 0; padding: 4px; list-style: none; }
+	.outline-pop a {
+		display: block;
+		padding: 3px 8px;
+		border-radius: 4px;
+		color: rgb(var(--gray));
+		font-size: 13px;
+		line-height: 1.35;
+		text-align: right;
+		text-decoration: none;
 	}
-	nav p { margin: 0 0 10px; color: rgb(var(--gray)); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; }
-	ol { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
-	li a { display: block; padding: 6px 8px; border-radius: 6px; color: rgb(var(--gray)); font-size: 0.82rem; line-height: 1.35; text-decoration: none; }
-	li.child a { padding-left: 22px; font-size: 0.78rem; }
-	li a:hover { background: var(--surface-soft); color: rgb(var(--black)); }
-	li a[aria-current='location'] { background: var(--surface-soft); color: var(--accent); font-weight: 700; }
-	@media (max-width: 1099px) {
-		.toc { top: auto; right: 18px; bottom: 18px; }
-		summary {
-			position: relative;
-			width: auto;
-			padding: 10px 14px;
-			border: 1px solid rgb(var(--gray-light));
-			border-radius: 999px;
-			background: var(--surface);
-			box-shadow: 0 8px 24px rgba(22, 32, 30, 0.14);
-		}
-		.mobile-label { display: inline; color: rgb(var(--gray-dark)); font-size: 0.82rem; font-weight: 700; }
-		.rail { display: none; }
-		nav { position: absolute; right: 0; bottom: 52px; margin: 0; }
+	.outline-pop li.child a { font-size: 12px; }
+	.outline-pop a:hover { background: var(--surface-hover); color: rgb(var(--black)); }
+	.outline-pop a[aria-current='location'] { color: rgb(var(--black)); font-weight: 600; }
+	.outline-marks {
+		display: grid;
+		justify-items: end;
+		gap: 10px;
+		width: 22px;
+		padding: 8px 2px;
+		pointer-events: auto;
+	}
+	.outline-marks i {
+		display: block;
+		width: 14px;
+		height: 1px;
+		border-radius: 1px;
+		background: rgb(var(--gray));
+		opacity: 0.55;
+	}
+	.outline-marks i.child { width: 8px; }
+	.outline-marks i[data-current='true'] { height: 2px; background: rgb(var(--gray-dark)); opacity: 1; }
+	@media (max-width: 1080px) {
+		.outline-rail { display: none; }
 	}
 </style>

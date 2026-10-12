@@ -62,7 +62,7 @@ import { SITE_TITLE } from '../consts';
 							<p id="property-error" role="alert" hidden></p>
 						</div>
 					</header>
-					<div id="crepe-editor" class="crepe-host" aria-label="Crepe 文章编辑器"></div>
+					<div id="crepe-editor" class="crepe-host" aria-label="文章编辑器"></div>
 					</div>
 				</section>
 			</section>
@@ -187,6 +187,11 @@ import { SITE_TITLE } from '../consts';
 	.article-properties .draft-property input { width: 16px; min-height: 16px; accent-color: var(--accent); }
 	#property-error { grid-column: 1 / -1; margin: 0; color: #b42318; font-size: 10px; }
 	.crepe-host { min-height: calc(100vh - 210px); background: transparent; }
+	:global(.crepe-host .yiitap) { display: block; min-height: inherit; color: rgb(var(--gray-dark)); font-family: var(--font-atkinson), system-ui, sans-serif; }
+	:global(.crepe-host .yiitap .editor-content) { box-sizing: border-box; width: min(100%, 850px); margin: 0 auto; padding: 10px 58px 180px; }
+	:global(.crepe-host .yiitap .ProseMirror) { min-height: calc(100vh - 280px); outline: none; }
+	:global(.crepe-host .yiitap .ProseMirror pre) { margin: 0.7em 0 1em; padding: 12px 14px; overflow-x: auto; border-radius: 8px; background: var(--surface-soft); color: rgb(var(--gray-dark)); }
+	:global(.crepe-host .yiitap .ProseMirror pre code) { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.55; white-space: pre-wrap; }
 	:global(.crepe-host .milkdown) {
 		--crepe-color-background: var(--surface);
 		--crepe-color-on-background: rgb(var(--gray-dark));
@@ -220,7 +225,18 @@ import { SITE_TITLE } from '../consts';
 	:global(.crepe-host .milkdown .ProseMirror .pm-block-range) { border-radius: 3px; background: color-mix(in srgb, var(--accent) 18%, var(--surface)); }
 	.editor-scroll.pm-block-dragging,
 	.editor-scroll.pm-block-dragging :global(.ProseMirror) { user-select: none; }
-	:global(.crepe-host .milkdown .ProseMirror .pm-inline-math) { display: inline-block; vertical-align: middle; margin: 0 1px; line-height: 1; color: inherit; cursor: text; }
+	:global(.crepe-host .milkdown .ProseMirror .pm-math-source) { color: #9a9a9a; background: none; }
+	:global(.crepe-host .milkdown .ProseMirror .pm-math-cmd) { color: #c45cdb; }
+	:global(.crepe-host .milkdown .ProseMirror .pm-math-preview) { position: relative; display: inline-block; width: 0; height: 0; vertical-align: baseline; pointer-events: none; user-select: none; z-index: 40; }
+	:global(.crepe-host .milkdown .ProseMirror .pm-math-preview-body) { position: absolute; top: 14px; left: 0; padding: 7px 12px 8px; border-radius: 7px; background: #1c1c1c; color: #fff; white-space: nowrap; box-shadow: 0 8px 18px rgb(0 0 0 / 16%); }
+	:global(.crepe-host .milkdown .ProseMirror .pm-math-preview-body::before) { content: ''; position: absolute; top: -6px; left: var(--arrow, 16px); transform: translateX(-50%); border-width: 0 6px 6px; border-style: solid; border-color: transparent transparent #1c1c1c; }
+	:global(.crepe-host .milkdown .ProseMirror .pm-math-preview-body .katex) { color: inherit; font-size: 1.12em; }
+	:global(html[data-theme='dark'] .crepe-host .milkdown .ProseMirror .pm-math-source) { color: #b5b5b5; }
+	:global(html[data-theme='dark'] .crepe-host .milkdown .ProseMirror .pm-math-cmd) { color: #e48cf0; }
+	:global(html[data-theme='dark'] .crepe-host .milkdown .ProseMirror .pm-math-preview-body) { background: #f3f3f3; color: #191919; }
+	:global(html[data-theme='dark'] .crepe-host .milkdown .ProseMirror .pm-math-preview-body::before) { border-color: transparent transparent #f3f3f3; }
+	:global(.crepe-host .milkdown .ProseMirror .pm-inline-math) { display: inline-block; vertical-align: middle; margin: 0 1px; padding-inline: 0.2em; line-height: 1; color: inherit; cursor: text; user-select: none; }
+	:global(.crepe-host .milkdown .ProseMirror .pm-inline-math .katex-mathml) { display: none; }
 	:global(.crepe-host .milkdown .ProseMirror .pm-inline-math:hover),
 	:global(.crepe-host .milkdown .ProseMirror .pm-inline-math.is-editing) { border-radius: 4px; background: color-mix(in srgb, var(--accent) 14%, var(--surface)); }
 	:global(.crepe-host .milkdown .ProseMirror .pm-inline-math.is-error) { text-decoration: underline wavy #b42318; }
@@ -324,6 +340,7 @@ import { SITE_TITLE } from '../consts';
 		.studio-shell, .studio-shell.ai-open { grid-template-columns: 220px minmax(0, 1fr); }
 		.ai-panel { position: fixed; z-index: 30; top: 0; right: 0; width: min(350px, 88vw); height: 100vh; box-shadow: -12px 0 38px rgba(0, 0, 0, 0.15); }
 		:global(.crepe-host .milkdown .ProseMirror) { padding-inline: 36px; }
+		:global(.crepe-host .yiitap .editor-content) { padding-inline: 36px; }
 		.document-header { padding-inline: 36px; }
 		.article-properties { grid-template-columns: minmax(0, 2fr) minmax(150px, 1fr); }
 	}
@@ -339,5 +356,6 @@ import { SITE_TITLE } from '../consts';
 		.article-properties { grid-template-columns: 1fr; }
 		#property-error { grid-column: auto; }
 		:global(.crepe-host .milkdown .ProseMirror) { padding: 8px 24px 140px; }
+		:global(.crepe-host .yiitap .editor-content) { padding: 8px 24px 140px; }
 	}
 </style>
