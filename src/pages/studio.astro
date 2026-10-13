@@ -247,6 +247,33 @@ import { SITE_TITLE } from '../consts';
 	:global(.crepe-host .milkdown .ProseMirror .pm-inline-math-preview.is-empty) { color: rgb(var(--gray)); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; white-space: nowrap; }
 	:global(.crepe-host .milkdown .ProseMirror .pm-inline-math-error) { display: block; margin-top: 4px; color: #b42318; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; white-space: normal; }
 	:global(.crepe-host .milkdown .milkdown-latex-inline-edit) { display: none; }
+	:global(.crepe-host .pm-display-math) { margin: 0.65em 0 0.85em; }
+	:global(.crepe-host .pm-display-math-formula) { padding: 8px 12px; border-radius: 8px; overflow-x: auto; text-align: center; cursor: pointer; }
+	:global(.crepe-host .pm-display-math-formula:hover) { background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+	:global(.crepe-host .pm-display-math.is-open) { margin: 0; }
+	:global(.crepe-host .pm-display-math.is-open .pm-display-math-formula) { display: none; }
+	:global(.crepe-host .pm-display-math-formula.is-empty) { color: rgb(var(--gray)); font-size: 0.92em; }
+	:global(.crepe-host .pm-display-math-formula.is-error) { text-decoration: underline wavy #b42318; }
+	:global(.crepe-host .pm-display-math-formula .katex-display) { margin: 0; }
+	:global(.crepe-host .pm-display-math-formula .katex-mathml) { display: none; }
+	:global(.pm-source-popup) { position: fixed; z-index: 50; box-sizing: border-box; padding: 10px; border: 1px solid rgb(var(--gray-light)); border-radius: 12px; background: var(--surface); box-shadow: 0 12px 40px rgb(0 0 0 / 14%); }
+	:global(.pm-source-popup-bar) { display: flex; align-items: center; gap: 4px; margin: -4px 0 6px 2px; }
+	:global(.pm-source-popup-caption) { flex: 1; min-width: 0; color: rgb(var(--gray)); font-size: 12px; line-height: 18px; user-select: none; }
+	:global(.pm-source-popup-action) { height: 24px; padding: 0 8px; border: 0; border-radius: 6px; background: transparent; color: var(--accent); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+	:global(.pm-source-popup-action:hover) { background: var(--surface-soft); }
+	:global(.pm-source-popup-action:focus-visible) { outline: 2px solid var(--accent); outline-offset: 1px; }
+	:global(.pm-source-popup-preview) { max-height: 180px; margin-bottom: 8px; padding: 10px 8px; overflow: auto; border-radius: 8px; background: var(--surface-soft); text-align: center; }
+	:global(.pm-source-popup-preview.is-empty) { color: rgb(var(--gray)); font-size: 13px; line-height: 28px; }
+	:global(.pm-source-popup-preview .katex-display) { margin: 0; }
+	:global(.pm-source-popup-preview .katex-mathml) { display: none; }
+	:global(.pm-source-popup-error) { margin: 6px 0 0; color: #b42318; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; line-height: 1.4; text-align: left; }
+	:global(.pm-source-popup-input) { display: block; width: 100%; box-sizing: border-box; min-height: 44px; margin: 0; padding: 8px 10px; border: 0; border-radius: 8px; background: var(--surface); color: rgb(var(--gray-dark)); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.5; resize: none; outline: none; }
+	:global(.pm-source-popup.is-molecule .pm-source-popup-input) { background: var(--surface-soft); white-space: pre; overflow: auto; tab-size: 4; }
+	:global(.pm-source-popup.is-molecule-inline .pm-source-popup-preview) { padding: 6px 8px; overflow: hidden; }
+	:global(.pm-source-popup.is-molecule-inline .pm-source-popup-preview .chem-viewer) { margin: 0; border: 0; border-radius: 0; background: transparent; overflow: visible; }
+	:global(.pm-source-popup.is-molecule-inline .pm-source-popup-preview .chem-viewer > figcaption) { display: none; }
+	:global(.pm-source-popup.is-molecule-inline .pm-source-popup-preview .chem-stage) { min-height: 0; background: transparent; }
+	:global(.pm-source-popup.is-molecule-inline .pm-source-popup-preview .chem-stage svg) { width: auto; height: auto; max-width: 100%; max-height: 150px; margin: 0 auto; }
 	:global(.crepe-host .milkdown .milkdown-block-handle) { margin-left: -2px; gap: 0; transition: none; }
 	:global(.crepe-host .milkdown .milkdown-block-handle .operation-item) { width: 24px; height: 24px; padding: 2px; border-radius: 6px; }
 	:global(.crepe-host .milkdown .milkdown-block-handle .operation-item svg) { width: 18px; height: 18px; }
@@ -265,7 +292,7 @@ import { SITE_TITLE } from '../consts';
 	:global(.crepe-host .science-block-caption) { position: absolute; z-index: 2; top: 6px; right: 6px; display: flex; align-items: center; gap: 2px; margin: 0; padding: 2px; border-radius: 8px; background: color-mix(in srgb, var(--surface) 92%, transparent); color: rgb(var(--gray)); font-size: 12px; opacity: 0; pointer-events: none; user-select: none; }
 	:global(.crepe-host .science-block:hover .science-block-caption),
 	:global(.crepe-host .science-block.ProseMirror-selectednode .science-block-caption),
-	:global(.crepe-host .science-block.is-editing .science-block-caption),
+	:global(.crepe-host .science-block.is-open .science-block-caption),
 	:global(.crepe-host .science-block.is-empty .science-block-caption) { opacity: 1; pointer-events: auto; }
 	:global(.crepe-host .science-block-kind) { padding: 0 6px; line-height: 24px; }
 	:global(.crepe-host .science-block-caption button) { height: 24px; padding: 0 8px; border: 0; border-radius: 6px; background: transparent; color: rgb(var(--gray-dark)); font: inherit; font-size: 12px; line-height: 24px; cursor: pointer; }
@@ -279,13 +306,15 @@ import { SITE_TITLE } from '../consts';
 	:global(.crepe-host .science-block .chem-3d .chem-stage) { height: 240px; min-height: 0; }
 	:global(.crepe-host .science-block .chem-stage svg) { width: auto; height: auto; max-width: 100%; max-height: 168px; margin: 0 auto; }
 	:global(.crepe-host .science-block-fallback) { margin: 0; padding: 20px 12px; color: rgb(var(--gray)); font-size: 13px; text-align: center; }
-	:global(.crepe-host .science-block[data-surface="preview"] .science-block-compose) { position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: pre; }
-	:global(.crepe-host .science-block[data-surface="compose"] .science-block-compose) { position: relative; margin-top: 6px; }
-	:global(.crepe-host .science-block.is-empty .science-block-compose) { margin-top: 0; }
 	:global(.crepe-host .science-block-placeholder) { display: none; }
-	:global(.crepe-host .science-block.is-empty[data-surface="compose"] .science-block-placeholder) { display: block; position: absolute; z-index: 1; top: 6px; left: 10px; color: rgb(var(--gray)); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.5; pointer-events: none; }
-	:global(.crepe-host .science-block[data-surface="compose"] .science-block-source) { min-height: 1.7em; margin: 0; padding: 6px 10px; border-radius: 6px; background: var(--surface-soft); color: rgb(var(--gray-dark)); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
-	:global(.crepe-host .science-block.is-empty[data-surface="compose"] .science-block-source) { padding-right: 88px; }
+	:global(.crepe-host .science-block.is-empty .science-block-placeholder) { display: block; padding: 14px 12px; padding-right: 120px; border-radius: 8px; background: var(--surface-soft); color: rgb(var(--gray)); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.5; cursor: text; }
+	:global(.crepe-host .science-block.is-empty .science-block-placeholder:hover) { background: var(--surface-hover); }
+	:global(.crepe-host .science-block.is-empty .science-block-edit) { display: none; }
+	:global(.crepe-host .science-block.is-open:not(.is-inline-source)) { box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent); }
+	/* The SMILES popup covers its block and previews itself, like a display formula. */
+	:global(.crepe-host .milkdown .science-block.is-inline-source) { background: transparent; outline: none; }
+	:global(.crepe-host .science-block.is-inline-source > *) { visibility: hidden; }
+	:global(.crepe-host .science-block-preview) { cursor: default; }
 	:global(.science-block-menu) { position: fixed; z-index: 40; width: 220px; padding: 6px; border: 1px solid rgb(var(--gray-light)); border-radius: 12px; background: var(--surface); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12); }
 	:global(.science-block-menu[hidden]) { display: none; }
 	:global(.science-block-menu-section) { padding: 8px 8px 2px; color: rgb(var(--gray)); font-size: 11px; }

@@ -1,16 +1,58 @@
 import { parseMoleculeBlock } from '../parsers/index.ts';
 import { prepareMoleculeRenderInput } from '../rendering/index.ts';
+import { describeRDKitError } from '../rendering/rdkit-messages.ts';
 
-type RDKitMol = {
+export type RDKitMol = {
 	is_valid(): boolean;
 	get_svg(width: number, height: number): string;
+	/** `details` is JSON drawing options, e.g. size and `clearBackground`. */
+	get_svg_with_highlights(details: string): string;
+	get_smiles(): string;
+	get_molblock(): string;
+	set_new_coords(useCoordGen?: boolean): boolean;
 	delete(): void;
 };
 
-type RDKitModule = {
-	version(): string;
-	get_mol(source: string): RDKitMol | null;
+type RDKitLogCapture = {
+	get_buffer(): string;
+	clear_buffer(): void;
+	delete?(): void;
 };
+
+export type RDKitModule = {
+	version(): string;
+	/** `details` is JSON, e.g. `{"sanitize":false}` to read a structure without RDKit's chemistry checks. */
+	get_mol(source: string, details?: string): RDKitMol | null;
+	set_log_capture?(logName: string): RDKitLogCapture | null;
+};
+
+/** A structure RDKit read, and why it had to be read as drawn when its chemistry checks refused it. */
+export type ReadMolecule = { mol: RDKitMol; problem: string | null };
+
+/**
+ * Read a structure. When RDKit refuses it (a hydrogen with two bonds, a
+ * pentavalent carbon…), read it again as drawn, without the checks, so the
+ * picture still shows what was written, and say why. Throws only when even
+ * that fails. The caller deletes `mol`.
+ */
+export function readMolecule(rdkit: RDKitModule, source: string): ReadMolecule {
+	const capture = rdkit.set_log_capture?.('rdApp.error') ?? null;
+	try {
+		const strict = rdkit.get_mol(source);
+		if (strict?.is_valid()) return { mol: strict, problem: null };
+		strict?.delete();
+		const reason = describeRDKitError(capture?.get_buffer() ?? '');
+		const loose = rdkit.get_mol(source, JSON.stringify({ sanitize: false }));
+		if (!loose?.is_valid()) {
+			loose?.delete();
+			throw new Error(reason ? `无法解析分子结构：${reason}` : '无法解析分子结构');
+		}
+		return { mol: loose, problem: reason || '结构没有通过 RDKit 的化学检查' };
+	} finally {
+		capture?.clear_buffer();
+		capture?.delete?.();
+	}
+}
 
 export type ThreeDMolViewer = {
 	addModel(source: string, format: string): unknown;
@@ -120,7 +162,8 @@ function loadScript(src: string): Promise<void> {
 	});
 }
 
-function loadRDKit(): Promise<RDKitModule> {
+/** The site's own RDKit (`/vendor/rdkit`), loaded once per page. */
+export function loadRDKit(): Promise<RDKitModule> {
 	const chemistryWindow = window as ChemistryWindow;
 	if (!chemistryWindow.__rdkitPromise) {
 		chemistryWindow.__rdkitPromise = loadScript('/vendor/rdkit/RDKit_minimal.js').then(() => {
@@ -289,13 +332,21 @@ export async function hydrateMoleculePreview(figure: HTMLElement): Promise<void>
 		if (renderInput.renderer === 'rdkit') {
 			const RDKit = await loadRDKit();
 			if (!figure.isConnected) return;
-			const molecule = RDKit.get_mol(renderInput.source);
-			if (!molecule || !molecule.is_valid()) throw new Error('无法解析分子结构');
+			const { mol, problem } = readMolecule(RDKit, renderInput.source);
 			try {
-				stage.innerHTML = molecule.get_svg(720, 360);
+				// No background: the structure sits on the page itself, light or dark.
+				stage.innerHTML = mol.get_svg_with_highlights(JSON.stringify({ width: 720, height: 360, clearBackground: false }));
 				stage.setAttribute('aria-label', `${renderInput.block.language} 二维分子结构`);
 			} finally {
-				molecule.delete();
+				mol.delete();
+			}
+			figure.querySelector('.chem-warning')?.remove();
+			if (problem) {
+				const warning = document.createElement('p');
+				warning.className = 'chem-warning';
+				warning.setAttribute('role', 'note');
+				warning.textContent = `结构有问题，按原样显示：${problem}`;
+				stage.after(warning);
 			}
 			return;
 		}
