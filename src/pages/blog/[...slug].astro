@@ -17,6 +17,9 @@ export async function getStaticPaths() {
 type Props = CollectionEntry<'blog'>;
 
 const post = Astro.props;
+if (post.data.kind === 'wiki') {
+	return Astro.redirect(`/wiki/${post.id}/`);
+}
 const { Content, headings } = await render(post);
 const viewsPath = articleBundlePaths(resolve('blog'), post.id).views;
 const viewsSource = await readFile(viewsPath, 'utf8').catch((error) => {

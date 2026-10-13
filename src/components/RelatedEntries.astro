@@ -1,0 +1,54 @@
+---
+import { articleHref, type ArticleEntry } from '../catalog';
+
+interface Props {
+	entries: ArticleEntry[];
+}
+
+const { entries } = Astro.props;
+---
+
+{
+	entries.length > 0 && (
+		<aside>
+			<h2>相关条目</h2>
+			<ul>
+				{entries.map((entry) => (
+					<li>
+						<a href={articleHref(entry)}>
+							<small>{entry.data.kind === 'wiki' ? '维基' : '博客'}</small>
+							<strong>{entry.data.title}</strong>
+						</a>
+					</li>
+				))}
+			</ul>
+		</aside>
+	)
+}
+
+<style>
+	aside {
+		margin-top: 48px;
+		padding-top: 18px;
+		border-top: 1px solid color-mix(in srgb, rgb(var(--gray-dark)) 12%, transparent);
+	}
+	h2 {
+		margin: 0 0 8px;
+		color: rgb(var(--gray));
+		font-size: 13px;
+		font-weight: 650;
+		letter-spacing: 0.02em;
+	}
+	ul { list-style: none; margin: 0; padding: 0; }
+	a {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+		padding: 7px 0;
+		color: inherit;
+		text-decoration: none;
+	}
+	a:hover strong { color: var(--accent-dark); }
+	small { flex: none; color: rgb(var(--gray)); font-size: 12px; }
+	strong { color: rgb(var(--black)); font-size: 16px; font-weight: 600; }
+</style>

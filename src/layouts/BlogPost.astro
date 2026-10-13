@@ -1,8 +1,10 @@
 ---
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
+import { loadCatalog, relatedArticles } from '../catalog';
 import ChemistryRenderers from '../components/ChemistryRenderers.astro';
 import FormattedDate from '../components/FormattedDate.astro';
+import RelatedEntries from '../components/RelatedEntries.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import WorkspaceFrame from '../components/WorkspaceFrame.astro';
 import { SITE_TITLE } from '../consts';
@@ -18,13 +20,17 @@ type Props = CollectionEntry<'blog'>['data'] & {
 	chemistryViews?: Record<string, { format: string; view: number[]; display?: unknown }>;
 	articleSlug: string;
 };
-const { title, description, pubDate, updatedDate, heroImage, tags, headings = [], chemistryViews = {}, articleSlug } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, tags, kind, headings = [], chemistryViews = {}, articleSlug } = Astro.props;
+const wiki = kind === 'wiki';
+const { wiki: wikiPages, posts } = await loadCatalog();
+const current = [...wikiPages, ...posts].find((entry) => entry.id === articleSlug);
+const related = current ? relatedArticles([...wikiPages, ...posts], current) : [];
 ---
 
 <WorkspaceFrame
 	title={title}
 	description={description}
-	crumbs={[{ label: SITE_TITLE, href: '/' }, { label: '文章', href: '/blog' }, { label: title }]}
+	crumbs={[{ label: SITE_TITLE, href: '/' }, { label: wiki ? '维基' : '博客', href: wiki ? '/wiki' : '/blog' }, { label: title }]}
 	editHref={`/studio?article=${articleSlug}`}
 >
 	{heroImage && (
@@ -33,11 +39,13 @@ const { title, description, pubDate, updatedDate, heroImage, tags, headings = []
 		</div>
 	)}
 	<p class="page-meta" slot="properties">
-		<FormattedDate date={pubDate} />
+		<a class="page-kind" href={wiki ? '/wiki' : '/blog'}>{wiki ? '维基' : '博客'}</a>
+		<span class="page-meta-tags"><FormattedDate date={pubDate} /></span>
 		{updatedDate && <> · 更新于 <FormattedDate date={updatedDate} /></>}
 		{tags.length > 0 && <span class="page-meta-tags">{tags.join(' · ')}</span>}
 	</p>
 	<TableOfContents headings={headings} />
 	<slot />
+	<RelatedEntries entries={related} />
 	<ChemistryRenderers views={chemistryViews} articleSlug={articleSlug} />
 </WorkspaceFrame>

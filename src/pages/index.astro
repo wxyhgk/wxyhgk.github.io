@@ -1,9 +1,67 @@
 ---
-import PageList from '../components/PageList.astro';
+import JournalList from '../components/JournalList.astro';
+import WikiDirectory from '../components/WikiDirectory.astro';
 import WorkspaceFrame from '../components/WorkspaceFrame.astro';
+import { loadCatalog } from '../catalog';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+const { wiki, posts } = await loadCatalog();
 ---
 
-<WorkspaceFrame title={SITE_TITLE} description={SITE_DESCRIPTION} crumbs={[{ label: SITE_TITLE }]}>
-	<PageList />
+<WorkspaceFrame wide title={SITE_TITLE} description={SITE_DESCRIPTION} crumbs={[{ label: SITE_TITLE }]}>
+	<div class="split">
+		<section>
+			<div class="column-head">
+				<h2>维基</h2>
+				<a href="/wiki">全部条目</a>
+			</div>
+			<p>方法、概念和可以反复查阅的计算约定。</p>
+			<WikiDirectory entries={wiki} />
+		</section>
+		<section>
+			<div class="column-head">
+				<h2>博客</h2>
+				<a href="/blog">全部文章</a>
+			</div>
+			<p>按时间留下的推导、计算和实验记录。</p>
+			<JournalList entries={posts} />
+		</section>
+	</div>
 </WorkspaceFrame>
+
+<style>
+	.split {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: 28px 56px;
+		margin-top: 8px;
+	}
+	.column-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 12px;
+	}
+	.column-head h2 {
+		margin: 0;
+		font-size: 22px;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+	}
+	.column-head a {
+		flex: none;
+		color: var(--accent);
+		font-size: 14px;
+		text-decoration: none;
+	}
+	.column-head a:hover { color: var(--accent-dark); }
+	.split > section > p {
+		margin: 4px 0 0;
+		color: rgb(var(--gray));
+		font-size: 14px;
+		line-height: 1.5;
+	}
+	@media (max-width: 800px) {
+		.split { grid-template-columns: 1fr; gap: 36px; }
+	}
+</style>

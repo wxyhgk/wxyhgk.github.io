@@ -1,0 +1,87 @@
+---
+import { articleHref, type ArticleEntry } from '../catalog';
+
+interface Props {
+	entries: ArticleEntry[];
+}
+
+const { entries } = Astro.props;
+const groups = new Map<string, ArticleEntry[]>();
+for (const entry of entries) {
+	const label = entry.data.tags[0] ?? '未分类';
+	const group = groups.get(label) ?? [];
+	group.push(entry);
+	groups.set(label, group);
+}
+---
+
+{
+	entries.length === 0 ? (
+		<p class="empty">还没有维基条目。在文章开头写上 <code>kind: wiki</code>，发布后就会出现在这里。</p>
+	) : (
+		<div class="directory">
+			{[...groups.entries()].map(([label, pages]) => (
+				<section>
+					<h3>{label}</h3>
+					<ul>
+						{pages.map((entry) => (
+							<li>
+								<a href={articleHref(entry)}>
+									<strong>{entry.data.title}</strong>
+									{entry.data.description && <span>{entry.data.description}</span>}
+								</a>
+							</li>
+						))}
+					</ul>
+				</section>
+			))}
+		</div>
+	)
+}
+
+<style>
+	.empty {
+		margin: 12px 0 0;
+		color: rgb(var(--gray));
+		font-size: 14px;
+	}
+	.empty code {
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		font-size: 0.92em;
+	}
+	.directory { display: grid; gap: 28px; margin-top: 8px; }
+	.directory h3 {
+		margin: 0 0 4px;
+		color: rgb(var(--gray));
+		font-size: 13px;
+		font-weight: 650;
+		letter-spacing: 0.02em;
+	}
+	.directory ul { list-style: none; margin: 0; padding: 0; }
+	.directory a {
+		display: block;
+		padding: 12px 0;
+		border-top: 1px solid color-mix(in srgb, rgb(var(--gray-dark)) 10%, transparent);
+		color: inherit;
+		text-decoration: none;
+	}
+	.directory li:last-child a { border-bottom: 1px solid color-mix(in srgb, rgb(var(--gray-dark)) 10%, transparent); }
+	.directory a:hover strong { color: var(--accent-dark); }
+	.directory strong {
+		display: block;
+		color: rgb(var(--black));
+		font-size: 17px;
+		font-weight: 650;
+		line-height: 1.35;
+	}
+	.directory span {
+		display: -webkit-box;
+		margin-top: 3px;
+		overflow: hidden;
+		color: rgb(var(--gray));
+		font-size: 14px;
+		line-height: 1.5;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+	}
+</style>

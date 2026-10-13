@@ -1,8 +1,7 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseHead from './BaseHead.astro';
+import { articleHref, loadCatalog } from '../catalog';
 import { SITE_TITLE } from '../consts';
-import { isPublishedArticle } from '../studio/server/schemas.mjs';
 
 interface Crumb {
 	label: string;
@@ -14,16 +13,19 @@ interface Props {
 	description?: string;
 	crumbs: Crumb[];
 	editHref?: string;
+	wide?: boolean;
 }
 
-const { title, description = '', crumbs, editHref = '/studio' } = Astro.props;
+const { title, description = '', crumbs, editHref = '/studio', wide = false } = Astro.props;
 const localStudio = import.meta.env.DEV;
-const posts = (await getCollection('blog'))
-	.filter(isPublishedArticle)
-	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const { wiki, posts } = await loadCatalog();
 
 const here = Astro.url.pathname.replace(/\/$/, '') || '/';
-const current = (href: string) => (href.replace(/\/$/, '') || '/') === here;
+const exact = (href: string) => (href.replace(/\/$/, '') || '/') === here;
+const section = (href: string) => {
+	const path = href.replace(/\/$/, '') || '/';
+	return path === '/' ? here === '/' : here === path || here.startsWith(`${path}/`);
+};
 ---
 
 <html lang="zh-CN">
@@ -49,15 +51,19 @@ const current = (href: string) => (href.replace(/\/$/, '') || '/') === here;
 					</a>
 				</div>
 				<nav class="side-nav" aria-label="工作区">
-					<a class="side-link" href="/" aria-current={current('/') ? 'page' : undefined}>
+					<a class="side-link" href="/" aria-current={section('/') ? 'page' : undefined}>
 						<svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 9.2 10 3.8l6.5 5.4V16a1 1 0 0 1-1 1h-3.4v-4.4H7.9V17H4.5a1 1 0 0 1-1-1V9.2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /></svg>
 						首页
 					</a>
-					<a class="side-link" href="/blog" aria-current={current('/blog') ? 'page' : undefined}>
-						<svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 3.2h5.4L15.2 7v9.2a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.2a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /><path d="M11.2 3.4V7.2h3.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /></svg>
-						文章
+					<a class="side-link" href="/wiki" aria-current={section('/wiki') ? 'page' : undefined}>
+						<svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3.6h4.2A1.8 1.8 0 0 1 11 5.4V16H6.6A1.6 1.6 0 0 0 5 17.6V3.6zM15 3.6h-4.2A1.8 1.8 0 0 0 9 5.4V16h4.4A1.6 1.6 0 0 1 15 17.6V3.6z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /></svg>
+						维基
 					</a>
-					<a class="side-link" href="/about" aria-current={current('/about') ? 'page' : undefined}>
+					<a class="side-link" href="/blog" aria-current={section('/blog') ? 'page' : undefined}>
+						<svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 3.2h5.4L15.2 7v9.2a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.2a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /><path d="M11.2 3.4V7.2h3.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /></svg>
+						博客
+					</a>
+					<a class="side-link" href="/about" aria-current={section('/about') ? 'page' : undefined}>
 						<svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="M10 9.1V13.6M10 6.5v.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
 						关于
 					</a>
@@ -68,17 +74,38 @@ const current = (href: string) => (href.replace(/\/$/, '') || '/') === here;
 						</a>
 					)}
 				</nav>
-				<p class="side-label">页面</p>
-				<nav class="side-pages" aria-label="文章">
+				<div class="side-scroll">
 					{
-						posts.map((post) => (
-							<a class="side-link page-link" href={`/blog/${post.id}/`} aria-current={current(`/blog/${post.id}`) ? 'page' : undefined}>
-								<span class="page-glyph" aria-hidden="true">{post.data.title.slice(0, 1)}</span>
-								<span>{post.data.title}</span>
-							</a>
-						))
+						wiki.length > 0 && (
+							<>
+								<p class="side-label">维基</p>
+								<nav class="side-pages" aria-label="维基条目">
+									{wiki.map((entry) => (
+										<a class="side-link page-link" href={articleHref(entry)} aria-current={exact(articleHref(entry)) ? 'page' : undefined}>
+											<span class="page-glyph" aria-hidden="true">{entry.data.title.slice(0, 1)}</span>
+											<span>{entry.data.title}</span>
+										</a>
+									))}
+								</nav>
+							</>
+						)
 					}
-				</nav>
+					{
+						posts.length > 0 && (
+							<>
+								<p class="side-label">博客</p>
+								<nav class="side-pages" aria-label="博客文章">
+									{posts.map((entry) => (
+										<a class="side-link page-link" href={articleHref(entry)} aria-current={exact(articleHref(entry)) ? 'page' : undefined}>
+											<span class="page-glyph" aria-hidden="true">{entry.data.title.slice(0, 1)}</span>
+											<span>{entry.data.title}</span>
+										</a>
+									))}
+								</nav>
+							</>
+						)
+					}
+				</div>
 			</aside>
 			<button id="workspace-scrim" class="workspace-scrim" type="button" aria-label="关闭侧边栏" tabindex="-1"></button>
 			<div class="workspace-canvas">
@@ -106,7 +133,7 @@ const current = (href: string) => (href.replace(/\/$/, '') || '/') === here;
 				</header>
 				<div class="workspace-scroll">
 					<slot name="cover" />
-					<article class="notion-page">
+					<article class:list={['notion-page', { 'is-wide': wide }]}>
 						<h1>{title}</h1>
 						{description && <p class="notion-lead">{description}</p>}
 						<slot name="properties" />
@@ -228,7 +255,7 @@ const current = (href: string) => (href.replace(/\/$/, '') || '/') === here;
 	}
 	.workspace-brand strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 	.side-nav, .side-pages { display: grid; align-content: start; padding: 4px 0; }
-	.side-pages { flex: 1; overflow: auto; padding-bottom: 24px; }
+	.side-scroll { flex: 1; overflow: auto; padding-bottom: 24px; }
 	.side-label { margin: 16px 16px 2px; color: rgb(var(--gray)); font-size: 12px; font-weight: 500; }
 	.side-link {
 		display: flex;
@@ -306,10 +333,13 @@ const current = (href: string) => (href.replace(/\/$/, '') || '/') === here;
 	.workspace-scroll > :global(.notion-cover) { height: 30vh; max-height: 280px; overflow: hidden; background: var(--surface-soft); }
 	.workspace-scroll > :global(.notion-cover img) { width: 100%; height: 100%; object-fit: cover; border-radius: 0; }
 	.notion-page { width: min(708px, calc(100% - 120px)); margin: 0 auto; padding: 72px 0 160px; }
+	.notion-page.is-wide { width: min(1040px, calc(100% - 96px)); }
 	.workspace-scroll:has(:global(.notion-cover)) .notion-page { padding-top: 28px; }
 	.notion-page > h1 { margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; }
 	.notion-lead { margin: 8px 0 0; color: rgb(var(--gray)); font-size: 16px; line-height: 1.6; }
 	.notion-page :global(.page-meta) { margin: 6px 0 0; color: rgb(var(--gray)); font-size: 14px; line-height: 1.5; }
+	.notion-page :global(.page-kind) { color: var(--accent); font-weight: 650; text-decoration: none; }
+	.notion-page :global(.page-kind:hover) { color: var(--accent-dark); }
 	.notion-page :global(.page-meta-tags)::before { content: ' · '; }
 	.notion-prose { padding-top: 18px; }
 	.notion-prose :global(h1),
@@ -377,7 +407,8 @@ const current = (href: string) => (href.replace(/\/$/, '') || '/') === here;
 			cursor: pointer;
 		}
 		.workspace.sidebar-collapsed .workspace-side { transform: translateX(-105%); opacity: 0; box-shadow: none; }
-		.notion-page { width: min(708px, calc(100% - 40px)); padding-top: 28px; }
+		.notion-page,
+		.notion-page.is-wide { width: min(1040px, calc(100% - 40px)); padding-top: 28px; }
 		.notion-page > h1 { font-size: 28px; }
 	}
 </style>

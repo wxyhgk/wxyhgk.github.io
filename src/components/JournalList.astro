@@ -1,0 +1,73 @@
+---
+import FormattedDate from './FormattedDate.astro';
+import { articleHref, type ArticleEntry } from '../catalog';
+
+interface Props {
+	entries: ArticleEntry[];
+}
+
+const { entries } = Astro.props;
+---
+
+{
+	entries.length === 0 ? (
+		<p class="empty">还没有博客。不写 <code>kind: wiki</code> 的文章会按时间出现在这里。</p>
+	) : (
+		<ol>
+			{entries.map((entry) => (
+				<li>
+					<FormattedDate date={entry.data.pubDate} />
+					<a href={articleHref(entry)}>
+						<strong>{entry.data.title}</strong>
+						{entry.data.description && <span>{entry.data.description}</span>}
+					</a>
+				</li>
+			))}
+		</ol>
+	)
+}
+
+<style>
+	.empty {
+		margin: 12px 0 0;
+		color: rgb(var(--gray));
+		font-size: 14px;
+	}
+	.empty code {
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		font-size: 0.92em;
+	}
+	ol { list-style: none; margin: 8px 0 0; padding: 0; }
+	li {
+		display: grid;
+		grid-template-columns: 7.2em minmax(0, 1fr);
+		gap: 12px 18px;
+		align-items: baseline;
+		padding: 14px 0;
+		border-top: 1px solid color-mix(in srgb, rgb(var(--gray-dark)) 10%, transparent);
+	}
+	li:last-child { border-bottom: 1px solid color-mix(in srgb, rgb(var(--gray-dark)) 10%, transparent); }
+	li :global(time) { color: rgb(var(--gray)); font-size: 13px; white-space: nowrap; }
+	a { color: inherit; text-decoration: none; }
+	a:hover strong { color: var(--accent-dark); }
+	strong {
+		display: block;
+		color: rgb(var(--black));
+		font-size: 17px;
+		font-weight: 650;
+		line-height: 1.35;
+	}
+	span {
+		display: -webkit-box;
+		margin-top: 3px;
+		overflow: hidden;
+		color: rgb(var(--gray));
+		font-size: 14px;
+		line-height: 1.5;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+	}
+	@media (max-width: 640px) {
+		li { grid-template-columns: 1fr; gap: 2px; }
+	}
+</style>

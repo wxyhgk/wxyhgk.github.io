@@ -6,6 +6,7 @@ tags:
   - Hartree–Fock
   - 量子化学
   - Python
+kind: wiki
 draft: false
 ---
 
