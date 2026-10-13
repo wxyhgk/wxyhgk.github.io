@@ -9,6 +9,7 @@ import remarkMath from 'remark-math';
 import vue from '@vitejs/plugin-vue';
 import articleAssets from './src/plugins/article-assets.mjs';
 import rehypeKatexMhchem from './src/plugins/rehype-katex-mhchem.mjs';
+import remarkMathBrackets from './src/plugins/remark-math-brackets.mjs';
 import studioDev from './src/plugins/studio-dev.mjs';
 import yiitapSource from './src/plugins/yiitap-source.mjs';
 
@@ -40,7 +41,7 @@ export default defineConfig({
 	integrations: [mdx(), sitemap(), articleAssets()],
 	markdown: {
 		processor: unified({
-			remarkPlugins: [remarkMath],
+			remarkPlugins: [remarkMath, remarkMathBrackets],
 			rehypePlugins: [rehypeKatexMhchem],
 		}),
 		syntaxHighlight: {
