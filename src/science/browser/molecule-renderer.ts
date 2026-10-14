@@ -1,6 +1,7 @@
 import { parseMoleculeBlock } from '../parsers/index.ts';
 import { prepareMoleculeRenderInput } from '../rendering/index.ts';
 import { describeRDKitError } from '../rendering/rdkit-messages.ts';
+import { moleculeViewKey } from '../view-key.mjs';
 
 export type RDKitMol = {
 	is_valid(): boolean;
@@ -93,18 +94,7 @@ export function setMoleculeViewContext(context: MoleculeViewContext): void {
 	moleculeViewContext = context;
 }
 
-function hashViewIdentity(value: string): string {
-	let hash = 0x811c9dc5;
-	for (let index = 0; index < value.length; index += 1) {
-		hash ^= value.charCodeAt(index);
-		hash = Math.imul(hash, 0x01000193);
-	}
-	return (hash >>> 0).toString(36);
-}
-
-export function moleculeViewKey(format: string, source: string): string {
-	return hashViewIdentity(`${format}\0${source}`);
-}
+export { moleculeViewKey };
 
 export function parseStoredMoleculeView(raw: string | null): number[] | null {
 	if (!raw) return null;
