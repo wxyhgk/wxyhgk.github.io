@@ -8,6 +8,7 @@ import { defineConfig, fontProviders } from 'astro/config';
 import remarkMath from 'remark-math';
 import vue from '@vitejs/plugin-vue';
 import articleAssets from './src/plugins/article-assets.mjs';
+import rehypeArticleHtml from './src/plugins/rehype-article-html.mjs';
 import rehypeKatexMhchem from './src/plugins/rehype-katex-mhchem.mjs';
 import remarkMathBrackets from './src/plugins/remark-math-brackets.mjs';
 import studioDev from './src/plugins/studio-dev.mjs';
@@ -35,14 +36,31 @@ const chemistryLanguages = [
 	'cube-3d',
 ];
 
+/**
+ * The Studio is a writing tool for this machine only: its page joins the dev
+ * server and is never built, so the published site carries none of its code.
+ * @returns {import('astro').AstroIntegration}
+ */
+function studioPage() {
+	return {
+		name: 'studio-page',
+		hooks: {
+			'astro:config:setup': ({ command, injectRoute }) => {
+				if (command === 'dev') injectRoute({ pattern: '/studio', entrypoint: './src/studio/StudioPage.astro' });
+			},
+		},
+	};
+}
+
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://wxyhgk.github.io',
-	integrations: [mdx(), sitemap(), articleAssets()],
+	integrations: [mdx(), sitemap(), articleAssets(), studioPage()],
 	markdown: {
 		processor: unified({
 			remarkPlugins: [remarkMath, remarkMathBrackets],
-			rehypePlugins: [rehypeKatexMhchem],
+			// Raw HTML in an article becomes elements, without scripts, event handlers or javascript: links.
+			rehypePlugins: [rehypeArticleHtml, rehypeKatexMhchem],
 		}),
 		syntaxHighlight: {
 			type: 'shiki',

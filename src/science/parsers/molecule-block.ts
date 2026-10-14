@@ -9,11 +9,20 @@ const THREE_D_FORMATS: Readonly<Record<string, MoleculeViewerFormat>> = {
 	'mol2-3d': 'mol2', 'cif-3d': 'cif', 'cube-3d': 'cube',
 };
 
-/** Classify a Markdown code fence without touching the DOM or loading a renderer. */
+/** Whether a fence's language is a molecular format, judged from the language alone, so it never throws. */
+export function isMoleculeLanguage(languageInput: string): boolean {
+	const language = languageInput.trim().toLowerCase();
+	return language === 'sdf' || language === 'mol' || EXPLICIT_TWO_D_FORMATS.has(language) || language in THREE_D_FORMATS;
+}
+
+/**
+ * Classify a Markdown code fence without touching the DOM or loading a renderer.
+ * Throws InvalidScienceResourcePathError for an `@file` outside the article's assets.
+ */
 export function parseMoleculeBlock(languageInput: string, source: string): MoleculeBlock | null {
+	if (!isMoleculeLanguage(languageInput)) return null;
 	const language = languageInput.trim().toLowerCase();
 	const isAutoSdf = language === 'sdf' || language === 'mol';
-	if (!isAutoSdf && !EXPLICIT_TWO_D_FORMATS.has(language) && !(language in THREE_D_FORMATS)) return null;
 
 	const resource = parseScienceResourceRef(source);
 	if (isAutoSdf) {
