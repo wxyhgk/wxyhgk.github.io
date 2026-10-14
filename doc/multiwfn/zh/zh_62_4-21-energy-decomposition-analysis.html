@@ -1,0 +1,7004 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Multiwfn 官方手册中文翻译 + 英文原文（由 PDF 转换，共 1161 页，行间公式为 LaTeX）">
+      
+      
+        <meta name="author" content="PDF 转 Markdown + AI 翻译">
+      
+      
+        <link rel="canonical" href="https://wxyhgk.github.io/doc/multiwfn/zh/zh_62_4-21-energy-decomposition-analysis.html">
+      
+      
+        <link rel="prev" href="zh_61_4-20-visual-study-of-weak-interactions.html">
+      
+      
+        <link rel="next" href="zh_63_4-22-examples-of-conceptual-density-functional-t.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>能量分解分析 - Multiwfn 官方手册</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../index.html" title="Multiwfn 官方手册" class="md-header__button md-logo" aria-label="Multiwfn 官方手册" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Multiwfn 官方手册
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              能量分解分析
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/wxyhgk/multiwfn-docs" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  首页
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="index.html" class="md-tabs__link">
+          
+  
+  
+  中文文档
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../en/index.html" class="md-tabs__link">
+          
+  
+  
+  English
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="Multiwfn 官方手册" class="md-nav__button md-logo" aria-label="Multiwfn 官方手册" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Multiwfn 官方手册
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/wxyhgk/multiwfn-docs" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    中文文档
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    中文文档
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    总览
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_00_%E7%9B%AE%E5%BD%95.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    书内目录总表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    前言
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    前言
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_01_must-read.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    必读
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux 和 Mac 说明
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Linux 和 Mac 说明
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_02_linux-and-mac-os-notes.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux 和 Mac 说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1 总览
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    1 总览
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_03_1-overview.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1 总览
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2 基本信息
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    2 基本信息
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_04_2-1-install.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    安装（Install）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_05_2-2-using-multiwfn.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiwfn的使用（Using Multiwfn）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_06_2-3-files-of-multiwfn.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiwfn的文件（Files of Multiwfn）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_07_2-6-real-space-functions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    实空间函数（Real space functions）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_08_2-7-user-defined-real-space-function.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    用户自定义实空间函数（User-defined real space funct
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_09_2-8-graphic-formats-and-image-size.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    图形格式与图像尺寸（Graphic formats and image size
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3 功能
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    3 功能
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_10_3-2-showing-molecular-structure-and-viewing-orbi.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    显示分子结构与查看轨道 /
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_11_3-3-outputting-all-properties-at-a-point-1.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    输出某点处的所有性质(1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_12_3-4-outputting-and-plotting-specific-property-in.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    在一条线上输出与绘制指定性质(3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_13_3-5-outputting-and-plotting-specific-property-in.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    在平面上输出与绘制指定性质(4)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_14_3-6-outputting-and-plotting-specific-property-wi.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    在空间区域内输出并绘制特定属性 (5)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_15_3-7-custom-operation-promolecular-and-deformatio.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    自定义操作、promolecular 与 deformation 性质（主功能
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_16_3-8-checking-modifying-wavefunction-6.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    检查与修改波函数 (6)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_17_3-9-population-analysis-and-calculation-of-atomi.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    布居分析与原子电荷计算
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_18_3-10-orbital-composition-analysis-8.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    轨道组成分析(Orbital composition analysis)(8)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_19_3-11-bond-order-analysis-9.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    键序分析(Bond order analysis) (9)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_20_3-12-plotting-density-of-states-dos-photoelectro.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    态密度图(DOS)、光电子
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_21_3-13-plotting-ir-raman-uv-vis-ecd-vcd-roa-and-nm.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (Plo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_22_3-14-topology-analysis-2.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    拓扑分析（Topology analysis）（2）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_23_3-15-quantitative-analysis-of-molecular-surface.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分子表面的定量分析（Quantitative analysis of molec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_24_3-16-processing-grid-data-13.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    处理格点数据（Processing grid data）（13）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_25_3-17-adaptive-natural-density-partitioning-adndp.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    自适应自然密度划分（Adaptive natural density parti
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_26_3-18-fuzzy-atomic-space-analysis-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模糊原子空间分析（Fuzzy atomic space analysis）（15
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_27_3-19-charge-decomposition-analysis-and-plotting.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    电荷分解分析与绘制轨道相互作用图（Charge decomposition an
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_28_3-20-basin-analysis-17.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    盆分析（Basin analysis）（17）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_29_3-21-electron-excitation-analysis-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    电子激发分析（Electron excitation analysis）（18）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_30_3-22-orbital-localization-analysis-19.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    轨道定域分析（Orbital localization analysis）（19
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_31_3-23-visual-study-of-weak-interaction-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    弱相互作用的可视化研究 (Visual study of weak intera
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_32_3-24-energy-decomposition-analysis-21.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    能量分解分析 (21)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_33_3-25-conceptual-density-functional-theory-cdft-a.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概念密度泛函理论 (CDFT) 分析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_34_3-26-extended-transition-state-natural-orbitals.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    扩展过渡态-化学价自然轨道 (ETS-NOCV) 分析 (23) (Extend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_35_3-27-hyper-polarizability-analysis-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    (超)极化率分析[(Hyper)polarizability analysis]
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_36_3-28-electron-delocalization-and-aromaticity-ana.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    电子离域与芳香性分析 (Electron delocalization and
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_37_3-100-other-functions-part-1-100.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    其它功能，第 1 部分 (Other functions, part 1) (1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_38_3-200-other-functions-part-2-200.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    其他功能，第二部分 (Other functions, part 2) (200
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_39_3-300-other-functions-part-3-300.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    其它功能，第3部分(300)(Other functions, part 3 (
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_8" id="__nav_2_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4 教程与实例
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    4 教程与实例
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_40_prologue-and-generation-of-input-files.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prologue and generation of input files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_41_4-0-view-orbitals-and-structure.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    查看轨道与结构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_42_4-1-calculate-properties-at-a-point.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    计算某点处的性质
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_43_4-2-topology-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    拓扑分析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_44_4-3-output-and-plot-various-properties-in-a-line.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    在一条线上输出并绘制各种性质
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_45_4-4-output-and-plot-various-properties-in-a-plan.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    在平面内输出和绘制各种性质
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_46_4-5-generate-grid-data-and-view-isosurface-map.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    生成格点数据并查看等值面图
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_47_4-6-modify-and-check-wavefunction.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    修改和检查波函数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_48_4-7-population-analysis-and-atomic-charge-calcul.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    布居分析和原子电荷计算
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_49_4-8-molecular-orbital-composition-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分子轨道组成分析（Molecular orbital composition a
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_50_4-9-bond-order-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    键级分析(Bond order analysis)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_51_4-10-plot-density-of-states-dos-maps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    绘制态密度(DOS)图
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_52_4-11-plot-various-kinds-of-spectra.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    绘制各种光谱 (Plot various kinds of spectra)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_53_4-12-quantitative-analysis-of-molecular-surface.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分子表面的定量分析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_54_4-13-process-grid-data.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    处理格点数据 (Process grid data)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_55_4-14-adaptive-natural-density-partitioning-adndp.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    自适应自然密度划分 (Adaptive natural density part
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_56_4-15-fuzzy-atomic-space-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模糊原子空间分析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_57_4-16-charge-decomposition-analysis-and-plotting.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    电荷分解分析与轨道相互作用图的绘制(Charge decomposition a
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_58_4-17-basin-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    盆分析(Basin analysis)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_59_4-18-electron-excitation-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    电子激发分析(Electron excitation analysis)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_60_4-19-orbital-localization-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    轨道定域化分析(Orbital localization analysis)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_61_4-20-visual-study-of-weak-interactions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    弱相互作用的可视化研究(Visual study of weak interac
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    能量分解分析
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="zh_62_4-21-energy-decomposition-analysis.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    能量分解分析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#421" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21 能量分解分析
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.21 能量分解分析">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4211-forcefieldeda-ff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.1 基于力场(forcefield)的能量分解分析(EDA-FF)例子
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42111-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.1.1 例1：水二聚体
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42112-2-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.1.2 例2：环晕苯-胞嘧啶-鸟嘌呤三聚体
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4212-shubin-liu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.2 Shubin Liu 能量分解分析在乙烷旋转
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        势垒中的应用
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4213-sobeda-sobedaw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.3 sobEDA 和 sobEDAw 能量分解
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        分析示例
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4214" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.4 原子对色散能贡献分析示例
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42141" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.4.1 考察螺旋烯中原子对色散能的贡献
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42142-actos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.4.2 actos 两种构象之间色散能的
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42143" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.4.3 甲苯在沸石上的吸附
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_63_4-22-examples-of-conceptual-density-functional-t.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概念密度泛函理论
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_64_4-23-examples-of-ets-nocv-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ETS-NOCV分析的例子
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_65_4-24-examples-of-hyper-polarizability-analyses.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    (超)极化率分析实例
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_66_4-25-examples-of-electron-delocalization-and-aro.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    电子离域与芳香性分析示例
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_67_4-100-other-functions-part-1.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    其他功能（第一部分）(Other functions (Part 1))
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_68_4-200-other-functions-part-2.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    其它功能（第二部分）(Other functions (Part 2))
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_69_4-300-other-functions-part-3.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    其他功能(Other functions)(第三部分，Part 3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_70_4-a-special-topics-and-advanced-tutorials.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    教程与实例（Tutorials and Examples） ..........
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_9" id="__nav_2_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5 技巧
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    5 技巧
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_71_5-1-make-multiwfn-support-more-quantum-chemistry.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    使 Multiwfn 支持更多的量子化学
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_72_5-3-running-multiwfn-in-batch-mode.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    在批处理模式下运行 Multiwfn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_73_5-4-copy-outputs-from-command-line-window-to-cli.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    从命令行窗口复制输出到剪贴板
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_74_5-5-make-command-line-window-capable-to-record-m.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    使命令行窗口能记录更多
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_75_5-6-rapidly-load-a-file-into-multiwfn.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    快速将文件载入 Multiwfn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_76_5-7-make-use-of-cubegen-utility-in-gaussian-pack.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    利用 Gaussian 软件包中的 cubegen 工具
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_77_5-8-some-tips-on-achieving-ideal-drawing-quality.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    获得理想绘图质量的一些技巧(Some tips on achieving ide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_10" id="__nav_2_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6 附录
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    6 附录
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_78_6-1-setting-up-running-environment-for-gaussian.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    在Windows下为Gaussian设置运行环境(Setting up runn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_79_6-3-detail-of-built-in-atomic-densities.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    内建原子密度的细节(Detail of built-in atomic dens
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_80_6-4-details-about-supplying-inner-core-electron.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    关于为涉及赝势的波函数补充内层芯电子密度的细节(Details about su
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_81_6-5-check-sanity-of-wavefunction.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    检查波函数的合理性(Check sanity of wavefunction)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_82_6-6-special-functions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    特殊功能(Special functions)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="zh_83_6-7-about-providing-fock-ks-matrix-to-multiwfn.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    关于向Multiwfn提供Fock/KS矩阵(About providing F
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    English
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    English
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/00_%E7%9B%AE%E5%BD%95.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Front matter
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Front matter
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/01_must-read.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Must read
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux and Mac OS USERS MUST READ
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Linux and Mac OS USERS MUST READ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/02_linux-and-mac-os-notes.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux and Mac OS notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1  Overview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    1  Overview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/03_1-overview.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1 Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2  General information
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    2  General information
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/04_2-1-install.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.1 Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/05_2-2-using-multiwfn.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.2 Using Multiwfn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/06_2-3-files-of-multiwfn.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.3 Files of Multiwfn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/07_2-6-real-space-functions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.6 Real space functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/08_2-7-user-defined-real-space-function.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.7 User-defined real space function
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/09_2-8-graphic-formats-and-image-size.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.8 Graphic formats and image size
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3  Functions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    3  Functions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/10_3-2-showing-molecular-structure-and-viewing-orbi.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.2 Showing molecular structure and viewing orbita
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/11_3-3-outputting-all-properties-at-a-point-1.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.3 Outputting all properties at a point (1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/12_3-4-outputting-and-plotting-specific-property-in.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.4 Outputting and plotting specific property in a
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/13_3-5-outputting-and-plotting-specific-property-in.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.5 Outputting and plotting specific property in a
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/14_3-6-outputting-and-plotting-specific-property-wi.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.6 Outputting and plotting specific property with
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/15_3-7-custom-operation-promolecular-and-deformatio.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.7 Custom operation, promolecular and deformation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/16_3-8-checking-modifying-wavefunction-6.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.8 Checking & modifying wavefunction (6)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/17_3-9-population-analysis-and-calculation-of-atomi.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.9 Population analysis and calculation of atomic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/18_3-10-orbital-composition-analysis-8.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.10 Orbital composition analysis (8)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/19_3-11-bond-order-analysis-9.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.11 Bond order analysis (9)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/20_3-12-plotting-density-of-states-dos-photoelectro.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.12 Plotting density-of-states (DOS), photoelectr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/21_3-13-plotting-ir-raman-uv-vis-ecd-vcd-roa-and-nm.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.13 Plotting IR, Raman, UV-Vis, ECD, VCD, ROA and
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/22_3-14-topology-analysis-2.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.14 Topology analysis (2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/23_3-15-quantitative-analysis-of-molecular-surface.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.15 Quantitative analysis of molecular surface (1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/24_3-16-processing-grid-data-13.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.16 Processing grid data (13)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/25_3-17-adaptive-natural-density-partitioning-adndp.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.17 Adaptive natural density partitioning (AdNDP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/26_3-18-fuzzy-atomic-space-analysis-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.18 Fuzzy atomic space analysis (15)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/27_3-19-charge-decomposition-analysis-and-plotting.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.19 Charge decomposition analysis and plotting or
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/28_3-20-basin-analysis-17.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.20 Basin analysis (17)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/29_3-21-electron-excitation-analysis-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.21 Electron excitation analysis (18)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/30_3-22-orbital-localization-analysis-19.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.22 Orbital localization analysis (19)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/31_3-23-visual-study-of-weak-interaction-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.23 Visual study of weak interaction (20)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/32_3-24-energy-decomposition-analysis-21.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.24 Energy decomposition analysis (21)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/33_3-25-conceptual-density-functional-theory-cdft-a.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.25 Conceptual density functional theory (CDFT) a
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/34_3-26-extended-transition-state-natural-orbitals.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.26 Extended Transition State - Natural Orbitals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/35_3-27-hyper-polarizability-analysis-24.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.27 (Hyper)polarizability analysis (24)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/36_3-28-electron-delocalization-and-aromaticity-ana.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.28 Electron delocalization and aromaticity analy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/37_3-100-other-functions-part-1-100.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.100 Other functions, part 1 (100)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/38_3-200-other-functions-part-2-200.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.200 Other functions, part 2 (200)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/39_3-300-other-functions-part-3-300.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.300 Other functions, part 3 (300)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4  Tutorials and Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    4  Tutorials and Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/40_prologue-and-generation-of-input-files.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prologue and generation of input files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/41_4-0-view-orbitals-and-structure.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.0 View orbitals and structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/42_4-1-calculate-properties-at-a-point.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.1 Calculate properties at a point
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/43_4-2-topology-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.2 Topology analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/44_4-3-output-and-plot-various-properties-in-a-line.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.3 Output and plot various properties in a line
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/45_4-4-output-and-plot-various-properties-in-a-plan.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.4 Output and plot various properties in a plane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/46_4-5-generate-grid-data-and-view-isosurface-map.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.5 Generate grid data and view isosurface map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/47_4-6-modify-and-check-wavefunction.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.6 Modify and check wavefunction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/48_4-7-population-analysis-and-atomic-charge-calcul.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.7 Population analysis and atomic charge calculat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/49_4-8-molecular-orbital-composition-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.8 Molecular orbital composition analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/50_4-9-bond-order-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.9 Bond order analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/51_4-10-plot-density-of-states-dos-maps.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.10 Plot density-of-states (DOS) maps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/52_4-11-plot-various-kinds-of-spectra.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.11 Plot various kinds of spectra
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/53_4-12-quantitative-analysis-of-molecular-surface.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.12 Quantitative analysis of molecular surface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/54_4-13-process-grid-data.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.13 Process grid data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/55_4-14-adaptive-natural-density-partitioning-adndp.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.14 Adaptive natural density partitioning (AdNDP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/56_4-15-fuzzy-atomic-space-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.15 Fuzzy atomic space analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/57_4-16-charge-decomposition-analysis-and-plotting.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.16 Charge decomposition analysis and plotting or
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/58_4-17-basin-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.17 Basin analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/59_4-18-electron-excitation-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.18 Electron excitation analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/60_4-19-orbital-localization-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.19 Orbital localization analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/61_4-20-visual-study-of-weak-interactions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.20 Visual study of weak interactions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/62_4-21-energy-decomposition-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.21 Energy decomposition analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/63_4-22-examples-of-conceptual-density-functional-t.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.22 Examples of conceptual density functional the
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/64_4-23-examples-of-ets-nocv-analysis.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.23 Examples of ETS-NOCV analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/65_4-24-examples-of-hyper-polarizability-analyses.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.24 Examples of (hyper)polarizability analyses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/66_4-25-examples-of-electron-delocalization-and-aro.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.25 Examples of electron delocalization and aroma
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/67_4-100-other-functions-part-1.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.100 Other functions (Part 1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/68_4-200-other-functions-part-2.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.200 Other functions (Part 2)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/69_4-300-other-functions-part-3.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.300 Other functions (Part 3)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/70_4-a-special-topics-and-advanced-tutorials.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4.A Special topics and advanced tutorials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5  Skills
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    5  Skills
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/71_5-1-make-multiwfn-support-more-quantum-chemistry.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.1 Make Multiwfn support more quantum chemistry p
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/72_5-3-running-multiwfn-in-batch-mode.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.3 Running Multiwfn in batch mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/73_5-4-copy-outputs-from-command-line-window-to-cli.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.4 Copy outputs from command-line window to clipb
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/74_5-5-make-command-line-window-capable-to-record-m.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.5 Make command-line window capable to record mor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/75_5-6-rapidly-load-a-file-into-multiwfn.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.6 Rapidly load a file into Multiwfn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/76_5-7-make-use-of-cubegen-utility-in-gaussian-pack.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.7 Make use of cubegen utility in Gaussian packag
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/77_5-8-some-tips-on-achieving-ideal-drawing-quality.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5.8 Some tips on achieving ideal drawing quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6 Appendix
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    6 Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/78_6-1-setting-up-running-environment-for-gaussian.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.1 Setting up running environment for Gaussian in
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/79_6-3-detail-of-built-in-atomic-densities.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.3 Detail of built-in atomic densities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/80_6-4-details-about-supplying-inner-core-electron.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.4 Details about supplying inner-core electron de
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/81_6-5-check-sanity-of-wavefunction.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.5 Check sanity of wavefunction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/82_6-6-special-functions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.6 Special functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../en/83_6-7-about-providing-fock-ks-matrix-to-multiwfn.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6.7 About providing Fock/KS matrix to Multiwfn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#421" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21 能量分解分析
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.21 能量分解分析">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4211-forcefieldeda-ff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.1 基于力场(forcefield)的能量分解分析(EDA-FF)例子
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42111-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.1.1 例1：水二聚体
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42112-2-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.1.2 例2：环晕苯-胞嘧啶-鸟嘌呤三聚体
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4212-shubin-liu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.2 Shubin Liu 能量分解分析在乙烷旋转
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        势垒中的应用
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4213-sobeda-sobedaw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.3 sobEDA 和 sobEDAw 能量分解
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        分析示例
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4214" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.4 原子对色散能贡献分析示例
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42141" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.4.1 考察螺旋烯中原子对色散能的贡献
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42142-actos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.4.2 actos 两种构象之间色散能的
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42143" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.21.4.3 甲苯在沸石上的吸附
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="_1">能量分解分析<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Multiwfn manual, p.913–930.英文原文见同名 English 章节。 Images: <code>../imgs/</code>.</p>
+</blockquote>
+<hr />
+<!-- p.913 -->
+
+<p>在.xyz轨迹文件中记录元素名而非原子名，否则Multiwfn可能错误猜测元素，使amIGM分析出错。注意Multiwfn载入输入文件后会显示体系化学式，从中你可很容易检查每种元素是否都被正确判断。</p>
+<p>提示(Tip)：用amIGM研究配体-蛋白相互作用时制备轨迹文件的常用做法</p>
+<p>首先，对溶剂化盒中的整个复合物做NPT模拟使其充分平衡，然后在配体固定的同时做至少1 ns的NVT模拟，至少保存500帧。再用VMD提取含配体及所有紧密接触残基的簇，并将此部分的轨迹保存为.xyz文件。你可用选择“resname MOL or protein same resid as within 3.5 of resname MOL”提取该簇，其中MOL为配体的残基名。接着，在amIGM分析中，你应定义两个片段，第一个为配体，另一个包含所有其它原子。在我的博客文章http://sobereva.com/591中给出了为aNCI分析生成配体-蛋白相互作用.xyz轨迹文件的完整例子，其也完全适用于amIGM分析。</p>
+<h2 id="421">4.21 能量分解分析<a class="headerlink" href="#421" title="Permanent link">&para;</a></h2>
+<p>除本节所给例子外，Multiwfn还能做所谓简单能量分解，见4.100.8节例子。</p>
+<h3 id="4211-forcefieldeda-ff">4.21.1 基于力场(forcefield)的能量分解分析(EDA-FF)例子<a class="headerlink" href="#4211-forcefieldeda-ff" title="Permanent link">&para;</a></h3>
+<p>本节我将说明如何基于经典力场对特定片段做能量分解分析，该方法称作EDA-FF。请先仔细阅读3.24.1节以获得关于EDA-FF基本思想与实现的知识。若你已仔细读过下例，你应能很容易地将此法用于各种体系。</p>
+<p>更深入的讨论见我的博客文章“使用Multiwfn做基于力场的能量分解分析”（中文，http://sobereva.com/442）。</p>
+<p>若你的工作中用了EDA-FF分析，请引用此文：Mat. Sci. Eng. B, 273, 115425 (2021) DOI: 10.1016/j.mseb.2021.115425，其中我简述了EDA-FF并用它研究了环[18]碳与石墨烯的相互作用</p>
+<h3 id="42111-1">4.21.1.1 例1：水二聚体<a class="headerlink" href="#42111-1" title="Permanent link">&para;</a></h3>
+<p>作为首例，我们基于AMBER力场对非常简单的体系——水二聚体做EDA-FF，其最稳定几何如下所示</p>
+<!-- p.914 -->
+
+<p>相关文件 相关文件已提供于“examples\EDA\EDA_FF\waterdimer”文件夹，如下所示：</p>
+<ul>
+<li>
+<p>dimer.mol：水二聚体的.mol文件，含其在B3LYP-D3(BJ)/6-311G**水平优化的几何，该水平对优化分子簇非常可靠。注意此文件中原子顺序为O1 H2 H3 O4 H5 H6</p>
+</li>
+<li>
+<p>water.fchk：水单体在B3LYP-D3(BJ)/6-311G**水平优化任务产生的.fchk文件</p>
+</li>
+<li>
+<p>mollist.txt：对应水二聚体的分子列表文件</p>
+</li>
+<li>water.txt：水单体的分子类型文件 可见，mollist.txt内容很简单</li>
+</ul>
+<div class="highlight"><pre><span></span><code>water.txt 2
+</code></pre></div>
+<p>对应水二聚体有两个水分子这一事实，它们由当前文件夹中的water.txt描述。</p>
+<p>water.txt内容为</p>
+<div class="highlight"><pre><span></span><code>OW  -0.737121
+HW  0.368560
+HW  0.368560
+</code></pre></div>
+<p>表明水中氧和氢的原子类型分别为OW和HW。第二列为用Merz-Kollman (MK)方法求得的原子电荷。</p>
+<p>分子类型文件细节 此处我描述water.txt是如何构建的。原子类型可按原子的实际化学环境及力场原始论文中原子类型的定义手动指定，但若分子中原子很多则此过程很麻烦。因此，此处我展示如何用流行的GaussView自动指定原子类型。将water.fchk载入GaussView，点击粗体A字母图标进入“原子列表编辑器(atom list editor)”，再点击粗体橙色M字母图标以显示原子类型，然后双击“AMBER Type”列标题，此时窗口状态应为</p>
+<p>然后点击“文件(File)”-“导出数据(Export Data)”，将文件保存为water.txt。接着，通过Ultraedit等高级</p>
+<p><img alt="" src="../imgs/p914_451.png" /></p>
+<p><img alt="" src="../imgs/p914_452.png" /></p>
+<!-- p.915 -->
+
+<p>文本编辑器的列模式，删除除“AMBER Type”列之外的所有列，再删除文件首行。此时，water.txt中只呈现所有原子的原子类型。之后，基于water.fchk用主功能7的子功能13（或12）计算MK（或CHELPG）电荷（可参阅4.7.1节例子），再将屏幕输出的电荷（或从导出的.chg文件）复制为water.txt的第二列。至此，water.txt的准备完毕。</p>
+<p>进行分析 现在，我们开始做EDA-FF分析。将water.txt复制到当前文件夹，然后启动Multiwfn并输入</p>
+<p>dimer.mol // 含二聚体结构信息的文件（你也可用含几何信息的其它格式作输入文件，如二聚体优化任务产生的.fch文件）</p>
+<div class="admonition terminal">
+<p class="admonition-title">Multiwfn 交互</p>
+<ul>
+<li><strong>21</strong> — 能量分解分析(Energy decomposition analysis)</li>
+<li><strong>1</strong> — 基于力场的能量分解分析(Energy decomposition analysis based on forcefield)</li>
+<li><strong>3</strong> — 载入原子类型与原子电荷(Load atom types and atomic charges) mollist.txt</li>
+</ul>
+</div>
+<div class="admonition terminal">
+<p class="admonition-title">Multiwfn 交互</p>
+<ul>
+<li><strong>2</strong> — 定义片段(Define fragments)</li>
+<li><strong>2</strong> — 将定义两个片段(Two fragments will be defined)</li>
+<li><strong>1-3</strong> — 片段1的原子序号(The atomic indices of the fragment 1)</li>
+<li><strong>4-6</strong> — 片段2的原子序号(The atomic indices of the fragment 2) 若你想检查当前体系所有原子的原子类型与电荷是否已正确设置，可选选项4，输出为</li>
+</ul>
+</div>
+<div class="highlight"><pre><span></span><code>*** Fragment   1:
+ Atom:    1(O )    Charge:   -0.737121    Type: OW
+ Atom:    2(H )    Charge:    0.368560    Type: HW
+ Atom:    3(H )    Charge:    0.368560    Type: HW
+ *** Fragment   2:
+ Atom:    4(O )    Charge:   -0.737121    Type: OW
+ Atom:    5(H )    Charge:    0.368560    Type: HW
+ Atom:    6(H )    Charge:    0.368560    Type: HW
+</code></pre></div>
+<p>可见原子类型与电荷都已正确指定。</p>
+<p>现选选项1开始EDA-FF分析，结果立即显示于屏幕：</p>
+<div class="highlight"><pre><span></span><code>Contribution of each atom in defined fragments to overall interfragment interac
+tion energies:
+ Atom    1(O )   Elec:   12.53  Rep:    3.85  Disp:   -2.21  Total:   14.17
+ Atom    2(H )   Elec:   -6.24  Rep:    0.00  Disp:    0.00  Total:   -6.24
+ Atom    3(H )   Elec:  -16.87  Rep:    0.00  Disp:    0.00  Total:  -16.87
+ Atom    4(O )   Elec:  -23.52  Rep:    3.85  Disp:   -2.21  Total:  -21.88
+ Atom    5(H )   Elec:    6.47  Rep:    0.00  Disp:    0.00  Total:    6.47
+ Atom    6(H )   Elec:    6.47  Rep:    0.00  Disp:    0.00  Total:    6.47
+
+ Interaction energy components between all fragments:
+</code></pre></div>
+<!-- p.916 -->
+
+<div class="highlight"><pre><span></span><code>                         Electrostatic   Repulsive   Dispersion     Total
+ Frag   1 -- Frag   2:       -21.15         7.71        -4.43       -17.87
+</code></pre></div>
+<p>输出单位均为kJ/mol。上述信息表明两水分子间总相互作用能为-17.87 kJ/mol，接近高精度CCSD(T)/CBS水平的结果-20.58 kJ/mol（见S66弱相互作用测试集原始论文，J. Chem. Theory Comput., 7, 2427 (2011)）。尽管给定结果有些误差，至少足以作定性讨论。上述数据还表明静电相互作用（-21.15 kJ/mol）对两水间结合能有决定性贡献，显然一般氢键的主要本质由静电相互作用主导。色散相互作用也有贡献，但量级相对较小。交换排斥效应（7.71 kJ/mol）在一定程度上抵消了静电与色散的吸引作用。</p>
+<p>在S66测试集原文中，用非常理想的DFT-SAPT方法给出的水二聚体色散相互作用能与静电相互作用能之比为0.29，与EDA-FF给出的值（4.43/21.15=0.21）定性一致。因此，以非常简单的水二聚体为例可见，只要力场与原子电荷选择得当，EDA-FF结果一般是可靠的。对有些体系，力场算得的总相互作用能与可靠量子化学方法求得的不太接近，但即便如此，一般EDA-FF提供的各物理成分间比例仍有意义。依我之见，</p>
+<p>用适当力场求得的ΔEele与ΔEtot之比乘以量子化学方法得到的总相互作用能（ΔEtot），以近似估计静电相互作用能（ΔEele），不失为一个好主意。</p>
+<p>上述输出还给出每个原子对所有已定义片段间总相互作用的贡献，使你能很容易识别哪些原子对片段间相互作用有关键影响。所有原子贡献之和等于总相互作用能（若体系只有两个原子A和B，且各自定义为一个片段，则原子A的贡献为A-B相互作用能之半）。由上数据可见每个原子的影响都不可忽略。毕竟体系中原子间距离不远。对吸引作用最重要的贡献是O4原子的静电相互作用（-23.52 kJ/mol），此结果易于理解，因O4为氢键受体原子。与O4直接作用形成氢键的H3也因显著的静电效应而对结合有很大贡献（-16.87 kJ/mol）。数据表明只有氧原子有非零排斥与色散项，这是因为HW原子类型的vdW势参数为零，故HW原子仅表现为点电荷以呈现静电效应。</p>
+<p>原子间相互作用 若你选一次选项-3将其状态从默认“否(No)”切换为“是(Yes)”，则在经选项1做EDA-FF分析时，程序还将每对原子的距离（Å）、相互作用能（kJ/mol）及其成分输出到当前文件夹的interatm.txt中。当前例子的文件内容为</p>
+<div class="highlight"><pre><span></span><code>******* Between fragment   1 and fragment   2:
+  Atom_i  Atom_j  Dist(Ang) Electrostatic   Repulsive    Dispersion     Total
+      1      4:     2.873       262.78         7.71        -4.43       266.05
+</code></pre></div>
+<!-- p.917 -->
+
+<div class="highlight"><pre><span></span><code>      1      5:     3.176      -118.86         0.00         0.00      -118.86
+      1      6:     3.176      -118.86         0.00         0.00      -118.86
+      2      4:     3.346      -112.79         0.00         0.00      -112.79
+      2      5:     3.762        50.16         0.00         0.00        50.16
+      2      6:     3.762        50.16         0.00         0.00        50.16
+      3      4:     1.916      -197.02         0.00         0.00      -197.02
+      3      5:     2.312        81.64         0.00         0.00        81.64
+      3      6:     2.312        81.64         0.00         0.00        81.64
+</code></pre></div>
+<p>由上数据可见，每对原子间相互作用能都很大，主要来自静电相互作用。例如，因两氧原子O1与O4电荷大且同号，静电互斥能高达262.78 kJ/mol。片段间结合能看似比上述值小数量级，这是因为计算片段间相互作用能时，原子对的静电相互作用正负大部抵消。</p>
+<h3 id="42112-2-">4.21.1.2 例2：环晕苯-胞嘧啶-鸟嘌呤三聚体<a class="headerlink" href="#42112-2-" title="Permanent link">&para;</a></h3>
+<p>在J. Chem. Theory Comput., 9, 3364 (2013)给出的L7弱相互作用测试集中，一个体系C3GC是由环晕苯（下文简称C3）、鸟嘌呤(G)与胞嘧啶(C)组成的三聚体。几何已由作者在TPSS-D/TZVP水平优化，如下</p>
+<p>所示。GC碱基对已形成三重氢键，且它经由π-π堆积物理吸附于C3之上。</p>
+<p>本节我们将基于AMBER力场对此体系做EDA-FF分析。相关文件提供于“examples\EDA\EDA-FF\C3GC”目录。</p>
+<p>准备工作 注意Multiwfn仅当任一分子类型中的原子序号连续时才能做EDA-FF。否则，无法经分子列表文件和分子类型文件为体系中每个原子设置原子电荷与类型。L7测试集补充材料给的结构文件为C3GC.xyz。此文件不能直接使用，因为每个单体中的原子序号不连续。判断原子序号是否连续的最简单方法之一如下：首先将C3GC.xyz载入Multiwfn，用主功能100的子功能2将其转为C3GC.pdb（做此转换是因为GaussView不支持.xyz</p>
+<p><img alt="" src="../imgs/p917_453.png" /></p>
+<!-- p.918 -->
+
+<p>格式），再将此pdb文件载入GaussView，在任一分子的任意原子（如C5原子）上右击，选“按原子C5选择片段(Select Fragments of Atom C5)”（此选项自GaussView 6起可用）。此时该分子中所有原子被选中呈黄色，再点击“工具(Tools)”-“原子选择(Atom Selection)”。如下截图所示，文本框显示的序号为5-9、13-17、19、25-29，显然原子序号不连续，应予修正。</p>
+<p>使每个分子中原子序号连续的最简方法是进入GaussView的“原子列表编辑器(Atom list editor)”，再选“编辑(Edit)”-“重排(Reorder)”-“按成键重排除首原子外的所有原子(All Atoms (Except the First) by Bonding)”，之后原子序号按连通性重排，你将看到每个单体中的原子序号已变为连续，如下所示。现将此结构保存为C3GC.pdb以替换旧文件。</p>
+<p>然后我们将三聚体中每个单体复制到各自的GaussView窗口，保存为各自的.gjf文件，将关键词改为“B3LYP/6-311G**”并用Gaussian运行，再基于所得.fch文件用Multiwfn计算MK电荷。同时，我们利用GaussView确定每个单体的原子类型。最后，将原子类型与电荷合并为每个单体的单个文件，于是得到C.txt、G.txt和C3.txt，它们已提供于“examples\EDA\EDA-FF\C3GC”目录。</p>
+<p>最后，创建分子列表文件mollist.txt（其它名字亦可），内容为C.txt、G.txt和C3.txt的实际路径以及相应分子数，注意</p>
+<p><img alt="" src="../imgs/p918_454.png" /></p>
+<p><img alt="" src="../imgs/p918_455.png" /></p>
+<!-- p.919 -->
+
+<p>文件路径的顺序必须与G3GC.pdb所给几何中的分子顺序严格一致。显然，mollist.txt内容应为（设所有分子类型文件置于C:\下）</p>
+<div class="highlight"><pre><span></span><code>C:\C.txt 1
+C:\G.txt 1
+C:\C3.txt 1
+</code></pre></div>
+<p>开始分析 所有准备工作已完成，现在开始EDA-FF分析。启动Multiwfn并输入</p>
+<div class="admonition terminal">
+<p class="admonition-title">Multiwfn 交互</p>
+<ul>
+<li><strong>C3GC.pdb 21</strong> — 能量分解分析(Energy decomposition analysis)</li>
+<li><strong>1</strong> — EDA-FF 3</li>
+</ul>
+</div>
+<p>输入mollist.txt实际路径(Input actual path of mollist.txt)</p>
+<div class="admonition terminal">
+<p class="admonition-title">Multiwfn 交互</p>
+<ul>
+<li><strong>2</strong> — 定义片段(Define fragments)</li>
+<li><strong>3</strong> — 将定义三个片段(Three fragments will be defined)</li>
+<li><strong>1-13</strong> — 片段1中的原子序号，即胞嘧啶(C)(Atom indices in fragment 1, namely cytosine (C))</li>
+<li><strong>14-29</strong> — 片段2中的原子序号，即鸟嘌呤(G)(Atom indices in fragment 2, namely guanine (G))</li>
+<li><strong>30-101</strong> — 片段3中的原子序号，即C3(Atom indices in fragment 3, namely C3)</li>
+</ul>
+</div>
+<p>选选项1进行EDA-FF计算，结果如下（忽略原子贡献部分）</p>
+<div class="highlight"><pre><span></span><code>                         Electrostatic   Repulsion   Dispersion     Total
+ Frag   1 -- Frag   2:      -120.98        60.26       -45.54      -106.27
+ Frag   1 -- Frag   3:         1.88        44.86       -94.69       -47.95
+ Frag   2 -- Frag   3:         0.71        62.08      -132.62       -69.84
+</code></pre></div>
+<p>数据显示G-C结合很强，高达-106.27 kJ/mol，主因是静电成分很大（-120.98 kJ/mol），这是G与C之间形成三对氢键的结果。C3与G间（-47.95 kJ/mol）以及C3与C间（-69.84 kJ/mol）的总相互作用能也不小，主要归因于</p>
+<p>其间显著的π-π堆积。因π-π堆积本质纯为色散效应，可见C3-C与C3-G的色散相互作用很强（分别为-94.69和-132.62 kJ/mol），远高于G-C之间（-45.54 kJ/mol）。因C3本质为有限石墨烯片，其与G、C的相互作用区域显然非极性（即原子电荷很小），故C3-C与C3-G相互作用中的静电成分可忽略（仅0.71和1.88 kJ/mol）。</p>
+<p>我还用二聚体模型在B3LYP-D3(BJ)/6-311+G**水平计算了G-C、C3-G与C3-C间结合能，该水平对评估弱相互作用非常稳健，结果为</p>
+<div class="highlight"><pre><span></span><code>G-C (Frag 1 - Frag 2)：-143.97 kJ/mol
+C3-C (Frag 1 - Frag 3)：-56.69 kJ/mol
+C3-G (Frag 2 - Frag 3)：-76.27 kJ/mol
+</code></pre></div>
+<p>对C3-C与C3-G，可见AMBER力场算得的结果与量子化学方法求得的很接近，但对G-C定量差异颇显著。此现象表明力场用于强度很大的弱相互作用时定量精度有限。但在此情形，若只关注</p>
+<!-- p.920 -->
+
+<p>各物理成分间比例，EDA-FF结果仍有用，不会造成明显误导性结论。</p>
+<p>按对相互作用能的贡献给原子着色 利用.pqr文件格式，原子性质可很容易地在VMD可视化程序中按不同颜色给原子着色来可视化，此策略在4.A.10节详细介绍。显然，若将原子对片段间相互作用能的贡献存入.pqr文件，则每个原子的重要性与作用将能生动展示于图中。类似思想也用于IGM分析，如4.20.10节所示。</p>
+<p>现我们在EDA-FF界面选“-4 是否输出原子贡献到.pqr文件(Toggle if outputting atom contributions to .pqr files)”选项将其状态切换为“是(Yes)”，再选选项1进行EDA-FF分析。计算后，当前目录出现atmint_tot.pqr、atmint_ele.pqr、atmint_rep.pqr、atmint_disp.pqr和atmint_vdW.pqr（其中一些已提供于“examples\EDA\EDA-FF\C3GC\pqr”）。这些.pqr文件中原子电荷列的数据分别对应每个原子对片段间总/静电/排斥/色散/vdW相互作用能的贡献，数值与屏幕打印的完全相同。例如，atmint_disp.pqr中片段1的C1原子在原子电荷列的值对应C1原子与片段2、3所有原子间色散相互作用能之半。</p>
+<p>我们将atmint_tot.pqr载入VMD程序，进入“图形(Graphics)”-“显示方式(Representation)”，按“电荷(Charge)”属性给原子着色，将色标下限与上限从默认值分别改为-50和50。将G、C部分的绘制方法设为CPK模式（在“选定原子(Selected Atoms)”框用fragment 0 1选它们），C3部分以甘草式(Licorice)显示（用fragment 2选它）。我们还将色标方法设为BWR（蓝-白-红）。最后，图将如下所示（若你不熟悉VMD而不知如何在VMD实现这些设置，请参阅4.A.10节）：</p>
+<p>因当前所用色标为蓝-白-红(Blue-White-Red)，图中原子颜色越蓝，对三聚体间总结合能的原子贡献越负（即吸引效应越显著）；而原子越红，其排斥效应越强</p>
+<p><img alt="" src="../imgs/p920_456.png" /></p>
+<!-- p.921 -->
+
+<p>作用。颜色较白的原子对三聚体结合只起微不足道的作用。从该图中可以看出，每个氢键受体原子以及与其直接作用的氢原子颜色明显偏蓝，因此它们对 G-C 结合的稳定性贡献很大。所有氢键给体原子的颜色为红色，表明它们的存在不利于结合，这是因为氢键给体与受体原子的原子电荷数值大且符号相同，因此它们之间存在显著的静电互斥。从上图中还可以看出，C3 的所有原子以及 G 和 C 中远离氢键区域的原子都只有很浅的颜色或纯白色，这一现象并不意味着它们对三聚体结合的贡献几乎消失，而是表明它们的贡献相对较弱，因此在当前的颜色标尺设置下难以显示出来。</p>
+<p>假设我们想生动地展示 C3 与 GC 碱基对之间的色散相互作用，则在 EDA-FF 界面中输入以下命令</p>
+<div class="admonition terminal">
+<p class="admonition-title">Multiwfn 交互</p>
+<ul>
+<li><strong>2</strong> — 重新定义片段(Redefine fragments)</li>
+<li><strong>2</strong> — 将定义两个片段(Two fragments will be defined)</li>
+<li><strong>1-29</strong> — 片段 1，即 GC 碱基对</li>
+<li><strong>30-101</strong> — 片段 2，即 C3 部分</li>
+<li><strong>1</strong> — 开始 EDA-FF 计算 然后屏幕上将显示以下信息，该数据等于 C3-C 与 C3-G 相互作用能之和</li>
+</ul>
+</div>
+<div class="highlight"><pre><span></span><code>                         Electrostatic   Repulsion   Dispersion     Total
+ Frag   1 -- Frag   2:         2.59       106.94      -227.31      -117.79
+</code></pre></div>
+<p>同时，当前文件夹中会生成四个新的 .pqr 文件（它们已提供在 "examples\EDA\EDA-FF\C3GC\pqr2" 文件夹中）。将其中 atmint_disp.pqr 载入 VMD，按照上述方法根据原子着色，但使用 -10 到 10 的颜色标尺，然后选择 显示(Display) - 正交投影(Orthographic) 以改变视角，你将看到</p>
+<p>在上图中，原子颜色越蓝，其对 C3 与 GC 之间色散相互作用的贡献越大。从图中可以看出，GC 部分的每个重原子对色散相互作用的贡献几乎相等，这主要是因为它们到 C3 平面的垂直距离几乎相同，且这些原子所携带的电子数没有很大</p>
+<p><img alt="" src="../imgs/p921_457.png" /></p>
+<!-- p.922 -->
+
+<p>差异。GC 碱基对中的氢原子对 C3-GC 色散相互作用的贡献非常小，这是因为氢原子只有很少的电子。在 C3 部分，与 GC 碱基对直接接触的碳原子颜色为浅蓝色，表明它们对色散相互作用有显著贡献。远离 GC 碱基对的 C3 原子颜色为白色，反映了它们对色散相互作用的影响可以忽略（回想色散吸引随距离急剧衰减这一事实，它具有 1/r6 渐近行为）。</p>
+<p>注：上图中 GC 碱基对中的重原子非常蓝，而处于等价位置的 C3 原子却没有那么蓝，原因是：由于 C3 中原子很多，GC 碱基对中的每个重原子可以与大范围的 C3 原子形成色散相互作用，因此各项之和很大。由于 GC 碱基对中的原子数目较少，C3 的每个原子只能与 GC 碱基对中相对较少的原子相互作用，因此各项之和不大。如果你想让 C3 部分的原子颜色更突出，可以将 C3 部分对应的表示(Representation)的颜色标尺范围设为比我们之前使用的 -10~10 更小的值；例如，改为 -6 到 6 将得到满意的图形。</p>
+<p>关于确定单个氢键的结合能 一些读者可能想到，如果能独立确定 G-C 之间三个氢键各自的结合能就好了。实现这一目标没有唯一的方法，因为这相当于把体系划分成几个部分，必然会引入人为误差。实现这一目的的一个看似简单的方法是直接把一个氢键的给体和受体部分定义为两个片段。例如，让我们考察 N10-H13...O14 氢键，我们输入</p>
+<div class="admonition terminal">
+<p class="admonition-title">Multiwfn 交互</p>
+<ul>
+<li><strong>2</strong> — 重新定义片段(Redefine fragments)</li>
+<li><strong>2</strong> — 将定义两个片段(Two fragments will be defined)</li>
+<li><strong>10,13</strong> — N10-H13...O14 给体部分的原子序号</li>
+<li><strong>14</strong> — N10-H13...O14 受体部分的原子序号</li>
+<li><strong>1</strong> — 执行 EDA-FF 分析 结果为</li>
+</ul>
+</div>
+<div class="highlight"><pre><span></span><code>                         Electrostatic   Repulsion   Dispersion     Total
+ Frag   1 -- Frag   2:        71.27        21.78        -9.40        83.65
+</code></pre></div>
+<p>显然结果不合理，因为预测的总结合能为正值！根本原因在于静电相互作用是一种长程效应（1/r 渐近行为），因此不能简单地忽略其它原子的贡献。我还尝试了其它方法来评估 N10-H13...O14 氢键的结合能，尽管其中一些方法给出了看似可接受的结果（例如，把 N10、H12、H13 和 O14 对总 G-C 结合能的原子贡献加和），但遗憾的是三种氢键的相对强弱无法得到忠实解释。在我看来，基于 EDA-FF 无法推导该体系中单个氢键的相互作用能，原因是三个氢键靠得太近，因而耦合非常强，极化效应明显，同时这些氢键中还涉及共振协助效应，这些因素使得三个氢键的总相互作用能很难被合理分解。然而，如果存在几个氢键且位点彼此相距较远，那么通过估计相应局域区域内原子之间的相互作用能，分别评估每个氢键的强度应该是可行的。</p>
+<p>据我所知，确定单个氢键结合能的最佳方法是使用分子中的原子(AIM)分析，见第 4.2.1 节的介绍和示例。</p>
+<p>其它方面 值得注意的是，除了 SAPT 之外，评估色散相互作用能的一个可能可行的方法是使用零阻尼参数的 DFT-D3 色散校正，该参数是针对完全不能描述色散相互作用的交换相关泛函拟合的。该策略已在第 4.100.8 节的能量分解分析示例中使用。使用零阻尼 BLYP 泛函参数的片段间相互作用能的 DFT-D3 色散校正如下所示</p>
+<!-- p.923 -->
+
+<p>交换相关泛函。如下所示</p>
+<div class="highlight"><pre><span></span><code>C -- G: -26.65 kJ/mol
+C -- C3: -87.78 kJ/mol
+G -- C3: -115.10 kJ/mol
+</code></pre></div>
+<p>可以看出，这三个值与用 AMBER 力场评估的相应色散相互作用能（分别为 -45.54、-94.69、-132.62）接近，表明用 AMBER 力场或 DFT-D3 来估计色散相互作用能都是合理的方法。</p>
+<p>使用 UFF 进行 EDA-FF 分析通常不理想。如果我们对当前体系这样做，结果为</p>
+<div class="highlight"><pre><span></span><code>                         Electrostatic   Repulsion   Dispersion     Total
+ Frag   1 -- Frag   2:      -120.98       848.28       -80.36       646.94
+ Frag   1 -- Frag   3:         1.88        52.65      -107.41       -52.87
+ Frag   2 -- Frag   3:         0.71        68.89      -143.58       -73.99
+</code></pre></div>
+<p>可以看出，UFF 预测的 C3-C 和 C3-G 相互作用正常，结果数值与 AMBER 计算的结果接近，但 G-C 的相互作用能为很大的正值，显然这完全不合理。从数据中很容易发现原因是交换排斥分量被严重高估。这不是个别现象，而是 UFF 的普遍现象，这就是为什么我一般不推荐基于 UFF 进行 EDA-FF（尽管在 EDA-FF 之前先用 UFF 优化几何可以缓解这一问题）。</p>
+<p>如第 3.24.1 节所述，对于非常大的体系，使用非常廉价的 EEM 电荷（以 B3LYP/6-31G* 水平下的 CHELPG 电荷拟合的参数）代替严格推导的 ESP 拟合电荷来进行 EDA-FF 分析可能是一个可行的选择；然而，我的测试表明这种处理会对当前体系的静电相互作用造成显著误差。基于 EEM 电荷评估的 G 与 C 之间的静电相互作用能仅为 -74.26 kJ/mol，远低于基于 MK 电荷评估的值（-120.98 kJ/mol）。因此，只要可能，强烈推荐在 EDA-FF 分析中使用 ESP 拟合电荷（MK 或 CHELPG），这对获得足够准确的静电相互作用能至关重要。</p>
+<h3 id="4212-shubin-liu">4.21.2 Shubin Liu 能量分解分析在乙烷旋转<a class="headerlink" href="#4212-shubin-liu" title="Permanent link">&para;</a></h3>
+<h3 id="_2">势垒中的应用<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>Shubin Liu 能量分解（EDA-SBL）的思想和用法已在第 3.24.2 节中介绍。本节我们用 EDA-SBL 方法研究乙烷优化后的重叠式与交错式构象之间能量差异的来源。相关输入和输出文件已在 "examples\EDA\EDA_SBL" 文件夹中给出。</p>
+<p>首先，我们用 Gaussian 在 B3LYP/def-TZVP 水平下优化交错式构象（D3 点群）和重叠式</p>
+<!-- p.924 -->
+
+<p>构象（D3h 点群）的乙烷，后者实际上是一个过渡态。然后利用这些几何结构创建两个 Gaussian 输入文件，分别命名为 ethane_staggered.gjf 和 ethane_eclipsed.gjf。这两个文件对应于 B3LYP/def2-TZVP 水平的单点任务。如第 3.24.2 节所述，路径行包含 ExtraLinks=L608 关键词，且输入文件末尾有 -5 行，表示当前使用的泛函为 B3LYP。</p>
+<p>用 Gaussian 运行这两个 .gjf 文件，分别得到 ethane_staggered.out 和 ethane_eclipsed.out，然后用 formchk 将得到的 .chk 文件转换为 .fch 文件。</p>
+<p>我们首先评估交错式乙烷的 EDA-SBL 方法定义的能量项。启动 Multiwfn 并输入</p>
+<p>examples\EDA\EDA_SBL\ethane_staggered.fch</p>
+<div class="admonition terminal">
+<p class="admonition-title">Multiwfn 交互</p>
+<ul>
+<li><strong>21</strong> — 能量分解分析(Energy decomposition analysis)</li>
+<li><strong>2</strong> — Shubin Liu 能量分解(Shubin Liu's energy decomposition) examples\EDA\EDA_SBL\ethane_staggered.out 现在 Multiwfn 从 Gaussian 输出文件中载入相关信息，然后评估 EDA-SBL 方法定义的空间位阻(steric)项。最后，打印 EDA-SBL 能量分量：</li>
+</ul>
+</div>
+<div class="highlight"><pre><span></span><code> E_steric:              64.213411 Hartree
+ E_electrostatic:     -146.114859 Hartree
+ E_quantum:              2.037465 Hartree
+
+ E_total:              -79.863983 Hartree
+</code></pre></div>
+<p>E_total 与 Gaussian 输出文件中的单点能完全一致。</p>
+<p>我们对重叠式乙烷重复上述分析，然后将数据汇总到下表中</p>
+<p>Etotal Esteric Eelectrostatic Equantum</p>
+<p>重叠式(Eclipsed) (a.u.) -79.85972 64.21925 -146.10780 2.02883 交错式(Staggered) (a.u.) -79.86398 64.21341 -146.11486 2.03747 差值(Diff.) (kJ/mol) 11.2 15.3 18.5 -22.7</p>
+<p>可以看出，重叠式构象的能量比重叠式高 11.2 kJ/mol，这对应于乙烷 C-C 单键旋转的势垒。数据表明</p>
+<p>空间位阻效应应该是势垒的主要贡献者之一，因为 ΔEsteric 明显为正。此外，相当大的 ΔEelectrostatic=18.5 kJ/mol 表明静电相互作用是决定势垒高度的主导因素。相比之下，反映纯粹由量子效应引起的能量变化的 Equantum 的变化显著抵消了空间位阻项和经典静电项，从而在降低势垒方面起重要作用。</p>
+<p>如屏幕上所见，EDA-SBL 模块还打印了构成 Esteric、Eelectrostatic 和 Equantum 的其它中间量，例如 Pauli 动能，因此你可以利用它们尝试从更多角度分析两种构象之间的能量差异。</p>
+<p>在 J. Phys. Chem. A, 117, 962 (2013) 中给出了用 EDA-SBL 方法对一系列小有机分子旋转势垒的深入分析，建议感兴趣的用户阅读。</p>
+<!-- p.925 -->
+
+<h3 id="4213-sobeda-sobedaw">4.21.3 sobEDA 和 sobEDAw 能量分解<a class="headerlink" href="#4213-sobeda-sobedaw" title="Permanent link">&para;</a></h3>
+<h3 id="_3">分析示例<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>sobEDA.sh 脚本用于基于 Gaussian 和 Multiwfn 方便地进行 sobEDA 和 sobEDAw 能量分解分析。非常详细的介绍和丰富的应用示例见 http://sobereva.com/soft/sobEDA_tutorial.zip，请仔细查看。</p>
+<h3 id="4214">4.21.4 原子对色散能贡献分析示例<a class="headerlink" href="#4214" title="Permanent link">&para;</a></h3>
+<p>注：本节的中文版是我的博文“使用 Multiwfn 图形化展示原子对色散能的贡献和色散密度”（http://sobereva.com/705），其中包含更多示例和讨论。</p>
+<p>本节给出原子对色散能贡献以及色散能分析的一些示例。请先仔细阅读第 3.24.4 节以获得基础知识，并了解如何在 <code>settings.ini</code> 中设置“dftd3path”。</p>
+<h3 id="42141">4.21.4.1 考察螺旋烯中原子对色散能的贡献<a class="headerlink" href="#42141" title="Permanent link">&para;</a></h3>
+<p>和色散密度</p>
+<p>在本例中，我们考察哪些原子对 6-螺旋烯的色散能有突出贡献。启动 Multiwfn 并输入</p>
+<div class="admonition terminal">
+<p class="admonition-title">Multiwfn 交互</p>
+<ul>
+<li><strong>examples\helicene.xyz</strong> — 6-螺旋烯的结构文件</li>
+<li><strong>21</strong> — 能量分解分析(Energy decomposition analysis)</li>
+<li><strong>4</strong> — 原子对色散能贡献分析(Analysis of atomic contribution to dispersion energy)</li>
+<li><strong>1</strong> — 计算当前体系原子对色散能的贡献(Calculate atomic contributions to dispersion energy for current system) 立即，你将在屏幕上看到以下信息，其中包含当前体系的总色散，即带有为 B3LYP 拟合参数的 DFT-D3(BJ) 色散校正能。同时，清楚地给出了每个原子对色散能的贡献。</li>
+</ul>
+</div>
+<div class="highlight"><pre><span></span><code>Total dispersion energy:     -74.468 kcal/mol
+
+ Atomic contribution to dispersion energy
+     1(C )    -2.681 kcal/mol
+     2(C )    -2.072 kcal/mol
+     3(C )    -2.068 kcal/mol
+     4(C )    -2.650 kcal/mol
+     5(C )    -3.432 kcal/mol
+[...ignored]
+    40(H )    -0.569 kcal/mol
+    41(H )    -0.511 kcal/mol
+    42(H )    -0.614 kcal/mol
+</code></pre></div>
+<p>接下来，你可以输入 y 以在当前文件夹中导出 atomdisp.pqr。将其载入 VMD 程序，在 图形(Graphics) - 表示(Representation) 界面中，将 绘制方式(Drawing Method) 设为 CPK，将 着色方式(Coloring Method) 设为</p>
+<!-- p.926 -->
+
+<p>“电荷(Charge)”，然后在 轨迹(Trajectory) 面板中，将颜色标尺的下限和上限分别设为 -5.0 和 5.0。你将看到如下图所示。由于 VMD 默认使用的颜色标尺为红-白-蓝，此图中颜色越红，原子对色散能的贡献越负，其与其它原子的色散相互作用越强。</p>
+<p>从上图可以看出，碳原子对色散能的贡献远大于氢原子，且越靠近螺旋烯中心的碳原子贡献越大。原因很容易理解，因为越靠近分子中心的碳原子越能与其它原子有丰富的色散相互作用。</p>
+<p>接下来，我们计算色散密度。选择选项“2 计算当前体系的色散密度(Calculate dispersion density for current system)”，然后选择“中等质量格点(Medium-quality grid)”，你会发现 dispdens.cub 已导出到当前文件夹，它是色散密度的 cube 文件（单位为 kcal/mol/Bohr3）。将其载入 VMD，以等值面图绘制，等值设为 -0.15，材质设为透明，并将分子结构图的表示方式设为 licorice，你将得到如下图所示。图中S等值面的分布清楚地表明，螺旋烯内部区域对比其它区域对色散能有相对更显著的贡献。</p>
+<p>值得注意的是，你可以使用本功能中的选项 6 来计算任意定义的两个片段之间的色散相互作用能。例如，要计算螺旋烯两端的两个六元碳环之间的色散相互作用能，选择该选项后，你应输入 17-22 然后输入 11-12,23-26，你将看到</p>
+<div class="highlight"><pre><span></span><code>Dispersion interaction energy between the fragments:      -2.809 kcal/mol
+</code></pre></div>
+<p><img alt="" src="../imgs/p926_458.png" /></p>
+<p><img alt="" src="../imgs/p926_459.png" /></p>
+<!-- p.927 -->
+
+<h3 id="42142-actos">4.21.4.2 actos 两种构象之间色散能的<a class="headerlink" href="#42142-actos" title="Permanent link">&para;</a></h3>
+<p>差异</p>
+<p>Actos 是一种柔性药物分子，其卷曲构象和伸展构象的 xyz 文件已在“examples”文件夹中分别作为 Actos_curly.xyz 和 Actos_linear.xyz 提供。本节我们考察卷曲构象相对于伸展构象原子对色散能贡献的变化。启动 Multiwfn 并输入</p>
+<div class="admonition terminal">
+<p class="admonition-title">Multiwfn 交互</p>
+<ul>
+<li><strong>examples\Actos_curly.xyz 21</strong> — 能量分解分析(Energy decomposition analysis)</li>
+<li><strong>4</strong> — 原子对色散能贡献分析(Analysis of atomic contribution to dispersion energy)</li>
+<li><strong>3</strong> — 计算当前体系与另一体系之间原子对色散能贡献的差值(Calculate difference of atomic contributions to dispersion energy between current and another systems)</li>
+</ul>
+</div>
+<p>[直接按 ENTER 键] //当前体系（Actos_curly.xyz）中的所有原子都是感兴趣的 examples\Actos_linear.xyz [直接按 ENTER 键] //Actos_curly.xyz 中的所有原子都是感兴趣的 从屏幕输出中，你可以发现 Actos_linear.xyz 和 Actos_curly.xyz 的总色散能分别为 -57.553 kcal/mol 和 -69.757 kcal/mol。显然卷曲构象的色散相互作用更显著。同时，还打印了每个原子对两种结构色散能贡献的差值。</p>
+<p>然后输入 y，将在当前目录中生成 diffatomdisp.pqr，其中“charge”属性记录了 Actos_curly.xyz 每个原子贡献的色散能减去 Actos_linear.xyz 每个原子贡献的色散能，该文件中的原子坐标与 Actos_curly.xyz 相同。使用 VMD 基于该文件根据“charge”属性对分子结构着色绘制，并将颜色标尺范围设为 -1.0 到 1.0 kcal/mol，你将得到下面左侧的图（颜色标尺条是从 图形(Graphics) - 颜色(Color) - 颜色标尺(Color Scale) 面板截取后用 Powerpoint 手工制作的），下面右侧图中的原子按元素名称着色以作比较（黄色/青色/红色/蓝色/白色分别为硫/碳/氧/氮/氢）。</p>
+<p>左上图中越红的原子对应于在从伸展构象变为卷曲构象过程中对色散能变化贡献更大的原子。可以看出，色散相互作用的增强主要发生在构象卷曲后能与其它原子变得更近的原子上。主要分布在边角处的白色原子的色散效应没有明显变化。</p>
+<p><img alt="" src="../imgs/p927_460.png" /></p>
+<!-- p.928 -->
+
+<p>Multiwfn 还可以生成色散密度的差值格点数据。在当前功能中输入以下命令</p>
+<div class="admonition terminal">
+<p class="admonition-title">Multiwfn 交互</p>
+<ul>
+<li><strong>4</strong> — 计算当前体系与另一体系之间的色散密度差值(Calculate dispersion density difference between current and another system)</li>
+<li><strong>[直接按 ENTER 键]</strong> — 当前体系（Actos_curly.xyz）中的所有原子都是感兴趣的</li>
+<li><strong>examples\Actos_linear.xyz</strong> — 另一体系</li>
+<li><strong>[直接按 ENTER 键]</strong> — Actos_curly.xyz 中的所有原子都是感兴趣的</li>
+<li><strong>3</strong> — 高质量格点(High-quality grid)</li>
+</ul>
+</div>
+<p>现在当前文件夹中生成了 dispdensdiff.cub。使用 VMD 通过第 4.A.14 节所述的便捷 VMD 脚本将其绘制为等值面图，等值设为 ±0.025，你将看到如下图所示，蓝色表示等值面对应负值。可以看出，等值面很好地突出了因结构卷曲导致色散能显著增强的区域。</p>
+<h3 id="42143">4.21.4.3 甲苯在沸石上的吸附<a class="headerlink" href="#42143" title="Permanent link">&para;</a></h3>
+<p>本节说明对周期性体系的分析。“examples”文件夹中的 zeolite.cif 和 zeolite-mol.cif 分别是沸石以及吸附了甲苯的沸石的结构文件。后者由 CP2K 程序在 PBE-D3(BJ)/DZVP-MOLOPT-SR-GTH 水平下优化，前者的坐标直接从后者中提取。这两个 .cif 文件可用作原子对色散能贡献分析和计算色散密度的输入文件。由于 .cif 文件向 Multiwfn 提供了晶胞信息，计算将自动考虑周期性进行。</p>
+<p>首先，我们对 zeolite-mol.cif 进行分析，并用与第 4.21.4.1 节所述完全相同的方法根据原子对色散能的贡献着色，将颜色标尺设为 -8.0 到 8.0 kcal/mol，你将得到如下图所示。只有吸附的甲苯的原子（对应文件中的原子 217-231）显示为大球。从图中可以看出，硅原子对色散能的贡献最大，远大于氧和碳原子，甲苯中的氢原子贡献最小。</p>
+<p><img alt="" src="../imgs/p928_461.png" /></p>
+<!-- p.929 -->
+
+<p>上图没有直接显示沸石中哪些原子与甲苯有最强的色散相互作用。为了清楚地研究这一点，我们需要求出 zeolite-mol.cif 体系中沸石原子（原子 1-216）对其色散能的贡献与 zeolite.cif 体系中原子对其色散能的贡献之差。下面将进行此操作。</p>
+<p>启动 Multiwfn 并输入 examples\zeolite-mol.cif</p>
+<div class="admonition terminal">
+<p class="admonition-title">Multiwfn 交互</p>
+<ul>
+<li><strong>21</strong> — 能量分解分析(Energy decomposition analysis)</li>
+<li><strong>4</strong> — 原子对色散能贡献分析(Analysis of atomic contribution to dispersion energy)</li>
+<li><strong>3</strong> — 计算当前体系与另一体系之间原子对色散能贡献的差值(Calculate difference of atomic contributions to dispersion energy between current and another systems)</li>
+</ul>
+</div>
+<p>1-216 // 感兴趣的原子是当前体系（zeolite-mol.cif）中沸石部分的原子（前 216 个原子）</p>
+<p>examples\zeolite.cif // 另一体系 [直接按 ENTER 键] //感兴趣的原子是 zeolite.cif 中的全部 216 个原子，它们也对应于 zeolite-mol.cif 中的原子 1-216</p>
+<p>y // 在当前文件夹中导出 diffatomdisp.pqr 将 diffatomdisp.pqr 载入 VMD，按“charge”属性对原子着色，将颜色标尺设为 -0.8 到 0.8，你将看到</p>
+<p><img alt="" src="../imgs/p929_462.png" /></p>
+<!-- p.930 -->
+
+<p>上图中吸附的甲苯完全为白色，因为它不在我们先前定义的 zeolite-mol.cif 的感兴趣原子范围内，因此其数据完全为零。图中粉色或红色的原子表明，靠近甲苯的沸石原子贡献的色散能因吸附而发生了很大变化。由于 zeolite-mol.cif 中沸石部分的结构与 zeolite.cif 相同，因此，上图中原子的颜色完全反映了沸石原子与甲苯之间的色散相互作用。从图中可以看出，色散相互作用随距离衰减非常快（已知为 1/r6 衰减行为）。基本上，只有最靠近甲苯的一层沸石原子才与其有显著的色散相互作用。</p>
+<p>上图可以变为如下图所示，它更清楚地显示了与甲苯有突出相互作用的沸石原子。具体而言，在 VMD 的 图形(Graphics) - 表示(Representation) 界面中应创建三个表示(Rep)</p>
+<ul>
+<li>
+<p>表示 1(Rep 1)：显示甲苯，用名称(Name)着色，以 Licorice 风格和 BrushedMetal 材质显示</p>
+</li>
+<li>
+<p>表示 2(Rep 2)：使用选择 serial 1 to 216 显示整个沸石，将绘制方式设为 Licorice（键半径(Bond Radius) = 0.1），将着色方式设为“电荷(Charge)”，材质设为透明(Transparent)</p>
+</li>
+<li>
+<p>表示 3(Rep 3)：显示“charge”属性比 -0.2 更负的沸石原子（使用选择 charge&lt;-0.2），使用 CPK 绘制方式和“电荷(Charge)”着色方式。</p>
+</li>
+</ul>
+<p><img alt="" src="../imgs/p930_463.png" /></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/lang-switch.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

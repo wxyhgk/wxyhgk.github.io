@@ -1,0 +1,6891 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ORCA 量子化学教程 / Quantum chemistry tutorials">
+      
+      
+      
+      
+        <link rel="prev" href="../solvationmodels/">
+      
+      
+        <link rel="next" href="../symmetry/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../../../zh/manual/contents/essentialelements/relativistic/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Relativistic - ORCA 6.1 Tutorials</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../../stylesheets/mol-embed.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#relativistic-calculations" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="ORCA 6.1 Tutorials" class="md-header__button md-logo" aria-label="ORCA 6.1 Tutorials" data-md-component="logo">
+      
+  <img src="../../../../assets/fastmol-logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ORCA 6.1 Tutorials
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Relativistic
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../zh/manual/contents/essentialelements/relativistic/" hreflang="zh" class="md-select__link">
+              中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../first_steps/howtocite/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../" class="md-tabs__link">
+          
+  
+  
+  Manual
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../bib/" class="md-tabs__link">
+          
+  
+  
+  Appendix
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="ORCA 6.1 Tutorials" class="md-nav__button md-logo" aria-label="ORCA 6.1 Tutorials" data-md-component="logo">
+      
+  <img src="../../../../assets/fastmol-logo.svg" alt="logo">
+
+    </a>
+    ORCA 6.1 Tutorials
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First steps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    First steps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/howtocite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to Cite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installing ORCA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/first_calc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello water!
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/input_output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input and Output
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/parallel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running in Parallel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Graphical User Interfaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/trouble_install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Solving common issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Workflows
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/compound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound Jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/extrapol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extrapolation Techniques
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/extopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    External Methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/opi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ORCA Python Interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Properties
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Properties
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/single_point/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single point energies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/geoopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/freq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibrational frequencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/thermo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thermodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/cpcm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implicit Solvation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/solvator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explicit Solvation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/goat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformer Search (GOAT)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/relativistic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relativistic corrections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/disp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dispersion corrections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/bonds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bond Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/led/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/fod/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FOD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/charges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Charge Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/esp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ESP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/corren/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Correlated Energies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reactivity
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reactivity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/nebts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/tsopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transition State Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/tsconf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transition State Conformers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/irc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IRC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/actibar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accurate energy barriers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/KIE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KIE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/FUKUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fukui functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DOCKER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectroscopy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Spectroscopy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/IR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Infrared and Raman
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/UVVis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UV/Vis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/ECD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/vcd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VCD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/NMR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NMR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/EPR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/SOC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spin-Orbit Coupling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Multiscale
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/XTB ONIOM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/basics-otheroniom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ONIOM beyond QM/XTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/oniom-nebts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/ionic_crystal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ionic-Crystal-QM/MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/fragmentator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fragmentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Manual
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Manual
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Suggested Topics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Preface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Preface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/foreword/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foreword
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/changes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/howtocite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Howtocite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/howtousethismanual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Howtousethismanual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Quick Start
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/index_quickstartguide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/hellowater/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello water
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/recommendations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Essential Elements
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Essential Elements
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index_essentialelements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Essential Calculation Elements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../input/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coordinates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coordinates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parallel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../initialguess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Initial guess
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basisset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basis sets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../solvationmodels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Solvation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relativistic
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relativistic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Basic Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scalar-relativistic-gradients-and-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scalar-Relativistic Gradients and Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#approximate-relativistic-hamiltonians" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Approximate Relativistic Hamiltonians
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Approximate Relativistic Hamiltonians">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#one-center-approximation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One-Center Approximation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-regular-approximation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Regular Approximation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Regular Approximation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-scaled-zora-variant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Scaled ZORA Variant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-regular-approximation-with-model-potential" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Regular Approximation with Model Potential
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-douglas-kroll-hess-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Douglas-Kroll-Hess Method
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Douglas-Kroll-Hess Method">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#magnetic-properties-with-dkh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Magnetic Properties with DKH
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exact-two-component-theory-x2c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact Two-Component Theory (X2C)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exact Two-Component Theory (X2C)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dlu-approximation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DLU Approximation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#x2c-derivatives-and-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        X2C Derivatives and Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basis-sets-in-relativistic-calculations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basis Sets in Relativistic Calculations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#picture-change-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Picture-Change Effects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#finite-nucleus-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finite Nucleus Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#keywords" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keywords
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../symmetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Symmetry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Chemistries
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Model Chemistries
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/index_modelchemistries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Chemistries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/hartreefock/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hartree-Fock
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/DensityFunctionalTheory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DFT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/MP2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MP2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/3cmethods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3c methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/dispersioncorrections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dispersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/CASSCF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CASSCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/NEVPT2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEVPT2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mrci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MRCI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mdci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DLPNO methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/semiempirical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Semiempirical
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecular mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structure & Reactivity
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Structure & Reactivity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/index_structurereactivity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structure and Reactivity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimizations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations_TS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transition states
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations_scans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scans
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/irc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IRC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/neb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/frequencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frequencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/thermochemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thermochemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/solvator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SOLVATOR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/goat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GOAT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DOCKER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/mecp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MECP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/conicalintersections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conical intersections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectroscopy & Properties
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Spectroscopy & Properties
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/index_spectroscopyproperties/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectroscopy and Properties
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/vibrations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibrations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/excitedstates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Excited states
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/tddft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TD-DFT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/esd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UV/Vis & ESD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/nmr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NMR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/epr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/led/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/nbo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NBO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/spinorbit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spin-orbit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/magnx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Magnetic properties
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Multiscale
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/index_multiscalesimulations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale Simulations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-general/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM general
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-molecules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM molecules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-crystal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Crystal QM/MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecular Dynamics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Molecular Dynamics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../moleculardynamics/index_moleculardynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecular Dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../moleculardynamics/moldyn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_10" id="__nav_3_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Workflows
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/index_workflowsautomatization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows and Automatization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/compound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/compound_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/orcapythoninterface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_11" id="__nav_3_11_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Utilities
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/index_utilitiesvisualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities and Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/index_orcaarchitecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture of ORCA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_13" id="__nav_3_13_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/public/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Public
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bibliography/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bibliography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../bib/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bibliography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../genindex/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Basic Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scalar-relativistic-gradients-and-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scalar-Relativistic Gradients and Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#approximate-relativistic-hamiltonians" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Approximate Relativistic Hamiltonians
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Approximate Relativistic Hamiltonians">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#one-center-approximation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One-Center Approximation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-regular-approximation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Regular Approximation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Regular Approximation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-scaled-zora-variant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Scaled ZORA Variant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-regular-approximation-with-model-potential" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Regular Approximation with Model Potential
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-douglas-kroll-hess-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Douglas-Kroll-Hess Method
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Douglas-Kroll-Hess Method">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#magnetic-properties-with-dkh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Magnetic Properties with DKH
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exact-two-component-theory-x2c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact Two-Component Theory (X2C)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exact Two-Component Theory (X2C)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dlu-approximation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DLU Approximation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#x2c-derivatives-and-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        X2C Derivatives and Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basis-sets-in-relativistic-calculations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basis Sets in Relativistic Calculations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#picture-change-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Picture-Change Effects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#finite-nucleus-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finite Nucleus Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#keywords" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keywords
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<p><a id="sec:essentialelements.relativistic"></a></p>
+<h1 id="relativistic-calculations">Relativistic Calculations<a class="headerlink" href="#relativistic-calculations" title="Permanent link">&para;</a></h1>
+<p>ORCA features three different approximations to cover relativistic effects:</p>
+<ol>
+<li>The „Exact 2 component“ (<a href="#sec:essentialelements.relativistic.x2c">X2C</a>) Hamiltonian</li>
+<li>The Douglas-Kroll-Hess (<a href="#sec:essentialelements.relativistic.dkh">DKH</a>) Hamiltonian to second order</li>
+<li>The 0th order regular approximation (<a href="#sec:essentialelements.relativistic.regularapprox">ZORA</a>) with a model potential</li>
+</ol>
+<p>Earlier versions of ORCA offered a number of additional approximations, which are no longer supported.</p>
+<p>The main relativistic Hamiltonian that will be pursued in further development is the X2C Hamiltonian.
+Of the three alternatives, we believe that X2C has the best feature set and we recommend to all of our users to preferentially use this method.</p>
+<p>All three relativistic model Hamiltonians are implemented for scalar relativistic energy calculations
+and these are carried through consistently through the entire program.
+Scalar relativity shows up as an additional effective potential that is added to the one-electron matrix.
+Scalar relativistic corrections to the two-electron interaction are not available in ORCA.
+Furthermore, self-consistent field calculations (HF, DFT, CASSCF) with inclusion of spin-orbit-coupling (SOC)
+are also not available in ORCA but we will not exclude the possibility to add this feature in a future version of the program.</p>
+<p><a id="sec:essentialelements.relativistic.basic"></a></p>
+<h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
+<p>The relativistic methods in ORCA are implemented in a fairly
+straightforward way but do require some caution from the user.
+The basic options are available via simple input keywords
+and finer control is possible through the <code>%rel</code> block --
+see <a href="#sec:essentialelements.relativistic.keywords">relativistic.keywords</a> for a full list of keywords.
+There are also settings specific to each Hamiltonian --
+these are explained in the respective section below.</p>
+<p>The following three (mutually exclusive) input lines request, respectively:
+- a TPSS optimization with the ZORA Hamiltonian,
+  together with the <a href="../basisset/#sec:essentialelements.basisset.builtin.rel.def2">relativistically recontracted <code>ZORA-def2-TZVP</code></a> basis set
+  and the <code>SARC/J</code> <a href="../basisset/#sec:essentialelements.basisset.aux.auxj">auxiliary basis set</a>;
+- a DLPNO-CCSD(T) energy calculation with the second order DKH Hamiltonian with,
+  together with a matching <a href="../basisset/#sec:essentialelements.basisset.builtin.rel.cc">correlation-consistent basis set</a>
+  and suitable <a href="../basisset/#sec:essentialelements.basisset.aux.auxc"><code>AuxC</code></a>;
+- a double-hybrid DFT NMR calculation with the X2C Hamiltonian
+  and <a href="../basisset/#sec:essentialelements.basisset.builtin.rel.karlsruhex2c">appropriate basis sets</a>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>! TPSS Opt ZORA ZORA-def2-TZVP SARC/J
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a># or
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>! DLPNO-CCSD(T) DKH cc-pVTZ-DK cc-pVTZ/C
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a># or
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>! DSD-PBEP86/2013 NMR X2C x2c-TZVPall-s x2c/J
+</code></pre></div>
+<p>See <a href="#sec:essentialelements.relativistic.basissets">relativistic.basissets</a> for an explanation
+of the basis set requirements in relativistic calculations
+and <a href="../basisset/#sec:essentialelements.basisset.builtin.rel">builtin.rel</a> for a list of available basis sets.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<ul>
+<li>Older versions of ORCA made extensive use of automatic basis set substitution and aliasing
+  when the use of the DKH or ZORA Hamiltonians was detected.
+  This is no longer the case!
+  Relativistic versions of basis sets now have to be requested explicitly with the appropriate prefix.
+  SARC basis sets also have to be requested explicitly for elements beyond Kr.</li>
+<li>Geometry optimizations with DKH and ZORA (but not X2C) automatically use the
+  <a href="#sec:essentialelements.relativistic.hamiltonian.1c">one-center approximation</a>.
+  When computing relative energies, do not mix energies from single-point calculations
+  without the one-center approximation
+  with those from geometry optimizations that do make use of this feature.</li>
+</ul>
+</div>
+<p><a id="sec:essentialelements.relativistic.basic.props"></a></p>
+<h3 id="scalar-relativistic-gradients-and-properties">Scalar-Relativistic Gradients and Properties<a class="headerlink" href="#scalar-relativistic-gradients-and-properties" title="Permanent link">&para;</a></h3>
+<p>Of the three model Hamiltonians, only X2C features analytic gradients.
+Hence, for geometry optimizations this is also the preferred method.
+For DKH and ZORA, the program automatically switches to the
+<a href="#sec:essentialelements.relativistic.hamiltonian.1c">one-center approximation</a>.
+This requires some attention by the users since final single point energies obtained
+with the one-center approximation are inconsistent with energies obtained without it.
+The one-center approximation is usually of sufficient accuracy but we have observed cases
+in actual applications where it leads to clearly wrong geometries.
+Hence, we strongly recommend to use the X2C Hamiltonian
+(or even an ECP-based calculation) in this realm.</p>
+<p>If relativistic calculations are used for molecular properties there is a potential mismatch
+between non-relativistically calculated property integrals and the relativistic Hamiltonian.
+The procedure to remove these inconsistencies is referred to as "picture change".
+It is controlled by the keyword <code>PictureChange</code> in <code>%rel</code> and is activated by default in most calculations.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>%rel 
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  FiniteNuc     true   # Invokes the Gaussian finite nucleus model.
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  PictureChange 1 or 2 # First or second order picture change effects.
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>                       # Second order is potentially more accurate and more expensive.
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>end
+</code></pre></div>
+<p>Picture change effects are implemented for DKH and X2C and to some extent also for ZORA.
+However, they are not implemented for all properties that ORCA can calculate.
+Please pay attention to the output of the property integral and property programs.
+Both programs will explicitly state which picture change effects are included in the molecular integrals.
+For more details, see <a href="#sec:essentialelements.relativistic.picturechange">relativistic.picturechange</a>.
+The example above also invokes the finite nucleus model --
+see <a href="#sec:essentialelements.relativistic.finnuc">relativistic.finnuc</a>.</p>
+<p><a id="sec:essentialelements.relativistic.hamiltonian"></a></p>
+<h2 id="approximate-relativistic-hamiltonians">Approximate Relativistic Hamiltonians<a class="headerlink" href="#approximate-relativistic-hamiltonians" title="Permanent link">&para;</a></h2>
+<p>In the relativistic domain, calculations are based on the one-electron,
+stationary Dirac equation in atomic units (rest mass subtracted)</p>
+<div class="arithmatex">\[
+h_{D} \Psi =\left({ \left({ \beta -1} \right)c^{2}+c \alpha \cdot p +V} \right)\Psi =E\Psi .\qquad \text{(eqn:rel-h-dirac)}
+\]</div>
+<p>The spinor <span class="arithmatex">\(\Psi\)</span> can be decomposed in its so-called large and small
+components</p>
+<div class="arithmatex">\[
+\Psi =
+\begin{pmatrix}
+\Psi_L \\
+\Psi_S
+\end{pmatrix}\qquad \text{(eqn:rel-spinorLS)}
+\]</div>
+<p>These are obviously coupled through the Dirac equation. More precisely,
+upon solving for <span class="arithmatex">\(\Psi_{S}\)</span>, the following relation is obtained:</p>
+<div class="arithmatex">\[
+\Psi_{S} =\frac{1}{2c}\left(1+\frac{E-V}{2c^{2} } \right)^{-1}\sigma\cdot p \Psi_{L} =R\Psi_{L}\qquad \text{(eqn:exact-relativistic)}
+\]</div>
+<p>Through the unitary transformation</p>
+<p>$$
+U=
+\begin{pmatrix}
+\Omega_+ &amp; - R^+\Omega \
+R\Omega_+ &amp; \Omega_-
+\end{pmatrix}
+$$
+with</p>
+<div class="arithmatex">\[
+\Omega_{+} =\frac{1}{\sqrt{1+R^{+}R} },\Omega_{-} =\frac{1}{\sqrt{ 1+RR^{+} } }
+\]</div>
+<p>the Hamiltonian can be brought into block-diagonal form</p>
+<div class="arithmatex">\[
+U^{+}h_{D} U=
+\begin{pmatrix}
+\tilde h_{++} &amp; 0 \\
+0 &amp; \tilde h_{--}
+\end{pmatrix}\qquad \text{(eqn:rel-unitary-decoupling)}
+\]</div>
+<p>The (electronic) large component thus has to satisfy the following
+relation</p>
+<div class="arithmatex">\[
+h_{++} \Psi_{L} =\Omega_{+} \left({ h_{++} +h_{\pm } R+R^{+}\left({ h_{\mp
+} +h_{--} R} \right)} \right)\Omega_{+} \Psi_{L} =E_{+} \Psi_{L} .\qquad \text{(eqn:exact-relativistic-2c)}
+\]</div>
+<p>The approximate relativistic schemes implemented in ORCA (DKH and ZORA)
+use different methods to substitute the exact relation
+<a href="#eqn:exact-relativistic-2c">Eq</a> with approximate ones,
+while the X2C formalism solves the model one-electron problem exactly.</p>
+<p><a id="sec:essentialelements.relativistic.hamiltonian.1c"></a></p>
+<h3 id="one-center-approximation">One-Center Approximation<a class="headerlink" href="#one-center-approximation" title="Permanent link">&para;</a></h3>
+<p>In the one-center approximation, which can be applied to any of the
+DKH, ZORA, or X2C methods, the model potential <span class="arithmatex">\(V\)</span> in <a href="#eqn:rel-h-dirac">Eq</a>
+only contains one-center terms, i.e. interactions with other atoms are ignored.
+This has several benefits:
+- The unitary decoupling transformation <a href="#eqn:rel-unitary-decoupling">Eq</a>
+  only needs to be solved for each atom type, within the atomic basis,
+  not for the whole system.
+- There are no gauge noninvariance errors in ZORA or IORA.
+- Most importantly, there are no
+  <a href="#sec:essentialelements.relativistic.picturechange">picture-change effects</a>
+  for geometric perturbations (i.e. gradients/Hessians),
+  because the relativistic correction is independent of the molecular geometry.
+  Thus, all relativistic methods can be used for geometry optimizations
+  and frequency calculations at negligible computational effort,
+  relative to the non-relativistic calculation.</p>
+<p>Several papers in the literature show that this approximation
+is fairly accurate for the calculation of structural parameters and vibrational frequencies.
+Thus, it is enabled by default for DKH and ZORA calculations
+that require analytic gradients or Hessians,
+and indeed such calculations are not implemented without it
+(although fully numerical gradients/Hessians are available).
+For X2C, picture-change corrections for geometric perturbations are implemented,
+so the one-center approximation is not enabled by default.
+The approximation can be controlled explicitly via the simple keywords
+<code>!Rel1C</code> (on) and <code>!RelFull</code> (off), or the <code>OneCenter</code> keyword in the <code>%rel</code> block.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Energies obtained with and without the one-center approximation not comparable!</p>
+</div>
+<p><a id="sec:essentialelements.relativistic.regularapprox"></a></p>
+<h2 id="the-regular-approximation">The Regular Approximation<a class="headerlink" href="#the-regular-approximation" title="Permanent link">&para;</a></h2>
+<p>In the regular approximation,
+<a href="#eqn:exact-relativistic-2c">Eq</a> is approximated by</p>
+<div class="arithmatex">\[
+R=\frac{c}{2c^{2}-V} \sigma \cdot p.\qquad \text{(eqn:166)}
+\]</div>
+<p>At the zeroth-order level (ZORA), <span class="arithmatex">\(\Omega_{\pm } =1\)</span>, so that the ZORA
+transformation is simply</p>
+<div class="arithmatex">\[
+U_{\mathrm{ZORA} } =
+\begin{pmatrix}
+1 &amp; -R^+ \\
+R &amp; 1
+\end{pmatrix}\qquad \text{(eqn:167)}
+\]</div>
+<p>and the corresponding Hamiltonian given by</p>
+<div class="arithmatex">\[
+\tilde{{h} }_{++}^{\mathrm{ZORA} } =V+c \sigma \cdot p \frac{1}{2c^{2}-V}c\sigma \cdot p.\qquad \text{(eqn:168)}
+\]</div>
+<p>At the infinite-order level (IORA), <span class="arithmatex">\(\Omega_{\pm }\)</span>is taken into
+account, so that</p>
+<div class="arithmatex">\[
+U_{\mathrm{IORA} } =U_{\mathrm{ZORA} }
+\begin{pmatrix}
+\Omega_+ &amp; 0 \\
+0 &amp; \Omega_-
+\end{pmatrix}\qquad \text{(eqn:169)}
+\]</div>
+<p>and</p>
+<div class="arithmatex">\[
+\tilde{{h} }_{++}^{\mathrm{IORA} } =\Omega_{+} \left({ V+c \sigma \cdot p \frac{1}{2c^{2}-V}c \sigma \cdot p} \right)\Omega_{+}\qquad \text{(eqn:170)}
+\]</div>
+<p>is the corresponding Hamiltonian. Note that despite the name --
+<em>infinite-order</em> regular approximation -- this is still <em>not</em> exact.</p>
+<p>In ORCA, the spin-free (scalar-relativistic) variant of ZORA and IORA
+are implemented. These are obtained from those above through the
+replacement</p>
+<div class="arithmatex">\[
+\sigma \cdot p \frac{1}{2c^{2}-V} \sigma \cdot p \to p \frac{1}{2c^{2}-V} p.\qquad \text{(eqn:171)}
+\]</div>
+<p>The regular Hamiltonians contain only part of the Darwin term and no
+mass-velocity term. A problem with relations
+<a href="#eqn:170">Eq</a> and
+<a href="#eqn:168">Eq</a> is
+that due to the non-linear dependence of the resulting regular
+Hamiltonians on <span class="arithmatex">\(V\)</span>, a constant change of <span class="arithmatex">\(V\)</span>, which in the Dirac and
+Schrödinger equations will result in a corresponding change of energy</p>
+<div class="arithmatex">\[
+E\to E+\text{const}
+\]</div>
+<p>does not so in the regular approximation. Several attempts have been
+made to circumvent this problem. The scaled ZORA variant is one such
+procedure. Another one is given through the introduction of model
+potentials replacing <span class="arithmatex">\(V\)</span>. Both approaches are available in ORCA.</p>
+<h3 id="the-scaled-zora-variant">The Scaled ZORA Variant<a class="headerlink" href="#the-scaled-zora-variant" title="Permanent link">&para;</a></h3>
+<p>This variant goes back to van Lenthe et al. <a href="../../../bibliography/">vanlenthe1994jcp</a>.
+The central observation is that the Hamiltonian</p>
+<div class="arithmatex">\[
+h_{\mathrm{scaledZORA} } =\frac{h_{\mathrm{ZORA} } }{1+\left\langle { \Psi_{L} \left|{c \sigma \cdot p \frac{1}{\left({ 2c^{2}-V}
+\right)^{2} }c \sigma \cdot p} \right|\Psi_{L} } \right\rangle}\qquad \text{(eqn:172)}
+\]</div>
+<p>produces constant energy-shifts <span class="arithmatex">\(E\to E+\text{const}\)</span> when the potential
+<span class="arithmatex">\(V\)</span> is changed by a constant -- <em>for hydrogenic ions</em>. For many-electron
+systems, the scaled-ZORA Hamiltonian still does not yield simple,
+constant energy shift for <span class="arithmatex">\(V\to V+\text{const}\)</span>. But it produces the exact Dirac energy for
+hydrogen-like atoms and performs better than the first-order regular
+approximation for atomic ionization energies.</p>
+<p><a id="sec:essentialelements.relativistic.zora"></a></p>
+<h3 id="the-regular-approximation-with-model-potential">The Regular Approximation with Model Potential<a class="headerlink" href="#the-regular-approximation-with-model-potential" title="Permanent link">&para;</a></h3>
+<p>The idea of this approach goes back to Van Wüllen <a href="../../../bibliography/">vanwuellen1998jcp</a>,
+who suggested the procedure for DFT. However we also use it for other
+methods. The scalar relativistic ZORA self-consistent field equation is
+in our implementation (in atomic units):</p>
+<div class="arithmatex">\[
+\left[{ \mathrm{p }\frac{c^{2} }{2c^{2}-V }\mathrm{p }+V_{\mathrm{eff} } } \right]\psi_{i} =\varepsilon_{i} \psi_{i}\qquad \text{(eqn:173)}
+\]</div>
+<p>where <span class="arithmatex">\(c\)</span> is the speed of light. It looks like the normal
+nonrelativistic Kohn--Sham equation with the KS potential
+<span class="arithmatex">\(V_{\mathrm{eff} }\)</span>:</p>
+<div class="arithmatex">\[
+V_{\mathrm{eff} } \left({ \mathrm{r }} \right)=-\sum\limits_A { \frac{Z_{A} }{\left|{\mathrm{r }-\mathrm{R }_{A} } \right|} } +\in t \frac{\rho \left( \mathrm{r'} \right)}{\left| \mathrm{r } - \mathrm{r'} \right|}
+d\mathrm{r'} + V_{\text{xc} } \left[ \rho \right](\mathbf r)\qquad \text{(eqn:174)}
+\]</div>
+<p>(<span class="arithmatex">\(Z_{A}\)</span> is the charge of nucleus <span class="arithmatex">\(A\)</span> and <span class="arithmatex">\(R_{A}\)</span> is its position;
+<span class="arithmatex">\(\rho (r)\)</span> is the total electron density and
+<span class="arithmatex">\(V_{xc} \left[ \rho \right]\)</span> the exchange-correlation potential -- the
+functional derivative of the exchange-correlation energy with respect to
+the density). The kinetic energy operator <span class="arithmatex">\(T=-\frac{1}{2}\nabla^{2}\)</span> of
+the nonrelativistic treatment is simply replaced by the ZORA kinetic
+energy operator:</p>
+<div class="arithmatex">\[
+T^{\mathrm{ZORA} }=\mathrm{p }\frac{c^{2} }{2c^{2}-V }\mathrm{p }\qquad \text{(eqn:175)}
+\]</div>
+<p>Clearly, in the regions where the potential <span class="arithmatex">\(V\)</span> is small compared to
+<span class="arithmatex">\(c^{2}\)</span>, this operator reduces to the nonrelativistic kinetic energy.
+<span class="arithmatex">\(V\)</span> could be the actual KS potential. However, this would require to
+solve the ZORA equations in a special way which demands recalculation of
+the kinetic energy in every SCF cycle. This becomes expensive and is
+also undesirable since the ZORA method is not gauge invariant and one
+obtains fairly large errors from such a procedure unless special
+precaution is taken. Van Wüllen <a href="../../../bibliography/">vanwuellen1998jcp</a> has therefore
+argued that it is a reasonable approximation to replace the potential
+<span class="arithmatex">\(V\)</span> with a model potential <span class="arithmatex">\(\tilde{{V} }_{\mathrm{model} }\)</span> which is
+constructed as follows:</p>
+<div class="arithmatex">\[
+\tilde{{V} }_{\mathrm{model} } =-\sum\limits_A { \frac{Z_{A} }{\left|{ \mathrm{r }
+-\mathrm{R }_{A} } \right|} } +\in t \frac{\rho_{\mathrm{model} } \left( \mathrm{r'} \right)}{\left| \mathrm{r }
+-\mathrm{r'} \right|}
+d\mathrm{r'} +V_{\text{xc} }^{\text{LDA} } \left[{ \rho^{\mathrm{model} }} \right](\mathbf r)\qquad \text{(eqn:176)}
+\]</div>
+<p>The model density is constructed as a sum over spherically symmetric
+(neutral) atomic densities:</p>
+<div class="arithmatex">\[
+\rho_{\mathrm{model} } \left({ \mathrm{r }} \right)=\sum\limits_A { \rho
+^{A}\left({ \mathrm{r }} \right)}\qquad \text{(eqn:177)}
+\]</div>
+<p>Thus, this density neither has the correct number of electrons (for
+charged species) nor any spin polarization. Yet, in the regions close to
+the nucleus, where the relativistic effects matter, it is a reasonable
+approximation. The atomic density is expanded in a sum of s-type
+Gaussian functions like:</p>
+<div class="arithmatex">\[
+\rho^{A}\left({ \mathrm{r }} \right)=\sum\limits_i { d_{i} \exp \left({-\alpha_{i} \left|{ \mathrm{r }-\mathrm{R }_{A} } \right|^{2} } \right)}\qquad \text{(eqn:178)}
+\]</div>
+<p>The fit coefficients were determined in three different ways by near
+basis set limit scalar relativistic atomic HF calculations and are
+stored as a library in the program.
+The fitting densities are available for elements up to Rn, as well as the actinoids.
+Through the variable <code>ModelDens</code> the user can choose between these fits and study the
+dependence of the results in this choice (it should be fairly small
+except, perhaps, with the heavier elements and the HF densities which
+are not recommended). The individual components of the model potential
+(eq. <a href="#eqn:176">Eq</a>)
+can be turned on or off through the use of the variable <code>ModelPot</code>.
+The available options for these keywords are listed in
+<a href="#sec:essentialelements.relativistic.keywords">relativistic.keywords</a>.
+For example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>! ZORA ZORA-def2-TZVP SARC/J
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a># for more detail use
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>%rel
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>     ModelPot 1,1,1,1
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>     ModelDens rhoZORA
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>end
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The ZORA method is highly dependent on
+numerical integration and it is very important to pay attention to the
+subject of radial integration accuracy!
+By default, from ORCA 5.0 we consider that during the grid construction
+and the defaults should work very well.
+Only for very problematic cases, consider using a higher
+<a href="../numericalintegration/#sec:essentialelements.numericalintegration.radgrid"><code>IntAcc</code> parameter</a>
+or at least to increase the radial integration accuracy
+around the heavy atoms using <code>SpecialGridAtoms</code> and <code>SpecialGridIntAcc</code>
+(see <a href="../numericalintegration/#sec:essentialelements.numericalintegration.detailsandoptions">numericalintegration.detailsandoptions</a>).</p>
+</div>
+<p><a id="sec:essentialelements.relativistic.dkh"></a></p>
+<h2 id="the-douglas-kroll-hess-method">The Douglas-Kroll-Hess Method<a class="headerlink" href="#the-douglas-kroll-hess-method" title="Permanent link">&para;</a></h2>
+<p>The Douglas-Kroll-Hess (DKH) method expands the exact relation
+<a href="#eqn:exact-relativistic-2c">Eq</a> in the external potential V. In
+ORCA the first- and second-order DKH methods are implemented. The
+first-order DKH Hamiltonian is given by</p>
+<div class="arithmatex">\[
+\tilde{h}_{++}^{(1) } =E_{p} +A_{p} VA_{p} +B_{p} V^{(p) }B_{p} ,\qquad \text{(eqn:179)}
+\]</div>
+<p>with</p>
+<div class="arithmatex">\[
+E_{P} =\sqrt{ c^{4}+c^{2}p^{2} }, \, A_{p} =\sqrt{\frac{E_{p} +c^{2} }{2E_{p} }}, \, B_{p} =\frac{c}{\sqrt{ 2E_{p} (E_{p} +c^{2}) } }\qquad \text{(eqn:180)}
+\]</div>
+<p>At second order, it reads</p>
+<div class="arithmatex">\[
+\tilde{{h} }_{++}^{(2) } =\tilde{{h} }_{++}^{(1) } +\frac{1}{2}\left[{ W_{p} ,O} \right]\qquad \text{(eqn:181)}
+\]</div>
+<p>where</p>
+<div class="arithmatex">\[
+\left\{{ W_{p} ,E_{p} } \right\}=\beta O, \, O=A_{p} \left[{ R_{p} ,V}
+\right]A_{p}, \, R_{p} =\frac{c\sigma p}{E_{p} +c^{2} }\qquad \text{(eqn:182)}
+\]</div>
+<p>define the second-order contribution. In ORCA, the spin-free part of
+<span class="arithmatex">\(\tilde{{h} }_{++}^{(2) }\)</span> is implemented.</p>
+<p>The occurrence of the relativistic kinetic energy, <span class="arithmatex">\(E_{P}\)</span>, which is not
+well-defined in position space, makes a transformation to the
+<span class="arithmatex">\(p^{2}\)</span>-eigenspace necessary. Thus any DKH calculation will start with a
+decontraction of the basis set, to ensure a good resolution of the
+identity. Then the non-relativistic kinetic energy is diagonalized and
+the <span class="arithmatex">\(E_{P}\)</span>-dependent operators calculated in that space. The potential
+<span class="arithmatex">\(V\)</span> and <span class="arithmatex">\(V^{(p) }\)</span> are transformed to <span class="arithmatex">\(p^{2}\)</span>-eigenspace. After all
+contributions are multiplied to yield the (first- or second-order)
+Hamiltonian, the transformation back to AO space is carried out and the
+basis is recontracted.</p>
+<p>The (spin-free) DKH-Hamiltonians contain all spin-free, relativistic
+correction terms, e.g. the mass-velocity and Darwin terms. As the
+potential enters linearly, no scaling or model potential is necessary to
+introduce the correct behaviour of the energy under a change</p>
+<div class="arithmatex">\[
+V\to V+\text{const}.
+\]</div>
+<p>In all these respects the DKH Hamiltonians are much cleaner than the
+regular approximation Hamiltonians.
+The first- or second-order DKH method be requested via the simple input keywords
+<code>DKH1</code> or <code>DKH2</code>, respectively (<code>DKH</code> is an alias for the latter),
+together with appropriate basis sets:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>! DKH DKH-def2-TZVP SARC/J
+</code></pre></div>
+For most calculations, no other settings are needed.
+A full list of available keywords is given in
+<a href="#sec:essentialelements.relativistic.keywords">relativistic.keywords</a>.
+<a id="sec:essentialelements.relativistic.dkh.magnetic"></a></p>
+<h3 id="magnetic-properties-with-dkh">Magnetic Properties with DKH<a class="headerlink" href="#magnetic-properties-with-dkh" title="Permanent link">&para;</a></h3>
+<p>For magnetic properties, the DKH transformation and consequently the DKH
+Hamiltonian and the corresponding property operators are not unique.
+Depending on whether the magnetic field is included in the free-particle
+Foldy--Wouthuysen (fpFW) transformation carried out in the first step of
+the DKH protocol or not, two different Hamiltonians result. If the
+magnetic field is included in the fpFW transformation, the resulting
+Hamiltonian is a function of the gauge invariant momentum</p>
+<div class="arithmatex">\[
+\pi=p+A.
+\]</div>
+<p>It is therefore gauge invariant under gauge transformations of the
+magnetic vector potential <span class="arithmatex">\(\mathbf A\)</span> and thus are the property
+operators derived from it. This is referred to as f<span class="arithmatex">\(\pi\)</span>FW DKH
+Hamiltonian. If the magnetic field is not included in the FW
+transformation, the resulting Hamiltonian is a function of the kinetic
+momentum <span class="arithmatex">\(p\)</span> only and thus is not gauge invariant. The latter
+Hamiltonian is referred to as fpFW DKH Hamiltonian. A comparison of both
+Hamiltonians is given in Table <a href="#table:compdkhham">table:compdkhham</a>.
+<a id="table:compdkhham"></a></p>
+<div class="admonition note">
+<p class="admonition-title">Comparison of the properties of the fpFW and fπFW DKH Hamiltonians. For details see Ref. <a href="../../../bibliography/">sandhoefer2012jcp</a>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Criterion</th>
+<th style="text-align: center;">fpFW Hamiltonian</th>
+<th style="text-align: center;">fπFW Hamiltonian</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Convergence of Eigenvalues to Dirac Eigenvalues</td>
+<td style="text-align: center;">?</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td style="text-align: left;">1st order is bounded</td>
+<td style="text-align: center;">no</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td style="text-align: left;">Reproduces Pauli Hamiltonian</td>
+<td style="text-align: center;">no</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td style="text-align: left;">Gauge invariance</td>
+<td style="text-align: center;">no</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td style="text-align: left;">Lorentz invariance</td>
+<td style="text-align: center;">no</td>
+<td style="text-align: center;">no</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>From this Table, it becomes clear that the f<span class="arithmatex">\(\pi\)</span>FW DKH Hamiltonian is
+clearly preferred over the fpFW Hamiltonian. To obtain the property
+operators, it is however necessary to take the derivatives of these
+Hamiltonians. It turns out that in the case of the hyperfine-coupling
+tensor, the necessary derivatives produce divergent property operators
+in the case of the f<span class="arithmatex">\(\pi\)</span>FW DKH Hamiltonian. This may be due to the
+unphysical assumption of a point-dipole as a source of the magnetic
+field of the nucleus. As a physical description of the magnetization
+distribution of the nucleus is not available due to a lack of
+experimental data, the magnetization distribution is assumed to be the
+same as the charge distribution of the nucleus, see
+Section <a href="#sec:essentialelements.relativistic.finnuc">relativistic.finnuc</a>.
+This is unphysical as the magnetization is caused by the one unpaired nucleon in the nucleus
+whereas the charge distribution is generated by the protons in the
+nucleus. So, physically, the magnetization should occupy a larger volume
+in space than the charge. This might also be the reason why the
+resulting finite-nucleus model is insufficient to remedy the
+divergences in the f<span class="arithmatex">\(\pi\)</span>FW hyperfine-coupling tensor. Consequently,
+the hyperfine-coupling tensor is only implemented in the version
+resulting from the fpFW DKH Hamiltonian. In the case of the g-tensor
+both versions are implemented and accessible via the keyword
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>%rel fpFWtrafo true/false end
+</code></pre></div>
+By default, this keyword is set to <code>true</code>. A detailed form of the
+property operators used for the g-tensor and hyperfine-tensors can be
+found in Ref. <a href="../../../bibliography/">sandhoefer2012jcp</a>.
+<a id="sec:essentialelements.relativistic.x2c"></a></p>
+<h2 id="exact-two-component-theory-x2c">Exact Two-Component Theory (X2C)<a class="headerlink" href="#exact-two-component-theory-x2c" title="Permanent link">&para;</a></h2>
+<p>The X2C implementation in ORCA closely follows that of Franzke, Weigend,
+and their coworkers, described in the references: <a href="../../../bibliography/">Peng2013</a> (energy),
+<a href="../../../bibliography/">Franzke2018</a> (gradient), <a href="../../../bibliography/">Franzke2022</a> (EPR hyperfine coupling),
+<a href="../../../bibliography/">Franzke2021a</a> (NMR spin--spin coupling), <a href="../../../bibliography/">Franzke2019</a> (NMR
+shielding). These are also consistent with the work of Gauss and
+coworkers in refs: <a href="../../../bibliography/">Cheng2011</a> (gradient, electric properties),
+<a href="../../../bibliography/">Cheng2011a</a> (Hessian), <a href="../../../bibliography/">Cheng2013</a> (NMR shielding). However, despite
+the name, only a scalar relativistic (spin-free) version is available at
+present, resulting effectively in a one-component method (more aptly
+called "SF-X2C-1e"), very similar to the DKH and ZORA approaches
+described above. The main difference to the latter two is that the
+decoupling of the one-electron Dirac Hamiltonian is exact, rather than
+approximate. SF-X2C-1e is implemented in ORCA for energies, gradients,
+and various properties (see below) with both a point- and finite nucleus
+model.
+We briefly describe the working equations here, using the notation of
+the aforementioned references, which differs somewhat from that in the
+previous sections. The one-electron Dirac equation is solved directly:</p>
+<div class="arithmatex">\[
+\mathbb{D C} = \mathbb{M C E},
+\quad
+  \mathbb{C} =
+  \begin{pmatrix}
+  \mathbf C^{\mathrm L}_{+} &amp; \mathbf C^{\mathrm L}_{-} \\
+  \mathbf C^{\mathrm S}_{+} &amp; \mathbf C^{\mathrm S}_{-} \\
+  \end{pmatrix}\qquad \text{(eq:x2c-DCSCE)}
+\]</div>
+<p>to obtain the unitary transformation matrix:</p>
+<div class="arithmatex">\[
+\begin{aligned}
+  \mathbb{U} &amp;=
+  \begin{pmatrix}
+  \mathbf U_{++} &amp; \mathbf U_{+-} \\
+  \mathbf U_{-+} &amp; \mathbf U_{--} \\
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+  \mathbf 1 &amp; -\mathbf X^\dagger \\
+  \mathbf X &amp; \mathbf 1 \\
+  \end{pmatrix}
+  \begin{pmatrix}
+  \mathbf R &amp; \mathbf 0 \\
+  \mathbf 0 &amp; \mathbf R' \\
+  \end{pmatrix}
+\\
+  \mathbf X &amp;= \mathbf C^{\mathrm S}_{+} \left( \mathbf C^{\mathrm L}_{+} \right)^{-1}\\
+  \mathbf R &amp;= \mathbf S^{-\frac{1}{2} } \left(\mathbf S^{-\frac{1}{2} }\tilde{\mathbf S} \mathbf S^{-\frac{1}{2} }\right)^{-\frac{1}{2} } \mathbf S^{\frac{1}{2} }\\
+  \tilde{\mathbf S} &amp;= \mathbf S + \frac{1}{2c^2}\mathbf X^\dagger \mathbf T \mathbf X
+\end{aligned}
+\]</div>
+<p>which exactly block-diagonalizes the Hamiltonian:</p>
+<div class="arithmatex">\[
+\mathbb{U^\dagger D U} =
+  \begin{pmatrix}
+  \mathbf h^{+} &amp; \mathbf 0 \\
+  \mathbf 0 &amp; \mathbf h^{-} \\
+  \end{pmatrix}\qquad \text{(eq:x2c-UDU)}
+\]</div>
+<div class="arithmatex">\[
+\mathbf h^{+} =
+  \mathbf R^\dagger \mathbf L \mathbf R\qquad \text{(eq:x2c-h)}
+\]</div>
+<div class="arithmatex">\[
+\mathbf L = \mathbf V + \mathbf T \mathbf X + \mathbf X^\dagger \mathbf T
+ +\mathbf X^\dagger \left(\frac{1}{4c^2} \mathbf W - \mathbf T\right) \mathbf X\qquad \text{(eq:x2c-L)}
+\]</div>
+<p>where <span class="arithmatex">\(\mathbf V\)</span>, <span class="arithmatex">\(\mathbf T\)</span>, <span class="arithmatex">\(\mathbf S\)</span>, and <span class="arithmatex">\(\mathbf W\)</span> are the
+potential, kinetic, overlap, and relativistic potential
+(<span class="arithmatex">\(\hat p\,\hat V\hat p\)</span>) integral matrices. <span class="arithmatex">\(\mathbf h^{+}\)</span> is thus the
+matrix form of the relativistically-corrected one-electron Hamiltonian
+used for the rest of the calculation.</p>
+<p>Note that the potential operator <span class="arithmatex">\(\hat V\)</span> used in the above equations
+only includes the electron--nuclear Coulomb interaction. External point
+charges may optionally be included via <code>%rel ModelPot[4]=1</code> (default 0).
+This option affects energy and NMR shielding calculations but it is
+presently not available for gradients or Hessians.</p>
+<p>In the simplest case, it is sufficient to add the <code>X2C</code> simple keyword to the input
+and choose an appropriate basis set:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>! X2C X2C-TZVPall X2C/J
+</code></pre></div>
+<p><a id="sec:essentialelements.relativistic.x2c.dlu"></a></p>
+<h3 id="dlu-approximation">DLU Approximation<a class="headerlink" href="#dlu-approximation" title="Permanent link">&para;</a></h3>
+<p>The diagonal local approximation to the unitary transformation matrix
+(DLU), as introduced by Peng and Reiher,<a href="../../../bibliography/">Peng2012</a> reduces the
+computational cost of the X2C transformation by approximating
+<span class="arithmatex">\(\mathbb U\)</span> (i.e., <span class="arithmatex">\(\mathbf R\)</span> and <span class="arithmatex">\(\mathbf X\)</span>) as an
+atomic-block-diagonal matrix.
+It leads to very minor loss of accuracy and is particularly suited
+for gradient/Hessian calculations.</p>
+<div class="arithmatex">\[
+\begin{aligned}
+  \mathbf R &amp;\approx \bigoplus_A \mathbf R_A
+&amp;
+  \mathbf X &amp;\approx \bigoplus_A \mathbf X_A\end{aligned}
+\]</div>
+<p>where <span class="arithmatex">\(\bigoplus_A\)</span> denotes a direct sum of atomic diagonal blocks.
+Eqs <a href="#eq:x2c-DCSCE">Eq</a>--<a href="#eq:x2c-L">Eq</a> can then be solved independently for diagonal
+atomic blocks <span class="arithmatex">\(\mathbf h^+_{AA}\)</span>. Off-diagonal blocks <span class="arithmatex">\(\mathbf h^+_{AB}\)</span>
+are obtained as:</p>
+<div class="arithmatex">\[
+\begin{aligned}
+    \mathbf h^+_{AB}  &amp;= \mathbf R^\dagger_A \mathbf L_{AB} \mathbf R_B
+\\
+    \mathbf L_{AB} &amp;= \mathbf V_{AB} + \mathbf T_{AB} \mathbf X_B + \mathbf X^\dagger_A \mathbf T_{AB} + \mathbf X^\dagger_A \left(\frac{1}{4c^2}\mathbf W_{AB} - \mathbf T_{AB}\right) \mathbf X_B\end{aligned}
+\]</div>
+<p>It is also possible to approximate light atoms <span class="arithmatex">\(a,b\)</span> (below a certain
+atomic number) as non-relativistic:</p>
+<div class="arithmatex">\[
+\begin{aligned}
+  \mathbf X_a &amp;= \mathbf R_a = \mathbf I
+\\
+  \mathbf W_{ab} &amp;= \mathbf W_{aB} = \mathbf 0
+\\
+  \mathbf h^+_{ab} &amp;= \mathbf V_{ab} + \mathbf T_{ab}
+\\
+  \mathbf h^+_{aB} &amp;= \left(\mathbf V_{aB} + \mathbf T_{aB} \mathbf X_B\right) \mathbf R_B\end{aligned}
+\]</div>
+<p>Unlike the one center approximation (which is also available for X2C),
+all nuclei are included in the potential operator <span class="arithmatex">\(\hat V\)</span>.</p>
+<p>The DLU approximation can be requested via the simple input keyword <code>!DLU-X2C</code>.
+Additional options are available in the <code>%rel</code> block
+(see also <a href="#sec:essentialelements.relativistic.keywords">relativistic.keywords</a>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>%rel
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  DLU         false # default - not used
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>               true # turn DLU on
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  LightAtomThresh 0 # (default) highest atomic number treated as non-relativistic
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>end
+</code></pre></div>
+<p><a id="sec:essentialelements.relativistic.x2c.props"></a></p>
+<h3 id="x2c-derivatives-and-properties">X2C Derivatives and Properties<a class="headerlink" href="#x2c-derivatives-and-properties" title="Permanent link">&para;</a></h3>
+<p>As discussed in <a href="#sec:essentialelements.relativistic.picturechange">relativistic.picturechange</a>,
+when computing properties with relativistic methods,
+derivatives need to be taken of the correct Hamiltonian,
+namely <span class="arithmatex">\(\mathbf h^+\)</span> (eq <a href="#eq:x2c-h">Eq</a>) in the X2C case.
+These include contributions due to the derivatives of <span class="arithmatex">\(\mathbf R\)</span> and <span class="arithmatex">\(\mathbf X\)</span>,
+which are often small.
+Therefore, it is possible to neglect them and save some computational time
+via the following option:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>%rel
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  PictureChange 2 # compute the full relativistic Hamiltonian derivative
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>                1 # neglect derivatives of R and X
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>                0 # (default) use the non-relativistic operator
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>end
+</code></pre></div>
+<p>The same setting is applied to all properties for which the X2C
+correction is implemented. Currently, these are: geometric gradients,
+electric dipoles, quadrupoles, and polarizabilities, electric field
+gradients, EPR hyperfine couplings, and NMR shieldings and spin--spin couplings.
+For the Hessian, the X2C correction is implemented in a semi-numeric fashion.
+The DLU approximation is applied throughout, if requested,
+and reduces the computational effort dramatically. Note that for
+magnetic properties, the restricted magnetic balance (RMB) for the small
+component basis functions is used whenever GIAOs are requested (e.g. NMR
+shielding), while the restricted kinetic balance (RKB) is used otherwise
+(e.g. NMR coupling). The spin--orbit coupling integrals used for various
+properties only include a relativistic correction to the one-electron
+term, as is the case for DKH.</p>
+<p>For second derivative properties whose number is proportional to the
+number of atoms, e.g. the DSO term of NMR couplings, first derivatives
+of various intermediate quantities required for the full X2C second
+derivative are stored on disk. The storage requirements can be reduced
+via the <code>StorageLevel</code> keyword and the missing intermediates will be
+recomputed on-the-fly, which of course increases the computation time.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>%rel
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>  StorageLevel 0 # do not store anything - not always available
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>               1 # store integral derivatives
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>               2 # 1 + derivatives of R and X (default, minimum for DLU)
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>               3 # 2 + derivatives of L
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>               4 # 3 + derivatives of S-tilde
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>               5 # 4 + derivatives of D and M
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>end
+</code></pre></div>
+<p><a id="sec:essentialelements.relativistic.basissets"></a></p>
+<h2 id="basis-sets-in-relativistic-calculations">Basis Sets in Relativistic Calculations<a class="headerlink" href="#basis-sets-in-relativistic-calculations" title="Permanent link">&para;</a></h2>
+<p>The different scalar relativistic potentials have different shapes in the core region.
+Consequently, each one of them requires specialized all electron basis sets that are optimized for the Hamiltonian at hand.
+Such basis sets have been designed,
+both as DKH and ZORA recontractions of the <a href="../basisset/#sec:essentialelements.basisset.builtin.rel.ahlrichs">Ahlrichs</a>
+and <a href="../basisset/#sec:essentialelements.basisset.builtin.rel.def2">Karlsruhe</a> basis sets
+for elements up to Kr (for which the original non-relativistic versions are all-electron),
+and as purpose-built segmented all-electron relativistically contracted (SARC)
+basis sets for elements beyond Kr
+.<a href="../../../bibliography/">Pantazis2008,Buehl2008,Pantazis2009,Pantazis2011,Pantazis2012,Rolfes2020</a>
+For X2C calculations, the <a href="../basisset/#sec:essentialelements.basisset.builtin.rel.karlsruhex2c">"x2c-XVPall" basis sets</a>
+and their variants are available.<a href="../../../bibliography/">Weigend2017-x2c-XVP,Weigend2019-x2c-XVP-s</a>
+All available built-in choices are listed in the section <a href="../basisset/#sec:essentialelements.basisset.builtin.rel">builtin.rel</a>.</p>
+<p>An uncontracted all-electron basis set of sufficient size will always work.
+Likewise, uncontracted fitting basis sets in all forms of RI calculations are always appropriate.
+Use the <a href="par:essentialelements.basisset.basicusage.decontract"><code>!Decontract</code> keyword</a>
+to decontract the chosen basis set and make it suitable for any relativistic Hamiltonian, as well as comparisons between them.</p>
+<p>If large, uncontracted basis sets are used in scalar relativistic calculations, there is a distinct danger of variational collapse.
+This behavior is related to the fact that the relativistic orbitals will diverge for a point nucleus.
+ORCA features the Gaussian finite nucleus model of Dyall and Visscher for DKH and X2C.
+We recommend to always use this feature (<code>FiniteNuc</code>) in relativistic calculations
+(see <a href="#sec:essentialelements.relativistic.finnuc">relativistic.finnuc</a>).</p>
+<p>Given the fact relativistic all-electron calculations on heavy element compounds feature very steep core basis functions,
+numeric integration, such as in DFT and COSX, may be challenging.
+ORCA features automatic procedures that adapt the integration grids for the presence of steep basis functions.
+However, in case you experience strange results, the numeric integration is one potential source of problem.
+The cure is to go to larger integration grids and, in particular,
+increase the <a href="../numericalintegration/#sec:essentialelements.numericalintegration.radgrid">radial integration accuracy</a> (<code>IntAcc</code>).</p>
+<p><a id="sec:essentialelements.relativistic.picturechange"></a></p>
+<h2 id="picture-change-effects">Picture-Change Effects<a class="headerlink" href="#picture-change-effects" title="Permanent link">&para;</a></h2>
+<p>Irrespective of which Hamiltonian has been used
+in the determination of the wave function,
+the calculation of properties requires some special care.
+This can be understood in two ways:
+First of all, we changed from the ordinary Schrödinger Hamiltonian
+to a more complicated Hamiltonian.
+As properties are defined as derivatives of the energy,
+it is clear that a new Hamiltonian will yield a new expression for the energy
+and thus a new and different expression for the property in question.
+Another way of seeing this is that through the transformation <span class="arithmatex">\(U\)</span>,
+we changed not only the Hamiltonian but also the wave function.
+To obtain the property at hand as the expectation value
+of the property operator with the wave function,
+we have to make sure that property operator and wave function
+are actually given in the same space.
+This is done through a transformation of either the property operator or the wave function.</p>
+<p>In any case, the difference between the non-relativistic
+and (quasi) relativistic property operator,
+evaluated over the (quasi) relativistic wave function,
+is called the <em>picture-change effect</em>.
+From what was said above, this is clearly not a physical effect.
+It describes how consistently the quasi relativistic calculation is carried out.
+A fully consistent calculation requires the determination of the wave function
+on the (quasi) relativistic level as well,
+as the use of the (quasi) relativistic property operator.
+This is obtained by enabling the <code>PictureChange</code> option in the <code>%rel</code> block:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>%rel PictureChange 1 end  # or 2 - see below
+</code></pre></div>
+<p>It may be that the (quasi) relativistic and non-relativistic
+property operator do produce similar results.
+In this case, a calculation with picture-change turned off
+(<code>PictureChange=0</code>) may be a good approximation.
+This is often the case for valence shell-dominated properties,
+such as the eletric dipole and polarizability.
+On the other hand, property calculations involving operators
+that carry inverse powers of the electron-nucleus distance
+can be wildly inaccurate if picture change effects are ignored.
+It is therefore highly recommended to turn on picture-change
+in all (quasi) relativistic property calculations!</p>
+<p>For DKH2, the fully consistent picture-change effects are obtained
+using the same transformation order for the property operator
+as for the one-electron Hamiltonian, i.e. setting <code>PictureChange=2</code>,
+while with <code>PictureChange=1</code> only first-order changes on the property operators
+are taken into account, which reduces the computational cost.
+However, since this is in no way a significant reduction, this choice is not recommended.</p>
+<p>A similar argument applies to X2C,
+where <code>PictureChange=2</code> is the formally correct approach
+and <code>PictureChange=1</code> is an approximate treatment
+(see <a href="#sec:essentialelements.relativistic.x2c.props">x2c.props</a>).</p>
+<p>By default, ORCA tries to choose the most appropriate value
+of the <code>PictureChange</code> variable depending on the requested properties,
+as described below (and issues a warning at the start of the output),
+but explicit user input is always respected.
+- For geometric perturbations with DKH or ZORA the
+  <a href="#sec:essentialelements.relativistic.hamiltonian.1c">one-center approximation</a>
+  is activated and picture-change corrections are not needed.
+  With X2C, <code>PictureChange=1</code> is chosen, because it significantly
+  reduces the computational cost.
+- For other properties, in particular core-sensitive ones (i.e. in EPR/NMR),
+  the full picture-change correction is applied.
+- Certain combinations of relativistic Hamiltonian and property operator are not implemented,
+  in which case ORCA prints a warning, or aborts entirely
+  if picture change effects are expected to be significant.</p>
+<p><a id="sec:essentialelements.relativistic.finnuc"></a></p>
+<h2 id="finite-nucleus-model">Finite Nucleus Model<a class="headerlink" href="#finite-nucleus-model" title="Permanent link">&para;</a></h2>
+<p>Composite particles like nuclei have, as opposed to elementary particles, a certain spatial extent.
+While the point-charge approximation for nuclei is
+in general very good in nonrelativistic calculations,
+in relativistic calculations it might lead to non-negligible errors.
+A finite-nucleus model is implemented in ORCA --
+the Gaussian nucleus model of Ref. <a href="../../../bibliography/">visscher1997atom</a> --
+and is available for DKH and X2C (but not ZORA) calculations in the ORCA program package.
+It is accessible from the <code>%rel</code> block via</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>%rel FiniteNuc true end
+</code></pre></div>
+<p>By default, this keyword is set to <code>false</code>. If the keyword is set to
+<code>true</code>, finite-nucleus effects are considered in the following
+integrals:</p>
+<ul>
+<li>nucleus potential <span class="arithmatex">\(V\)</span> and its nuclear derivatives;</li>
+<li>relativistic potential integral <span class="arithmatex">\(V^{(p) }\)</span> in DKH and X2C;</li>
+<li>one-electron part of the spin-orbit (SOC) integrals;</li>
+<li>electric-field gradient (EFG);</li>
+<li>contact density integral;</li>
+<li>Fermi-contact and spin-dipole terms of the EPR hyperfine coupling;
+  and NMR indirect spin-spin coupling tensors;</li>
+<li>nucleus-orbit coupling integral;</li>
+<li>angular-momentum integral;</li>
+<li>NMR shielding integrals over GIAOs.</li>
+</ul>
+<p><a id="sec:essentialelements.relativistic.keywords"></a></p>
+<h2 id="keywords">Keywords<a class="headerlink" href="#keywords" title="Permanent link">&para;</a></h2>
+<p><a id="tab:essentialelements.relativistic.keywords.simple"></a></p>
+<div class="admonition note">
+<p class="admonition-title">Simple input keywords for relativistic methods.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Keyword</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>DKH1</code></td>
+<td style="text-align: left;">Activate the first-order DKH Hamiltonian</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>DKH2</code>, <code>DKH</code></td>
+<td style="text-align: left;">Activate the second-order DKH Hamiltonian</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ZORA</code></td>
+<td style="text-align: left;">Activate the ZORA Hamiltonian</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>IORA</code></td>
+<td style="text-align: left;">Activate the IORA Hamiltonian</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>X2C</code></td>
+<td style="text-align: left;">Activate the X2C Hamiltonian</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>DLU-X2C</code></td>
+<td style="text-align: left;">Activate the X2C Hamiltonian in the DLU approximation</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>RelDLU</code></td>
+<td style="text-align: left;">Enable the <a href="#sec:essentialelements.relativistic.x2c.dlu">DLU approximation</a> (X2C only)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Rel1C</code></td>
+<td style="text-align: left;">Enable the <a href="#sec:essentialelements.relativistic.hamiltonian.1c">one-center approximation</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>RelFull</code></td>
+<td style="text-align: left;">Disable the one-center and DLU approximations</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a id="tab:essentialelements.relativistic.keywords.block"></a></p>
+<div class="admonition note">
+<p class="admonition-title"><code>%rel</code> block input keywords relativistic methods.</p>
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Options</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Method</code></td>
+<td><code>DKH</code></td>
+<td>Scalar relativistic Hamiltonian</td>
+</tr>
+<tr>
+<td></td>
+<td><code>ZORA</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>IORA</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>X2C</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>ModelPot</code></td>
+<td><code>&lt;VeN&gt;, &lt;VC&gt;, &lt;VXa&gt;, &lt;VLDA&gt;, &lt;VPC&gt;</code></td>
+<td>Flags for model potential (1: included, 0: not included). <code>&lt;VeN&gt;</code>: nuclear attraction; <code>&lt;VC&gt;</code>: Coulomb (ZORA/IORA only); <code>&lt;VXa&gt;</code>: Xalpha (ZORA/IORA only); <code>&lt;VLDA&gt;</code>: VWN-5 correlation (ZORA/IORA only); <code>&lt;VPC&gt;</code>: point charges (X2C only)</td>
+</tr>
+<tr>
+<td><code>ModelDens</code></td>
+<td><code>rhoDKH</code></td>
+<td>Fitted atomic density used for Coulomb model potential and for PModel guess</td>
+</tr>
+<tr>
+<td></td>
+<td><code>rhoZORA</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>rhoHF</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>OneCenter</code></td>
+<td><code>false</code></td>
+<td>If true, use the <a href="#sec:essentialelements.relativistic.hamiltonian.1c">one-center approximation</a></td>
+</tr>
+<tr>
+<td><code>C</code></td>
+<td>137.0359895</td>
+<td>Speed of light used (in a.u.). Synonyms: <code>VELIT</code>, <code>VELOCITY</code></td>
+</tr>
+<tr>
+<td><code>PictureChange</code></td>
+<td>0, 1, 2</td>
+<td><a href="#sec:essentialelements.relativistic.picturechange">Picture change</a> for properties. 0: none; 1: enable; 2: full (DKH/X2C). Default: determine automatically</td>
+</tr>
+<tr>
+<td><code>FiniteNuc</code></td>
+<td><code>false</code></td>
+<td>Whether to use the <a href="#sec:essentialelements.relativistic.finnuc">finite nucleus model</a> (DKH or X2C)</td>
+</tr>
+<tr>
+<td><code>PrintLevel</code></td>
+<td>1</td>
+<td>How much relativistics-related output to print (0-4). Alias for <code>%output Print[P_Rel]</code></td>
+</tr>
+<tr>
+<td>DKH-specific</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Order</code></td>
+<td>2</td>
+<td>Order of DKH Hamiltonian (1 or 2)</td>
+</tr>
+<tr>
+<td><code>fpFWtrafo</code></td>
+<td><code>true</code></td>
+<td>Kind of Foldy-Wouthuysen transformation used for EPR with DKH (see <a href="#sec:essentialelements.relativistic.dkh.magnetic">dkh.magnetic</a>). <code>true</code>: fpFW; <code>false</code>: fπFW</td>
+</tr>
+<tr>
+<td>ZORA-specific</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Xalpha</code></td>
+<td>0.7</td>
+<td>Default value for Xalpha potential. Has effect only if VXa is included</td>
+</tr>
+<tr>
+<td><code>ScaleZORA</code></td>
+<td><code>false</code></td>
+<td>Whether to scale the orbital energies (single points only)</td>
+</tr>
+<tr>
+<td>X2C-specific</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>DLU</code></td>
+<td><code>false</code></td>
+<td>If true, use the <a href="#sec:essentialelements.relativistic.x2c.dlu">DLU approximation</a> for X2C (mutually exclusive with <code>OneCenter</code>)</td>
+</tr>
+<tr>
+<td><code>LightAtomThresh</code></td>
+<td>0</td>
+<td>Highest atomic number treated as non-relativistic in the <a href="#sec:essentialelements.relativistic.x2c.dlu">DLU approximation</a></td>
+</tr>
+<tr>
+<td><code>StorageLevel</code></td>
+<td>2</td>
+<td>X2C intermediate storage level (0–5) -- see <a href="#sec:essentialelements.relativistic.x2c.props">x2c.props</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../solvationmodels/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Solvation">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Solvation
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../symmetry/" class="md-footer__link md-footer__link--next" aria-label="Next: Symmetry">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Symmetry
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "toc.follow"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../../javascripts/mathjax.js"></script>
+      
+        <script src="../../../../javascripts/mathjax/tex-mml-chtml.js"></script>
+      
+        <script src="../../../../javascripts/math-instant.js"></script>
+      
+        <script src="../../../../javascripts/fast-mol-viewer.iife.js"></script>
+      
+        <script src="../../../../javascripts/mol-embed.js"></script>
+      
+        <script src="../../../../javascripts/tabs-pin.js"></script>
+      
+    
+  </body>
+</html>

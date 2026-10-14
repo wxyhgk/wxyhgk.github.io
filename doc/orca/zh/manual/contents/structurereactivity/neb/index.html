@@ -1,0 +1,6596 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ORCA 量子化学教程 / Quantum chemistry tutorials">
+      
+      
+      
+      
+        <link rel="prev" href="../irc/">
+      
+      
+        <link rel="next" href="../frequencies/">
+      
+      
+        
+          <link rel="alternate" href="../../../../../manual/contents/structurereactivity/neb/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>NEB-TS - ORCA 6.1 Tutorials</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../../../stylesheets/mol-embed.css">
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nudged-elastic-band-method" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../../../" title="ORCA 6.1 Tutorials" class="md-header__button md-logo" aria-label="ORCA 6.1 Tutorials" data-md-component="logo">
+      
+  <img src="../../../../../assets/fastmol-logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ORCA 6.1 Tutorials
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              NEB-TS
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../../manual/contents/structurereactivity/neb/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh" class="md-select__link">
+              中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  首页
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../first_steps/howtocite/" class="md-tabs__link">
+          
+  
+  
+  教程
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../" class="md-tabs__link">
+          
+  
+  
+  手册
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../bib/" class="md-tabs__link">
+          
+  
+  
+  附录
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../" title="ORCA 6.1 Tutorials" class="md-nav__button md-logo" aria-label="ORCA 6.1 Tutorials" data-md-component="logo">
+      
+  <img src="../../../../../assets/fastmol-logo.svg" alt="logo">
+
+    </a>
+    ORCA 6.1 Tutorials
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    教程
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    教程
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    入门
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    入门
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/howtocite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    如何引用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    安装 ORCA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/first_calc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello water！
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/input_output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    输入与输出
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/parallel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    并行运行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    内存设置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    图形界面
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/trouble_install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    常见问题
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工作流
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    工作流
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/compound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    复合作业
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/extrapol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    外推技术
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/extopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    外部方法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/opi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python 接口
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    性质
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    性质
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/single_point/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    单点能
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/geoopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    几何优化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/freq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    振动频率
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/thermo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    热力学
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/cpcm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    隐式溶剂化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/solvator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    显式溶剂化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/goat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    构象搜索
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/relativistic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    相对论校正
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/disp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    色散校正
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/bonds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    化学键分析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/led/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/fod/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分数占据密度
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/charges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    电荷模型
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/esp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    静电势
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/corren/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    相关能
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    反应性
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    反应性
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/nebts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/tsopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    过渡态优化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/tsconf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    过渡态构象
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/irc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IRC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/actibar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    精确能垒
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/KIE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    动力学同位素效应
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/FUKUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    福井函数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DOCKER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    波谱
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    波谱
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/IR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    红外与拉曼
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/UVVis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    紫外-可见
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/ECD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    电子圆二色
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/vcd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    振动圆二色
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/NMR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NMR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/EPR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/SOC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    自旋轨道耦合
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多尺度
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    多尺度
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/XTB ONIOM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/basics-otheroniom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ONIOM 进阶
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/oniom-nebts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多尺度 NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/ionic_crystal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    离子晶体 QM/MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/fragmentator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    碎片化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    手册
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    手册
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    推荐主题
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    前言
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    前言
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/foreword/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foreword
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/changes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/howtocite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Howtocite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/howtousethismanual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Howtousethismanual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    快速入门
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    快速入门
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/index_quickstartguide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    快速入门指南
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    简介
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    安装
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    图形界面
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    运行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/hellowater/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello water
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/recommendations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    建议
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    故障排除
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    核心要素
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    核心要素
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/index_essentialelements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    基本计算要素（Essential Calculation Elements）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/input/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    输入
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/coordinates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    坐标
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    输出
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/parallel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    并行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/scf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/initialguess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    初始猜测
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/basisset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    基组
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/RI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/solvationmodels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    溶剂化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/relativistic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    相对论
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/symmetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    对称性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模型方法
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    模型方法
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/index_modelchemistries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模型化学（Model Chemistries）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/hartreefock/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hartree-Fock
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/DensityFunctionalTheory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    密度泛函
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/MP2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MP2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/3cmethods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3c 方法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/dispersioncorrections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    色散
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/CASSCF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CASSCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/NEVPT2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEVPT2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mrci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MRCI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mdci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DLPNO 方法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/semiempirical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    半经验
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分子力学
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    结构与反应性
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    结构与反应性
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index_structurereactivity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    结构与反应性（Structure and Reactivity）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../optimizations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    优化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../optimizations_TS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    过渡态
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../optimizations_scans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    势能面扫描
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../irc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IRC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#theory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        理论（Theory）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spring-forces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        弹簧力（Spring Forces）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#neb-optimization-and-convergence-of-the-neb-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NEB 方法的优化与收敛（Optimization and Convergence of the NEB Method）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nebclimbing-image-nebci-neb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        爬坡映像 NEB（Climbing Image NEB，CI-NEB）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generation-of-the-initial-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        初始路径的生成（Generation of the Initial Path）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#removal-of-translational-and-rotational-degrees-of-freedom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        平动和转动自由度的移除（Removal of Translational and Rotational Degrees of Freedom）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#optimizations-using-the-nudged-elastic-band-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用微动弹性带方法的优化（Optimizations using the Nudged Elastic Band Method）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reparametrization-of-the-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        路径的重新参数化（Reparametrization of the Path）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#useful-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        有用的输出（Useful Output）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#important-warning-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        重要的警告信息（Important Warning Messages）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parallel-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        并行执行（Parallel Execution）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zoom-neb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zoom-NEB
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#neb-ts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NEB-TS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fast-neb-ts-loose-neb-ts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FAST-NEB-TS 和 LOOSE-NEB-TS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#neb-neb-ts-td-dftneb-neb-ts-and-td-dft" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NEB / NEB-TS 与 TD-DFT（NEB / NEB-TS and TD-DFT）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-of-keywords" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关键词总结（Summary of Keywords）
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frequencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    频率
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../thermochemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    热化学
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../solvator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SOLVATOR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../goat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GOAT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DOCKER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mecp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MECP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../conicalintersections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    圆锥交叉
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    波谱与性质
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    波谱与性质
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/index_spectroscopyproperties/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    光谱与性质（Spectroscopy and Properties）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/vibrations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    振动
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/excitedstates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    激发态
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/tddft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TD-DFT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/esd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UV/Vis 与 ESD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/nmr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NMR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/epr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/led/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/nbo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NBO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/spinorbit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    自旋轨道
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/magnx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    磁性质
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多尺度
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    多尺度
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/index_multiscalesimulations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多尺度模拟（Multiscale Simulations）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-general/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM 总论
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-molecules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM 分子体系
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-crystal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    晶体 QM/MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分子动力学
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    分子动力学
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../moleculardynamics/index_moleculardynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分子动力学（Molecular Dynamics）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../moleculardynamics/moldyn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分子动力学
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_10" id="__nav_3_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工作流
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    工作流
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/index_workflowsautomatization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工作流与自动化（Workflows and Automatization）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/compound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/compound_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound 示例
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/orcapythoninterface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_11" id="__nav_3_11_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工具
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    工具
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/index_utilitiesvisualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    辅助工具与可视化（Utilities and Visualization）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工具
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    绘图
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    架构
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    架构
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/index_orcaarchitecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ORCA 的体系结构（Architecture of ORCA）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    组件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_13" id="__nav_3_13_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    附录
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    术语表（Glossary）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/public/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Public
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bibliography/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    参考文献
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    附录
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../bib/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    参考文献
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../genindex/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    索引
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#theory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        理论（Theory）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spring-forces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        弹簧力（Spring Forces）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#neb-optimization-and-convergence-of-the-neb-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NEB 方法的优化与收敛（Optimization and Convergence of the NEB Method）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nebclimbing-image-nebci-neb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        爬坡映像 NEB（Climbing Image NEB，CI-NEB）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generation-of-the-initial-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        初始路径的生成（Generation of the Initial Path）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#removal-of-translational-and-rotational-degrees-of-freedom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        平动和转动自由度的移除（Removal of Translational and Rotational Degrees of Freedom）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#optimizations-using-the-nudged-elastic-band-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用微动弹性带方法的优化（Optimizations using the Nudged Elastic Band Method）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reparametrization-of-the-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        路径的重新参数化（Reparametrization of the Path）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#useful-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        有用的输出（Useful Output）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#important-warning-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        重要的警告信息（Important Warning Messages）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parallel-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        并行执行（Parallel Execution）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zoom-neb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zoom-NEB
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#neb-ts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NEB-TS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fast-neb-ts-loose-neb-ts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FAST-NEB-TS 和 LOOSE-NEB-TS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#neb-neb-ts-td-dftneb-neb-ts-and-td-dft" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NEB / NEB-TS 与 TD-DFT（NEB / NEB-TS and TD-DFT）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-of-keywords" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关键词总结（Summary of Keywords）
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<p><a id="sec:structurereactivity.neb"></a></p>
+<h1 id="nudged-elastic-band-method">微动弹性带方法（Nudged Elastic Band Method）<a class="headerlink" href="#nudged-elastic-band-method" title="Permanent link">&para;</a></h1>
+<h2 id="theory">理论（Theory）<a class="headerlink" href="#theory" title="Permanent link">&para;</a></h2>
+<p>微动弹性带（Nudged Elastic Band，NEB）<a href="../../../bibliography/">Mills1995,Jonsson1998,Henkelman2000a</a>
+方法用于寻找连接势能面（PES）上两个局域能量极小值的最小能量路径（minimum energy path，MEP），从而给出该转变活化能的估计。在下面的讨论中，这两个极小值点分别称为反应物和产物。路径可以有一个或多个极大值，每个对应能量面上的一个一阶鞍点。NEB 方法相对本征矢量跟踪方法的一个优点是，它保证能找到连接给定反应物态和产物态的鞍点。最小能量路径常用于表示两态之间转变的反应坐标。下面概述的方法和实现详见参考文献 <a href="../../../bibliography/">Asgeirsson2021</a>。</p>
+<p>用户需要指定反应物和产物构型。反应物能量极小值插入常规 ORCA 输入文件中，而产物应在单独的 .xyz 文件中（关键词：<em>neb_end_xyzfile</em>）。反应物和产物构型应通过弛豫到 PES 上的能量极小值<em>先验地</em>优化，见
+<a href="../optimizations/#sec:structurereactivity.optimization.geometry">optimization.geometry</a> 一节。这也可以通过 'preopt_ends' 关键词实现。重要的是仔细准备反应物和产物，使原子的位置（或编号）在两个构型文件中相同，即反应物和产物构型之间应有一一映射。</p>
+<p>两个极小值之间的离散化路径由一组 <span class="arithmatex">\(M\)</span> 个称为映像（image）的体系构型表示，即
+<span class="arithmatex">\(R = [r_0, r_1, ..., r_{M-1}]\)</span>。端点（即反应物和产物）之间的中间映像数由用户指定。一般的经验法则是包含 <span class="arithmatex">\(M=7-12\)</span> 个，或每个能量极大值 5–10 个中间映像，以获得足够高的路径和鞍点分辨率。不过，用更少的映像计算往往也能收敛并给出准确结果，但具有多个极大值或长尾的复杂路径可能需要更多映像。在 NEB 计算期间，中间映像利用垂直于当前路径的原子力分量（由每个映像处路径的切线估计）迭代地向 MEP 移动，而端点映像通常保持固定。在迭代过程的每一步中，需要计算每个中间映像的能量和原子力。NEB 方法的主要优点之一是映像的计算可以并行进行，电子结构计算可以分布到多个处理器上（关于并行化的更多细节见下文的讨论）。虽然 CPU 时间与映像数成正比，但收敛到 MEP 所需的迭代次数在路径的离散表示中包含更多映像时可能变小。</p>
+<p>每个映像处路径的切线 <span class="arithmatex">\(\hat{\tau}_i\)</span> 可以用两种方式估计（关键词：<em>tangent</em>），或者用原始方法
+<a href="../../../bibliography/">Jonsson1998</a>，或者用数值上更稳定的改进估计 <a href="../../../bibliography/">Henkelman2000a</a>（默认选项）。在前者中，一个映像处的切线取为连接到映像 <span class="arithmatex">\(i\)</span> 的两条线段的线性组合，</p>
+<div class="arithmatex">\[
+\tau_i = \dfrac{r_{i+1}-r_{i} }{|r_{i+1}-r_{i}|} + \dfrac{r_{i}-r_{i-1} }{|r_{i}-r_{i-1}|}
+\]</div>
+<p>在改进的切线估计中，使用从当前映像到能量更高的相邻映像的线段，即</p>
+<div class="arithmatex">\[
+\tau_i =
+    \begin{cases}
+      \tau^+ &amp; \text{if E_{i+1} &gt; E_i &gt; E_{i-1}}\\
+      \tau^- &amp; \text{if E_{i+1} &lt; E_i &lt; E_{i-1}}\\
+    \end{cases}
+\]</div>
+<p>其中 <span class="arithmatex">\(\tau^+ = r_{i+1}-r_i\)</span>，<span class="arithmatex">\(\tau^- = r_{i}-r_{i-1}\)</span>。除了映像 <span class="arithmatex">\(i\)</span> 处于路径上的能量极值的情况外，则使用到相邻映像的两条线段的能量加权平均，</p>
+<div class="arithmatex">\[
+\tau_i =
+    \begin{cases}
+      \tau^+\Delta V^\text{max}_i + \tau^- \Delta V^\text{min}_i &amp; \text{if E_{i+1} &gt; E_{i-1}}\\
+      \tau^+\Delta V^\text{min}_i + \tau^- \Delta V^\text{max}_i &amp; \text{if E_{i+1} &lt; E_{i-1}}\\
+    \end{cases}
+\]</div>
+<p>其中</p>
+<div class="arithmatex">\[
+\begin{aligned}
+\Delta V^\text{max}_i = \max(|E_{i+1}-E_{i}|, |E_{i-1}-E_i|)\\
+\Delta V^\text{max}_i = \min(|E_{i+1}-E_{i}|, |E_{i-1}-E_i|)\end{aligned}
+\]</div>
+<p>然后切线归一化，<span class="arithmatex">\(\hat{\tau}_i = \tau_i/|\tau_i|\)</span>。有了切线的准确估计，原子力的垂直分量按下式计算：</p>
+<div class="arithmatex">\[
+F_i^\perp = F_i - \left(F_i\cdot \hat{\tau}_i\right)\hat{\tau}_i
+\]</div>
+<p>在自由端 NEB 方法中，端点映像与中间映像一起优化，即使用 <span class="arithmatex">\(M\)</span> 个可移动的映像。ORCA 中包含自由端 NEB 方法的三个不同变体（关键词：<em>free_end</em>、<em>free_end_type</em>）：(i) 端点被约束沿相同（或不同）的能量等值线移动 <a href="../../../bibliography/">Zhu2007,Asgeirsson2018</a>，(ii) 根据作用于垂直路径方向的原子力移动，(iii) 全部原子力。对第一种变体，"反应物"和"产物"端点映像可以被约束沿两条不同的能量等值线 <span class="arithmatex">\(E_0\)</span>（由关键词 <em>free_end_ec</em> 给出）和 <span class="arithmatex">\(E_1\)</span>（由关键词 <em>free_end_ec_end</em> 给出）移动，以保持路径有界。然后，若因能量面的曲率映像偏离等值线，则用一个谐约束项把映像拉回等值线。<a href="../../../bibliography/">Asgeirsson2018</a> 谐约束的刚度由用户提供的参数给出（关键词：<em>free_end_kappa</em>）。重要的是仔细选择能量和谐约束的强度，否则路径可能变得扭结。对第二种变体，端点映像无约束但直接向 MEP 位移。如果端点映像已经靠近 MEP，这通常是可接受的，且不易在路径上产生扭结。对第三种变体，端点映像被优化到反应物和产物的能量极小值。</p>
+<h2 id="spring-forces">弹簧力（Spring Forces）<a class="headerlink" href="#spring-forces" title="Permanent link">&para;</a></h2>
+<p>为控制映像沿路径的分布，包含作用于相邻映像之间、与路径相切的弹簧力 <a href="../../../bibliography/">Jonsson1998</a>，</p>
+<div class="arithmatex">\[
+F^{\text{sp},\parallel}_i = \left(k_{i}^\text{sp}|r_{i+1}-r_{i}|-k_{i-1}^\text{sp}|r_i - r_{i-1}|\right)\hat{\tau}_i
+\]</div>
+<p>弹簧力的大小（即刚度）由弹簧常数 <span class="arithmatex">\(k^\text{sp}\)</span> 控制。弹簧常数的典型值（关键词：<em>springconst</em>）可取在 0.01 Eh/Bohr<span class="arithmatex">\(^2\)</span> 到 1.0 Eh/Bohr<span class="arithmatex">\(^2\)</span> 范围内。如果所有相邻映像对的弹簧常数相同，映像将沿路径均匀分布。不过，也可以选择能量加权的弹簧常数（关键词：<em>energy_weighted</em>），以便在更高能量区域增加映像的密度 <a href="../../../bibliography/">Henkelman2000b,Asgeirsson2021</a>。在能量加权的 NEB 计算中，弹簧常数根据映像的相对能量从下界值（关键词：<em>springconst</em>）缩放到上界值（关键词：<em>springconst2</em>），按下式</p>
+<div class="arithmatex">\[
+\begin{aligned}
+k^{\text{sp} }_i &amp;=\left\{  \begin{array}{@{}ll@{} }
+    (1-\alpha_i)k_{\text{u} } + \alpha_i k_\text{l}, &amp; \text{if} E_i &gt; E_\text{ref} \\
+    k_l, &amp; \text{otherwise}
+  \end{array}\right.\\
+  \alpha_i &amp;= \frac{E_\text{max} - E_i}{E_{\text{max} }-E_\text{ref} }\end{aligned}
+\]</div>
+<p>其中 <span class="arithmatex">\(k_{\text{u} }\)</span> 和 <span class="arithmatex">\(k_{\text{l} }\)</span> 是弹簧常数的上界和下界值。<span class="arithmatex">\(E_\text{max}\)</span> 是沿路径最大能量的当前估计，<span class="arithmatex">\(E_i\)</span> 是由线段 <span class="arithmatex">\(i\)</span> 连接的映像对中能量更高的映像，<span class="arithmatex">\(E_\text{ref}\)</span> 是能量更高的极小值的能量。能量加权的弹簧通常有助于改善势垒区域的切线估计，从而使计算稳定。包含能量加权弹簧在能垒狭窄和/或路径以长"能量尾"为特征的反应中可能很重要，例如在重排或解离反应中。弹簧常数的选择会影响计算的行为，特别是达到收敛所需的迭代次数。自 ORCA 4.2 起也可用其他弹簧力的表述（关键词：<em>springtype</em>）。它们被称为原始 <a href="../../../bibliography/">Jonsson1998</a> 和理想 <a href="../../../bibliography/">Maras2016</a> 弹簧力。原始弹簧力由作用于相邻映像对之间每个自由度上的弹簧估计。对理想弹簧，每个映像根据映像当前位置的线性插值在路径上分配一个理想位置，各个映像通过弹簧力与理想位置相互作用。理想弹簧目前未实现与能量加权弹簧常数一起工作。
+虽然 NEB 计算（默认）只包含与路径平行的弹簧力分量，用户可以选择包含一部分作用于垂直路径方向的弹簧力以稳定计算（关键词：<em>perpspring</em>）。因为弹簧力的垂直分量有助于拉直路径，对具有多个能量极值和路径分辨率低的复杂路径很有用。弹簧力垂直分量的包含总是伴随一个切换函数，用于根据 (i) 向 MEP 的收敛（'tan' 函数）<a href="../../../bibliography/">Sheppard08</a>、(ii) 相邻映像之间的夹角（'cos' 函数）<a href="../../../bibliography/">Jonsson1998</a> 或两者的组合来缩放它。弹簧力垂直分量的包含有助于减少迭代次数并消除路径上的扭结。但必须强调的是，通过包含垂直弹簧力，映像可能不收敛到 MEP 上。或者，用户可以选择使用改进的 DNEB 方法 <a href="../../../bibliography/">DNEB2005,Sheppard08</a>。</p>
+<h2 id="neb-optimization-and-convergence-of-the-neb-method">NEB 方法的优化与收敛（Optimization and Convergence of the NEB Method）<a class="headerlink" href="#neb-optimization-and-convergence-of-the-neb-method" title="Permanent link">&para;</a></h2>
+<p>标准 NEB 计算中使用的有效力是垂直于路径的原子力分量与平行于路径的弹簧力分量之和，</p>
+<div class="arithmatex">\[
+F^\text{NEB}_i = F^\perp_i  + F^{\text{sp},\parallel}_i
+\]</div>
+<p>可以通过按有效力移动将路径带到 MEP，如 <a href="#fig:neb-forces">fig:neb-forces</a> 所示。
+<a id="fig:neb-forces"></a>
+<img alt="neb-forces" src="../../../../images/manual/neb-forces.png" />
+<em>NEB 优化中沿中间路径三个映像的有效力 <span class="arithmatex">\(F^\text{NEB}\)</span> 及其两个分量：<span class="arithmatex">\(F^\perp_i\)</span> 和 <span class="arithmatex">\(F^{\text{sp},\parallel}_i\)</span> 的可视化。该图取自参考文献 <a href="../../../bibliography/">Asgeirsson2021b</a></em>
+这可以通过使用所实现的三种优化方法中的任何一种来实现（关键词：<em>opt_method</em>）：速度投影优化（VPO）<a href="../../../bibliography/">Jonsson1998</a>、快速惯性弛豫引擎（FIRE）<a href="../../../bibliography/">Bitzek2006</a> 和 L-BFGS<a href="../../../bibliography/">LBFGS</a>。VPO 和 FIRE 对远离 MEP 的区域更稳健，而当映像靠近 MEP 时 L-BFGS 收敛更快。FIRE 和 VPO 都有局域和全局实现（关键词：<em>local</em>）。在局域变体中，采取优化步时所有映像被单独处理，而在后者中整个弹性带被当作一个点处理。所有优化方法都使用恒定的"信赖半径（trust-radius）"，即若优化步的最大笛卡尔分量超过用户给定的阈值（关键词：<em>maxmove</em>），整个位移会相应缩小。L-BFGS 优化中为构造近似 Hessian 矩阵所存储的步数可由用户调整（关键词：<em>lbfgs_memory</em>）。为进行更保守的 L-BFGS 优化，若尝试大步也可以清除记忆（关键词：<em>lbfgs_restart_on_maxmove</em>）。
+中间映像的收敛由垂直于路径的原子力的最大笛卡尔分量以及均方根判断，即
+<span class="arithmatex">\(\max(|F^\perp|), \text{RMS}(F^\perp)\)</span>。当映像位于 MEP 上时，映像上垂直于路径的原子力消失。垂直于路径的原子力最大分量的典型容差值为 <span class="arithmatex">\(1\cdot10^{-3}\)</span> Eh/Bohr。通常均方根值的容差取小 1/2 或 1/3 倍。有时需要对力的最大分量取更紧的容差，例如 <span class="arithmatex">\(5\cdot 10^{-4}\)</span> Eh/Bohr 甚至 <span class="arithmatex">\(2 \cdot 10^{-4}\)</span> Eh/Bohr。允许的最大优化步数由关键词 'maxiter' 设置。
+每次迭代后每个映像的构型写入一个 '_trj.xyz' 文件（见文件：basename_MEP<span class="arithmatex">\(\_\)</span>ALL_trj.xyz）。该文件对排查不收敛的计算很有用。</p>
+<h2 id="nebclimbing-image-nebci-neb">爬坡映像 NEB（Climbing Image NEB，CI-NEB）<a class="headerlink" href="#nebclimbing-image-nebci-neb" title="Permanent link">&para;</a></h2>
+<p>为使最高能量映像更准确地收敛到 MEP 上的（最高）能量极大值，可使用 NEB 方法的爬坡映像变体（CI-NEB）。<a href="../../../bibliography/">Henkelman2000b</a> 在 CI-NEB 方法中，作用于爬坡映像（即 <span class="arithmatex">\(i=\text{ci}\)</span>）的有效力 <span class="arithmatex">\(F^\text{NEB}\)</span> 变换为：</p>
+<div class="arithmatex">\[
+F_\text{ci}^\text{NEB} = F_\text{ci} - 2\left(F_\text{ci}\cdot \hat{\tau}_\text{ci}\right)\hat{\tau}_\text{ci}
+\]</div>
+<p>其中爬坡映像沿路径被推向上坡，而垂直于路径弛豫到下坡。也就是说，能量相对对应于切线方向的一个自由度被最大化，而相对所有其他自由度被最小化。爬坡映像上的有效力不包含任何弹簧力，映像的密度在爬坡映像两侧于是变得不同。只要切线估计足够准确，爬坡映像将严格收敛到路径上的最高能量点。爬坡映像 NEB 方法工作原理的说明见 <a href="#fig:cineb-mb">fig:cineb-mb</a>，是一个简单的二维能量函数。
+<a id="fig:cineb-mb"></a>
+<img alt="cineb_mb" src="../../../../images/manual/cineb_mb.png" />
+<em>CI-NEB 方法在二维 Müller-Brown 能量面 <span class="arithmatex">\(E(x,y)\)</span> 上工作原理的说明。<a href="../../../bibliography/">Muller1979</a> 计算从反应物（</em><em>R</em><em>）和产物（</em><em>P</em><em>）能量极小值之间的线性插值出发，使用 <span class="arithmatex">\(M=10\)</span>。
+映像沿正交于路径的方向（红色曲线）位移，直到收敛到最小能量路径（白色虚线曲线）。爬坡映像准确定位了路径上更高能量的一阶鞍点（记作
+</em><em>SP</em><em>）。优化剖面显示为插图。在这样的图中，沿路径的插值能量作为位移的函数绘制，对每个（或选定的）优化步。
+该图取自参考文献 <a href="../../../bibliography/">Asgeirsson2021b</a></em>
+在垂直于路径的原子力量值降到给定的用户阈值以下之后再启动爬坡映像可能有用（关键词：<em>tol<span class="arithmatex">\(\_\)</span>turn<span class="arithmatex">\(\_\)</span>on<span class="arithmatex">\(\_\)</span>ci</em>）。然后，当前路径上最高能量的映像被转换为爬坡映像。通常最高效的是在 NEB 计算早期甚至一开始就启动爬坡映像。这适用于使用 VPO 优化方法时。对 L-BFGS，建议在路径部分收敛到 MEP 后再开始 CI-NEB，例如在 0.01-0.02 Eh/Bohr 左右。如果 MEP 上的能量有两个或多个极大值，在 NEB 计算早期阶段，靠近最高极大值的映像可能未被选为爬坡映像。那么之后爬坡映像的选择可以自动切换。同样，对于无势垒反应，爬坡映像不会被开启。当计算成功完成时，爬坡映像（在 CI-NEB 计算中）或最高能量映像（在 NEB 计算中）的原子坐标分别写入文件 '_NEB-CI<span class="arithmatex">\(\_\)</span>converged.xyz' 和 '_NEB-HEI<span class="arithmatex">\(\_\)</span>converged.xyz'。
+CI-NEB 计算的收敛可以通过监控所有映像上的力或仅爬坡映像上的力来判断（关键词：<em>convtype</em>）。当计算的目标是定位连接反应物态和产物态的最高能量鞍点时，后一选项可以节省大量计算量。为判断爬坡映像上的收敛，同时监控原子力的最大（笛卡尔）分量的均方根和量值，即
+<span class="arithmatex">\(\max(|F_\text{ci}|), \text{RMS}(F_\text{ci})\)</span>。当判断 CI-NEB 计算中所有映像的收敛时，通常可以接受让常规映像比爬坡映像更宽松地收敛。默认情况下，常规映像的容差比爬坡映像大 10 倍。该容差标度是一个可由用户设置的参数（关键词：<em>tol_scale</em>）。通常对于可接受的鞍点收敛，爬坡映像原子力分量最大量值的容差阈值可设为 <span class="arithmatex">\(5\cdot 10^{-4}\)</span> Eh/Bohr。</p>
+<h2 id="generation-of-the-initial-path">初始路径的生成（Generation of the Initial Path）<a class="headerlink" href="#generation-of-the-initial-path" title="Permanent link">&para;</a></h2>
+<p>任何 NEB 或 CI-NEB 计算最重要的方面之一是反应物和产物能量极小值之间初始路径的生成（关键词：<em>interpolation</em>）。推荐的方法是映像相关对势（image-dependent pair potential，IDPP）方法 <a href="../../../bibliography/">IDPP2014</a>。另一种更简单的方法是笛卡尔坐标中的线性插值。无论哪种情况，用户都应始终检查初始路径（见文件：basename<span class="arithmatex">\(\_\)</span>initial<span class="arithmatex">\(\_\)</span>path_trj.xyz），确保它是可接受的。
+默认情况下，会扫描端点结构中通过共价键连接的片段。若在任一端点结构中检测到两个片段，会自动准备结构使片段之间的距离不超过默认为 3.5 Å 的最大距离。
+笛卡尔坐标中的线性插值可能导致原子重叠，从而产生很大的初始原子力，甚至导致 SCF 循环发散。IDPP 方法通过对反应物和产物能量极小值中相邻原子之间的成对距离进行插值来解决这些问题。然后生成一条路径以尽可能匹配那些距离。由于成对距离远多于原子坐标，初始路径通过最小化目标函数得到，</p>
+<div class="arithmatex">\[
+S_\kappa^{\text{IDPP} }( r_i) = \sum_A^M \sum^M_{B &gt; A} w(d_{AB}) \left(d_{AB}^\kappa - d_{AB}\right)^2\qquad \text{(eq:idpp)}
+\]</div>
+<p>其中 <span class="arithmatex">\(d_{AB}\)</span> 是中间映像 <span class="arithmatex">\(i\)</span> 中原子 <span class="arithmatex">\(A\)</span> 和 <span class="arithmatex">\(B\)</span> 之间的成对距离。<span class="arithmatex">\(d^\kappa_{AB}\)</span> 是同一映像中原子 <span class="arithmatex">\(A\)</span> 和 <span class="arithmatex">\(B\)</span> 之间的理想插值距离。<span class="arithmatex">\(w\)</span> 是一个权重函数，给较短的键距离更大权重，使不必要的断键不利。权重函数给为 <span class="arithmatex">\(w = (d_{\text{AB} })^{-4}\)</span>。IDPP 路径避免原子重叠，也能生成比笛卡尔坐标线性插值更靠近 MEP 的路径 <a href="../../../bibliography/">IDPP2014</a>。IDPP 路径由使用 IDPP 目标函数的 NEB 计算得到，从端点结构之间笛卡尔坐标的线性插值出发，但该计算几乎不需要计算量，因为它不需要任何电子结构计算。注意初始路径可能打断共价键，也可能远离最优 MEP。若是这种情况，默认算法会检测到并自动生成不同的 IDPP 初始路径。这会重复进行，直到要么得到没有不必要键变化的初始路径，要么所有初始路径选项都用尽，此时识别出最佳初始路径。无论如何，用户在开始 NEB 计算前应始终检查初始路径。用户可以使用 'idpp' 相关关键词调整 IDPP 计算的设置，但默认值对大多数应用应足够。注意 IDPP 的单位是 Å 而非原子单位。
+映像 <span class="arithmatex">\(i\)</span> 中原子 <span class="arithmatex">\(A\)</span> 和 <span class="arithmatex">\(B\)</span> 之间理想插值距离的矩阵 <span class="arithmatex">\(d_{AB,\ i}^\kappa\,\)</span> 最简单地由线性插值得到</p>
+<div class="arithmatex">\[
+d_{AB,\ i}^\kappa = d_{AB}^{initial} + P_{i} * \left(d_{AB}^{final} - d_{AB}^{initial}\right)\,,
+\]</div>
+<p>其中 <span class="arithmatex">\(P_{i} = \frac{i}{n_{im} - 1}\)</span> 是映像 <span class="arithmatex">\(i\)</span> 在路径上的位置，介于 0（对应初始映像）和 1（对应最终映像）之间，<span class="arithmatex">\(n_{im}\)</span> 是映像的总数。</p>
+<p>由于这种线性距离插值可能并不理想，也可以选择考虑原子键的双线性距离插值方案。初始和最终映像中原子 <span class="arithmatex">\(A\)</span> 和 <span class="arithmatex">\(B\)</span> 之间的键在其距离
+<span class="arithmatex">\(d_{AB} &lt; t_{bond} = t_{c}\left(R_{A}^{cov} + R_{B}^{cov}\right)\,,\)</span>
+时被识别，其中 <span class="arithmatex">\(t_{c}\)</span> 是影响检测键距离的输入因子，默认取 1.3，<span class="arithmatex">\(R_{X}^{cov}\)</span> 是原子 <span class="arithmatex">\(X\)</span> 的共价半径。若在一个端点结构中检测到键而在另一个中没有，则执行两次线性距离插值得到 <span class="arithmatex">\(d_{AB, i}^{\kappa}\)</span>。第一次插值原子成键的端点结构与 <span class="arithmatex">\(t_{bond}\)</span> 之间的距离，第二次插值 <span class="arithmatex">\(t_{bond}\)</span> 与键断裂的端点结构之间的距离。两次线性距离插值在路径位置 <span class="arithmatex">\(P_{join}\)</span>（默认为 0.5，对应端点映像之间路径的中点）处连接。若原子在初始结构中成键而在最终结构中不成键，插值为</p>
+<div class="arithmatex">\[
+d_{AB,\ i}^{\kappa} = \begin{cases} d_{AB}^{initial} 
++ \frac{P_{i}\left(t_{bond} - d_{AB}^{initial}\right)}{P_{join}}\,,\ \hspace{11pt}\text{if}\ P_{i} &lt; P_{join}\\
+d_{AB}^{final} - \frac{(1 - P_{i})\left(d_{AB}^{final} - t_{bond}\right)}{\left(1.0 - P_{join}\right)}\,,\ \text{if}\ P_{i} \geq P_{join}\,.\end{cases}
+\]</div>
+<p>若原子在最终结构中成键而在初始结构中不成键，插值为</p>
+<div class="arithmatex">\[
+d_{AB,\ i}^{\kappa} = \begin{cases} d_{AB}^{initial} 
+- \frac{P_{i}\left(d_{AB}^{initial} - t_{bond}\right)}{1 - P_{join}}\,,\ \hspace{11pt}\text{if}\ P_{i} &lt; 1 - P_{join}\\
+d_{AB}^{final} + \frac{(1 - P_{i})\left(t_{bond} - d_{AB}^{final}\right)}{P_{join}}\,,\ \text{if}\ P_{i} \geq 1 - P_{join}\,.\end{cases}
+\]</div>
+<p>这种双线性插值在大多数情况下导致成键区域的原子距离比非成键区域增加更慢，强调断键过程，从而强调键距离变化使能量改变最大的区域。若非成键区域键距离的变化比成键区域慢，实现会回退到常规的线性距离插值。</p>
+<p>在有挑战性的情况下，即使是从未端点结构之间笛卡尔坐标线性插值出发的 IDPP NEB 计算也可能无法提供合理的初始路径。当线性插值路径在中间映像中使原子非常接近时就会发生这种情况，即使在使用 IDPP 目标函数的 NEB 优化后也会导致断键。在这种情况下，通过避免线性插值、改为从两个端点结构出发依次向路径添加映像，通常可以得到合理的初始路径。该方法称为顺序 IDPP（S-IDPP）。<a href="../../../bibliography/">Schmerwitz2024a</a> 靠近每个端点结构的两组映像之间，通过选择比每组内映像之间更小的弹簧常数（组内使用相等的弹簧常数）而相隔更大的距离。最靠近中心的映像在 NEB 计算中收敛，并在两个最靠近中心的映像之间、距收敛映像适当距离处添加一个映像。该过程重复进行，直到添加了所需数量的映像。最靠近中心的映像的切线遵循改进的切线定义，并总是把它们当作路径上的极值，即使用到相邻映像的归一化距离矢量的平均。用于形成 S-IDPP 初始路径的映像数可以与后续含电子结构计算的 NEB 计算中所用的映像数不同。在 S-IDPP 计算中使用偶数个映像可能是有益的，因为这样初始路径中心就不放置映像，之后在附加的 IDPP NEB 计算中再移动到所需的奇数个映像。该选项默认使用，但可以停用。对于涉及大基团很重转动的体系，在 S-IDPP 计算中使用两倍数量的映像时方法更稳健。随后含电子结构计算的 NEB 计算会自动移去一半的映像。该选项可用，但默认不使用。</p>
+<p>用所选设置生成的初始路径会检查不必要的断键或成键。原子 <span class="arithmatex">\(A\)</span> 和 <span class="arithmatex">\(B\)</span> 之间的键在其距离
+<span class="arithmatex">\(d_{AB} &lt; t_{bond} = t_{c}\left(R_{A}^{cov} + R_{B}^{cov}\right)\,,\)</span>
+时被识别，其中 <span class="arithmatex">\(t_{c}\)</span> 是影响检测键距离的输入因子，默认取 1.3，<span class="arithmatex">\(R_{X}^{cov}\)</span> 是原子 <span class="arithmatex">\(X\)</span> 的共价半径。若原子 <span class="arithmatex">\(A\)</span> 和 <span class="arithmatex">\(B\)</span> 的连接性在端点结构之间不变，则其连接性的变化被认为是不必要的。若连接性在端点结构之间确实改变，则允许连接性恰好改变一次，但沿初始路径的任何进一步连接性变化被认为是不必要的。若初始路径上出现任何不必要的连接性变化，则利用 S-IDPP 的灵活性系统地生成不同设置的更多初始路径，直到得到一个没有不必要连接性变化的初始路径。该超参数搜索的参数空间由 <em>SIDPP_Reparam</em>、<em>SIDPP_Energy_Weighted_Tangent</em>、<em>SIDPP_Even_NIm</em>、<em>SIDPP_Double_NIm</em>、<em>SIDPP_Ideal_Springconst</em> 的所有组合以及 <em>SIDPP_Tol_MaxF</em> 的四个值（0.05、0.01、0.005 和 0.001）组成，除了所选设置外总共有 128 个选项。一旦找到没有不必要连接性变化的初始路径，超参数搜索即终止。在不太可能的情形下，所有生成的初始路径都显示不必要的连接性变化时，默认取最少的那个，但用户可能更愿意让计算中止以检查初始路径，这可用关键词 <em>SIDPP_HyperSearch_StrictConnectivity</em> 设置。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>在某些情况下，例如分子中大位阻基团的转动，反应可能只能通过沿 MEP 断裂并重新形成一个键来进行。你可能并不总是想要完全无不必要连接性变化的初始路径！</p>
+</div>
+<p>用户可能对鞍点构型有预想，或从较低理论水平的计算中得到路径的估计。初始路径可以以包含一个中间构型作为其中一个映像的方式生成，使用 'NEB_TS_XYZFile' 关键词。由于该映像将与其他中间映像一起在 NEB 计算期间优化，猜测不必准确。</p>
+<p>如果检查初始路径发现问题，例如不必要的断键，向初始插值中插入一个合理的构型以避免此类问题通常是好主意。此外，如果 NEB 计算在给定的最大迭代数内无法收敛到 MEP（或鞍点），用户可以从 'allxyz' 文件（见文件：basename_MEP.allxyz）重新开始计算，该文件在优化期间每次迭代后写入磁盘。注意，从先前 CI-NEB 计算的输出开始 NEB 计算以及反之亦然时，弹性带可能需要几次迭代来调整映像分布以达到所需的分布，取决于所选的弹簧类型和 NEB 方法的选择。</p>
+<p>如果体系可以用 GFN-xTB 方法合理地建模，另一种可能的选择是在 XTB 水平上生成初始路径（关键词 'XTB0'、'XTB1' 或 'XTB2' 分别对应 GFN0-xTB<a href="../../../bibliography/">pracht2019xtb</a>、GFN-xTB<a href="../../../bibliography/">grimme2017xtb</a> 或 GFN2-xTB<a href="../../../bibliography/">grimme2019xtb</a>）。在这种情况下，IDPP 水平上的初始路径用所选 XTB 水平上的 NEB 计算精修。如果该 NEB 运行成功，XTB 水平上的整个 MEP 用作初始路径。如果 XTB 水平上的 NEB 运行不成功，则改用 IDPP 水平上的初始路径。</p>
+<p>另一个使用 XTB 方法的关键词是 'XTBTS' 关键词（'XTB0TS'、'XTB1TS' 或 'XTB2TS'）。在这种情况下，IDPP 水平上的初始路径用 XTB 水平上的 NEB-CI 计算精修。如果 NEB-CI 运行成功，所得 CI 结构被选作 TS 猜测结构，最终的初始路径用从反应物到 TS 猜测以及从 TS 猜测到产物的 IDPP 路径生成。如果 XTB 水平上的 NEB-CI 运行不成功，则改用 IDPP 水平上的初始路径。</p>
+<h2 id="removal-of-translational-and-rotational-degrees-of-freedom">平动和转动自由度的移除（Removal of Translational and Rotational Degrees of Freedom）<a class="headerlink" href="#removal-of-translational-and-rotational-degrees-of-freedom" title="Permanent link">&para;</a></h2>
+<p>对分子体系的 NEB 和 CI-NEB 计算，投影掉对应于体系整体转动和平动的六个（线性分子则为五个）自由度是很重要的。这可以在计算开始时或对每个优化步进行（关键词：<em>quatern</em>）。对后者，每个映像的几何中心被平移到原点，并用四元数方法 <a href="../../../bibliography/">marko2016</a> 构造一个旋转矩阵，以最小化任意两个相邻映像之间的均方根偏差。取决于是否使用固定中心（关键词：<em>fix_center</em>），映像要么保持在该处，要么被转移回其原始位置。该过程对优化每一步中的任意相邻映像对重复进行。此外，净有效 NEB 力被设为零（关键词：<em>remove_extern_force</em>）。<a href="../../../bibliography/">removetranslation1998</a></p>
+<p><a id="sec:structurereactivity.optimization.neb"></a></p>
+<h2 id="optimizations-using-the-nudged-elastic-band-method">使用微动弹性带方法的优化（Optimizations using the Nudged Elastic Band Method）<a class="headerlink" href="#optimizations-using-the-nudged-elastic-band-method" title="Permanent link">&para;</a></h2>
+<p>总结一下——微动弹性带（NEB）方法用于寻找连接给定反应物态和产物态极小值的最小能量路径（MEP）。生成一条初始路径，并由原子构型的离散集合表示，称为体系的映像。映像数由用户指定，必须足够大以获得路径足够的分辨率。ORCA 中的实现在 Ásgeirsson 等人的文章 <a href="../../../bibliography/">Asgeirsson2021</a> 以及 <a href="#sec:structurereactivity.neb">structurereactivity.neb</a> 一节中连同输入选项一起详细描述。NEB 方法最常见的用途是寻找指定给定初态和终态过渡态的势能面上最高能量鞍点。一阶鞍点的严格收敛可通过爬坡映像 NEB（CI-NEB）获得，其中最高能量映像沿路径切线方向被推向能量上坡，同时在正交方向弛豫到下坡。寻找一阶鞍点的另一种方法是 NEB-TS，它先用宽松容差的 CI-NEB 方法，然后切换到 OptTS 方法以在鞍点上收敛。这种组合对复杂反应的计算可能是好的选择，其中 ScanTS 方法失败，或需要二维弛豫势能面扫描来为 OptTS 方法找到一个好的初始猜测结构。zoomNEB 变体对具有长尾的非常复杂的过渡态是好的选择。关于 ORCA 中实现的各种 NEB 变体的更详细信息，请查阅 <a href="#sec:structurereactivity.neb">structurereactivity.neb</a> 一节。</p>
+<p>在其最简单的形式中，NEB、NEB-CI 和 NEB-TS 只需要反应物和产物态构型（一个通过 xyz 块，另一个通过关键词 neb_end_xyzfile）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>!NEB-TS # or !NEB or !NEB-CI or !ZOOM-NEB-TS or !ZOOM-NEB-CI
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>        # or !Fast-NEB-TS  (corresponds to IDPP-TS defined
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    # in the NEB-TS manuscript)
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        # or !Loose-NEB-TS (corresponds to default NEB-TS
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    # in the NEB-TS manuscript)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>%neb
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a> neb_end_xyzfile &quot;final.xyz&quot;
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>end
+</code></pre></div>
+<p>下面是涉及乙酸分子内质子转移的 NEB-TS 运行示例。最简单的输入是</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 1">
+<pre class="mol-xyz" data-format="xyz">8
+structure (0 1)
+C      0.416168     0.038758    -0.014077
+C      0.041816     0.011798     1.439610
+O      1.524458     0.176600    -0.453888
+O     -0.654209    -0.127881    -0.803857
+H     -0.391037    -0.126036    -1.737478
+H     -0.913438     0.507022     1.585301
+H     -0.057787    -1.026455     1.750845
+H      0.819515     0.485425     2.030252</pre>
+<pre class="mol-input">!XTB NEB-TS
+%neb
+ neb_end_xyzfile &quot;final.xyz&quot;
+end
+
+*xyz 0 1
+C      0.416168     0.038758    -0.014077
+C      0.041816     0.011798     1.439610
+O      1.524458     0.176600    -0.453888
+O     -0.654209    -0.127881    -0.803857
+H     -0.391037    -0.126036    -1.737478
+H     -0.913438     0.507022     1.585301
+H     -0.057787    -1.026455     1.750845
+H      0.819515     0.485425     2.030252
+*</pre>
+</div>
+
+<p>其中 final.xyz 结构包含质子在另一个氧上的相应结构。</p>
+<p>初始路径是合理的，CI 计算可以在五次 NEB 迭代后开启。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Starting iterations:
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Optim.  Iteration  HEI  E(HEI)-E(0)  max(|Fp|)   RMS(Fp)    dS
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Switch-on CI threshold               0.020000
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>   LBFGS     0      4    0.081017    0.073897   0.018915  3.2882
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>   LBFGS     1      5    0.070244    0.056668   0.013913  3.2770
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>   LBFGS     2      5    0.062934    0.038972   0.008763  3.3376
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>   LBFGS     3      5    0.057358    0.032076   0.006535  3.3950
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>   LBFGS     4      4    0.053260    0.019015   0.003599  3.4826
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>Image 4 will be converted to a climbing image in the next iteration (max(|Fp|)&lt;0.0200)
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>Optim.  Iteration  CI   E(CI)-E(0) max(|Fp|)   RMS(Fp)    dS     max(|FCI|)   RMS(FCI)
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>Convergence thresholds             0.020000   0.010000            0.002000    0.001000
+</code></pre></div>
+<p>CI 运行在另外几次迭代后收敛：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>*********************H U R R A Y*********************
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>***        THE NEB OPTIMIZATION HAS CONVERGED     ***
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>*****************************************************
+</code></pre></div>
+<p>随后打印 MEP 的总结：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>---------------------------------------------------------------
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>                         PATH SUMMARY              
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>---------------------------------------------------------------
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>All forces in Eh/Bohr.
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>Image Dist.(Ang.)    E(Eh)   dE(kcal/mol)  max(|Fp|)  RMS(Fp)
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>  0     0.000     -14.45993      0.00       0.00011   0.00004
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>  1     0.426     -14.44891      6.91       0.00092   0.00033
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>  2     0.652     -14.42864     19.63       0.00084   0.00038
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>  3     0.805     -14.41132     30.50       0.00075   0.00027
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>  4     0.932     -14.40562     34.08       0.00057   0.00018 &lt;= CI
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>  5     1.044     -14.41047     31.03       0.00057   0.00024
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>  6     1.153     -14.42200     23.80       0.00103   0.00034
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>  7     1.280     -14.43666     14.60       0.00098   0.00037
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>  8     1.476     -14.45106      5.56       0.00106   0.00033
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>  9     1.869     -14.45988      0.03       0.00013   0.00006
+</code></pre></div>
+<p>此外，打印关于最高能量映像（或 CI）的详细信息：</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 2">
+<pre class="mol-xyz" data-format="xyz">10
+structure
+C      0.040867     0.007347    -0.497635
+C     -0.075595     0.017879     0.979075
+O      1.122340     0.126074    -1.145534
+O     -0.928470    -0.137946    -1.298318
+H      0.165808    -0.021676    -2.055704
+H     -0.996979     0.514720     1.271668
+H     -0.116377    -1.013504     1.327873
+H      0.788406     0.507105     1.418575
+C     -0.000646    -0.000111     0.000086
+C     -0.246569    -0.031821    -0.019359</pre>
+<pre class="mol-input"></pre>
+</div>
+
+<p>最后，开始 TS 优化，之后 MEP 信息通过包含 TS 结构来更新：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>---------------------------------------------------------------
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>                      PATH SUMMARY FOR NEB-TS             
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>---------------------------------------------------------------
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>All forces in Eh/Bohr. Global forces for TS.
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>Image     E(Eh)   dE(kcal/mol)  max(|Fp|)  RMS(Fp)
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>  0     -14.45993     0.00       0.00011   0.00004
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>  1     -14.44891     6.91       0.00092   0.00033
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>  2     -14.42864    19.63       0.00084   0.00038
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>  3     -14.41132    30.50       0.00075   0.00027
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>  4     -14.40562    34.08       0.00057   0.00018 &lt;= CI
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a> TS     -14.40562    34.08       0.00033   0.00013 &lt;= TS
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>  5     -14.41047    31.03       0.00057   0.00024
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>  6     -14.42200    23.80       0.00103   0.00034
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>  7     -14.43666    14.60       0.00098   0.00037
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>  8     -14.45106     5.56       0.00106   0.00033
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>  9     -14.45988     0.03       0.00013   0.00006
+</code></pre></div>
+<p>注意这里同时打印了 TS 和 CI 以便比较。</p>
+<h2 id="reparametrization-of-the-path">路径的重新参数化（Reparametrization of the Path）<a class="headerlink" href="#reparametrization-of-the-path" title="Permanent link">&para;</a></h2>
+<p>在某些情况下，启用每 <span class="arithmatex">\(N\)</span> 次迭代沿路径重新分布映像（即类似于弦方法 <a href="../../../bibliography/">E2002</a>）可能是有益的（关键词：<em>reparam</em>）。然后路径用拟合坐标和路径切线的线性或三次多项式插值，映像沿插值后的路径均匀重新分布。<span class="arithmatex">\(N\)</span> 和插值类型都由用户指定（关键词：<em>reparam_type</em>）。三次插值方法在路径分辨率好、从而切线估计好的计算中应更好，而线性插值通常更稳健，因为它不那么依赖切线。</p>
+<h2 id="useful-output">有用的输出（Useful Output）<a class="headerlink" href="#useful-output" title="Permanent link">&para;</a></h2>
+<p>每次迭代后，通过用能量和原子力沿路径切向的分量做分段三次多项式插值得到沿路径的能量剖面 <a href="../../../bibliography/">Henkelman2000a</a>。插值可以揭示中间映像之间位置上关于 MEP 的重要信息。插值在优化每一步写入文件 'interp'（见文件：basename.interp）。此外，由于 NEB 和 CI-NEB 计算可能相当耗费计算量，为正确分析此类计算中可能出了什么问题，用户可以检查 '.log' 文件，其中包含关于计算类型、能量、路径长度、弹簧力、原子力等的信息。</p>
+<h2 id="important-warning-messages">重要的警告信息（Important Warning Messages）<a class="headerlink" href="#important-warning-messages" title="Permanent link">&para;</a></h2>
+<p>优化期间会进行一些测试以便即时检测问题。计算通过一个映像及其两侧邻居的两条直线之间的夹角。若夹角变大（例如超过 90<span class="arithmatex">\(^\circ\)</span>），切线的估计可能已变得不准确，需要路径更好的分辨率。若夹角接近 180<span class="arithmatex">\(^\circ\)</span>，映像的顺序可能已变得不正确。尤其在后一种情况下，终止计算并在后续计算中包含更多中间映像可能是好的选择。计算中的一些信息（例如鞍点的猜测）可以纳入新的计算。</p>
+<p>另一个问题是路径上中间极小值的识别。若在 <span class="arithmatex">\(M\)</span> 次后续迭代（<span class="arithmatex">\(M\)</span> 由用户提供）中观察到中间极小值，会向用户发出警告：路径上可能存在可能的中间极小值。检查计算的状态、路径和收敛行为是个好主意。如果计算看起来进展正常并趋向收敛，最好的做法是让计算完成。然而，一般更好的是对中间极小值两侧的 MEP 各段分别进行 NEB 计算。尤其是当中间极小值相对反应物和产物态能量极小值较深时。</p>
+<p>在这种情况下，选择最接近表观中间极小值的映像并进行结构极小化。所得构型随后用作后续 CI-NEB 计算中的初态或终态。</p>
+<h2 id="parallel-execution">并行执行（Parallel Execution）<a class="headerlink" href="#parallel-execution" title="Permanent link">&para;</a></h2>
+<p>如果输入中指定的进程数（NProcs）大于 1，NEB 将自动以多进程模式启动：</p>
+<p>NProcs \&lt;= NImages</p>
+<p>:   NProcs 个进程将独立处理 NProcs 个映像，每个映像 1 个进程。选择 NProcs = X*NImages（例如 X = 1 或 0.5）</p>
+<p>NProcs &gt; NImages</p>
+<p>:   NProcs 个进程将处理 NImage 个映像，每个映像由（NProcs/ NImages）个进程处理。如果你想为每个单独的映像计算投入多于 1 个进程，选择 NProcs = X*NImages（例如 X = 2, 3, 4, ...）。</p>
+<p>注意：若第二种情况下涉及多个计算节点，用户需要定义 ORCA 特定的环境变量 RSH_COMMAND，它告诉 NEB 驱动程序如何连接到各个节点（设为 'rsh' 或 'ssh'）。不过，这可能不适用于所有排队系统。</p>
+<p>如果能量和力的计算很快（例如用半经验方法），对每个映像使用多个进程没有收益。启动和结束 MPI 可能比并行处理的收益耗费更多时间。</p>
+<h2 id="zoom-neb">Zoom-NEB<a class="headerlink" href="#zoom-neb" title="Permanent link">&para;</a></h2>
+<p>Zoom-NEB（Z-NEB）方法的初步版本已包含在此实现中，该方法的目标是比 CI-NEB 计算以更好的分辨率更准确地定位鞍点。Z-NEB 方法是一个自动的两步过程，第一步进行 CI-NEB 计算以对 MEP 获得粗略的收敛。然后识别沿路径最高能量极大值周围的区域，并在该区域上分布一组新的映像。第二步，从这条新路径开始自由端 CI-NEB 计算。在此计算中，端点根据垂直于路径的原子力优化。这将确保第二个 CI-NEB 计算的端点也收敛到 MEP。此外，为保持 CI-NEB 方法的并行性，第一次和第二次 CI-NEB 计算使用相同数量的可移动映像。</p>
+<p><a id="sec:structurereactivity.neb.nebts"></a></p>
+<h2 id="neb-ts">NEB-TS<a class="headerlink" href="#neb-ts" title="Permanent link">&para;</a></h2>
+<p>或许最高效的鞍点搜索方法是将双端方法（例如 NEB）与单端方法（例如本征矢量跟踪）结合起来时获得的。在当前实现中，给出了 EW-CI-NEB 和 EF P-RFO（本征矢量跟踪分区有理函数优化）方法的组合，称为 NEB-TS 方法 <a href="../../../bibliography/">Asgeirsson2021</a>。</p>
+<p>在 NEB-TS 中，EW-CI-NEB 方法用于部分收敛到 MEP 从而到鞍点，即沿 MEP 的映像优化一旦爬坡映像收敛到规定的容差就停止。然后，爬坡映像用于为后续的本征矢量跟踪计算提供准确的初始猜测构型，如 <a href="#fig:nebts-mb">fig:nebts-mb</a> 所示，CI 处的切线用于选择要跟踪的本征矢量。切线估计应已给出鞍点处不稳定模式的准确近似。本征矢量跟踪计算所需的初始 Hessian 矩阵可以解析计算（若可用）或取为 Almlöf 经验 Hessian 矩阵 <a href="../../../bibliography/">fischer1992phys</a>。若使用 Almlöf Hessian 矩阵，CI 处的曲率用有限差分近似估计（即使用作用于 CI 相邻映像上的原子力）并用于缩放所选本征矢量的相应本征值，使本征矢量跟踪计算能从正确形式的 Hessian 矩阵开始。典型的 '%geom' 块可用于修改本征矢量跟踪计算的设置。</p>
+<p><a id="fig:nebts-mb"></a>
+<img alt="nebts_mb" src="../../../../images/manual/nebts_mb.png" /></p>
+<p><em>NEB-TS 方法在二维 Müller-Brown 能量面 <span class="arithmatex">\(E(x,y)\)</span> 上工作原理的说明。<a href="../../../bibliography/">Muller1979</a> 计算从反应物和产物能量极小值之间的线性插值出发，使用
+<span class="arithmatex">\(M=10\)</span>。映像用 CI-NEB 算法沿正交于路径的方向（红色曲线）位移，直到对最小能量路径（白色虚线曲线）获得粗略收敛。爬坡映像随后提供一个近似的鞍点构型，可用于启动本征矢量跟踪分区有理函数优化，以准确（且迅速）识别（更高能量的）一阶鞍点。该图
+取自参考文献 <a href="../../../bibliography/">Asgeirsson2021</a></em></p>
+<h2 id="fast-neb-ts-loose-neb-ts">FAST-NEB-TS 和 LOOSE-NEB-TS<a class="headerlink" href="#fast-neb-ts-loose-neb-ts" title="Permanent link">&para;</a></h2>
+<p>自我们的第一个 NEB-TS 实现以来，我们研究了更多的设置和变体，见 <a href="../../../bibliography/">Asgeirsson2021</a>。基于这些发现，两个新的算法和收敛阈值设置已实现到 ORCA 中。FAST-NEB-TS 对应论文中的 IDPP-TS，LOOSE-NEB-TS 对应论文中定义的实际 NEB-TS 默认值。FAST- 和 LOOSE-NEB-TS 两个特性稳健性略低，但所需的 NEB 循环显著更少。</p>
+<h2 id="neb-neb-ts-td-dftneb-neb-ts-and-td-dft">NEB / NEB-TS 与 TD-DFT（NEB / NEB-TS and TD-DFT）<a class="headerlink" href="#neb-neb-ts-td-dftneb-neb-ts-and-td-dft" title="Permanent link">&para;</a></h2>
+<p>NEB 和 NEB-TS 算法现在也与 TD-DFT 一起工作。输入：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>! NEB-TS
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>%neb 
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a> product &quot;product.xyz&quot;
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>end
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>%tddft
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a> NRoots 1
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a> IRoot 1
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>end
+</code></pre></div>
+<p>不仅计算第一激发态的 MEP 和 TS，还在（NEB 收敛后）打印出 MEP 上的激发态以及基态能量：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>-----------------------------------------
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>Image    E0      Root  1
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>-----------------------------------------
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  0   -67.203     0.000
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>  1   -66.443     1.517
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>  2   -54.382     5.774
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>  3   -42.483    10.473
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>  4   -32.798    14.323
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>  5   -28.056    16.108
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>  6   -34.102    13.915
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>  7   -48.125     8.249
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>  8   -64.188     2.212
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>  9   -67.066     0.018
+</code></pre></div>
+<p>你甚至可以请求在基态 PES 上做 NEB-TS 计算，同时通过输入获得激发 PES 的信息：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>! NEB-TS
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>%neb 
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a> product &quot;product.xyz&quot;
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>end
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>%tddft
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a> NRoots 1
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a> IRoot 0
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>end
+</code></pre></div>
+<p>在此 NEB 计算期间，只计算基态的能量和梯度。只在 NEB 收敛后，才在每个映像上计算附加的激发态能量，以给出 MEP 上态的顺序：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>-----------------------------------------
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>Image    E0      Root  1
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>-----------------------------------------
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>  0     0.000   121.545
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>  1     6.281   128.198
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>  2    21.434   143.835
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>  3    35.437   151.581
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>  4    43.223   155.579
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>  5    43.235   155.501
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>  6    35.472   151.495
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>  7    21.498   143.715
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>  8     6.395   128.060
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>  9     0.166   121.425
+</code></pre></div>
+<p><a id="sec:structurereactivity.neb.keywords"></a></p>
+<h2 id="summary-of-keywords">关键词总结（Summary of Keywords）<a class="headerlink" href="#summary-of-keywords" title="Permanent link">&para;</a></h2>
+<p>可用关键词如下：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>! NEB           # NEB calculation
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>! NEB-CI        # Climbing Image NEB calculation
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>! NEB-TS        # NEB calculation plus subsequent TS optimization
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>! FAST-NEB-TS   # NEB calculation with one iteration only plus subsequent TS opt.
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>! LOOSE-NEB-TS  # NEB calculation with default convergence criteria
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>                # from NEB-TS paper
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>! TIGHT-NEB-TS  # NEB calculation with tighter convergence criteria plus 
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>                # subsequent TS optimization
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>! ZOOM-NEB      # NEB calculation plus zoomed NEB calculation
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>! ZOOM-NEB-CI   # Climbing Image NEB plus zoomed climbing image NEB calculation
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>! ZOOM-NEB-TS   # NEB calculation plus zoomed NEB calculation plus subsequent
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>                #  TS optimization
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>! NEB-IDPP      # IDPP (Initial Path) NEB calculation - for estimation of path
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>                #  length
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>%neb
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>   Product &quot;product.xyz&quot; # product structure. Input is mandatory.
+<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>   NImages  8         # default 8. Number of images without fixed endpoints, 
+<a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a>                      #  for free_end total number of images
+<a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a>   PrintLevel   1     # default 1. Normal printout. Use 0 for no printout, higher 
+<a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a>                      #  numbers (&lt;=4) for more detailed printout.
+<a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a>
+<a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a>   TS &quot;TSGuess.xyz&quot;   # Provide guess for the TS structure. Images 
+<a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a>                                  #  are interpolated between reactant and TS guess
+<a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a>                                  #  and between TS guess and product.
+<a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a>   NEB_TS_Image     3 # default -1. Number of the image the TS guess is used for.
+<a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a>                      #  If not defined (=-1), the image which gives lowest RMSD
+<a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a>                      #  for all image distances is used.
+<a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a>
+<a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a> # Restart option: After each iteration the NEB method stores all image 
+<a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a> # structures in an .allxyz file. In case of an abort this file can be used 
+<a id="__codelineno-9-31" name="__codelineno-9-31" href="#__codelineno-9-31"></a> # for a restart. File should contain the structures for all images.
+<a id="__codelineno-9-32" name="__codelineno-9-32" href="#__codelineno-9-32"></a>   Restart_ALLXYZFile &quot;NEB1.allxyz&quot;# use the trajectory from file if filename is 
+<a id="__codelineno-9-33" name="__codelineno-9-33" href="#__codelineno-9-33"></a>                                   #  provided 
+<a id="__codelineno-9-34" name="__codelineno-9-34" href="#__codelineno-9-34"></a>
+<a id="__codelineno-9-35" name="__codelineno-9-35" href="#__codelineno-9-35"></a> # Alternatively, NEB can be started on user-prepared wavefunctions for each image.
+<a id="__codelineno-9-36" name="__codelineno-9-36" href="#__codelineno-9-36"></a> # The names of these wavefunction files should consist of a user-chosen basename
+<a id="__codelineno-9-37" name="__codelineno-9-37" href="#__codelineno-9-37"></a> # and the extension &#39;_imN.gbw&#39;, where N is the image number.
+<a id="__codelineno-9-38" name="__codelineno-9-38" href="#__codelineno-9-38"></a> # The basename should be provided in the input, ORCA will add extension &#39;_imN.gbw&#39; 
+<a id="__codelineno-9-39" name="__codelineno-9-39" href="#__codelineno-9-39"></a>   Restart_GBW_BaseName &quot;NEB2&quot;     # use the wavefunctions from file NEB2_imN.gbw  
+<a id="__codelineno-9-40" name="__codelineno-9-40" href="#__codelineno-9-40"></a>
+<a id="__codelineno-9-41" name="__codelineno-9-41" href="#__codelineno-9-41"></a> # Check SCF convergence: If true, SCF convergence is checked for and 
+<a id="__codelineno-9-42" name="__codelineno-9-42" href="#__codelineno-9-42"></a> # calculation aborts if: 
+<a id="__codelineno-9-43" name="__codelineno-9-43" href="#__codelineno-9-43"></a> # -any of the images does not show SCF convergence in four subsequent cycles.
+<a id="__codelineno-9-44" name="__codelineno-9-44" href="#__codelineno-9-44"></a> # -any of the images does not show SCF convergence in two subsequent cycles
+<a id="__codelineno-9-45" name="__codelineno-9-45" href="#__codelineno-9-45"></a> #  after the gradient is converged.
+<a id="__codelineno-9-46" name="__codelineno-9-46" href="#__codelineno-9-46"></a>   CheckSCFConv     true           # default true  
+<a id="__codelineno-9-47" name="__codelineno-9-47" href="#__codelineno-9-47"></a>
+<a id="__codelineno-9-48" name="__codelineno-9-48" href="#__codelineno-9-48"></a> # PDB file input format:
+<a id="__codelineno-9-49" name="__codelineno-9-49" href="#__codelineno-9-49"></a>   Product_PDBFile  &quot;product.pdb&quot;  # Product structure in pdb format. If this is
+<a id="__codelineno-9-50" name="__codelineno-9-50" href="#__codelineno-9-50"></a>                                   #  given, xyz does not need to be given.
+<a id="__codelineno-9-51" name="__codelineno-9-51" href="#__codelineno-9-51"></a>   TS_PDBFile       &quot;TSGuess.pdb&quot;  # TS guess structure in pdb format. If this is 
+<a id="__codelineno-9-52" name="__codelineno-9-52" href="#__codelineno-9-52"></a>                                   #  given, xyz does not need to be given. 
+<a id="__codelineno-9-53" name="__codelineno-9-53" href="#__codelineno-9-53"></a>   Free_End         false          # Use free-end NEB. In this case the NImages 
+<a id="__codelineno-9-54" name="__codelineno-9-54" href="#__codelineno-9-54"></a>                                   #  corresponds to the total number of images.
+<a id="__codelineno-9-55" name="__codelineno-9-55" href="#__codelineno-9-55"></a>   PreOpt           false          # do optimization of reactant and product in  
+<a id="__codelineno-9-56" name="__codelineno-9-56" href="#__codelineno-9-56"></a>                                   #  internal coordinates before NEB starts
+<a id="__codelineno-9-57" name="__codelineno-9-57" href="#__codelineno-9-57"></a>   NSteps_FoundIntermediate  30    # Number of steps the intermediate has to be 
+<a id="__codelineno-9-58" name="__codelineno-9-58" href="#__codelineno-9-58"></a>                                   #  present
+<a id="__codelineno-9-59" name="__codelineno-9-59" href="#__codelineno-9-59"></a>   AbortIf_FoundIntermediate false # If an intermediate is found abort the run.
+<a id="__codelineno-9-60" name="__codelineno-9-60" href="#__codelineno-9-60"></a>   NPTS_Interpol    10             # Number of abscissa in cubic polynomial 
+<a id="__codelineno-9-61" name="__codelineno-9-61" href="#__codelineno-9-61"></a>                                   #  interpolation   
+<a id="__codelineno-9-62" name="__codelineno-9-62" href="#__codelineno-9-62"></a>   Interpolation    IDPP           # Method to generate the images based on the 
+<a id="__codelineno-9-63" name="__codelineno-9-63" href="#__codelineno-9-63"></a>                                   #  reactant, product (and potentially TS guess)
+<a id="__codelineno-9-64" name="__codelineno-9-64" href="#__codelineno-9-64"></a>                                   # linear 
+<a id="__codelineno-9-65" name="__codelineno-9-65" href="#__codelineno-9-65"></a>                                   # IDPP 
+<a id="__codelineno-9-66" name="__codelineno-9-66" href="#__codelineno-9-66"></a>                                   # XTB0TS  - TS on GFN0-xTB level 
+<a id="__codelineno-9-67" name="__codelineno-9-67" href="#__codelineno-9-67"></a>                                   # XTB0    - entire path on GFN0-xTB level 
+<a id="__codelineno-9-68" name="__codelineno-9-68" href="#__codelineno-9-68"></a>                                   # XTB1TS  - TS on GFN1-xTB level 
+<a id="__codelineno-9-69" name="__codelineno-9-69" href="#__codelineno-9-69"></a>                                   # XTB1    - entire path on GFN1-xTB level 
+<a id="__codelineno-9-70" name="__codelineno-9-70" href="#__codelineno-9-70"></a>                                   # XTB2TS   - TS on GFN2-xTB level 
+<a id="__codelineno-9-71" name="__codelineno-9-71" href="#__codelineno-9-71"></a>                                   # XTB2     - entire path on GFN2-xTB level 
+<a id="__codelineno-9-72" name="__codelineno-9-72" href="#__codelineno-9-72"></a>   Prepare_Frags    true           # Analyze endpoint structures for fragments.
+<a id="__codelineno-9-73" name="__codelineno-9-73" href="#__codelineno-9-73"></a>                                   #  If two fragments are detected in an
+<a id="__codelineno-9-74" name="__codelineno-9-74" href="#__codelineno-9-74"></a>                                   #  endpoint structure, reduce distance to
+<a id="__codelineno-9-75" name="__codelineno-9-75" href="#__codelineno-9-75"></a>                                   #  maximum distance given by Max_Frag_Dist
+<a id="__codelineno-9-76" name="__codelineno-9-76" href="#__codelineno-9-76"></a>   Max_Frag_Dist    3.5            # Maximum allowed fragment distance. If they
+<a id="__codelineno-9-77" name="__codelineno-9-77" href="#__codelineno-9-77"></a>                                   #  are farther apart, reduce the distance to
+<a id="__codelineno-9-78" name="__codelineno-9-78" href="#__codelineno-9-78"></a>                                   #  this value (Ang.)
+<a id="__codelineno-9-79" name="__codelineno-9-79" href="#__codelineno-9-79"></a>   Bond_Cutoff      1.2            # Factor to multiply sum of covalent radii of
+<a id="__codelineno-9-80" name="__codelineno-9-80" href="#__codelineno-9-80"></a>                                   #  two atoms by. If the distance is smaller
+<a id="__codelineno-9-81" name="__codelineno-9-81" href="#__codelineno-9-81"></a>                                   #  than the result, the atoms are considered
+<a id="__codelineno-9-82" name="__codelineno-9-82" href="#__codelineno-9-82"></a>                                   #  bonded.
+<a id="__codelineno-9-83" name="__codelineno-9-83" href="#__codelineno-9-83"></a>
+<a id="__codelineno-9-84" name="__codelineno-9-84" href="#__codelineno-9-84"></a>  # The formulation used to estimate the tangent to the path
+<a id="__codelineno-9-85" name="__codelineno-9-85" href="#__codelineno-9-85"></a>   Tangent improved                # improved (default)
+<a id="__codelineno-9-86" name="__codelineno-9-86" href="#__codelineno-9-86"></a>                                   # original
+<a id="__codelineno-9-87" name="__codelineno-9-87" href="#__codelineno-9-87"></a>
+<a id="__codelineno-9-88" name="__codelineno-9-88" href="#__codelineno-9-88"></a>  # The type of the spring interaction parallel to the path. Original springs apply 
+<a id="__codelineno-9-89" name="__codelineno-9-89" href="#__codelineno-9-89"></a>  # spring interaction between each degree of freedom of adjacent images, while 
+<a id="__codelineno-9-90" name="__codelineno-9-90" href="#__codelineno-9-90"></a>  # &#39;image&#39; springs apply a spring interaction between the images
+<a id="__codelineno-9-91" name="__codelineno-9-91" href="#__codelineno-9-91"></a>  # Spring type  
+<a id="__codelineno-9-92" name="__codelineno-9-92" href="#__codelineno-9-92"></a>   SpringType image                # image / distance (default)
+<a id="__codelineno-9-93" name="__codelineno-9-93" href="#__codelineno-9-93"></a>                                   # dof / original
+<a id="__codelineno-9-94" name="__codelineno-9-94" href="#__codelineno-9-94"></a>                                   # ideal                                    
+<a id="__codelineno-9-95" name="__codelineno-9-95" href="#__codelineno-9-95"></a>   SpringConst  0.01               # The spring constant used to scale the spring 
+<a id="__codelineno-9-96" name="__codelineno-9-96" href="#__codelineno-9-96"></a>                                   #  forces parallel to the path. If energy-
+<a id="__codelineno-9-97" name="__codelineno-9-97" href="#__codelineno-9-97"></a>                   #  weighted springs are used. This parameter
+<a id="__codelineno-9-98" name="__codelineno-9-98" href="#__codelineno-9-98"></a>                   #  gives the lower bound value of the spring
+<a id="__codelineno-9-99" name="__codelineno-9-99" href="#__codelineno-9-99"></a>                   #  constant     
+<a id="__codelineno-9-100" name="__codelineno-9-100" href="#__codelineno-9-100"></a>   SpringConst2 0.1                # If energy-weighted spring forces are used.
+<a id="__codelineno-9-101" name="__codelineno-9-101" href="#__codelineno-9-101"></a>                                   #  This parameters give the value for the upper
+<a id="__codelineno-9-102" name="__codelineno-9-102" href="#__codelineno-9-102"></a>                                   #  bound value of the spring constant.
+<a id="__codelineno-9-103" name="__codelineno-9-103" href="#__codelineno-9-103"></a>   Energy_Weighted true            # Employ energy-weighted springs. When 
+<a id="__codelineno-9-104" name="__codelineno-9-104" href="#__codelineno-9-104"></a>                                   #  energy-weighted springs are used, the
+<a id="__codelineno-9-105" name="__codelineno-9-105" href="#__codelineno-9-105"></a>                                   #  images tend to accumlate in higher energy
+<a id="__codelineno-9-106" name="__codelineno-9-106" href="#__codelineno-9-106"></a>                                   #  regions of the path. 
+<a id="__codelineno-9-107" name="__codelineno-9-107" href="#__codelineno-9-107"></a>
+<a id="__codelineno-9-108" name="__codelineno-9-108" href="#__codelineno-9-108"></a>  # The type of the spring interaction perpendicular to the path. The perpendicular
+<a id="__codelineno-9-109" name="__codelineno-9-109" href="#__codelineno-9-109"></a>  # spring is introduced via a scaling function: cos, tan, costan, which all use 
+<a id="__codelineno-9-110" name="__codelineno-9-110" href="#__codelineno-9-110"></a>  # the spring component perpendicular to the path. 
+<a id="__codelineno-9-111" name="__codelineno-9-111" href="#__codelineno-9-111"></a>  # DNEB is the doubly nudged elastic band method.                                 
+<a id="__codelineno-9-112" name="__codelineno-9-112" href="#__codelineno-9-112"></a>   PerpSpring    no                # no      (default)   
+<a id="__codelineno-9-113" name="__codelineno-9-113" href="#__codelineno-9-113"></a>                                   # cos        
+<a id="__codelineno-9-114" name="__codelineno-9-114" href="#__codelineno-9-114"></a>                                   # tan        
+<a id="__codelineno-9-115" name="__codelineno-9-115" href="#__codelineno-9-115"></a>                                   # cosTan
+<a id="__codelineno-9-116" name="__codelineno-9-116" href="#__codelineno-9-116"></a>                                   # DNEB 
+<a id="__codelineno-9-117" name="__codelineno-9-117" href="#__codelineno-9-117"></a>
+<a id="__codelineno-9-118" name="__codelineno-9-118" href="#__codelineno-9-118"></a>    LLT_Cos true                   # Enables the cos-type spring force 
+<a id="__codelineno-9-119" name="__codelineno-9-119" href="#__codelineno-9-119"></a>                                   #  acting perpendicular to the band.
+<a id="__codelineno-9-120" name="__codelineno-9-120" href="#__codelineno-9-120"></a>
+<a id="__codelineno-9-121" name="__codelineno-9-121" href="#__codelineno-9-121"></a>  # Translational and rotational degrees of freedom
+<a id="__codelineno-9-122" name="__codelineno-9-122" href="#__codelineno-9-122"></a>  Quatern     always           # no, 
+<a id="__codelineno-9-123" name="__codelineno-9-123" href="#__codelineno-9-123"></a>                               # startonly
+<a id="__codelineno-9-124" name="__codelineno-9-124" href="#__codelineno-9-124"></a>                               # always (default)
+<a id="__codelineno-9-125" name="__codelineno-9-125" href="#__codelineno-9-125"></a>  # Fix_center specifies whether the centroid of each image should be
+<a id="__codelineno-9-126" name="__codelineno-9-126" href="#__codelineno-9-126"></a>  # constrained to the origin of the coordinate system or to the center 
+<a id="__codelineno-9-127" name="__codelineno-9-127" href="#__codelineno-9-127"></a>  # of each image individually.   
+<a id="__codelineno-9-128" name="__codelineno-9-128" href="#__codelineno-9-128"></a>  Fix_center  True                
+<a id="__codelineno-9-129" name="__codelineno-9-129" href="#__codelineno-9-129"></a>
+<a id="__codelineno-9-130" name="__codelineno-9-130" href="#__codelineno-9-130"></a>  # Fix_center specifies whether the centroid of each image should be
+<a id="__codelineno-9-131" name="__codelineno-9-131" href="#__codelineno-9-131"></a>  # constrained to the origin of the coordinate system or to the center 
+<a id="__codelineno-9-132" name="__codelineno-9-132" href="#__codelineno-9-132"></a>  # of each image individually.   
+<a id="__codelineno-9-133" name="__codelineno-9-133" href="#__codelineno-9-133"></a>  Remove_extern_Force  True    # Removes the net effective NEB force before
+<a id="__codelineno-9-134" name="__codelineno-9-134" href="#__codelineno-9-134"></a>                               #  translation of the path
+<a id="__codelineno-9-135" name="__codelineno-9-135" href="#__codelineno-9-135"></a>
+<a id="__codelineno-9-136" name="__codelineno-9-136" href="#__codelineno-9-136"></a>  # Options for Free-End NEB
+<a id="__codelineno-9-137" name="__codelineno-9-137" href="#__codelineno-9-137"></a>   Free_End_Type    Perp       # Type of optimization of endpoints in free-end
+<a id="__codelineno-9-138" name="__codelineno-9-138" href="#__codelineno-9-138"></a>                               #  NEB.
+<a id="__codelineno-9-139" name="__codelineno-9-139" href="#__codelineno-9-139"></a>                               # contour - constrain endpoints to a fixed
+<a id="__codelineno-9-140" name="__codelineno-9-140" href="#__codelineno-9-140"></a>                               #  contour with energy EC, see below
+<a id="__codelineno-9-141" name="__codelineno-9-141" href="#__codelineno-9-141"></a>                               # perp - allow end points to move according to
+<a id="__codelineno-9-142" name="__codelineno-9-142" href="#__codelineno-9-142"></a>                               #  perp. spring force
+<a id="__codelineno-9-143" name="__codelineno-9-143" href="#__codelineno-9-143"></a>                               # full - allow to move according to full force,
+<a id="__codelineno-9-144" name="__codelineno-9-144" href="#__codelineno-9-144"></a>                               #  i.e. relax to energy minimum
+<a id="__codelineno-9-145" name="__codelineno-9-145" href="#__codelineno-9-145"></a>   Free_End_EC                 # Energy contour value for image 0 - needed for
+<a id="__codelineno-9-146" name="__codelineno-9-146" href="#__codelineno-9-146"></a>                               #  free_end_type = contour
+<a id="__codelineno-9-147" name="__codelineno-9-147" href="#__codelineno-9-147"></a>   Free_End_EC_End             # Energy contour value for image N - needed for
+<a id="__codelineno-9-148" name="__codelineno-9-148" href="#__codelineno-9-148"></a>                               #  free_end_type = contour
+<a id="__codelineno-9-149" name="__codelineno-9-149" href="#__codelineno-9-149"></a>   Free_End_Kappa              # harmonic restraint term - needed for
+<a id="__codelineno-9-150" name="__codelineno-9-150" href="#__codelineno-9-150"></a>                               #  free_end_type = contour
+<a id="__codelineno-9-151" name="__codelineno-9-151" href="#__codelineno-9-151"></a>
+<a id="__codelineno-9-152" name="__codelineno-9-152" href="#__codelineno-9-152"></a>
+<a id="__codelineno-9-153" name="__codelineno-9-153" href="#__codelineno-9-153"></a> # Monitor convergence for all images or only the CI.                       
+<a id="__codelineno-9-154" name="__codelineno-9-154" href="#__codelineno-9-154"></a> # Convergence type
+<a id="__codelineno-9-155" name="__codelineno-9-155" href="#__codelineno-9-155"></a>   ConvType all                    # all   (default)
+<a id="__codelineno-9-156" name="__codelineno-9-156" href="#__codelineno-9-156"></a>                                   # CIOnly  
+<a id="__codelineno-9-157" name="__codelineno-9-157" href="#__codelineno-9-157"></a>
+<a id="__codelineno-9-158" name="__codelineno-9-158" href="#__codelineno-9-158"></a>   CI false                        # Do Climbing image NEB
+<a id="__codelineno-9-159" name="__codelineno-9-159" href="#__codelineno-9-159"></a>
+<a id="__codelineno-9-160" name="__codelineno-9-160" href="#__codelineno-9-160"></a>   NEB_TS false                    # Do CI NEB and subsequent TS opt.
+<a id="__codelineno-9-161" name="__codelineno-9-161" href="#__codelineno-9-161"></a>
+<a id="__codelineno-9-162" name="__codelineno-9-162" href="#__codelineno-9-162"></a> # Convergence tolerance. In Eh / Bohr (except Tol_Scale ).
+<a id="__codelineno-9-163" name="__codelineno-9-163" href="#__codelineno-9-163"></a>   Tol_MaxFP_I      1.e-3  # Default. The convergence tolerance for the 
+<a id="__codelineno-9-164" name="__codelineno-9-164" href="#__codelineno-9-164"></a>                           #  maximum component of the atomic force 
+<a id="__codelineno-9-165" name="__codelineno-9-165" href="#__codelineno-9-165"></a>                           #  perpendicular to the path.
+<a id="__codelineno-9-166" name="__codelineno-9-166" href="#__codelineno-9-166"></a>   Tol_RMSFP_I      5.e-4  # Default. The convergence tolerance for the rms
+<a id="__codelineno-9-167" name="__codelineno-9-167" href="#__codelineno-9-167"></a>                           #  atomic force perpendicular to the path. Only
+<a id="__codelineno-9-168" name="__codelineno-9-168" href="#__codelineno-9-168"></a>                           #  applies to regular images.
+<a id="__codelineno-9-169" name="__codelineno-9-169" href="#__codelineno-9-169"></a>   Tol_MaxF_CI      2.e-3  # The convergence tolerance for the maxmimum 
+<a id="__codelineno-9-170" name="__codelineno-9-170" href="#__codelineno-9-170"></a>                           #  component of the atomic force acting on the CI. 
+<a id="__codelineno-9-171" name="__codelineno-9-171" href="#__codelineno-9-171"></a>                           #  Only applies to (ZOOM-)NEB-CI/-TS calculations.
+<a id="__codelineno-9-172" name="__codelineno-9-172" href="#__codelineno-9-172"></a>                           #  Default is 5.e-4 (-CI) and 2.e-3 (-TS)
+<a id="__codelineno-9-173" name="__codelineno-9-173" href="#__codelineno-9-173"></a>   Tol_RMSF_CI      1.e-3  # The convergence tolerance for the rms atomic 
+<a id="__codelineno-9-174" name="__codelineno-9-174" href="#__codelineno-9-174"></a>                           #  force acting on the CI. Only applies to (ZOOM-)NEB-CI.
+<a id="__codelineno-9-175" name="__codelineno-9-175" href="#__codelineno-9-175"></a>                           #  Default is 2.5e-4 (-CI) and 1.e-3 (-TS)
+<a id="__codelineno-9-176" name="__codelineno-9-176" href="#__codelineno-9-176"></a>   Tol_Turn_On_CI   2.e-2  # Thresholds for max. atomic force for switching on 
+<a id="__codelineno-9-177" name="__codelineno-9-177" href="#__codelineno-9-177"></a>                           #  CI in (ZOOM-)NEB-CI and (ZOOM-)NEB-TS. 
+<a id="__codelineno-9-178" name="__codelineno-9-178" href="#__codelineno-9-178"></a>                           #  Defaults: 0.02 for LBFGS, 0.2 for VPO and FIRE
+<a id="__codelineno-9-179" name="__codelineno-9-179" href="#__codelineno-9-179"></a>   Tol_Scale        10.0   # For convergence type &#39;all&#39; the user can scale 
+<a id="__codelineno-9-180" name="__codelineno-9-180" href="#__codelineno-9-180"></a>                           #  the convergence tolerance of the regular images 
+<a id="__codelineno-9-181" name="__codelineno-9-181" href="#__codelineno-9-181"></a>                           #  relative to the CI values using this 
+<a id="__codelineno-9-182" name="__codelineno-9-182" href="#__codelineno-9-182"></a>                           #  multiplicative factor. Only applies to (ZOOM-)NEB-CI
+<a id="__codelineno-9-183" name="__codelineno-9-183" href="#__codelineno-9-183"></a>                           #  and (ZOOM-)NEB-TS calculations.
+<a id="__codelineno-9-184" name="__codelineno-9-184" href="#__codelineno-9-184"></a>
+<a id="__codelineno-9-185" name="__codelineno-9-185" href="#__codelineno-9-185"></a>  # Interpolation and redistribution of the path is performed every &#39;reparam&#39; 
+<a id="__codelineno-9-186" name="__codelineno-9-186" href="#__codelineno-9-186"></a>  # iterations. The type of interpolation is set by reparam_type.
+<a id="__codelineno-9-187" name="__codelineno-9-187" href="#__codelineno-9-187"></a>   Reparam_type linear   # Cubic
+<a id="__codelineno-9-188" name="__codelineno-9-188" href="#__codelineno-9-188"></a>                         # Linear (default)
+<a id="__codelineno-9-189" name="__codelineno-9-189" href="#__codelineno-9-189"></a>   Reparam 0             # No. of iterations after which the path should be 
+<a id="__codelineno-9-190" name="__codelineno-9-190" href="#__codelineno-9-190"></a>                         #  reparametrized
+<a id="__codelineno-9-191" name="__codelineno-9-191" href="#__codelineno-9-191"></a>                         #  0 (default) means: reparametrization is off
+<a id="__codelineno-9-192" name="__codelineno-9-192" href="#__codelineno-9-192"></a>   Tol_Reparam 0.0       # User-defined threshold at which the path should be 
+<a id="__codelineno-9-193" name="__codelineno-9-193" href="#__codelineno-9-193"></a>                         #  reparametrized
+<a id="__codelineno-9-194" name="__codelineno-9-194" href="#__codelineno-9-194"></a>                         # 0.0 (default) means: reparametrization is off 
+<a id="__codelineno-9-195" name="__codelineno-9-195" href="#__codelineno-9-195"></a>  # The optimization method used to converge the band on the MEP / saddle point. 
+<a id="__codelineno-9-196" name="__codelineno-9-196" href="#__codelineno-9-196"></a>  # The L-BFGS is more aggressive and efficient, but also more error-prone. 
+<a id="__codelineno-9-197" name="__codelineno-9-197" href="#__codelineno-9-197"></a>  # VPO is conservative and robust.
+<a id="__codelineno-9-198" name="__codelineno-9-198" href="#__codelineno-9-198"></a>   Opt_Method LBFGS      # LBFGS   (default)          
+<a id="__codelineno-9-199" name="__codelineno-9-199" href="#__codelineno-9-199"></a>                         # VPO   
+<a id="__codelineno-9-200" name="__codelineno-9-200" href="#__codelineno-9-200"></a>                         # FIRE
+<a id="__codelineno-9-201" name="__codelineno-9-201" href="#__codelineno-9-201"></a>                         # BFGS  
+<a id="__codelineno-9-202" name="__codelineno-9-202" href="#__codelineno-9-202"></a>
+<a id="__codelineno-9-203" name="__codelineno-9-203" href="#__codelineno-9-203"></a> # Options Optim. Method
+<a id="__codelineno-9-204" name="__codelineno-9-204" href="#__codelineno-9-204"></a>   Maxmove  0.1    # maximum component allowed per step. Default is 0.1 (LBFGS) 
+<a id="__codelineno-9-205" name="__codelineno-9-205" href="#__codelineno-9-205"></a>                   # and 0.2 (VPO / FIRE)
+<a id="__codelineno-9-206" name="__codelineno-9-206" href="#__codelineno-9-206"></a>   Stepsize 1.0    # multiplicative factor to scale the size of the step in each 
+<a id="__codelineno-9-207" name="__codelineno-9-207" href="#__codelineno-9-207"></a>                   # optimization cycle.
+<a id="__codelineno-9-208" name="__codelineno-9-208" href="#__codelineno-9-208"></a>                   # Default is 1.0 (LBFGS) and 0.5 (VPO / FIRE)
+<a id="__codelineno-9-209" name="__codelineno-9-209" href="#__codelineno-9-209"></a>   MaxIter  500    # Maximum number of iterations.
+<a id="__codelineno-9-210" name="__codelineno-9-210" href="#__codelineno-9-210"></a>                   # 500 for LBFGS, 1000 for VPO / FIRE.
+<a id="__codelineno-9-211" name="__codelineno-9-211" href="#__codelineno-9-211"></a>   Local    false  # Use local optimization. 
+<a id="__codelineno-9-212" name="__codelineno-9-212" href="#__codelineno-9-212"></a>                   # Default is false for NEB, but true for (ZOOM-)NEB-CI/-TS.
+<a id="__codelineno-9-213" name="__codelineno-9-213" href="#__codelineno-9-213"></a>
+<a id="__codelineno-9-214" name="__codelineno-9-214" href="#__codelineno-9-214"></a> # Options LBFGS 
+<a id="__codelineno-9-215" name="__codelineno-9-215" href="#__codelineno-9-215"></a>   LBFGS_Mem      20    # the number of previous steps to be kept in memory and 
+<a id="__codelineno-9-216" name="__codelineno-9-216" href="#__codelineno-9-216"></a>                        # used to construct the approximate Hessian matrix.
+<a id="__codelineno-9-217" name="__codelineno-9-217" href="#__codelineno-9-217"></a>   LBFGS_DR 1.e-3       # Size of the finite difference step taken at the 
+<a id="__codelineno-9-218" name="__codelineno-9-218" href="#__codelineno-9-218"></a>                        # initialization of L-BFGS
+<a id="__codelineno-9-219" name="__codelineno-9-219" href="#__codelineno-9-219"></a>   LBFGS_Restart_On_Maxmove true  # Re-initialize L-BFGS for the next step when 
+<a id="__codelineno-9-220" name="__codelineno-9-220" href="#__codelineno-9-220"></a>                                  # the &#39;max-move&#39; limit is reached.
+<a id="__codelineno-9-221" name="__codelineno-9-221" href="#__codelineno-9-221"></a>   LBFGS_Reparam_On_Restart false # Re-parametrize when L-BFGS is re-initialized
+<a id="__codelineno-9-222" name="__codelineno-9-222" href="#__codelineno-9-222"></a>   LBFGS_Precondition true        # If true, then after initialization, the curvature
+<a id="__codelineno-9-223" name="__codelineno-9-223" href="#__codelineno-9-223"></a>                                  # curvature along direction of the force is
+<a id="__codelineno-9-224" name="__codelineno-9-224" href="#__codelineno-9-224"></a>                  # estimated and used to determine the first step
+<a id="__codelineno-9-225" name="__codelineno-9-225" href="#__codelineno-9-225"></a>
+<a id="__codelineno-9-226" name="__codelineno-9-226" href="#__codelineno-9-226"></a> # FIRE parameters 
+<a id="__codelineno-9-227" name="__codelineno-9-227" href="#__codelineno-9-227"></a>   FIRE_INITIAL_DAMP 0.1   # Initial value for the damping factor
+<a id="__codelineno-9-228" name="__codelineno-9-228" href="#__codelineno-9-228"></a>   FIRE_DAMP_DECR&quot;   0.99  # Decrease of the damping factor
+<a id="__codelineno-9-229" name="__codelineno-9-229" href="#__codelineno-9-229"></a>   FIRE_STEP_INCR&quot;   1.1   # Factor to increase the stepsize
+<a id="__codelineno-9-230" name="__codelineno-9-230" href="#__codelineno-9-230"></a>   FIRE_STEP_DECR&quot;   0.5   # Factor to decrease the stepsize
+<a id="__codelineno-9-231" name="__codelineno-9-231" href="#__codelineno-9-231"></a>   FIRE_MAX_STEP&quot;    5.0   # Default is 10 x Stepsize
+<a id="__codelineno-9-232" name="__codelineno-9-232" href="#__codelineno-9-232"></a>   FIRE_RETENTION&quot;   5     # Retention before starting acceleration 
+<a id="__codelineno-9-233" name="__codelineno-9-233" href="#__codelineno-9-233"></a>
+<a id="__codelineno-9-234" name="__codelineno-9-234" href="#__codelineno-9-234"></a> # Options Zoom
+<a id="__codelineno-9-235" name="__codelineno-9-235" href="#__codelineno-9-235"></a>   Tol_Turn_On_Zoom  0.1   # use ZOOM-NEB(-CI/TS)
+<a id="__codelineno-9-236" name="__codelineno-9-236" href="#__codelineno-9-236"></a>   Zoom_Offset       1     # if manual selection is chosen, how many
+<a id="__codelineno-9-237" name="__codelineno-9-237" href="#__codelineno-9-237"></a>                           #  images away from CI should be chosen
+<a id="__codelineno-9-238" name="__codelineno-9-238" href="#__codelineno-9-238"></a>   Zoom_Auto         true  # automatically select zoom region
+<a id="__codelineno-9-239" name="__codelineno-9-239" href="#__codelineno-9-239"></a>   Zoom_Alpha        0.5   # determines how much of the barrier 
+<a id="__codelineno-9-240" name="__codelineno-9-240" href="#__codelineno-9-240"></a>                           #  zoom-auto should select
+<a id="__codelineno-9-241" name="__codelineno-9-241" href="#__codelineno-9-241"></a>   Zoom_Interpolation      # linear (default)
+<a id="__codelineno-9-242" name="__codelineno-9-242" href="#__codelineno-9-242"></a>                           # cubic
+<a id="__codelineno-9-243" name="__codelineno-9-243" href="#__codelineno-9-243"></a>   Zoom_PrintFullTrj       # print full trajectory including fixed region 
+<a id="__codelineno-9-244" name="__codelineno-9-244" href="#__codelineno-9-244"></a>                           # during Zoom
+<a id="__codelineno-9-245" name="__codelineno-9-245" href="#__codelineno-9-245"></a>
+<a id="__codelineno-9-246" name="__codelineno-9-246" href="#__codelineno-9-246"></a> # Set of parameters to adjust the IDPP pre-optimization when generating the
+<a id="__codelineno-9-247" name="__codelineno-9-247" href="#__codelineno-9-247"></a> # the initial path.
+<a id="__codelineno-9-248" name="__codelineno-9-248" href="#__codelineno-9-248"></a>
+<a id="__codelineno-9-249" name="__codelineno-9-249" href="#__codelineno-9-249"></a> # Options IDPP 
+<a id="__codelineno-9-250" name="__codelineno-9-250" href="#__codelineno-9-250"></a>   IDPP_NMax                     7000  # maximum number of cycles allowed in IDPP
+<a id="__codelineno-9-251" name="__codelineno-9-251" href="#__codelineno-9-251"></a>   IDPP_Tol_MaxF                 0.01  # tolerance on the maximum component of the
+<a id="__codelineno-9-252" name="__codelineno-9-252" href="#__codelineno-9-252"></a>                                       #  atomic force perpendicular to the path.
+<a id="__codelineno-9-253" name="__codelineno-9-253" href="#__codelineno-9-253"></a>                                       #  For S-IDPP, this setting is used in the
+<a id="__codelineno-9-254" name="__codelineno-9-254" href="#__codelineno-9-254"></a>                                       #  final IDPP optimization after all images
+<a id="__codelineno-9-255" name="__codelineno-9-255" href="#__codelineno-9-255"></a>                                       #  have been added to the path
+<a id="__codelineno-9-256" name="__codelineno-9-256" href="#__codelineno-9-256"></a>   IDPP_ksp                      1.0   # spring constant used to scale the spring
+<a id="__codelineno-9-257" name="__codelineno-9-257" href="#__codelineno-9-257"></a>                                       #  force parallel to the path.
+<a id="__codelineno-9-258" name="__codelineno-9-258" href="#__codelineno-9-258"></a>   IDPP_Alpha                    0.01  # multiplicative factor to scale the size
+<a id="__codelineno-9-259" name="__codelineno-9-259" href="#__codelineno-9-259"></a>                                       #  of the step in each opt. cycle
+<a id="__codelineno-9-260" name="__codelineno-9-260" href="#__codelineno-9-260"></a>   IDPP_MaxMove                  0.05  # maximum component allowed per step
+<a id="__codelineno-9-261" name="__codelineno-9-261" href="#__codelineno-9-261"></a>   IDPP_Debug                    false # will print out the convergence of IDPP 
+<a id="__codelineno-9-262" name="__codelineno-9-262" href="#__codelineno-9-262"></a>                                       #  and also the optimization trajectory and
+<a id="__codelineno-9-263" name="__codelineno-9-263" href="#__codelineno-9-263"></a>                                       #  the log file for the IDPP run.
+<a id="__codelineno-9-264" name="__codelineno-9-264" href="#__codelineno-9-264"></a>   IDPP_Quatern                  true  # Whether quaternions should be used in the
+<a id="__codelineno-9-265" name="__codelineno-9-265" href="#__codelineno-9-265"></a>                                       #  IDPP optimization
+<a id="__codelineno-9-266" name="__codelineno-9-266" href="#__codelineno-9-266"></a>  # Interpolation scheme between the endpoint images to use for the pairwise atom
+<a id="__codelineno-9-267" name="__codelineno-9-267" href="#__codelineno-9-267"></a>  # distances to obtain the ideal distances. Bilinear identifies bonded atoms in
+<a id="__codelineno-9-268" name="__codelineno-9-268" href="#__codelineno-9-268"></a>  # one endpoint structure that are not bonded in the other and leads to a smaller
+<a id="__codelineno-9-269" name="__codelineno-9-269" href="#__codelineno-9-269"></a>  # change in the bond distance in the bonded region than in the non-bonded one.
+<a id="__codelineno-9-270" name="__codelineno-9-270" href="#__codelineno-9-270"></a>   IDPP_Dist_Interpolation             # Linear (default)
+<a id="__codelineno-9-271" name="__codelineno-9-271" href="#__codelineno-9-271"></a>                                       # Bilinear
+<a id="__codelineno-9-272" name="__codelineno-9-272" href="#__codelineno-9-272"></a>   IDPP_Bilinear_Partition       0.5   # Path position at which to join the two
+<a id="__codelineno-9-273" name="__codelineno-9-273" href="#__codelineno-9-273"></a>                                       # linear distance interpolations. The 
+<a id="__codelineno-9-274" name="__codelineno-9-274" href="#__codelineno-9-274"></a>                                       # default corresponds to the midpoint 
+<a id="__codelineno-9-275" name="__codelineno-9-275" href="#__codelineno-9-275"></a>                                       # of the path.
+<a id="__codelineno-9-276" name="__codelineno-9-276" href="#__codelineno-9-276"></a>   SIDPP                         false # Whether the IDPP optimization should use a
+<a id="__codelineno-9-277" name="__codelineno-9-277" href="#__codelineno-9-277"></a>                                       # Cartesian linear interpolation initial
+<a id="__codelineno-9-278" name="__codelineno-9-278" href="#__codelineno-9-278"></a>                                       # guess or sequentially add images to the
+<a id="__codelineno-9-279" name="__codelineno-9-279" href="#__codelineno-9-279"></a>                                       # path
+<a id="__codelineno-9-280" name="__codelineno-9-280" href="#__codelineno-9-280"></a>   SIDPP_Tol_MaxF                0.01  # Tolerance on the maximum component of the
+<a id="__codelineno-9-281" name="__codelineno-9-281" href="#__codelineno-9-281"></a>                                       #  atomic force perpendicular to the path
+<a id="__codelineno-9-282" name="__codelineno-9-282" href="#__codelineno-9-282"></a>                                       #  acting on the images closest to the 
+<a id="__codelineno-9-283" name="__codelineno-9-283" href="#__codelineno-9-283"></a>                                       #  center of the path. This setting defines 
+<a id="__codelineno-9-284" name="__codelineno-9-284" href="#__codelineno-9-284"></a>                                       #  when new images are added to the path
+<a id="__codelineno-9-285" name="__codelineno-9-285" href="#__codelineno-9-285"></a>   SIDPP_Reparam                 true  # Whether to reparameterize the path once
+<a id="__codelineno-9-286" name="__codelineno-9-286" href="#__codelineno-9-286"></a>                                       #  after all images have been added to it
+<a id="__codelineno-9-287" name="__codelineno-9-287" href="#__codelineno-9-287"></a>                                       #  (uses Reparam_type setting) before the
+<a id="__codelineno-9-288" name="__codelineno-9-288" href="#__codelineno-9-288"></a>                                       #  final IDPP optimization of the full path
+<a id="__codelineno-9-289" name="__codelineno-9-289" href="#__codelineno-9-289"></a>   SIDPP_Energy_Weighted_Tangent false # Whether to use an energy weight in the
+<a id="__codelineno-9-290" name="__codelineno-9-290" href="#__codelineno-9-290"></a>                                       #  tangent definition of the images closest
+<a id="__codelineno-9-291" name="__codelineno-9-291" href="#__codelineno-9-291"></a>                                       #  to the center of the path
+<a id="__codelineno-9-292" name="__codelineno-9-292" href="#__codelineno-9-292"></a>   SIDPP_Even_NIm                true  # Whether to perform S-IDPP with one image
+<a id="__codelineno-9-293" name="__codelineno-9-293" href="#__codelineno-9-293"></a>                                       #  less than requested until all images
+<a id="__codelineno-9-294" name="__codelineno-9-294" href="#__codelineno-9-294"></a>                                       #  have been added to the path and then
+<a id="__codelineno-9-295" name="__codelineno-9-295" href="#__codelineno-9-295"></a>                                       #  add the last image afterwards. This
+<a id="__codelineno-9-296" name="__codelineno-9-296" href="#__codelineno-9-296"></a>                                       #  setting increases robustness of the
+<a id="__codelineno-9-297" name="__codelineno-9-297" href="#__codelineno-9-297"></a>                                       #  method since no image is placed in the
+<a id="__codelineno-9-298" name="__codelineno-9-298" href="#__codelineno-9-298"></a>                                       #  center of the path during image addition
+<a id="__codelineno-9-299" name="__codelineno-9-299" href="#__codelineno-9-299"></a>   SIDPP_Double_NIm              false # Whether to perform S-IDPP with twice the
+<a id="__codelineno-9-300" name="__codelineno-9-300" href="#__codelineno-9-300"></a>                                       #  amount of images and then remove half of
+<a id="__codelineno-9-301" name="__codelineno-9-301" href="#__codelineno-9-301"></a>                                       #  them automatically. This setting
+<a id="__codelineno-9-302" name="__codelineno-9-302" href="#__codelineno-9-302"></a>                                       #  increases robustness of the method for
+<a id="__codelineno-9-303" name="__codelineno-9-303" href="#__codelineno-9-303"></a>                                       #  systems involving very heavy rotations of
+<a id="__codelineno-9-304" name="__codelineno-9-304" href="#__codelineno-9-304"></a>                                       #  large groups
+<a id="__codelineno-9-305" name="__codelineno-9-305" href="#__codelineno-9-305"></a>   SIDPP_Ideal_Springconst       false # Whether the spring constant between the
+<a id="__codelineno-9-306" name="__codelineno-9-306" href="#__codelineno-9-306"></a>                                       #  images closest to the center of the path
+<a id="__codelineno-9-307" name="__codelineno-9-307" href="#__codelineno-9-307"></a>                                       #  should be scaled according to the ratio
+<a id="__codelineno-9-308" name="__codelineno-9-308" href="#__codelineno-9-308"></a>                                       #  of the number of images that have been
+<a id="__codelineno-9-309" name="__codelineno-9-309" href="#__codelineno-9-309"></a>                                       #  placed on the path already and the
+<a id="__codelineno-9-310" name="__codelineno-9-310" href="#__codelineno-9-310"></a>                                       #  requested number of images. This is a
+<a id="__codelineno-9-311" name="__codelineno-9-311" href="#__codelineno-9-311"></a>                                       #  more aggressive setting pulling the
+<a id="__codelineno-9-312" name="__codelineno-9-312" href="#__codelineno-9-312"></a>                                       #  images closest to the center of the path
+<a id="__codelineno-9-313" name="__codelineno-9-313" href="#__codelineno-9-313"></a>                                       #  together more.
+<a id="__codelineno-9-314" name="__codelineno-9-314" href="#__codelineno-9-314"></a>
+<a id="__codelineno-9-315" name="__codelineno-9-315" href="#__codelineno-9-315"></a>   SIDPP_HyperSearch             true  # Check connectivity of initial path
+<a id="__codelineno-9-316" name="__codelineno-9-316" href="#__codelineno-9-316"></a>                                       #  and perform hypersearch for S-IDPP
+<a id="__codelineno-9-317" name="__codelineno-9-317" href="#__codelineno-9-317"></a>                                       #  initial path with minimal
+<a id="__codelineno-9-318" name="__codelineno-9-318" href="#__codelineno-9-318"></a>                                       #  unnecessary connectivity changes?
+<a id="__codelineno-9-319" name="__codelineno-9-319" href="#__codelineno-9-319"></a>
+<a id="__codelineno-9-320" name="__codelineno-9-320" href="#__codelineno-9-320"></a>   SIDPP_HyperSearch_StrictConnectivity
+<a id="__codelineno-9-321" name="__codelineno-9-321" href="#__codelineno-9-321"></a>                                 false # Abort if no initial path with no
+<a id="__codelineno-9-322" name="__codelineno-9-322" href="#__codelineno-9-322"></a>                                       #  unnecessary connectivity changes
+<a id="__codelineno-9-323" name="__codelineno-9-323" href="#__codelineno-9-323"></a>                                       #  is found? Otherwise, use the one
+<a id="__codelineno-9-324" name="__codelineno-9-324" href="#__codelineno-9-324"></a>                                       #  with the fewest
+<a id="__codelineno-9-325" name="__codelineno-9-325" href="#__codelineno-9-325"></a>
+<a id="__codelineno-9-326" name="__codelineno-9-326" href="#__codelineno-9-326"></a> # Extra Output options   
+<a id="__codelineno-9-327" name="__codelineno-9-327" href="#__codelineno-9-327"></a>   Monitor_Internals # Up to three internal coordinates can be defined 
+<a id="__codelineno-9-328" name="__codelineno-9-328" href="#__codelineno-9-328"></a>      {B 0 1}        # for which the values are printed during the NEB run.
+<a id="__codelineno-9-329" name="__codelineno-9-329" href="#__codelineno-9-329"></a>      {B 1 5}        #  Possible are (B)onds, (A)ngles, (D)ihedrals and (I)mpropers
+<a id="__codelineno-9-330" name="__codelineno-9-330" href="#__codelineno-9-330"></a>   end 
+<a id="__codelineno-9-331" name="__codelineno-9-331" href="#__codelineno-9-331"></a> end
+</code></pre></div>
+<p>输出文件：</p>
+<ul>
+<li>
+<p>构型和轨迹文件：</p>
+<ul>
+<li>
+<p>basename_initial_path_trj.xyz：NEB 运行开始时以及在反应物和产物态之间 RMSD 最小化之后生成的初始路径。</p>
+</li>
+<li>
+<p>basename_MEP_trj.xyz：最终收敛的 MEP 轨迹。</p>
+</li>
+<li>
+<p>basename_MEP_ALL_trj.xyz：NEB 优化每一步的每个映像构型都追加到该文件。</p>
+</li>
+<li>
+<p>basename_trj.xyz：TS 优化的轨迹。</p>
+</li>
+<li>
+<p>basename_MEP.allxyz：重启文件，包含 NEB 或 NEB-CI 迭代最后一次迭代中每个映像的构型。</p>
+</li>
+<li>
+<p>basename_NEB-CI_converged.xyz：成功 NEB-CI 计算后爬坡映像的构型。</p>
+</li>
+<li>
+<p>basename_NEB-HEI_converged.xyz：成功 NEB 计算后最高能量映像的构型。</p>
+</li>
+<li>
+<p>basename.xyz：用 TS 优化得到的优化后鞍点构型。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>日志文件：</p>
+<ul>
+<li>
+<p>basename.interp：NEB/NEB-CI 优化期间每次迭代路径的插值能量剖面。</p>
+</li>
+<li>
+<p>basename.interp.final：NEB/NEB-CI 优化收敛路径的能量剖面。</p>
+</li>
+<li>
+<p>basename.log：包含关于运行的基本信息（例如能量、力和步长）的一般日志文件。</p>
+</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../irc/" class="md-footer__link md-footer__link--prev" aria-label="上一页: IRC">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                IRC
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../frequencies/" class="md-footer__link md-footer__link--next" aria-label="下一页: 频率">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                频率
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "toc.follow"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../../../javascripts/mathjax.js"></script>
+      
+        <script src="../../../../../javascripts/mathjax/tex-mml-chtml.js"></script>
+      
+        <script src="../../../../../javascripts/math-instant.js"></script>
+      
+        <script src="../../../../../javascripts/fast-mol-viewer.iife.js"></script>
+      
+        <script src="../../../../../javascripts/mol-embed.js"></script>
+      
+        <script src="../../../../../javascripts/tabs-pin.js"></script>
+      
+    
+  </body>
+</html>

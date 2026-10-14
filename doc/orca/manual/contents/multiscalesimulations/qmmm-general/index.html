@@ -1,0 +1,6863 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ORCA 量子化学教程 / Quantum chemistry tutorials">
+      
+      
+      
+      
+        <link rel="prev" href="../index_multiscalesimulations/">
+      
+      
+        <link rel="next" href="../qmmm-molecules/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../../../zh/manual/contents/multiscalesimulations/qmmm-general/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>QM/MM general - ORCA 6.1 Tutorials</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../../stylesheets/mol-embed.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#overview-on-orcas-multiscale-implementation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="ORCA 6.1 Tutorials" class="md-header__button md-logo" aria-label="ORCA 6.1 Tutorials" data-md-component="logo">
+      
+  <img src="../../../../assets/fastmol-logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ORCA 6.1 Tutorials
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              QM/MM general
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../zh/manual/contents/multiscalesimulations/qmmm-general/" hreflang="zh" class="md-select__link">
+              中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../first_steps/howtocite/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../" class="md-tabs__link">
+          
+  
+  
+  Manual
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../bib/" class="md-tabs__link">
+          
+  
+  
+  Appendix
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="ORCA 6.1 Tutorials" class="md-nav__button md-logo" aria-label="ORCA 6.1 Tutorials" data-md-component="logo">
+      
+  <img src="../../../../assets/fastmol-logo.svg" alt="logo">
+
+    </a>
+    ORCA 6.1 Tutorials
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First steps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    First steps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/howtocite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to Cite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installing ORCA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/first_calc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello water!
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/input_output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input and Output
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/parallel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running in Parallel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Graphical User Interfaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/trouble_install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Solving common issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Workflows
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/compound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound Jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/extrapol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extrapolation Techniques
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/extopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    External Methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/opi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ORCA Python Interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Properties
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Properties
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/single_point/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single point energies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/geoopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/freq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibrational frequencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/thermo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thermodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/cpcm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implicit Solvation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/solvator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explicit Solvation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/goat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conformer Search (GOAT)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/relativistic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relativistic corrections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/disp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dispersion corrections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/bonds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bond Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/led/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/fod/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FOD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/charges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Charge Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/esp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ESP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/corren/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Correlated Energies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reactivity
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reactivity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/nebts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/tsopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transition State Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/tsconf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transition State Conformers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/irc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IRC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/actibar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accurate energy barriers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/KIE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KIE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/FUKUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fukui functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DOCKER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectroscopy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Spectroscopy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/IR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Infrared and Raman
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/UVVis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UV/Vis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/ECD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/vcd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VCD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/NMR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NMR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/EPR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/SOC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spin-Orbit Coupling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Multiscale
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/XTB ONIOM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/basics-otheroniom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ONIOM beyond QM/XTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/oniom-nebts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/ionic_crystal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ionic-Crystal-QM/MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/fragmentator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fragmentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Manual
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Manual
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Suggested Topics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Preface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Preface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/foreword/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foreword
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/changes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/howtocite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Howtocite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/howtousethismanual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Howtousethismanual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Quick Start
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/index_quickstartguide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/hellowater/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello water
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/recommendations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Essential Elements
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Essential Elements
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/index_essentialelements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Essential Calculation Elements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/input/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/coordinates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coordinates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/parallel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parallel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/scf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/initialguess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Initial guess
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/basisset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basis sets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/RI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/solvationmodels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Solvation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/relativistic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relativistic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../essentialelements/symmetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Symmetry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Chemistries
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Model Chemistries
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/index_modelchemistries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Chemistries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/hartreefock/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hartree-Fock
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/DensityFunctionalTheory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DFT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/MP2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MP2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/3cmethods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3c methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/dispersioncorrections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dispersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/CASSCF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CASSCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/NEVPT2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEVPT2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mrci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MRCI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mdci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DLPNO methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/semiempirical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Semiempirical
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecular mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structure & Reactivity
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Structure & Reactivity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/index_structurereactivity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structure and Reactivity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimizations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations_TS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transition states
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations_scans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scans
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/irc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IRC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/neb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/frequencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frequencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/thermochemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thermochemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/solvator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SOLVATOR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/goat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GOAT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DOCKER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/mecp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MECP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/conicalintersections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conical intersections
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectroscopy & Properties
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Spectroscopy & Properties
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/index_spectroscopyproperties/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectroscopy and Properties
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/vibrations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibrations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/excitedstates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Excited states
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/tddft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TD-DFT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/esd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UV/Vis & ESD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/nmr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NMR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/epr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/led/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/nbo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NBO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/spinorbit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spin-orbit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/magnx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Magnetic properties
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Multiscale
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index_multiscalesimulations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiscale Simulations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM general
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM general
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#combining-multiscale-features-with-other-orca-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Combining Multiscale Features with other ORCA Features
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#required-settings-for-a-multiscale-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required Settings for a Multiscale Simulation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qm-and-active-region-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QM and Active Region Definition
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="QM and Active Region Definition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#explicit-definition-of-qm-and-active-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit Definition of QM and Active Region
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automated-definition-of-qm-and-active-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automated Definition of QM and Active Region
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#definition-of-qm-and-active-region-via-pdb-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Definition of QM and Active Region via pdb file
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#active-atoms-in-combination-with-optimization-frequency-calculation-md" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Active Atoms in Combination with Optimization, Frequency Calculation, MD
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Active Atoms in Combination with Optimization, Frequency Calculation, MD">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#optimization-in-redundant-internal-coordinates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimization in redundant internal coordinates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimization-with-the-cartesian-l-bfgs-minimizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimization with the Cartesian L-BFGS Minimizer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frequency-calculation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frequency Calculation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nudged-elastic-band-calculations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nudged Elastic Band Calculations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#molecular-dynamics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Molecular Dynamics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boundary-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boundary Region
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Boundary Region">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#link-atoms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Link Atoms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bonded-interactions-at-the-qm-mm-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bonded Interactions at the QM-MM Boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#charge-alteration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Charge Alteration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#embedding-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Embedding Types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-keywords" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional Keywords
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../qmmm-molecules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM molecules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../qmmm-crystal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Crystal QM/MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecular Dynamics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Molecular Dynamics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../moleculardynamics/index_moleculardynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Molecular Dynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../moleculardynamics/moldyn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_10" id="__nav_3_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Workflows
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/index_workflowsautomatization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows and Automatization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/compound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/compound_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/orcapythoninterface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_11" id="__nav_3_11_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Utilities
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/index_utilitiesvisualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities and Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/index_orcaarchitecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture of ORCA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_13" id="__nav_3_13_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/public/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Public
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bibliography/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bibliography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../bib/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bibliography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../genindex/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#combining-multiscale-features-with-other-orca-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Combining Multiscale Features with other ORCA Features
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#required-settings-for-a-multiscale-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required Settings for a Multiscale Simulation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qm-and-active-region-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QM and Active Region Definition
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="QM and Active Region Definition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#explicit-definition-of-qm-and-active-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit Definition of QM and Active Region
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automated-definition-of-qm-and-active-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automated Definition of QM and Active Region
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#definition-of-qm-and-active-region-via-pdb-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Definition of QM and Active Region via pdb file
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#active-atoms-in-combination-with-optimization-frequency-calculation-md" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Active Atoms in Combination with Optimization, Frequency Calculation, MD
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Active Atoms in Combination with Optimization, Frequency Calculation, MD">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#optimization-in-redundant-internal-coordinates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimization in redundant internal coordinates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimization-with-the-cartesian-l-bfgs-minimizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimization with the Cartesian L-BFGS Minimizer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frequency-calculation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frequency Calculation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nudged-elastic-band-calculations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nudged Elastic Band Calculations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#molecular-dynamics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Molecular Dynamics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boundary-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boundary Region
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Boundary Region">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#link-atoms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Link Atoms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bonded-interactions-at-the-qm-mm-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bonded Interactions at the QM-MM Boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#charge-alteration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Charge Alteration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#embedding-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Embedding Types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-keywords" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional Keywords
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<p><a id="sec:multiscalesimulations.qmmm.orca"></a></p>
+<h1 id="overview-on-orcas-multiscale-implementation">Overview on ORCA's Multiscale Implementation<a class="headerlink" href="#overview-on-orcas-multiscale-implementation" title="Permanent link">&para;</a></h1>
+<p>ORCA features five primary methods suitable for diverse applications such as 
+proteins, DNA, large molecules, explicit solvation, and crystalline solids:</p>
+<ul>
+<li>
+<p><a href="../qmmm-molecules/#sec:multiscalesimulations.add_qmmm">Additive QM/MM</a> for proteins and DNA/RNA.</p>
+</li>
+<li>
+<p><a href="../qmmm-molecules/#sec:multiscalesimulations.oniom2">QM1/QM2</a> (2-layered ONIOM) for small proteins, RNA, large molecules and explicit solvation.</p>
+</li>
+<li>
+<p><a href="../qmmm-molecules/#sec:multiscalesimulations.oniom3">QM1/QM2/MM</a> (3-layered ONIOM) for proteins and DNA/RNA.</p>
+</li>
+<li>
+<p><a href="../qmmm-crystal/#sec:multiscalesimulations.mol-cryst-qmmm">MOL-CRYSTAL-QMMM</a> for molecular crystals.</p>
+</li>
+<li>
+<p><a href="../qmmm-crystal/#sec:multiscalesimulations.ionic-cryst-qmmm">IONIC-CRYSTAL-QMMM</a> for semiconductors and insulators.</p>
+</li>
+</ul>
+<p>All methods integrate seamlessly with other ORCA modules, simplifying the preparation and execution of multiscale calculations.</p>
+<p>The multiscale features are optimally connected to all other modules and
+tools available in ORCA  allowing the user to handle multiscale
+calculations from a QM-centric perspective in a simple and efficient
+way, with a focus on simplifying the process to prepare, set up and run
+multiscale calculations. Since version 6.1 ORCA provides an automated tool
+for setting up QM and active regions, which is described <a href="#sec:multiscalesimulations.qmmm-regions-automated">here</a>.</p>
+<p>From the input side all methods share a common set of concepts and
+keywords, which will be outlined in this section. In
+subsequent sections the different methods are
+described and further input options are discussed.</p>
+<h2 id="combining-multiscale-features-with-other-orca-features">Combining Multiscale Features with other ORCA Features<a class="headerlink" href="#combining-multiscale-features-with-other-orca-features" title="Permanent link">&para;</a></h2>
+<p>The multiscale features can be used together with all other possible
+ORCA methods:</p>
+<ul>
+<li>
+<p><strong>Single Point Calculations</strong>: Use all kinds of available electronic structure methods as QM
+    method.</p>
+</li>
+<li>
+<p><strong>Optimization</strong>: Use all kinds of <a href="../../structurereactivity/optimizations/#sec:structurereactivity.optimization">geometry optimizations</a> 
+    with all kinds of
+    constraints, TS optimization, relaxed surface scans, and the ScanTS
+    feature. Use the L-Opt and L-OptH features including the combination
+    of all kinds of fragment optimizations (fix fragments, relax
+    fragments, relax only specific elements in fragments, treat a
+    fragment as a rigid body).</p>
+</li>
+<li>
+<p><strong>Transition States and Minimum Energy Paths</strong>: Use all kinds of <a href="../../structurereactivity/neb/#sec:structurereactivity.optimization.neb">Nudged-Elastic Band calculations</a> Nudged-Elastic Band calculations (Fast-NEB-TS, NEB,
+    NEB-CI, NEB-TS, including their ZOOM variants) and Intrinsic
+    Reaction Coordinate calculations. (not implemented for
+    <code>MOL-CRYSTAL-QMMM</code> and <code>IONIC-CRYSTAL-QMMM</code>)</p>
+</li>
+<li>
+<p><strong>Conformational Searches</strong>: Conformational Searches can be run with ORCA's <a href="../../structurereactivity/goat/#sec:structurereactivity.GOAT">GOAT</a> module.</p>
+</li>
+<li>
+<p><strong>Frequency Calculations</strong>: Use regular <a href="../../structurereactivity/frequencies/#sec:structurereactivity.frequencies">frequency calculations</a>. If required, ORCA automatically
+    switches on the <a href="../../structurereactivity/optimizations_TS/#sec:structurereactivity.geomopt.partialhess">geomopt.partialhess</a>
+    (PHVA) <a href="../../../bibliography/">li2002theor</a> calculation. (not tested for <code>IONIC-CRYSTAL-QMMM</code>)</p>
+</li>
+<li>
+<p><strong>Molecular Dynamics</strong>: Use the <a href="../../moleculardynamics/moldyn/#sec:moldyn">Molecular Dynamics</a> (MD) module for Born-Oppenheimer MD
+    (BOMD) with QM/MM in combination with all kinds of electronic
+    structure methods. (not implemented for <code>MOL-CRYSTAL-QMMM</code> and
+    <code>IONIC-CRYSTAL-QMMM</code>)</p>
+</li>
+<li>
+<p><strong>Property Calculation</strong>: All kinds of regular property calculations are available. For
+    electrostatic embedding the electron density is automatically
+    perturbed by the surrounding point charges.</p>
+</li>
+<li>
+<p><strong>Excited State Calculations</strong>: Use all kinds of <a href="../../spectroscopyproperties/tddft/#sec:spectroscopyproperties.tddft">excited state calculations</a> (TD-DFT, EOM, single
+    point calculations, optimizations, frequencies).</p>
+</li>
+</ul>
+<h2 id="required-settings-for-a-multiscale-simulation">Required Settings for a Multiscale Simulation<a class="headerlink" href="#required-settings-for-a-multiscale-simulation" title="Permanent link">&para;</a></h2>
+<p>In the following, the basic concepts are introduced.</p>
+<ul>
+<li><strong>QM atoms</strong>: The user can define the QM region either directly, or via flags in a
+    pdb file. See <a href="#sec:multiscalesimulations.qmmm-regions">multiscalesimulations.qmmm-regions</a>. For an automated buildup </li>
+<li>
+<p>of the QM region with miminal user input see <a href="#sec:multiscalesimulations.qmmm-regions-automated">here</a>.</p>
+</li>
+<li>
+<p><strong>Active Atoms</strong>: The user can choose an active region, e.g. for geometry
+    optimizations the atoms that are optimized, for a frequency
+    calculation the atoms that are allowed to vibrate for the PHVA, or
+    for an MD run the atoms that are propagated. More background is 
+    provided <a href="#sec:multiscalesimulations.qmmm-active">here</a>.
+    Input options on how to define the active region in an <a href="#sec:multiscalesimulations.qmmm-regions-automated">automated</a> way 
+    or in an <a href="#sec:multiscalesimulations.qmmm-regions-explicit">explicit</a> way are provided below. </p>
+</li>
+</ul>
+<p>A minimal user input for an ONIOM2 type calculation looks like this.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>!QM/XTB
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>%qmmm
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  QMCoreAtoms {7 12} end
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  ActiveCoreAtoms {7 12} end
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>end
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>*xyz 0 1
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>...
+</code></pre></div>
+<p>Other aspects that often need to be addressed for multiscale simulations are treated
+automatically and with reasonable defaults- which can, of course, be controlled by the user.
+The <strong>boundary treatment</strong>, i.e. bonds that have to be cut between QM and MM region, and 
+the treatment of overpolarization is covered in the paragraph <a href="#sec:multiscalesimulations.qmmm-boundary">multiscalesimulations.qmmm-boundary</a>.
+Available <strong>embedding types</strong> are discussed in section <a href="#sec:multiscalesimulations.qmmm-embedding">multiscalesimulations.qmmm-embedding</a>.
+<strong>QM2 atoms</strong>, which define the low-level region in 3-layer ONIOM calculations, are discussed in 
+section <a href="../qmmm-molecules/#sec:multiscalesimulations.oniom-qm2atoms">multiscalesimulations.oniom-qm2atoms</a>.</p>
+<p>Detailed information on the different available input and runtime
+options and additionally available keywords (see
+<a href="#sec:multiscalesimulations.qmmm-keywords">multiscalesimulations.qmmm-keywords</a>) are given below.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In order to check the multiscale setup done by ORCA, without the need to run the entire simulation, you can 
+invoke the keyword <code>! QMMMSetup</code>. 
+This makes sure that ORCA stops after the multiscale preparation. The information on the QMMM setup is 
+printed in the output, and 
+a file with the QM region including link atoms is stored (<code>basename_QM.xyz</code>).</p>
+</div>
+<p><a id="sec:multiscalesimulations.qmmm-regions"></a></p>
+<h2 id="qm-and-active-region-definition">QM and Active Region Definition<a class="headerlink" href="#qm-and-active-region-definition" title="Permanent link">&para;</a></h2>
+<p>QM and active region atoms can be defined in three different ways: </p>
+<ul>
+<li>Explicit definition of all atom indices.</li>
+<li>Defining the most important atoms (the <code>core</code> atoms) and ORCA determines the full QM and active region.</li>
+<li>Definition in a pdb file.</li>
+</ul>
+<p><a id="sec:multiscalesimulations.qmmm-regions-explicit"></a></p>
+<h3 id="explicit-definition-of-qm-and-active-region">Explicit Definition of QM and Active Region<a class="headerlink" href="#explicit-definition-of-qm-and-active-region" title="Permanent link">&para;</a></h3>
+<p>The QM and active region can be directly defined in the input as shown in the following example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>%qmmm                  
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a> QMAtoms {0 1 2 27 28} end      # lists of atoms (counting starts from 0) or
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a> ActiveAtoms {0:5 16 21:30} end # ranges of atoms (range defined via start:end)
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>end        
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>*pdbfile 0 1 ubq.pdb
+</code></pre></div>
+<p><a id="sec:multiscalesimulations.qmmm-regions-automated"></a></p>
+<h3 id="automated-definition-of-qm-and-active-region">Automated Definition of QM and Active Region<a class="headerlink" href="#automated-definition-of-qm-and-active-region" title="Permanent link">&para;</a></h3>
+<p>A standard approach in the QMMM scientific literature for defining QM and active regions involves:</p>
+<h4 id="identifying-important-atoms-or-functional-groups">Identifying Important Atoms or Functional Groups<a class="headerlink" href="#identifying-important-atoms-or-functional-groups" title="Permanent link">&para;</a></h4>
+<p>Examples include:
+- Atoms involved directly in bond formation or breakage.
+- Functional groups essential for spectroscopy.
+- Metal ions central to catalytic activities.
+- Entire molecules or ligands binding to proteins.
+- <em>Additional criteria as necessary.</em></p>
+<h4 id="including-surrounding-atoms">Including Surrounding Atoms<a class="headerlink" href="#including-surrounding-atoms" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Include all atoms within a defined spatial distance around these important atoms.</li>
+</ul>
+<h4 id="applying-rules-to-avoid-artifacts">Applying Rules to Avoid Artifacts<a class="headerlink" href="#applying-rules-to-avoid-artifacts" title="Permanent link">&para;</a></h4>
+<p>Specifically ensure that:
+- The boundary between QM and MM regions cuts through a non-polarized single bond.
+- The topological distance between two QM-MM cuts (the MM gap) is sufficiently large, 
+- preventing overly close placement of link atoms.</p>
+<hr />
+<h4 id="automated-procedure-in-orca-61">Automated procedure in ORCA 6.1<a class="headerlink" href="#automated-procedure-in-orca-61" title="Permanent link">&para;</a></h4>
+<p>In ORCA 6.1, an automatic scheme has been developed to manage this multistep process. 
+Users specify only key atoms (<strong>core</strong> atoms) that define the core part of the QM and active regions.</p>
+<p>ORCA requires:
+- Knowledge of the system's <strong>topology</strong>.
+- Information about <strong>functional groups</strong> within the system.</p>
+<p>Using the newly introduced <a href="../../essentialelements/fragmentation/#sec:essentialelements.fragmentation">fragmentation procedure</a>, ORCA 
+automatically determines this information at the start of the calculation. Functional groups are 
+stored as separate fragments based on the user-selected fragmentation procedure.</p>
+<h4 id="steps-of-the-automated-procedure-illustrated-for-qm-region-analogous-steps-apply-for-active-regions">Steps of the Automated Procedure (Illustrated for QM Region; analogous steps apply for active regions)<a class="headerlink" href="#steps-of-the-automated-procedure-illustrated-for-qm-region-analogous-steps-apply-for-active-regions" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Accept user-defined input <code>QMCoreAtoms</code>.</li>
+<li>If <code>QMCore_Type</code> is <code>Fragments</code>, extend <code>QMCoreAtoms</code> to entire fragments, producing an updated <code>QMCoreAtoms</code> set.</li>
+<li>Determine all atoms within <code>QMCore_Extension</code> Å around <code>QMCoreAtoms</code>, yielding <code>QMAtoms</code>.</li>
+<li>If <code>QMCoreExtension_Type</code> is <code>Fragments</code>, extend <code>QMAtoms</code> to entire fragments, updating the set again.</li>
+<li>Include any explicitly user-defined atoms (<code>QMAtoms</code>) in the automatically generated set.</li>
+<li>If <code>CheckAutoFragForQMGaps</code> is <code>true</code>, verify no topologically close QM atoms are separated by fewer MM atoms than <code>QMGap_MinLength</code>. If so, add necessary connecting fragments to <code>QMAtoms</code>.</li>
+<li>If <code>CheckAutoFragBoundaries</code> is <code>true</code>, ensure that QM-MM boundaries do not cut polarized or problematic bonds.</li>
+<li>Repeat steps 6 and 7 until no further fragments need addition.</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can add the keyword <code>QMMMSetup</code> to your input. This allows you to check the autogenerated QM region (<code>basename_QM.xyz</code>) and verify the charge and multiplicity required for the actual multiscale calculation.
+that is needed for the actual multiscale calculation.</p>
+</div>
+<p>The automated QM and active region setup can be defined in the input as shown in the following example:</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>! QM/XTB
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>! QMMMSetup # just do the preparation and stop
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>%qmmm
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a> QMCoreAtoms {2032} end
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a> ActiveCoreAtoms {2032} end
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a> frag
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>   FragProc NABackbone, NASideChains, FunctionalGroups, Extend, Connectivity
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a> end
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>end
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>*xyz 0 1
+</code></pre></div>
+<a id="fig:qmmm-autofrag_rna"></a>
+<img alt="qmmm-autofrag_rna" src="../../../../images/manual/qmmm-autofrag_rna.png" /></p>
+<p><em>QM region for QMCoreAtom 2032. Left is the QM region in ball-and-stick style as part of the full system in cartoon style, right is the QM region with link atoms.</em>
+In the above example, which is a ligand bound to RNA, we first define the fragments using 
+the <a href="../../essentialelements/fragmentation/#sec:essentialelements.fragmentation">fragmentator</a>) using RNA specific groups and functional groups (for the ligand), and then build the QM and active 
+region around the ligand (atom 2032 is an atom of the ligand).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>! QMMMSetup # just do the preparation and stop
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>! QMMM
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>%qmmm
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>  ORCAFFFilename &quot;reactant.ORCAFF.prms&quot;
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>  QMCoreAtoms {183 2745} end
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>  ActiveCoreAtoms {183 2745} end
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>  frag
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    FragProc SEQBACKBONE, AASCFINEGRAINED, FUNCTIONALGROUPS, EXTEND, Connectivity
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    UseTopology true
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    TopolFile &quot;reactant.ORCAFF.prms&quot;
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>  end
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>end
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>*pdbfile 0 1 reactant.pdb
+</code></pre></div>
+<p><a id="fig:qmmm-autofrag_prot"></a>
+<img alt="qmmm-autofrag_prot" src="../../../../images/manual/qmmm-autofrag_prot.png" /></p>
+<p><em>QM region for QMCoreAtoms 183 and 2745. Left is the QM region in ball-and-stick style as part of the full system in cartoon style, right is the QM region with link atoms.</em>
+In the above example, involving a covalent ligand bound within a protein active site, we first define the fragments using 
+the <a href="../../essentialelements/fragmentation/#sec:essentialelements.fragmentation">fragmentator</a>, specifying protein-specific groups and functional groups for 
+ligands and cofactors. We then construct the QM and active regions around the two critical atoms directly involved in 
+the covalent binding process: atom <code>183</code> from the Cys reside, and atom <code>2745</code> from the covalently binding ligand.</p>
+<p><a id="tab:multiscalesimulations.qmmm-autofrag_keywords"></a></p>
+<div class="admonition note">
+<p class="admonition-title">Options to automatically define the QM and active region.</p>
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Options</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>QMCOREATOMS</code></td>
+<td><code>{ints...}</code></td>
+<td>Defines the core atoms of the QM region. Single indices can be given as <code>int int</code>. Ranges of atom indices can be provided as <code>int:int</code>. All these can be combined.</td>
+</tr>
+<tr>
+<td><code>ACTIVECOREATOMS</code></td>
+<td><code>{ints}</code></td>
+<td>Defines the core atoms of the active region.</td>
+</tr>
+<tr>
+<td><code>Frag</code></td>
+<td>As defined <a href="../../essentialelements/fragmentation/#sec:essentialelements.fragmentation">here</a></td>
+<td></td>
+</tr>
+<tr>
+<td><code>QMCore_Type</code></td>
+<td><code>Fragments</code></td>
+<td>(Default) Take as QM core the atoms that the user defines plus all atoms of the fragments which they belong to.</td>
+</tr>
+<tr>
+<td></td>
+<td><code>Atoms</code></td>
+<td>Take as QM core only the atoms that the user defines.</td>
+</tr>
+<tr>
+<td><code>QMCoreExtension_Type</code></td>
+<td><code>Fragments</code></td>
+<td>(Default) Take as <code>QMAtoms</code> the atoms that belong to fragments which have at least one atom which has a distance of less than <code>QMCore_Extension</code> to any of the <code>QMCoreAtoms</code>.</td>
+</tr>
+<tr>
+<td></td>
+<td><code>Atoms</code></td>
+<td>Take as <code>QMAtoms</code> the atoms that have a distance of less than <code>QMCore_Extension</code> to any of the <code>QMCoreAtoms</code>.</td>
+</tr>
+<tr>
+<td><code>QMCore_Extension</code></td>
+<td><code>real</code></td>
+<td>Distance by how much the QM core is extended to yield <code>QMAtoms</code>. Default <code>3.</code></td>
+</tr>
+<tr>
+<td><code>CheckAutoFragForQMGaps</code></td>
+<td><code>true</code>/<code>false</code></td>
+<td>Check whether two QM atoms show a QM gap, i.e. which are topologically connected by more than <code>QMGap_MinLength</code> MM atoms and if so, add the connecting fragments to <code>QMAtoms</code>.</td>
+</tr>
+<tr>
+<td><code>QMGap_MinLength</code></td>
+<td><code>0</code> to <code>6</code></td>
+<td>Topological distance between two QM atoms which determines whether the connecting MM atoms are considered as a QM gap. Default <code>3</code></td>
+</tr>
+<tr>
+<td><code>CheckAutoFragBoundaries</code></td>
+<td><code>true</code>/<code>false</code></td>
+<td>Check whether a QM-MM bond is an unpolar single bond. If not, add the MM atom's fragment to <code>QMAtoms</code>.</td>
+</tr>
+<tr>
+<td><code>ActiveCore_Type</code></td>
+<td><code>Fragments</code></td>
+<td>(Default) Take as active core the atoms that the user defines plus all atoms of the fragments which they belong to.</td>
+</tr>
+<tr>
+<td></td>
+<td><code>Atoms</code></td>
+<td>Take as active core only the atoms that the user defines.</td>
+</tr>
+<tr>
+<td><code>ActiveCoreExtension_Type</code></td>
+<td><code>Fragments</code></td>
+<td>(Default) Take as <code>ActiveAtoms</code> the atoms that belong to fragments which have at least one atom which has a distance of less than <code>ActiveCore_Extension</code> to any of the <code>ActiveCoreAtoms</code>.</td>
+</tr>
+<tr>
+<td></td>
+<td><code>Atoms</code></td>
+<td>Take as <code>ActiveAtoms</code> the atoms that have a distance of less than <code>ActiveCore_Extension</code> to any of the <code>ActiveCoreAtoms</code>.</td>
+</tr>
+<tr>
+<td><code>ActiveCore_Extension</code></td>
+<td><code>real</code></td>
+<td>Distance by how much the active core is extended to yield <code>ActiveAtoms</code>. Default <code>5.</code></td>
+</tr>
+<tr>
+<td><code>CheckAutoFragForQMGaps_Active</code></td>
+<td><code>true</code>/<code>false</code></td>
+<td>Check whether two active atoms show a gap, i.e. they are topologically connected by more than <code>QMGap_MinLength</code> non-active atoms and if so, add the connecting fragments to <code>ActiveAtoms</code>.</td>
+</tr>
+<tr>
+<td><code>CheckAutoFragBoundaries_Active</code></td>
+<td><code>true</code>/<code>false</code></td>
+<td>Check whether an active-nonactive bond is an unpolar single bond. If not, add the non-active atom's fragment to <code>ActiveAtoms</code>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Automated setup can be combined with explicit definition of QM or active atoms via <code>QMAtoms</code> and <code>ActiveAtoms</code>.</p>
+</div>
+<p><a id="sec:multiscalesimulations.qmmm-regions-pdb"></a></p>
+<h3 id="definition-of-qm-and-active-region-via-pdb-file">Definition of QM and Active Region via pdb file<a class="headerlink" href="#definition-of-qm-and-active-region-via-pdb-file" title="Permanent link">&para;</a></h3>
+<p>The QM and active region can be defined in the pdb file as shown in the following example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>%qmmm
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a> Use_QM_InfoFromPDB true     # get the QMAtoms and ActiveAtoms definition from 
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a> Use_Active_InfoFromPDB true # the pdb file. The default for both is false.
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>                             # If InfoFromPDB is set to true, the QMAtoms or 
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>                             # ActiveAtoms input is ignored
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>end
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>*pdbfile 0 1 ubq.pdb
+</code></pre></div>
+<p>If <code>Use_QM_InfoFromPDB</code> or <code>Use_Active_InfoFromPDB</code> is set to true, a pdb file should be used for
+the structural input. QM atoms are defined via 1 in the occupancy
+column, MM atoms via 0. Active atoms are defined via 1 in the B-factor
+column, non-active atoms via 0.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>ubq.pdb:
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>...
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>ATOM    327  N   ASP A  21      29.599  18.599   9.828  0.00  0.00      P1   N
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>ATOM    328  HN  ASP A  21      29.168  19.310   9.279  0.00  0.00      P1   H
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>ATOM    329  CA  ASP A  21      30.796  19.083  10.566  0.00  1.00      P1   C
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>ATOM    330  HA  ASP A  21      31.577  18.340  10.448  0.00  1.00      P1   H
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>ATOM    331  CB  ASP A  21      31.155  20.515  10.048  2.00  1.00      P1   C
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>ATOM    332  HB1 ASP A  21      30.220  21.082   9.865  2.00  1.00      P1   H
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>ATOM    333  HB2 ASP A  21      31.754  21.064  10.801  2.00  1.00      P1   H
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>ATOM    334  CG  ASP A  21      31.923  20.436   8.755  1.00  1.00      P1   C
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>ATOM    335  OD1 ASP A  21      32.493  19.374   8.456  1.00  1.00      P1   O
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>ATOM    336  OD2 ASP A  21      31.838  21.402   7.968  1.00  1.00      P1   O
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>ATOM    337  C   ASP A  21      30.491  19.162  12.040  0.00  0.00      P1   C
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>ATOM    338  O   ASP A  21      29.367  19.523  12.441  0.00  0.00      P1   O
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>...
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Contrary to the hybrid36 standard of PDB files, ORCA writes
+non-standard pdb files as:</p>
+<ul>
+<li>
+<p>atoms 1-99,999 in decimal numbers</p>
+</li>
+<li>
+<p>atoms 100,000 and beyond in hexadecimal numbers, with atom 100,000
+    corresponding to index 186a0.</p>
+</li>
+</ul>
+<p>This ensures a unique mapping of indices. If you want to select an atom
+with an index in hexadecimal space (index larger than 100,000), convert
+the hexadecimal number into decimals when choosing this index in the
+ORCA input file. Note also, that in the pdb file, counting starts from
+1, while in ORCA counting starts from zero.</p>
+</div>
+<p><a id="sec:multiscalesimulations.qmmm-active"></a></p>
+<h2 id="active-atoms-in-combination-with-optimization-frequency-calculation-md">Active Atoms in Combination with Optimization, Frequency Calculation, MD<a class="headerlink" href="#active-atoms-in-combination-with-optimization-frequency-calculation-md" title="Permanent link">&para;</a></h2>
+<p>The systems of multiscale calculations can become quite large with tens
+and hundreds of thousands of atoms. In multiscale calculations the
+region of interest is often only a particular part of the system, and it
+is common practice to restrict the optimization to a small part of the
+system, which we call the active region = active part of the system. For 
+info on how to define the active region see <a href="#sec:multiscalesimulations.qmmm-regions">multiscalesimulations.qmmm-regions</a>.
+Usually this active
+part consists of hundreds of atoms, and is defined as the QM region plus
+a layer around the QM region. The same definition holds for frequency
+calculations, in particular since after optimization non-active atoms
+are not at stationary points, and a frequency calculation would lead to
+artifacts in such a scenario. MD calculations on systems with hundreds
+of thousands of atoms are not problematic, but there are applications
+where a separation in active and non-active parts can be important (e.g.
+a solute in a solvent droplet, with the outer shell of the solvent
+frozen).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If no active atoms are defined, the entire system is treated as active.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The active region definitions also apply to MM calculations, but
+have to be provided via the <code>%qmmm</code> block.</p>
+</div>
+<h3 id="optimization-in-redundant-internal-coordinates">Optimization in redundant internal coordinates<a class="headerlink" href="#optimization-in-redundant-internal-coordinates" title="Permanent link">&para;</a></h3>
+<p>In ORCA's QM/MM geometry optimization only the positions of the active
+atoms are optimized. The forces on these active atoms are nevertheless
+influenced by the interactions with the non-active surrounding atoms. In
+order to get a smooth optimization convergence for quasi-Newton
+optimization algorithms in internal coordinates, it is necessary that
+the Hessian values between the active atoms and the directly surrounding
+non-active atoms are available. For that reason the active atoms are
+extended by a shell of surrounding non-active atoms which are also
+included in the geometry optimization, but whose positions are
+constrained, see
+<a href="#fig:QMMM_ActiveRegion">fig:QMMM_ActiveRegion</a>. This shell of atoms can be
+automatically chosen by ORCA. There are three options available:</p>
+<p><a id="tab:multiscalesimulations.qmmm-activeatoms_extend"></a></p>
+<div class="admonition note">
+<p class="admonition-title">Options to extend the active region.</p>
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Options</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EXTENDACTIVEREGION</code></td>
+<td><code>DISTANCE</code></td>
+<td>(Default) The parameter <code>Dist_AtomsAroundOpt</code> controls which non-active atoms are included in the extension shell, i.e., non-active atoms that have a distance of less than the sum of their VDW radii plus <code>Dist_AtomsAroundOpt</code> are included.</td>
+</tr>
+<tr>
+<td></td>
+<td><code>COV_BONDS</code></td>
+<td>All (non-active) atoms that are covalently bonded to active atoms are included.</td>
+</tr>
+<tr>
+<td></td>
+<td><code>NO</code></td>
+<td>No non-active atoms are included.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The user can also provide the atoms for the extension shell manually.
+This will be discussed in section <a href="#sec:multiscalesimulations.qmmm-active-freq">multiscalesimulations.qmmm-active-freq</a>.</p>
+<p><a id="fig:QMMM_ActiveRegion"></a>
+<em>Active and non-active atoms. Additionally shown is the extension shell, 
+which consists of non-active atoms close in distance to the active atoms.
+The extension shell is used for optimization in internal coordinates and PHVA.</em></p>
+<p>The set of active atoms is called the 'activeRegion', and the set of
+active atoms plus the surrounding non-active atoms is called
+'activeRegionExt'. During geometry optimization the following
+trajectories are stored (which can be switched off):</p>
+<p><a id="tab:multiscalesimulations.qmmm-opt-trjfiles"></a></p>
+<div class="admonition note">
+<p class="admonition-title">Files containing trajectories during optimization.</p>
+<table>
+<thead>
+<tr>
+<th>Filename</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>basename_trj.xyz</code></td>
+<td>Entire QM/MM system</td>
+</tr>
+<tr>
+<td><code>basename.QMonly_trj.xyz</code></td>
+<td>Only QM region</td>
+</tr>
+<tr>
+<td><code>basename.activeRegion_trj.xyz</code></td>
+<td>Only active atoms</td>
+</tr>
+<tr>
+<td><code>basename.activeRegionExt_trj.xyz</code></td>
+<td>Active atoms plus extension</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The following files are stored containing the optimized structures - if
+requested:</p>
+<p><a id="tab:multiscalesimulations.qmmm-opt-files"></a></p>
+<div class="admonition note">
+<p class="admonition-title">Files containing optimized structures.</p>
+<table>
+<thead>
+<tr>
+<th>Filename</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>basename.pdb</code></td>
+<td>Optimized QM/MM system in pdb file format</td>
+</tr>
+<tr>
+<td><code>basename.xyz</code></td>
+<td>Optimized QM/MM system</td>
+</tr>
+<tr>
+<td><code>basename.QMonly.xyz</code></td>
+<td>Only QM region</td>
+</tr>
+<tr>
+<td><code>basename.activeRegion.xyz</code></td>
+<td>Only active atoms</td>
+</tr>
+<tr>
+<td><code>basename.activeRegionExt.xyz</code></td>
+<td>Active atoms plus extension</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a id="sec:multiscalesimulations.qmmm-lopt"></a></p>
+<h3 id="optimization-with-the-cartesian-l-bfgs-minimizer">Optimization with the Cartesian L-BFGS Minimizer<a class="headerlink" href="#optimization-with-the-cartesian-l-bfgs-minimizer" title="Permanent link">&para;</a></h3>
+<p>For very large active regions the quasi-Newton optimization in internal
+coordinates can become costly. It can be advantageous to use the
+<code>L-Opt</code> or <code>L-OptH</code> feature, see section
+<a href="../../structurereactivity/optimizations/#sec:structurereactivity.optimization.lbfgs">optimization.lbfgs</a>. 
+In the context of multiscale simulations it can also be useful to treat 
+parts of the system or full molecules of the system as rigid.
+E.g. you can optimize the hydrogen positions of the protein and water
+molecules, and at the same time relax non-standard molecules, for
+which no exact bonded parameters are available, as rigid bodies.
+For available options in that context see <a href="../../structurereactivity/optimizations/#sec:structurereactivity.optimization.rigidbody">optimization.rigidbody</a>. 
+An example is shown here:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>!QMMM L-OptH
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>%qmmm
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a> QMAtoms {22397:22423} end
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a> ORCAFFFilename &quot;DNA_hexamer.ORCAFF.prms&quot;
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>end
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>*pdbfile 0 1 DNA_ligand.pdb
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>%frag 
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a> Definition
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>  1 {22307:22396} end # cofactor
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>  2 {22397:22423} end # ligand
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a> end
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>end
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>%geom 
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a> RigidFrags {1 2} end # treat cofactor and ligand as individual rigid bodies
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>end
+</code></pre></div>
+<p><a id="sec:multiscalesimulations.qmmm-active-freq"></a></p>
+<h3 id="frequency-calculation">Frequency Calculation<a class="headerlink" href="#frequency-calculation" title="Permanent link">&para;</a></h3>
+<p>If all atoms are active, a regular frequency calculation is carried out
+when requesting <code>!NumFreq</code>. If there are also non-active atoms in the
+QM/MM system, the <a href="../../structurereactivity/optimizations_TS/#sec:structurereactivity.geomopt.partialhess">geomopt.partialhess</a> (PHVA) is
+automatically selected. Here, the PHVA is carried out for the above defined
+<code>activeRegionExt</code>, where the extension shell atoms are automatically used
+as 'frozen' atoms. Note that the analytic Hessian is not available due
+to the missing analytic second derivatives for the MM calculation. Note
+that in a new calculation after an optimization it might happen that the
+new automatically generated extended active region is different compared
+to the previous region before optimization. This means that when using a
+previously computed Hessian (e.g. at the end of an optimization or a
+NEB-TS run) the Hessian does not fit to the new extended active region.
+ORCA tries to solve this problem by fetching the information on the
+extended region from the <code>.hess</code> file. If that does not work (e.g. if you
+distort the geometry after the Hessian calculation) you should manually
+provide the list of atoms of the extended active region. This is done
+via the following keyword:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>%qmmm
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a> OptRegion_FixedAtoms {27 1288:1290 4400} end  # manually define the 
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>                                               # activeRegionExt atoms.
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>end
+</code></pre></div>
+<p>Note that ORCA did print the necessary information in the output of the
+calculation in which the Hessian was computed:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Fixed atoms used in optimizer          ... 27 1288 1289 1290 4400
+</code></pre></div>
+<p><a id="sec:multiscalesimulations.qmmm-neb"></a></p>
+<h3 id="nudged-elastic-band-calculations">Nudged Elastic Band Calculations<a class="headerlink" href="#nudged-elastic-band-calculations" title="Permanent link">&para;</a></h3>
+<p>NEB calculations
+(section <a href="../../structurereactivity/neb/#sec:structurereactivity.neb">structurereactivity.neb</a>) can be carried out in
+combination with the multiscale features in order to e.g. study enzyme
+catalysis. When automatically building the extension shell at the start
+of a Multiscale-NEB calculation, not only the coordinates of the main
+input structure ('reactant'), but also the atomic coordinates of the
+'product' and, if available, of the 'transition state guess' are used to
+determine the union of the extension shell of the active region. For
+large systems it is advised to use the active region feature for the NEB
+calculation. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The atomic positions of the non-active atoms of reactant and product and,
+if available, transition state guess, should be identical.</p>
+</div>
+<h3 id="molecular-dynamics">Molecular Dynamics<a class="headerlink" href="#molecular-dynamics" title="Permanent link">&para;</a></h3>
+<p>If there are active and non-active atoms in the multiscale system, only
+the active atoms are allowed to propagate in the MD run. If all atoms
+are active, all atoms are propagated. For more information on the output
+and trajectory options, see
+section <a href="#moldyn:sec_regions">moldyn:sec_regions</a>.</p>
+<p><a id="sec:multiscalesimulations.qmmm-boundary"></a></p>
+<h2 id="boundary-region">Boundary Region<a class="headerlink" href="#boundary-region" title="Permanent link">&para;</a></h2>
+<p>This section is important for the QM/MM, QM/QM2 and QM/QM2/MM methods.
+For the latter method two boundary regions are present (between QM and
+QM2 as well as between QM2 and MM region), and both can go through
+covalent bonds. In the following we will only discuss the concept for
+the boundary between QM and MM, but the same holds true for the other
+two boundaries.</p>
+<h3 id="link-atoms">Link Atoms<a class="headerlink" href="#link-atoms" title="Permanent link">&para;</a></h3>
+<p>ORCA automatically generates link atoms based on the information of the
+QM region and on the topology of the system (based on the <code>ORCAFF.prms</code>
+file). ORCA places link atoms on the bond between QM and MM atoms.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When defining the QM, QM2 and MM regions, make sure that you only
+cut through single bonds (not aromatic, double, triple bonds, etc.).</p>
+</div>
+<p>The distance between QM atom and link atom is determined via a <strong>bond length scaling
+factor</strong> (in relation to the QM-MM bond length) that is computed as the
+ratio of the equilibrium bond length between QM and hydrogen atom
+(<span class="arithmatex">\(d_{QM-H}\)</span>) and the equilibrium bond length between QM and MM atom
+(<span class="arithmatex">\(d_{QM-MM}\)</span>).</p>
+<p>For the <strong>equilibrium bond lengths to hydrogen</strong>, ORCA uses tabulated
+standard values for the most common atoms involved in boundary regions
+(C, N, O), which can be modified via keywords as defined further
+below. ORCA stores these values on-the-fly in a simple file
+(<code>basename.H_DIST.prms</code>). If necessary, the user can modify these values
+atom-specific or add others to the file and provide this file as input
+to ORCA (see also
+paragraph <a href="../../modelchemistries/mm/#sec:modelchemistries.mm-orcaforcefield-getHDist">modelchemistries.mm-orcaforcefield-getHDist</a>). For QM/QM2 and QM/QM2/MM
+methods the equilibrium bond lengths to hydrogen are explicitly
+calculated.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>%qmmm
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a># standard equilibrium bond lengths with hydrogen can be modified
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a> Dist_C_HLA 1.09        # d0_C-H
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a> Dist_O_HLA 0.98        # d0_O-H
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a> Dist_N_HLA 0.99        # d0_N-H 
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a># file can be provided which provides the used d0_X-H values specific to all atoms
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a> H_Dist_FileName &quot;QM_H_dist.txt&quot;
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>end
+</code></pre></div>
+<h3 id="bonded-interactions-at-the-qm-mm-boundary">Bonded Interactions at the QM-MM Boundary<a class="headerlink" href="#bonded-interactions-at-the-qm-mm-boundary" title="Permanent link">&para;</a></h3>
+<p>The MM bonded interactions within the QM region are neglected in the
+additive coupling scheme. However, at the boundary, it is advisable to
+use some specific bonded interactions which include QM atoms. By default
+ORCA neglects only those bonded interactions at the boundary, where only
+one MM atom is involved, i.e. all bonds of the type QM1-MM1, bends of
+the type QM2-QM1-MM1, and torsions of the type QM3-QM2-QM1-MM1. Other
+QM-MM mixed bonded interactions (with more than two MM atoms involved)
+are included. The user is allowed to include the described interactions,
+which is controlled via the following keywords:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>%qmmm
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a> DeleteLADoubleCounting true     # Neglect bends (QM2-QM1-MM1) and torsions 
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>                                 # (QM3-QM2-QM1-MM1). Default true. 
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a> DeleteLABondDoubleCounting true # Neglect bonds (QM1-MM1)
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>end
+</code></pre></div>
+<h3 id="charge-alteration">Charge Alteration<a class="headerlink" href="#charge-alteration" title="Permanent link">&para;</a></h3>
+<p>If QM and MM atoms are connected via a bond (defined in the topology
+file), the charge of the close-by MM atom (and its neighboring atoms)
+has to be modified in order to prevent overpolarization of the electron
+density of LA and QM region. This charge alteration is automatically
+taken care of by ORCA in <code>%qmmm</code> block. ORCA provides the most popular schemes that can
+be used to prevent overpolarization.</p>
+<p><a id="tab:multiscalesimulations.qmmm-chargealteration"></a></p>
+<div class="admonition note">
+<p class="admonition-title">Options to modify the charge at the QM-MM boundary in order to prevent overpolarization.</p>
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Options</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ChargeAlteration</code></td>
+<td><code>CS</code></td>
+<td>(Default) Charge Shift – Shift the charge of the MM atom away to the MM2 atoms so that the overall charge is conserved.</td>
+</tr>
+<tr>
+<td></td>
+<td><code>RCD</code></td>
+<td>Redistributed Charge and Dipole – Shift the charge of the MM atom so that the overall charge and dipole are conserved.</td>
+</tr>
+<tr>
+<td></td>
+<td><code>Z0</code></td>
+<td>Keep charges as they are. This MM atom will probably lead to overpolarization.</td>
+</tr>
+<tr>
+<td></td>
+<td><code>Z1</code></td>
+<td>Delete the charge on the MM1 atom (no overall charge conservation).</td>
+</tr>
+<tr>
+<td></td>
+<td><code>Z2</code></td>
+<td>Delete the charges on the MM1 atom and on its first (MM2) neighbors (no overall charge conservation).</td>
+</tr>
+<tr>
+<td></td>
+<td><code>Z3</code></td>
+<td>Delete the charges on the MM1 atom and on its first (MM2) and second (MM3) neighbors (no overall charge conservation).</td>
+</tr>
+<tr>
+<td><code>Scale_RCD</code></td>
+<td><code>real</code></td>
+<td>For <code>RCD</code> scheme, defines where on the bond between MM1 and MM2 the shifted charge is positioned. Default: <code>0.5</code>, i.e., midpoint.</td>
+</tr>
+<tr>
+<td><code>Scale_CS</code></td>
+<td><code>real</code></td>
+<td>For <code>CS</code> scheme, defines where on the bond between MM2 and MM1/MM3 the shifted charge is positioned. Default: <code>0.06 × bond</code>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a id="sec:multiscalesimulations.qmmm-embedding"></a></p>
+<h2 id="embedding-types">Embedding Types<a class="headerlink" href="#embedding-types" title="Permanent link">&para;</a></h2>
+<p>There are two embedding schemes available for treating the electrostatic interaction between high level and low level region. 
+In the electrostatic embedding scheme the electrostatic interaction between QM and MM system is computed at the QM level. 
+Thus, the charge distribution of the MM atoms (or other low level methods) can polarize the electron density of the QM region.
+The following embeding schemes are available:</p>
+<p><a id="tab:multiscalesimulations.qmmm-embedding"></a></p>
+<div class="admonition note">
+<p class="admonition-title">Options for embedding scheme to treat the electrostatic interaction between high and low level region.</p>
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Options</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Embedding</code></td>
+<td><code>Electrostatic</code></td>
+<td>(Default) The electrostatic interaction between the QM and MM system is computed at the QM level.</td>
+</tr>
+<tr>
+<td></td>
+<td><code>Mechanical</code></td>
+<td>The electrostatic interaction between the QM and MM system is computed at the MM level.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In QMMM the LJ interaction between QM and MM system is always computed at the MM level.</p>
+</div>
+<p>In the scheme of electrostatic embedding, the evaluation of the electrostatic 
+potential generated by the MM part can be accelerated by using the FMM algorithm 
+(described in reference <a href="../../../bibliography/">Greengard1987</a>). This will speed up the building 
+of the Fock Matrix. The default recommended setup can be called using the FMM-QMMM 
+keyword directly in the keywords line. However, more details about the algorithm 
+parameters and all input options can be found in  (see also
+paragraph <a href="../fmm/#sec:multiscalesimulations.fmm">multiscalesimulations.fmm</a>)</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>! FMM-QMMM
+</code></pre></div>
+It is recommended to use that option whenever the MM part is composed of more than 10,000 atoms (or point charges for ECM methods).</p>
+<p><a id="sec:multiscalesimulations.qmmm-keywords"></a></p>
+<h2 id="additional-keywords">Additional Keywords<a class="headerlink" href="#additional-keywords" title="Permanent link">&para;</a></h2>
+<p>Here we list additional keywords and options that are accessible from
+within the <code>%qmmm</code> block and that are relevant to QM/MM calculations.
+Some of these keywords can also be accessed via the <code>%mm</code> block, see
+section <a href="../../modelchemistries/mm/#sec:modelchemistries.mm-keywords">modelchemistries.mm-keywords</a>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>!QMMM
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>%qmmm
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a># The extended active region, activeRegionExt, contains the atoms surrounding the 
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a># active atoms.
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a> ExtendActiveRegion distance  # rule to choose the atoms belonging 
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>                              # to activeRegionExt.
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>                              # no - do not use activeRegionExt atoms
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>                              # cov_bonds - add only atoms bonded covalently to 
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>                              # active atoms
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>                              # distance (default) - use a distance criterion (VDW 
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>                              # distance plus Dist_AtomsAroundOpt)
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a> Dist_AtomsAroundOpt 0.0      # in Angstrom (Default 0). Meaning only freeze atoms
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>                              # which touch the active atoms by their VDW spheres.
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>                              # only needed for ExtendActiveRegion distance
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a> OptRegion_FixedAtoms {27 1288:1290 4400} end  # manually define the
+<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>                                               # activeRegionExt atoms.
+<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>                                               # Default: empty list. 
+<a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a>
+<a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a># Printing options. All are true by default.
+<a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a> PrintLevel 1               # Can be 0 to 4, 0=nothing, 1=normal, ...
+<a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a> PrintOptRegion true        # Additionally print xyz and trj for opt region
+<a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a> PrintOptRegionExt false    # Additionally print xyz and trj for extended 
+<a id="__codelineno-12-24" name="__codelineno-12-24" href="#__codelineno-12-24"></a>                            # opt region
+<a id="__codelineno-12-25" name="__codelineno-12-25" href="#__codelineno-12-25"></a> PrintQMRegion true         # Additionally print xyz and trj for QM region
+<a id="__codelineno-12-26" name="__codelineno-12-26" href="#__codelineno-12-26"></a> PrintFullTRJ true          # Print trajectory of full system. Default true.
+<a id="__codelineno-12-27" name="__codelineno-12-27" href="#__codelineno-12-27"></a> PrintPDB true              # Additionally print pdb file for entire system, is 
+<a id="__codelineno-12-28" name="__codelineno-12-28" href="#__codelineno-12-28"></a>                            # updated every iteration for optimization
+<a id="__codelineno-12-29" name="__codelineno-12-29" href="#__codelineno-12-29"></a>
+<a id="__codelineno-12-30" name="__codelineno-12-30" href="#__codelineno-12-30"></a># Computing MM nonbonded interactions within non-active region.
+<a id="__codelineno-12-31" name="__codelineno-12-31" href="#__codelineno-12-31"></a> Do_NB_For_Fixed_Fixed true # Compute MM-MM nonbonded interaction also for 
+<a id="__codelineno-12-32" name="__codelineno-12-32" href="#__codelineno-12-32"></a>                            # non-active atom pairs. Default true.
+<a id="__codelineno-12-33" name="__codelineno-12-33" href="#__codelineno-12-33"></a># Treats all active water molecules that are treated on MM level as rigid bodies 
+<a id="__codelineno-12-34" name="__codelineno-12-34" href="#__codelineno-12-34"></a>#  in optimization and MD simulation, see section &quot;Rigid Water&quot;.
+<a id="__codelineno-12-35" name="__codelineno-12-35" href="#__codelineno-12-35"></a> Rigid_MM_Water false       #  Default false.
+<a id="__codelineno-12-36" name="__codelineno-12-36" href="#__codelineno-12-36"></a>
+<a id="__codelineno-12-37" name="__codelineno-12-37" href="#__codelineno-12-37"></a>end
+<a id="__codelineno-12-38" name="__codelineno-12-38" href="#__codelineno-12-38"></a>
+<a id="__codelineno-12-39" name="__codelineno-12-39" href="#__codelineno-12-39"></a>*pdbfile 0 1 ubq.pdb  # structure input via pdb file, but also possible via 
+<a id="__codelineno-12-40" name="__codelineno-12-40" href="#__codelineno-12-40"></a>                      # xyz file
+</code></pre></div>
+<p><a id="tab:multiscalesimulations.qmmm-keywords"></a></p>
+<div class="admonition note">
+<p class="admonition-title">Additional keywords in the <code>%qmmm</code> block, which are also accessible from the <code>%mm</code> block.</p>
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Options</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ORCAFFFilename</code></td>
+<td><code>"&lt;filename&gt;"</code></td>
+<td>Filename of the ORCA Force Field prms file.</td>
+</tr>
+<tr>
+<td><code>Do_NB_For_Fixed_Fixed</code></td>
+<td><code>true</code>/<code>false</code></td>
+<td>Compute MM-MM nonbonded interaction also within the non-active region (i.e., for non-active atom pairs). Default <code>true</code>. For <code>GOAT</code> and <code>Crystal-QMMM</code>, default is <code>false</code>.</td>
+</tr>
+<tr>
+<td><code>RIGID_MM_WATER</code></td>
+<td><code>true</code>/<code>false</code></td>
+<td>Optimization and MD of active MM waters. Default <code>false</code>.</td>
+</tr>
+<tr>
+<td><code>ExtendActiveRegion</code></td>
+<td><code>distance</code></td>
+<td>Use a distance criterion (VDW distance plus <code>Dist_AtomsAroundOpt</code>) to extend the active region.</td>
+</tr>
+<tr>
+<td></td>
+<td><code>cov_bonds</code></td>
+<td>Add only atoms covalently bonded to active atoms.</td>
+</tr>
+<tr>
+<td></td>
+<td><code>no</code></td>
+<td>Do not add any atoms to the extended active region.</td>
+</tr>
+<tr>
+<td><code>Dist_AtomsAroundOpt</code></td>
+<td><code>&lt;real&gt;</code></td>
+<td>Distance (in Å) to add to VDW radius for <code>ExtendActiveRegion</code>. Default: <code>0.</code></td>
+</tr>
+<tr>
+<td><code>OptRegion_FixedAtoms</code></td>
+<td><code>{ints}</code></td>
+<td>List of atoms to define the extended active region. Default: empty list.</td>
+</tr>
+<tr>
+<td><code>PrintOptRegion</code></td>
+<td><code>true</code>/<code>false</code></td>
+<td>Additionally print <code>.xyz</code> and <code>.trj</code> files for the optimization region. Default <code>true</code>.</td>
+</tr>
+<tr>
+<td><code>PrintOptRegionExt</code></td>
+<td><code>true</code>/<code>false</code></td>
+<td>Additionally print <code>.xyz</code> and <code>.trj</code> files for the extended optimization region. Default <code>false</code>.</td>
+</tr>
+<tr>
+<td><code>PrintPDB</code></td>
+<td><code>true</code>/<code>false</code></td>
+<td>Additionally print <code>.pdb</code> file for the entire system, updated every optimization iteration. Default <code>false</code>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../index_multiscalesimulations/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Multiscale Simulations">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Multiscale Simulations
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../qmmm-molecules/" class="md-footer__link md-footer__link--next" aria-label="Next: QM/MM molecules">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                QM/MM molecules
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "toc.follow"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../../javascripts/mathjax.js"></script>
+      
+        <script src="../../../../javascripts/mathjax/tex-mml-chtml.js"></script>
+      
+        <script src="../../../../javascripts/math-instant.js"></script>
+      
+        <script src="../../../../javascripts/fast-mol-viewer.iife.js"></script>
+      
+        <script src="../../../../javascripts/mol-embed.js"></script>
+      
+        <script src="../../../../javascripts/tabs-pin.js"></script>
+      
+    
+  </body>
+</html>

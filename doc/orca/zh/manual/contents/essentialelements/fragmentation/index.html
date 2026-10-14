@@ -1,0 +1,6841 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ORCA 量子化学教程 / Quantum chemistry tutorials">
+      
+      
+      
+      
+      
+      
+        
+          <link rel="alternate" href="../../../../../manual/contents/essentialelements/fragmentation/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Fragmentation - ORCA 6.1 Tutorials</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../../../stylesheets/mol-embed.css">
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#fragment-specification" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../../../" title="ORCA 6.1 Tutorials" class="md-header__button md-logo" aria-label="ORCA 6.1 Tutorials" data-md-component="logo">
+      
+  <img src="../../../../../assets/fastmol-logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ORCA 6.1 Tutorials
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Fragmentation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../../manual/contents/essentialelements/fragmentation/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh" class="md-select__link">
+              中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  首页
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../first_steps/howtocite/" class="md-tabs__link">
+          
+  
+  
+  教程
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../" class="md-tabs__link">
+          
+  
+  
+  手册
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../bib/" class="md-tabs__link">
+          
+  
+  
+  附录
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../" title="ORCA 6.1 Tutorials" class="md-nav__button md-logo" aria-label="ORCA 6.1 Tutorials" data-md-component="logo">
+      
+  <img src="../../../../../assets/fastmol-logo.svg" alt="logo">
+
+    </a>
+    ORCA 6.1 Tutorials
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    教程
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    教程
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    入门
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    入门
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/howtocite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    如何引用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    安装 ORCA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/first_calc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello water！
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/input_output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    输入与输出
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/parallel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    并行运行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    内存设置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    图形界面
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/trouble_install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    常见问题
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工作流
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    工作流
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/compound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    复合作业
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/extrapol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    外推技术
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/extopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    外部方法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../workflows/opi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python 接口
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    性质
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    性质
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/single_point/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    单点能
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/geoopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    几何优化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/freq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    振动频率
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/thermo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    热力学
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/cpcm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    隐式溶剂化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/solvator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    显式溶剂化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/goat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    构象搜索
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/relativistic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    相对论校正
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/disp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    色散校正
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/bonds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    化学键分析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/led/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/fod/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分数占据密度
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/charges/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    电荷模型
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/esp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    静电势
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../prop/corren/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    相关能
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    反应性
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    反应性
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/nebts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/tsopt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    过渡态优化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/tsconf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    过渡态构象
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/irc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IRC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/actibar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    精确能垒
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/KIE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    动力学同位素效应
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/FUKUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    福井函数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../react/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DOCKER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    波谱
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    波谱
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/IR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    红外与拉曼
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/UVVis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    紫外-可见
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/ECD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    电子圆二色
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/vcd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    振动圆二色
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/NMR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NMR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/EPR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../spec/SOC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    自旋轨道耦合
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_6" id="__nav_2_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多尺度
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    多尺度
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/XTB ONIOM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/basics-otheroniom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ONIOM 进阶
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/oniom-nebts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多尺度 NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/ionic_crystal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    离子晶体 QM/MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../multi/fragmentator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    碎片化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    手册
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    手册
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    推荐主题
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    前言
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    前言
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/foreword/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foreword
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/changes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/howtocite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Howtocite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preface/howtousethismanual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Howtousethismanual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    快速入门
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    快速入门
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/index_quickstartguide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    快速入门指南
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    简介
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    安装
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    图形界面
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    运行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/hellowater/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello water
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/recommendations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    建议
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstartguide/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    故障排除
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    核心要素
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    核心要素
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index_essentialelements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    基本计算要素（Essential Calculation Elements）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../input/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    输入
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coordinates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    坐标
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    输出
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    并行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../initialguess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    初始猜测
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basisset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    基组
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../solvationmodels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    溶剂化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../relativistic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    相对论
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../symmetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    对称性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模型方法
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    模型方法
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/index_modelchemistries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模型化学（Model Chemistries）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/hartreefock/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hartree-Fock
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/DensityFunctionalTheory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    密度泛函
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/MP2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MP2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/3cmethods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3c 方法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/dispersioncorrections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    色散
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/CASSCF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CASSCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/NEVPT2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEVPT2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mrci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MRCI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mdci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DLPNO 方法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/semiempirical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    半经验
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modelchemistries/mm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分子力学
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    结构与反应性
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    结构与反应性
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/index_structurereactivity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    结构与反应性（Structure and Reactivity）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    优化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations_TS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    过渡态
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/optimizations_scans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    势能面扫描
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/irc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IRC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/neb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NEB-TS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/frequencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    频率
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/thermochemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    热化学
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/solvator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SOLVATOR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/goat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GOAT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DOCKER
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/mecp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MECP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structurereactivity/conicalintersections/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    圆锥交叉
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    波谱与性质
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    波谱与性质
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/index_spectroscopyproperties/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    光谱与性质（Spectroscopy and Properties）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/vibrations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    振动
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/excitedstates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    激发态
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/tddft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TD-DFT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/esd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UV/Vis 与 ESD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/nmr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NMR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/epr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EPR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/led/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LED
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/nbo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NBO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/spinorbit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    自旋轨道
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../spectroscopyproperties/magnx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    磁性质
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多尺度
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    多尺度
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/index_multiscalesimulations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多尺度模拟（Multiscale Simulations）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-general/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM 总论
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-molecules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QM/MM 分子体系
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multiscalesimulations/qmmm-crystal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    晶体 QM/MM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分子动力学
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    分子动力学
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../moleculardynamics/index_moleculardynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分子动力学（Molecular Dynamics）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../moleculardynamics/moldyn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分子动力学
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工作流
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    工作流
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/index_workflowsautomatization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工作流与自动化（Workflows and Automatization）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/compound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/compound_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compound 示例
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflowsautomatization/orcapythoninterface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工具
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    工具
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/index_utilitiesvisualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    辅助工具与可视化（Utilities and Visualization）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/utilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工具
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilitiesvisualization/plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    绘图
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    架构
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    架构
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/index_orcaarchitecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ORCA 的体系结构（Architecture of ORCA）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orcaarchitecture/components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    组件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_13" id="__nav_3_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    附录
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    术语表（Glossary）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendix/public/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Public
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../bibliography/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    参考文献
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    附录
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../bib/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    参考文献
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../genindex/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    索引
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        在输入文件中定义片段
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#automatic-fragmentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        自动片段划分（Automatic Fragmentation）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="自动片段划分（Automatic Fragmentation）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connectivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        自动片段划分：连通性（Connectivity）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#atomic-notassigned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        自动片段划分：Atomic 与 NotAssigned
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#internal-libraries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        自动片段划分：内部库（Internal Libraries）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#external-libraries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        自动片段划分：外部库（External Libraries）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        自动片段划分：Extend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fusebyatoms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        自动片段划分：Fusebyatoms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        自动片段划分：Delete 与高级片段划分工作流
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        %frag 输入块中的可用选项
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<p><a id="sec:essentialelements.fragmentation"></a></p>
+<h1 id="fragment-specification">片段指定（Fragment Specification）<a class="headerlink" href="#fragment-specification" title="Permanent link">&para;</a></h1>
+<p>计算中的原子可以被分组为特定的<em>片段（fragments）</em>，片段有多种用途。片段定义可用于<a href="../basisset/#sec:essentialelements.basisset.fragments">分配基组和 ECP</a>、在<a href="../../spectroscopyproperties/population/#sec:spectroscopyproperties.pop.lsa">布居分析部分</a>组织输出，以及启用<a href="../../structurereactivity/optimizations/#sec:structurereactivity.geomopt.constrainedfragment">片段约束优化</a>和<a href="../../structurereactivity/optimizations/#sec:structurereactivity.optimization.rigidbody">刚体优化（Rigid Body Optimization）</a>等功能。它们还用于<a href="../../spectroscopyproperties/led/#sec:spectroscopyproperties.led">局域能量分解</a>和<a href="../../modelchemistries/mdci/#sec:modelchemistries.mdci.multilevel">多层级计算</a>。</p>
+<p><a id="sec:essentialelements.fragmentation.Inputdef"></a></p>
+<h2 id="_1">在输入文件中定义片段<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>有三种方式可以通过输入文件把原子分配到片段。第一种方法是在坐标部分的原子符号后直接放置 <code>(n)</code>，把特定原子分配到特定片段。</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 1">
+<pre class="mol-xyz" data-format="xyz">5
+structure (-2 2)
+Cu         0.00         0.00         0.00
+Cl         2.25         0.00         0.00
+Cl        -2.25         0.00         0.00
+Cl         0.00         2.25         0.00
+Cl         0.00        -2.25         0.00</pre>
+<pre class="mol-input">*xyz -2 2
+ Cu(1)  0.00  0.00  0.00
+ Cl(2)  2.25  0.00  0.00
+ Cl(2) -2.25  0.00  0.00
+ Cl(2)  0.00  2.25  0.00
+ Cl(2)  0.00 -2.25  0.00
+*</pre>
+</div>
+
+<p>本例中使用片段功能把分子划分为"金属"和"配体"两个片段，程序相应地会打印金属和配体的电荷与布居。</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 2">
+<pre class="mol-xyz" data-format="xyz">5
+structure
+Cu     0.000000     0.000000     0.000000
+Cl     2.250000     0.000000     0.000000
+Cl    -2.250000     0.000000     0.000000
+Cl     0.000000     2.250000     0.000000
+Cl     0.000000    -2.250000     0.000000</pre>
+<pre class="mol-input"></pre>
+</div>
+
+<p>另外，也可以用 <code>%coords</code> 模块块以同样的方式定义片段——在原子符号后直接放置 <code>(n)</code>。</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 3">
+<pre class="mol-xyz" data-format="xyz">5
+structure
+Cu         0.00         0.00         0.00
+Cl         2.25         0.00         0.00
+Cl        -2.25         0.00         0.00
+Cl         0.00         2.25         0.00
+Cl         0.00        -2.25         0.00</pre>
+<pre class="mol-input"></pre>
+</div>
+
+<div class="admonition note">
+<p class="admonition-title">重要</p>
+<ul>
+<li>
+<p>当所有原子都被显式分配到片段时，片段编号必须从 1 开始并使用连续整数。不连续或不正确的编号可能导致错误。</p>
+</li>
+<li>
+<p>如果有任何原子未被分配（或被显式分配到片段 0），它将按照<a href="#sec:essentialelements.fragmentation.inputfile">自动片段划分</a>一节中描述的片段划分流程自动分配到某个片段。在这种情况下——即只有一部分原子被手动分配到片段——不需要使用连续的片段编号。但输入中指定的最大片段编号必须小于手动与自动流程组合所产生的片段总数。如果这一条件不满足，ORCA 会自动按升序从 1 开始重新排列所有片段编号。</p>
+</li>
+</ul>
+</div>
+<p>最后，第三种定义片段的方式是在 <code>%frag</code> 模块块内使用 <code>Definition</code>。在这种方案中，片段编号写在最前面，随后是用花括号 <code>{}</code> 括起、以 <code>end</code> 结尾的原子列表（原子从 0 开始编号）。连续的原子也可以用 <code>initial_atom</code>:<code>final_atom</code> 记号指定。</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 4">
+<pre class="mol-xyz" data-format="xyz">5
+structure (-2 2)
+Cu         0.00         0.00         0.00
+Cl         2.25         0.00         0.00
+Cl        -2.25         0.00         0.00
+Cl         0.00         2.25         0.00
+Cl         0.00        -2.25         0.00</pre>
+<pre class="mol-input">*xyz -2 2
+ Cu  0.00  0.00  0.00
+ Cl  2.25  0.00  0.00
+ Cl -2.25  0.00  0.00
+ Cl  0.00  2.25  0.00
+ Cl  0.00 -2.25  0.00
+*
+
+%frag
+ Definition
+  1 {0} end    # atom 0 for fragment 1
+  2 {1:4} end  # atoms 1 to 4 for fragment 2
+ end
+end</pre>
+</div>
+
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 5">
+<pre class="mol-xyz" data-format="xyz">5
+structure (-2 2)
+Cl         2.25         0.00         0.00
+Cl        -2.25         0.00         0.00
+Cu         0.00         0.00         0.00
+Cl         0.00         2.25         0.00
+Cl         0.00        -2.25         0.00</pre>
+<pre class="mol-input">*xyz -2 2
+ Cl  2.25  0.00  0.00
+ Cl -2.25  0.00  0.00
+ Cu  0.00  0.00  0.00
+ Cl  0.00  2.25  0.00
+ Cl  0.00 -2.25  0.00
+*
+
+%frag
+ Definition
+  1 {2} end        # atom 2 for fragment 1
+  2 {0:1 3:4} end  # atoms 0, 1, 3, and 4 for fragment 2
+ end
+end</pre>
+</div>
+
+<div class="admonition note">
+<p class="admonition-title">注意</p>
+<ul>
+<li>
+<p>对于最后一种选项（<code>Definition</code>），<code>%frag</code> 模块块必须写在坐标部分之后。</p>
+</li>
+<li>
+<p><code>%frag Definition</code> 也适用于通过外部文件定义的坐标。</p>
+</li>
+</ul>
+</div>
+<p><a id="sec:essentialelements.fragmentation.inputfile"></a></p>
+<h2 id="automatic-fragmentation">自动片段划分（Automatic Fragmentation）<a class="headerlink" href="#automatic-fragmentation" title="Permanent link">&para;</a></h2>
+<p>从 ORCA 6.1 起，引入了一套自动片段划分算法，用于自动识别并将原子分组为片段。</p>
+<p>当输入文件中包含 <code>%frag</code> 模块块，或只有部分原子被手动分配到片段时，就会触发自动片段划分流程。</p>
+<p>自动片段划分由一组流程完成，用户可在 <code>%frag</code> 模块块中选择。每个流程都会尝试在尚未分配的原子中识别新的片段。例如，考虑下面的例子：前 11 个原子属于一个丙烷分子，最后三个属于一个水分子。<code>FragProc</code> 中的 <code>Water</code> 流程把最后三个原子识别为水分子并分配到第一个片段，而 <code>FunctionalGroups</code> 流程则检测并将丙烷的 CH<sub>3</sub> 和 CH<sub>2</sub> 基团分配为片段 2 到 4。</p>
+<p><a id="sec:essentialelements.fragmentation.intlibex"></a></p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 6">
+<pre class="mol-xyz" data-format="xyz">14
+structure (0 1)
+C      0.000000     1.270000    -0.260000
+C      0.000000    -0.000000     0.580000
+C      0.000000    -1.270000    -0.260000
+H     -0.890000     1.320000    -0.910000
+H      0.890000     1.320000    -0.910000
+H      0.000000     2.180000     0.370000
+H      0.880000    -0.000000     1.250000
+H     -0.880000    -0.000000     1.250000
+H      0.890000    -1.320000    -0.910000
+H      0.000000    -2.180000     0.370000
+H     -0.880000    -1.300000    -0.910000
+H     -0.920000     0.850000    -2.430000
+O     -1.690000     0.830000    -3.000000
+H     -1.640000     1.630000    -3.510000</pre>
+<pre class="mol-input">%frag
+   FragProc Water, FunctionalGroups
+end
+
+* xyz 0 1
+ C     0.000000     1.270000    -0.260000
+ C     0.000000    -0.000000     0.580000
+ C     0.000000    -1.270000    -0.260000
+ H    -0.890000     1.320000    -0.910000
+ H     0.890000     1.320000    -0.910000
+ H     0.000000     2.180000     0.370000
+ H     0.880000    -0.000000     1.250000
+ H    -0.880000    -0.000000     1.250000
+ H     0.890000    -1.320000    -0.910000
+ H     0.000000    -2.180000     0.370000
+ H    -0.880000    -1.300000    -0.910000
+ H    -0.920000     0.850000    -2.430000
+ O    -1.690000     0.830000    -3.000000
+ H    -1.640000     1.630000    -3.510000
+*</pre>
+</div>
+
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 7">
+<pre class="mol-xyz" data-format="xyz">14
+structure
+H     -0.920000     0.850000    -2.430000
+O     -1.690000     0.830000    -3.000000
+H     -1.640000     1.630000    -3.510000
+C      0.000000     1.270000    -0.260000
+H     -0.890000     1.320000    -0.910000
+H      0.890000     1.320000    -0.910000
+H      0.000000     2.180000     0.370000
+C      0.000000    -1.270000    -0.260000
+H      0.890000    -1.320000    -0.910000
+H      0.000000    -2.180000     0.370000
+H     -0.880000    -1.300000    -0.910000
+C      0.000000    -0.000000     0.580000
+H      0.880000    -0.000000     1.250000
+H     -0.880000    -0.000000     1.250000</pre>
+<pre class="mol-input"></pre>
+</div>
+<p>这种自动片段划分给出的结果与下面所示的手动片段定义相同，而无需查看几何结构并手动分配片段。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>%frag
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a> Definition
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a> 1 { 11:13} end  # water
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a> 2 { 0 3:5} end  # CH3
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a> 3 { 2 8:10} end # CH3
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a> 4 { 1 6:7} end  # CH2
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a> end
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>end
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">注意</p>
+<ul>
+<li>在<a href="#sec:essentialelements.fragmentation.Inputdef">输入文件</a>中定义的任何片段优先于自动分配。</li>
+<li>ORCA 的 <code>FragProc</code> 最多支持 10 个流程，完整列表见 <a href="#tab:essentialelements.fragmentationprocedures">tab:essentialelements.fragmentationprocedures</a> 和 <a href="#tab:essentialelements.delprocedures">tab:essentialelements.delprocedures</a>。</li>
+<li>当存在未分配到片段的原子时，<a href="../../structurereactivity/optimizations/#sec:structurereactivity.geomopt.constrainedfragment">约束片段</a>不会自动启用自动片段划分。但可以通过在输入文件中包含 <code>%frag</code> 模块块来激活自动片段划分。</li>
+</ul>
+</div>
+<p>ORCA 提供了 30 多种 <code>FragProc</code> 方法，可以组合成列表，为各种目的生成片段。下面是对各个流程的说明和示例。</p>
+<p><a id="sec:essentialelements.fragmentation.inputfile.connectivity"></a></p>
+<h3 id="connectivity">自动片段划分：连通性（Connectivity）<a class="headerlink" href="#connectivity" title="Permanent link">&para;</a></h3>
+<p><code>FragProc Connectivity</code> 把由化学键连接的原子分组到一起，化学键基于原子半径估计。在下面的例子中，前九个原子属于一个二甲醚分子，被自动检测并分配到一个片段；最后三个原子——属于一个水分子——被分配到第二个片段。</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 8">
+<pre class="mol-xyz" data-format="xyz">12
+structure (0 1)
+O      0.000000     0.000000     0.000000
+C      0.000000     0.000000     1.380000
+C      1.300000     0.000000    -0.460000
+H     -0.500000     0.870000     1.740000
+H     -0.500000    -0.870000     1.740000
+H      1.000000     0.000000     1.740000
+H      1.300000     0.000000    -1.530000
+H      1.800000     0.870000    -0.100000
+H      1.800000    -0.870000    -0.100000
+H     -1.840000     0.000000    -0.650000
+O     -2.440000     0.000000     0.080000
+H     -3.300000     0.000000    -0.300000</pre>
+<pre class="mol-input">%frag
+  PrintLevel 3
+  FragProc Connectivity
+end
+
+*xyz 0 1
+ O     0.000000     0.000000     0.000000
+ C     0.000000     0.000000     1.380000
+ C     1.300000     0.000000    -0.460000
+ H    -0.500000     0.870000     1.740000
+ H    -0.500000    -0.870000     1.740000
+ H     1.000000     0.000000     1.740000
+ H     1.300000     0.000000    -1.530000
+ H     1.800000     0.870000    -0.100000
+ H     1.800000    -0.870000    -0.100000
+ H    -1.840000     0.000000    -0.650000
+ O    -2.440000     0.000000     0.080000
+ H    -3.300000     0.000000    -0.300000
+*</pre>
+</div>
+
+<p>在这种情况下，自动片段划分工具的输出表明两个片段由 <code>Connectivity</code> 流程分配。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>------------------------------------------
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a> Assigned Fragment: 1 
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>------------------------------------------
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  Name: Connectivity:0 Method: Connectivity 
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  Natoms: 9 Charge: 0 Mult: 1 
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a> 0 O     0.000000    0.000000    0.000000 
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a> 1 C     0.000000    0.000000    1.380000 
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a> 2 C     1.300000    0.000000   -0.460000 
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a> 3 H    -0.500000    0.870000    1.740000 
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a> 4 H    -0.500000   -0.870000    1.740000 
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a> 5 H     1.000000    0.000000    1.740000 
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a> 6 H     1.300000    0.000000   -1.530000 
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a> 7 H     1.800000    0.870000   -0.100000 
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a> 8 H     1.800000   -0.870000   -0.100000 
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>------------------------------------------
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>------------------------------------------
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a> Assigned Fragment: 2 
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>------------------------------------------
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>  Name: Connectivity:1 Method: Connectivity 
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>  Natoms: 3 Charge: 0 Mult: 1 
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a> 9 H    -1.840000    0.000000   -0.650000 
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a> 10 O    -2.440000    0.000000    0.080000 
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a> 11 H    -3.300000    0.000000   -0.300000 
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>------------------------------------------
+</code></pre></div>
+<p>每个片段划分流程只适用于尚未分配到片段的原子。因此，基于连通性的片段划分会忽略与已在输入文件中或由先前 <code>FragProc</code> 分配的原子之间的任何键。</p>
+<p>例如，在上例中如果把氧原子在输入文件中手动分配到片段 1，则该手动分配优先于 <code>FragProc Connectivity</code>。结果会创建四个片段：一个包含手动分配的氧原子的片段、两个 CH<sub>3</sub> 基团和一个水分子。</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 9">
+<pre class="mol-xyz" data-format="xyz">12
+structure (0 1)
+O      0.000000     0.000000     0.000000
+C      0.000000     0.000000     1.380000
+C      1.300000     0.000000    -0.460000
+H     -0.500000     0.870000     1.740000
+H     -0.500000    -0.870000     1.740000
+H      1.000000     0.000000     1.740000
+H      1.300000     0.000000    -1.530000
+H      1.800000     0.870000    -0.100000
+H      1.800000    -0.870000    -0.100000
+H     -1.840000     0.000000    -0.650000
+O     -2.440000     0.000000     0.080000
+H     -3.300000     0.000000    -0.300000</pre>
+<pre class="mol-input">%frag
+  PrintLevel 3
+  FragProc Connectivity
+end
+
+*xyz 0 1
+ O(1)  0.000000     0.000000     0.000000
+ C     0.000000     0.000000     1.380000
+ C     1.300000     0.000000    -0.460000
+ H    -0.500000     0.870000     1.740000
+ H    -0.500000    -0.870000     1.740000
+ H     1.000000     0.000000     1.740000
+ H     1.300000     0.000000    -1.530000
+ H     1.800000     0.870000    -0.100000
+ H     1.800000    -0.870000    -0.100000
+ H    -1.840000     0.000000    -0.650000
+ O    -2.440000     0.000000     0.080000
+ H    -3.300000     0.000000    -0.300000
+*</pre>
+</div>
+
+<p>自动片段划分工具的输出表明，第一个片段由 <code>Orca_Input</code> 流程分配，其余三个片段由 <code>Connectivity</code> 流程分配。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>===================================================
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Tfragmentator: Fragmenting by Orca_input
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>===================================================
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>------------------------------------------
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a> Assigned Fragment: 1
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>------------------------------------------
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>  Name: User-defined:0 Method: Orca_input
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>  Natoms: 1 Charge: 0 Mult: 1 InputId: 1
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a> 0 O     0.000000    0.000000    0.000000
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>------------------------------------------
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>===================================================
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>Tfragmentator: Fragmenting by Connectivity
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>===================================================
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>------------------------------------------
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a> Assigned Fragment: 2 
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>------------------------------------------ 
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>  Name: Connectivity:1 Method: Connectivity
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>  Natoms: 4 Charge: 0 Mult: 1 
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a> 1 C     0.000000    0.000000    1.380000 
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a> 3 H    -0.500000    0.870000    1.740000 
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a> 4 H    -0.500000   -0.870000    1.740000 
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a> 5 H     1.000000    0.000000    1.740000 
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>------------------------------------------
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>------------------------------------------
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a> Assigned Fragment: 3 
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>------------------------------------------
+<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a>  Name: Connectivity:2 Method: Connectivity 
+<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a>  Natoms: 4 Charge: 0 Mult: 1 
+<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a>
+<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a> 2 C     1.300000    0.000000   -0.460000 
+<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a> 6 H     1.300000    0.000000   -1.530000 
+<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a> 7 H     1.800000    0.870000   -0.100000 
+<a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a> 8 H     1.800000   -0.870000   -0.100000
+<a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a>------------------------------------------
+<a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a>
+<a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a>------------------------------------------
+<a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a> Assigned Fragment: 4
+<a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a>------------------------------------------
+<a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a>  Name: Connectivity:3 Method: Connectivity
+<a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a>  Natoms: 3 Charge: 0 Mult: 1
+<a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a>
+<a id="__codelineno-2-48" name="__codelineno-2-48" href="#__codelineno-2-48"></a> 9 H    -1.840000    0.000000   -0.650000
+<a id="__codelineno-2-49" name="__codelineno-2-49" href="#__codelineno-2-49"></a> 10 O    -2.440000    0.000000    0.080000
+<a id="__codelineno-2-50" name="__codelineno-2-50" href="#__codelineno-2-50"></a> 11 H    -3.300000    0.000000   -0.300000
+<a id="__codelineno-2-51" name="__codelineno-2-51" href="#__codelineno-2-51"></a>------------------------------------------
+</code></pre></div>
+<p><a id="sec:essentialelements.fragmentation.inputfile.atnoas"></a></p>
+<h3 id="atomic-notassigned">自动片段划分：Atomic 与 NotAssigned<a class="headerlink" href="#atomic-notassigned" title="Permanent link">&para;</a></h3>
+<p><code>FragProc Atomic</code> 和 <code>FragProc NotAssigned</code> 是终止流程。<code>FragProc Atomic</code> 把每个先前未分配的原子各自作为一个独立片段，而 <code>FragProc NotAssigned</code> 把所有剩余未分配的原子分配到同一个片段。</p>
+<p>与其他 <code>FragProc</code> 方法类似，自动片段划分工具的输出表明使用了 <code>Atomic</code> 或 <code>Not_assigned</code> 流程来生成相应片段。</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 10">
+<pre class="mol-xyz" data-format="xyz">12
+structure (0 1)
+O      0.000000     0.000000     0.000000
+C      0.000000     0.000000     1.380000
+C      1.300000     0.000000    -0.460000
+H     -0.500000     0.870000     1.740000
+H     -0.500000    -0.870000     1.740000
+H      1.000000     0.000000     1.740000
+H      1.300000     0.000000    -1.530000
+H      1.800000     0.870000    -0.100000
+H      1.800000    -0.870000    -0.100000
+H     -1.840000     0.000000    -0.650000
+O     -2.440000     0.000000     0.080000
+H     -3.300000     0.000000    -0.300000</pre>
+<pre class="mol-input">%frag
+  PrintLevel 3
+  FragProc Atomic
+end
+
+*xyz 0 1
+ O(1)  0.000000     0.000000     0.000000
+ C     0.000000     0.000000     1.380000
+ C     1.300000     0.000000    -0.460000
+ H    -0.500000     0.870000     1.740000
+ H    -0.500000    -0.870000     1.740000
+ H     1.000000     0.000000     1.740000
+ H     1.300000     0.000000    -1.530000
+ H     1.800000     0.870000    -0.100000
+ H     1.800000    -0.870000    -0.100000
+ H    -1.840000     0.000000    -0.650000
+ O    -2.440000     0.000000     0.080000
+ H    -3.300000     0.000000    -0.300000
+*</pre>
+</div>
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>===================================================
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Tfragmentator: Fragmenting by Orca_input
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>===================================================
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>------------------------------------------
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a> Assigned Fragment: 1
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>------------------------------------------
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>  Name: User-defined:0 Method: Orca_input
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>  Natoms: 1 Charge: 0 Mult: 1 InputId: 1
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a> 0 O     0.000000    0.000000    0.000000
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>------------------------------------------
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>===================================================
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>Tfragmentator: Fragmenting by Atomic
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>===================================================
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>------------------------------------------
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a> Match: 1, Assigned Fragment: 2
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>------------------------------------------
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>  Name: C  Method: Atomic
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>  Natoms: 1 Charge: 0 Mult: 1
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a> 1 C     0.000000    0.000000    1.380000
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>------------------------------------------
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>------------------------------------------
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a> Match: 2, Assigned Fragment: 3
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>------------------------------------------
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>  Name: C  Method: Atomic
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>  Natoms: 1 Charge: 0 Mult: 1
+<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>
+<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a> 2 C     1.300000    0.000000   -0.460000
+<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a>------------------------------------------
+<a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>
+<a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a>...
+<a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a>
+<a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a>------------------------------------------
+<a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a> Match: 11, Assigned Fragment: 12
+<a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a>------------------------------------------
+<a id="__codelineno-3-41" name="__codelineno-3-41" href="#__codelineno-3-41"></a>  Name: H  Method: Atomic
+<a id="__codelineno-3-42" name="__codelineno-3-42" href="#__codelineno-3-42"></a>  Natoms: 1 Charge: 0 Mult: 1
+<a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a>
+<a id="__codelineno-3-44" name="__codelineno-3-44" href="#__codelineno-3-44"></a> 11 H    -3.300000    0.000000   -0.300000
+<a id="__codelineno-3-45" name="__codelineno-3-45" href="#__codelineno-3-45"></a>------------------------------------------
+</code></pre></div>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 11">
+<pre class="mol-xyz" data-format="xyz">12
+structure (0 1)
+O      0.000000     0.000000     0.000000
+C      0.000000     0.000000     1.380000
+C      1.300000     0.000000    -0.460000
+H     -0.500000     0.870000     1.740000
+H     -0.500000    -0.870000     1.740000
+H      1.000000     0.000000     1.740000
+H      1.300000     0.000000    -1.530000
+H      1.800000     0.870000    -0.100000
+H      1.800000    -0.870000    -0.100000
+H     -1.840000     0.000000    -0.650000
+O     -2.440000     0.000000     0.080000
+H     -3.300000     0.000000    -0.300000</pre>
+<pre class="mol-input">%frag
+  PrintLevel 3
+  FragProc NotAssigned
+end
+
+*xyz 0 1
+ O(1)  0.000000     0.000000     0.000000
+ C     0.000000     0.000000     1.380000
+ C     1.300000     0.000000    -0.460000
+ H    -0.500000     0.870000     1.740000
+ H    -0.500000    -0.870000     1.740000
+ H     1.000000     0.000000     1.740000
+ H     1.300000     0.000000    -1.530000
+ H     1.800000     0.870000    -0.100000
+ H     1.800000    -0.870000    -0.100000
+ H    -1.840000     0.000000    -0.650000
+ O    -2.440000     0.000000     0.080000
+ H    -3.300000     0.000000    -0.300000
+*</pre>
+</div>
+
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>===================================================
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>Tfragmentator: Fragmenting by Orca_input
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>===================================================
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>------------------------------------------
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a> Assigned Fragment: 1
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>------------------------------------------ 
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>  Name: User-defined:0 Method: Orca_input 
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>  Natoms: 1 Charge: 0 Mult: 1 InputId: 1
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a> 0 O     0.000000    0.000000    0.000000
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>------------------------------------------
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>===================================================
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>Tfragmentator: Setting not assigned atoms to a fragment
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>===================================================
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>------------------------------------------
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a> Assigned Fragment: 1 
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>------------------------------------------
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>  Name: Not Assigned Method: Not_assigned
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>  Natoms: 11 Charge: 0 Mult: 1 
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a> 1 C     0.000000    0.000000    1.380000 
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a> 2 C     1.300000    0.000000   -0.460000
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a> 3 H    -0.500000    0.870000    1.740000
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a> 4 H    -0.500000   -0.870000    1.740000
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a> 5 H     1.000000    0.000000    1.740000 
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a> 6 H     1.300000    0.000000   -1.530000  
+<a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a> 7 H     1.800000    0.870000   -0.100000
+<a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a> 8 H     1.800000   -0.870000   -0.100000
+<a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a> 9 H    -1.840000    0.000000   -0.650000  
+<a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a> 10 O    -2.440000    0.000000    0.080000 
+<a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a> 11 H    -3.300000    0.000000   -0.300000
+<a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a>------------------------------------------
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">注意</p>
+<ul>
+<li><code>FragProc NotAssigned</code> 总是在所有 <code>FragProc</code> 流程的最后应用，以确保没有原子遗漏片段分配。</li>
+</ul>
+</div>
+<p><a id="sec:essentialelements.fragmentation.inputfile.intlib"></a></p>
+<h3 id="internal-libraries">自动片段划分：内部库（Internal Libraries）<a class="headerlink" href="#internal-libraries" title="Permanent link">&para;</a></h3>
+<p>ORCA 包含一系列内部库，其中含有许多常见分子结构的定义。在所有情况下，结构识别都是对由笛卡尔坐标构建的分子图应用 VF2 子图同构算法完成的。</p>
+<p>利用内部库的可用片段划分流程列于 <a href="#tab:essentialelements.fragmentationprocedures">tab:essentialelements.fragmentationprocedures</a>。</p>
+<p><a id="tab:essentialelements.fragmentationprocedures"></a></p>
+<div class="admonition note">
+<p class="admonition-title">片段检测的简单输入关键字。</p>
+<table>
+<thead>
+<tr>
+<th>Fragment detection Keyword</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FunctionalGroups</code></td>
+<td>包含最常见有机官能团的列表。</td>
+</tr>
+<tr>
+<td><code>Aminoacids</code></td>
+<td>包含所有氨基酸的列表，涵盖所有常见质子化状态，但不包括两性离子形式。</td>
+</tr>
+<tr>
+<td><code>AABackbone</code></td>
+<td>包含氨基酸主链检测的片段定义。</td>
+</tr>
+<tr>
+<td><code>Backbone</code></td>
+<td>先执行 <code>AABackbone</code>，随后把所有片段合并为一个蛋白质主链片段。</td>
+</tr>
+<tr>
+<td><code>SeqBackbone</code></td>
+<td>与 <code>AABackbone</code> 类似，但肽键被分配为单独的片段。</td>
+</tr>
+<tr>
+<td><code>AASidechains</code></td>
+<td>包含所有氨基酸侧链的列表。</td>
+</tr>
+<tr>
+<td><code>AASCFinegrained</code></td>
+<td>包含氨基酸侧链内有机官能团的详细列表。</td>
+</tr>
+<tr>
+<td><code>NABackbone</code></td>
+<td>包含 DNA/RNA 主链的片段定义；磷酸基团被分配到 3′ 位。</td>
+</tr>
+<tr>
+<td><code>SEQNABackbone</code></td>
+<td>包含 DNA/RNA 主链的片段定义；磷酸基团被分配到 5′ 位。</td>
+</tr>
+<tr>
+<td><code>NABBFinegrained</code></td>
+<td>与 <code>NABackbone</code> 相同，但进一步拆分磷酸基团。</td>
+</tr>
+<tr>
+<td><code>Nucleoticacid</code></td>
+<td>包含所有核酸的列表。</td>
+</tr>
+<tr>
+<td><code>NASidechains</code></td>
+<td>包含所有核酸侧链的列表。</td>
+</tr>
+<tr>
+<td><code>Solvents</code></td>
+<td>包含常见溶剂的定义：1-辛醇、正己烷、环己烷、甲苯、氯苯、四氢呋喃、苯、N,N-二甲基甲酰胺、吡啶、二甲基亚砜、丙酮、乙醇、乙腈、甲醇、氯仿、四氯化碳、二氯甲烷、氨和水。</td>
+</tr>
+<tr>
+<td><code>Water</code></td>
+<td>包含水分子的定义，如果只需划分水分子片段，比 <code>Solvents</code> 更快。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>与其他片段划分流程类似，在 <code>FragProc</code> 中列出多个库将依次应用这些流程。使用<a href="#sec:essentialelements.fragmentation.inputfile">自动片段划分</a>中列出的第一个例子（<a href="#sec:essentialelements.fragmentation.intlibex">输入</a>），并在 <code>%frag</code> 模块块中加入 <code>PrintLevel 3</code> 以提高输出详细程度，输出将表明由 <code>Water</code> 和 <code>Functional_groups</code> 流程完成的片段分配。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>===================================================
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>Tfragmentator: Fragmenting by Water
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>===================================================
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>------------------------------------------
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a> Match: 1, Assigned Fragment: 1
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>------------------------------------------
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>  Name:  WATER Method: Water
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>  Natoms: 3 Charge: 0 Mult: 1
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a> 11 H    -0.920000    0.850000   -2.430000
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a> 12 O    -1.690000    0.830000   -3.000000
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a> 13 H    -1.640000    1.630000   -3.510000
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>------------------------------------------
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>===================================================
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>Tfragmentator: Fragmenting by Functional_groups
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>===================================================
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>------------------------------------------
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a> Match: 1, Assigned Fragment: 2
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a>------------------------------------------
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a>  Name:  CH3 Method: Functional_groups
+<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a>  Natoms: 4 Charge: 0 Mult: 1
+<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a>
+<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a> 0 C     0.000000    1.270000   -0.260000
+<a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a> 3 H    -0.890000    1.320000   -0.910000
+<a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a> 4 H     0.890000    1.320000   -0.910000
+<a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a> 5 H     0.000000    2.180000    0.370000
+<a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a>------------------------------------------
+<a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a>
+<a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a>------------------------------------------
+<a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a> Match: 2, Assigned Fragment: 3
+<a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a>------------------------------------------
+<a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a>  Name:  CH3 Method: Functional_groups
+<a id="__codelineno-5-36" name="__codelineno-5-36" href="#__codelineno-5-36"></a>  Natoms: 4 Charge: 0 Mult: 1
+<a id="__codelineno-5-37" name="__codelineno-5-37" href="#__codelineno-5-37"></a>
+<a id="__codelineno-5-38" name="__codelineno-5-38" href="#__codelineno-5-38"></a> 2 C     0.000000   -1.270000   -0.260000
+<a id="__codelineno-5-39" name="__codelineno-5-39" href="#__codelineno-5-39"></a> 8 H     0.890000   -1.320000   -0.910000
+<a id="__codelineno-5-40" name="__codelineno-5-40" href="#__codelineno-5-40"></a> 9 H     0.000000   -2.180000    0.370000
+<a id="__codelineno-5-41" name="__codelineno-5-41" href="#__codelineno-5-41"></a> 10 H    -0.880000   -1.300000   -0.910000
+<a id="__codelineno-5-42" name="__codelineno-5-42" href="#__codelineno-5-42"></a>------------------------------------------
+<a id="__codelineno-5-43" name="__codelineno-5-43" href="#__codelineno-5-43"></a>
+<a id="__codelineno-5-44" name="__codelineno-5-44" href="#__codelineno-5-44"></a>------------------------------------------
+<a id="__codelineno-5-45" name="__codelineno-5-45" href="#__codelineno-5-45"></a> Match: 1, Assigned Fragment: 4
+<a id="__codelineno-5-46" name="__codelineno-5-46" href="#__codelineno-5-46"></a>------------------------------------------
+<a id="__codelineno-5-47" name="__codelineno-5-47" href="#__codelineno-5-47"></a>  Name:  CH2 Method: Functional_groups
+<a id="__codelineno-5-48" name="__codelineno-5-48" href="#__codelineno-5-48"></a>  Natoms: 3 Charge: 0 Mult: 1
+<a id="__codelineno-5-49" name="__codelineno-5-49" href="#__codelineno-5-49"></a>
+<a id="__codelineno-5-50" name="__codelineno-5-50" href="#__codelineno-5-50"></a> 1 C     0.000000   -0.000000    0.580000
+<a id="__codelineno-5-51" name="__codelineno-5-51" href="#__codelineno-5-51"></a> 6 H     0.880000   -0.000000    1.250000
+<a id="__codelineno-5-52" name="__codelineno-5-52" href="#__codelineno-5-52"></a> 7 H    -0.880000   -0.000000    1.250000
+<a id="__codelineno-5-53" name="__codelineno-5-53" href="#__codelineno-5-53"></a>------------------------------------------
+</code></pre></div>
+<p><a id="sec:essentialelements.fragmentation.inputfile.externallib"></a></p>
+<h3 id="external-libraries">自动片段划分：外部库（External Libraries）<a class="headerlink" href="#external-libraries" title="Permanent link">&para;</a></h3>
+<p>自动片段划分器还允许用户通过 <code>%frag</code> 模块块中的 <code>XZYFRAGLIB</code> 变量提供 <code>.xyz</code> 文件，其中包含应被识别为片段的几何结构。<code>FragProc Extlib</code> 流程会自动把每个提供的几何结构转换为分子图，然后应用 VF2 子图同构算法——与内部库的处理方式相同。</p>
+<p>下面的例子使用文件 <code>Mylib.xyz</code> 中 CH<sub>3</sub>O 和 CH<sub>3</sub> 片段的定义，在如下给出的二甲醚几何结构中识别并生成片段：</p>
+<p><a id="sec:essentialelements.fragmentation.intextlib"></a></p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 12">
+<pre class="mol-xyz" data-format="xyz">9
+structure (0 1)
+O      0.000000     0.000000     0.000000
+C      0.000000     0.000000     1.380000
+C      1.300000     0.000000    -0.460000
+H     -0.500000     0.870000     1.740000
+H     -0.500000    -0.870000     1.740000
+H      1.000000     0.000000     1.740000
+H      1.300000     0.000000    -1.530000
+H      1.800000     0.870000    -0.100000
+H      1.800000    -0.870000    -0.100000</pre>
+<pre class="mol-input">%frag
+  PrintLevel 3
+  FragProc Extlib
+  XZYFRAGLIB &quot;Mylib.xyz&quot;
+end
+
+*xyz 0 1
+ O     0.000000     0.000000     0.000000
+ C     0.000000     0.000000     1.380000
+ C     1.300000     0.000000    -0.460000
+ H    -0.500000     0.870000     1.740000
+ H    -0.500000    -0.870000     1.740000
+ H     1.000000     0.000000     1.740000
+ H     1.300000     0.000000    -1.530000
+ H     1.800000     0.870000    -0.100000
+ H     1.800000    -0.870000    -0.100000
+*</pre>
+</div>
+
+<p>其中 <code>Mylib.xyz</code> 包含甲基和甲氧基的定义。</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 13">
+<pre class="mol-xyz" data-format="xyz">9
+CHARGE 0 MULT 1 NAME CH3O
+O      0.000000     0.000000     0.000000
+C      0.000000     0.000000     1.380000
+H      1.008807     0.000000     1.736663
+H     -0.328435     0.953845     1.736667
+H     -0.794950    -0.621083     1.736667
+C      0.000000     0.000000     0.000000
+H      0.000000     0.000000     1.070000
+H      1.008807     0.000000    -0.356663
+H     -0.328435    -0.953845    -0.356667</pre>
+<pre class="mol-input"></pre>
+</div>
+
+<p>结果是原子 0、1、3、4 和 5 被分配到一个 CH<sub>3</sub>O 片段，其余原子由 <code>Ext_lib</code> 流程分配到一个 CH<sub>3</sub>。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>===================================================
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>Tfragmentator: Fragmenting by Ext_lib
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>===================================================
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>****
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>**** There are 2 Ref structures found in file Mylib.xyz
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>****
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>------------------------------------------
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a> Match: 1, Assigned Fragment: 1
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>------------------------------------------
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>  Name:  CH3O Method: Ext_lib
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>  Natoms: 5 Charge: 0 Mult: 1
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a> 0 O     0.000000    0.000000    0.000000
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a> 1 C     0.000000    0.000000    1.380000
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a> 3 H    -0.500000    0.870000    1.740000
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a> 4 H    -0.500000   -0.870000    1.740000
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a> 5 H     1.000000    0.000000    1.740000
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>------------------------------------------
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>------------------------------------------
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a> Match: 1, Assigned Fragment: 2
+<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a>------------------------------------------
+<a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a>  Name:  CH3 Method: Ext_lib
+<a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a>  Natoms: 4 Charge: 0 Mult: 1
+<a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a>
+<a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a> 2 C     1.300000    0.000000   -0.460000
+<a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a> 6 H     1.300000    0.000000   -1.530000
+<a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a> 7 H     1.800000    0.870000   -0.100000
+<a id="__codelineno-6-30" name="__codelineno-6-30" href="#__codelineno-6-30"></a> 8 H     1.800000   -0.870000   -0.100000
+<a id="__codelineno-6-31" name="__codelineno-6-31" href="#__codelineno-6-31"></a>------------------------------------------
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">注意</p>
+<ul>
+<li>
+<p><code>XZYFRAGLIB</code> 最多允许包含 10 个文件。每个文件可以包含多个片段定义；但每个定义必须由单个连通的分子组成——单个定义内不允许出现不连通的结构。</p>
+</li>
+<li>
+<p><code>Mylib.xyz</code> 的格式遵循标准 XYZ 文件结构，但可选地支持三个标识符：<code>CHARGE</code>、<code>MULT</code> 和 <code>NAME</code>，其中 <code>NAME</code> 应出现在最后。识别到片段时会打印这些标识符，但目前它们不用于任何计算。</p>
+</li>
+<li>
+<p>随后其他方法对片段的修改（见下文的 <a href="#sec:essentialelements.fragmentation.inputfile.fuse">Fusebyatoms</a> 和 <a href="#sec:essentialelements.fragmentation.inputfile.extend">Extend</a>）不会影响标识符中片段的 CHARGE 或 MULT 值。</p>
+</li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">重要</p>
+<ul>
+<li>ORCA 的 VF2 子图同构算法仅基于原子连接性；它不考虑立体化学或键级。</li>
+<li>
+<p><code>FragProc Extlib</code> 的片段分配遵循 <code>XZYFRAGLIB</code> 中列出文件的顺序以及每个文件内片段定义的顺序。由于原子一旦被分配到片段就会从后续匹配中排除，因此库中定义片段的顺序至关重要。例如，在前面的<a href="#sec:essentialelements.fragmentation.intextlib">例子</a>中，如果 CH<sub>3</sub> 在 <code>Mylib.xyz</code> 中定义在 CH<sub>3</sub>O 之前，则<a href="#sec:essentialelements.fragmentation.intextlib">输入文件</a>中的两个 CH<sub>3</sub> 基团会先被匹配。这将阻止 CH<sub>3</sub>O 在之后被识别，即使它存在于体系中。</p>
+</li>
+<li>
+<p>原子到片段的分配遵循原子在几何结构中出现的顺序。在<a href="#sec:essentialelements.fragmentation.intextlib">前面的例子</a>中，CH<sub>3</sub>O 片段既可以按 C(1)-O 键也可以按 C(2)-O 键分配。但由于 C(1) 在几何结构中先出现，它被选入 CH<sub>3</sub>O 片段。</p>
+</li>
+</ul>
+</div>
+<p><a id="sec:essentialelements.fragmentation.inputfile.extend"></a></p>
+<h3 id="extend">自动片段划分：Extend<a class="headerlink" href="#extend" title="Permanent link">&para;</a></h3>
+<p>内部库中的许多片段代表不完整的分子结构。因此，在某些情况下需要添加额外的氢原子——或在某些情况下添加羟基——来补全体系。<code>FragProc Extend</code> 通过识别与先前分配片段中碳原子成键的氧原子，以及与碳、氮或氧成键的氢原子来解决这一问题，然后扩展相应片段以包含这些原子。</p>
+<p>考虑下面的例子，它由一个两性离子（zwitterionic）甘氨酸分子组成，使用定义了 C–C–N 片段的外部库进行片段划分。在这种情况下，可以应用 <code>FragProc Extend</code> 添加缺失的氧和氢原子，从而补全分子结构。</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 14">
+<pre class="mol-xyz" data-format="xyz">10
+structure (0 1)
+N      0.000000     0.000000     0.000000
+C      0.000000     0.000000     1.460000
+C      1.403962     0.000000     2.015868
+O      1.837767     0.962613     2.627089
+O      2.161436    -0.947142     1.883370
+H      0.423874    -0.764689    -0.525339
+H     -0.538292    -0.884247     1.831954
+H     -0.538292     0.884247     1.831954
+H     -0.970478     0.016940    -0.313504
+H      0.499909     0.831989    -0.313504</pre>
+<pre class="mol-input">%frag
+  PrintLevel 3
+  FragProc Extlib, Extend
+  XZYFRAGLIB &quot;Mylib.xyz&quot;
+end
+
+*xyz 0 1
+ N     0.000000     0.000000     0.000000
+ C     0.000000     0.000000     1.460000
+ C     1.403962     0.000000     2.015868
+ O     1.837767     0.962613     2.627089
+ O     2.161436    -0.947142     1.883370
+ H     0.423874    -0.764689    -0.525339
+ H    -0.538292    -0.884247     1.831954
+ H    -0.538292     0.884247     1.831954
+ H    -0.970478     0.016940    -0.313504
+ H     0.499909     0.831989    -0.313504
+*</pre>
+</div>
+
+<p>本例中的 <code>Mylib.xyz</code> 为：</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 15">
+<pre class="mol-xyz" data-format="xyz">3
+Name CCN
+C      0.000000     0.000000     0.000000
+C      0.000000     0.000000     1.500000
+N      1.376503     0.000000    -0.486661</pre>
+<pre class="mol-input"></pre>
+</div>
+
+<p>结果是对 C–C–N 片段的初始分配，随后将片段扩展以包含两个氧原子和五个氢原子。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>------------------------------------------
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a> Match: 1, Assigned Fragment: 1 
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>------------------------------------------
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>  Name:  CCN Method: Ext_lib 
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>  Natoms: 3 Charge: 0 Mult: 1 
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a> 0 N     0.000000    0.000000    0.000000 
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a> 1 C     0.000000    0.000000    1.460000 
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a> 2 C     1.403962    0.000000    2.015868 
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>------------------------------------------
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>===================================================
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>Tfragmentator: Extending Fragments
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>===================================================
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a> Extending Fragment 0 with O  (3)
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a> Extending Fragment 0 with O  (4)
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a> Extending Fragment 0 with H  (6)
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a> Extending Fragment 0 with H  (7)
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a> Extending Fragment 0 with H  (5)
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a> Extending Fragment 0 with H  (8)
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a> Extending Fragment 0 with H  (9) 
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">重要</p>
+<ul>
+<li><code>FragProc Extend</code> 会尝试扩展任何先前已分配的片段。</li>
+<li><code>FragProc Extend</code> 不会修改片段的 <code>Charge</code> 和 <code>Mult</code> 标识符。</li>
+</ul>
+</div>
+<p><a id="sec:essentialelements.fragmentation.inputfile.fuse"></a></p>
+<h3 id="fusebyatoms">自动片段划分：Fusebyatoms<a class="headerlink" href="#fusebyatoms" title="Permanent link">&para;</a></h3>
+<p>当多个片段划分流程组合使用时，可能需要把两个先前已分配的片段合并为一个。这可以通过 <code>FragProc Fusebyatoms</code> 流程实现，它按照 <code>FuseAtomPairs</code> 中的指定识别应当属于同一片段的原子对。</p>
+<p>在下面的例子中，目标是把丙烷分子划分为一个 CH<sub>3</sub> 基团和一个 CH<sub>3</sub>–CH<sub>2</sub> 片段。实现这一点的一种方法是先应用 <code>FragProc FunctionalGroups</code>，把分子划分为两个 CH<sub>3</sub> 基团和一个 CH<sub>2</sub> 基团。然后把 CH<sub>2</sub> 基团与其中一个 CH<sub>3</sub> 基团合并。这通过在 <code>FuseAtomPairs</code> 指令中指定 CH<sub>2</sub> 和一个 CH<sub>3</sub> 基团的碳原子来完成：<code>FuseAtomPairs {0 1} end</code>。</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 16">
+<pre class="mol-xyz" data-format="xyz">11
+structure (0 1)
+C      0.000000     1.270000    -0.260000
+C      0.000000    -0.000000     0.580000
+C      0.000000    -1.270000    -0.260000
+H     -0.890000     1.320000    -0.910000
+H      0.890000     1.320000    -0.910000
+H      0.000000     2.180000     0.370000
+H      0.880000    -0.000000     1.250000
+H     -0.880000    -0.000000     1.250000
+H      0.890000    -1.320000    -0.910000
+H      0.000000    -2.180000     0.370000
+H     -0.880000    -1.300000    -0.910000</pre>
+<pre class="mol-input">%frag
+        printlevel 3
+        FragProc FunctionalGroups, Fusebyatoms
+        FuseAtomPairs {0 1} end
+end
+
+*xyz 0 1
+ C     0.000000     1.270000    -0.260000
+ C     0.000000    -0.000000     0.580000
+ C     0.000000    -1.270000    -0.260000
+ H    -0.890000     1.320000    -0.910000
+ H     0.890000     1.320000    -0.910000
+ H     0.000000     2.180000     0.370000
+ H     0.880000    -0.000000     1.250000
+ H    -0.880000    -0.000000     1.250000
+ H     0.890000    -1.320000    -0.910000
+ H     0.000000    -2.180000     0.370000
+ H    -0.880000    -1.300000    -0.910000
+*</pre>
+</div>
+
+<p>片段划分器的输出首先报告由 <code>Functional_groups</code> 库完成的初始片段划分，随后是一条表明按 <code>FuseAtomPairs</code> 指令进行片段合并的消息。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>===================================================
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>Tfragmentator: Fragmenting by Functional_groups
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>===================================================
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>------------------------------------------
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a> Match: 1, Assigned Fragment: 1
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>------------------------------------------
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>  Name:  CH3 Method: Functional_groups
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>  Natoms: 4 Charge: 0 Mult: 1
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a> 0 C     0.000000    1.270000   -0.260000
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a> 3 H    -0.890000    1.320000   -0.910000
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a> 4 H     0.890000    1.320000   -0.910000
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a> 5 H     0.000000    2.180000    0.370000
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>------------------------------------------
+<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>
+<a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a>------------------------------------------
+<a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a> Match: 2, Assigned Fragment: 2
+<a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a>------------------------------------------
+<a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a>  Name:  CH3 Method: Functional_groups
+<a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a>  Natoms: 4 Charge: 0 Mult: 1
+<a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a>
+<a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a> 2 C     0.000000   -1.270000   -0.260000
+<a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a> 8 H     0.890000   -1.320000   -0.910000
+<a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a> 9 H     0.000000   -2.180000    0.370000
+<a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a> 10 H    -0.880000   -1.300000   -0.910000
+<a id="__codelineno-8-27" name="__codelineno-8-27" href="#__codelineno-8-27"></a>------------------------------------------
+<a id="__codelineno-8-28" name="__codelineno-8-28" href="#__codelineno-8-28"></a>
+<a id="__codelineno-8-29" name="__codelineno-8-29" href="#__codelineno-8-29"></a>------------------------------------------
+<a id="__codelineno-8-30" name="__codelineno-8-30" href="#__codelineno-8-30"></a> Match: 1, Assigned Fragment: 3
+<a id="__codelineno-8-31" name="__codelineno-8-31" href="#__codelineno-8-31"></a>------------------------------------------
+<a id="__codelineno-8-32" name="__codelineno-8-32" href="#__codelineno-8-32"></a>  Name:  CH2 Method: Functional_groups
+<a id="__codelineno-8-33" name="__codelineno-8-33" href="#__codelineno-8-33"></a>  Natoms: 3 Charge: 0 Mult: 1
+<a id="__codelineno-8-34" name="__codelineno-8-34" href="#__codelineno-8-34"></a>
+<a id="__codelineno-8-35" name="__codelineno-8-35" href="#__codelineno-8-35"></a> 1 C     0.000000   -0.000000    0.580000
+<a id="__codelineno-8-36" name="__codelineno-8-36" href="#__codelineno-8-36"></a> 6 H     0.880000   -0.000000    1.250000
+<a id="__codelineno-8-37" name="__codelineno-8-37" href="#__codelineno-8-37"></a> 7 H    -0.880000   -0.000000    1.250000
+<a id="__codelineno-8-38" name="__codelineno-8-38" href="#__codelineno-8-38"></a>------------------------------------------
+<a id="__codelineno-8-39" name="__codelineno-8-39" href="#__codelineno-8-39"></a>
+<a id="__codelineno-8-40" name="__codelineno-8-40" href="#__codelineno-8-40"></a>===================================================
+<a id="__codelineno-8-41" name="__codelineno-8-41" href="#__codelineno-8-41"></a>Tfragmentator: Fusing Fragments
+<a id="__codelineno-8-42" name="__codelineno-8-42" href="#__codelineno-8-42"></a>===================================================
+<a id="__codelineno-8-43" name="__codelineno-8-43" href="#__codelineno-8-43"></a>Fusing Fragment 0 (atom 0) with Fragment 2 (atom 1)
+</code></pre></div>
+<p><a id="sec:essentialelements.fragmentation.inputfile.delete"></a></p>
+<h3 id="delete">自动片段划分：Delete 与高级片段划分工作流<a class="headerlink" href="#delete" title="Permanent link">&para;</a></h3>
+<p>几乎所有的片段划分方案都有一个对应的删除（delete）流程，用于移除该特定方案生成的片段。这使得构建高级片段划分工作流成为可能，其中一个流程可以临时"保护"某些原子不被后续方法划分。这些受保护的片段之后可以被删除，从而允许用不同的片段划分方法重新处理这些原子。</p>
+<p>考虑<a href="#sec:essentialelements.fragmentation.intdelaa">下面</a>的体系，它同时包含一个苯丙氨酸分子和一个苯分子。目标是把苯丙氨酸划分为它的主链、一个 CH<sub>2</sub> 基团和苯环，同时把苯划分为六个独立的 CH 片段。</p>
+<p>一方面，通过组合三个片段划分流程——<code>FragProc AABackbone, Extend, AASCFinegrained</code>——可以实现苯丙氨酸所需的片段划分。<code>AABackbone</code> 和 <code>Extend</code> 选项识别氨基酸主链，而 <code>AASCFinegrained</code> 把 CH<sub>2</sub> 基团和苯环分离为不同的片段。同时，可以用 <code>FragProc Extlib</code> 通过定义 CH 片段的外部库把苯分子划分为六个独立的 CH 片段。然而这两种片段划分方案并不兼容。当对整个体系应用 <code>FragProc AASCFinegrained</code> 时，它不仅会划分苯丙氨酸侧链，还会把苯环拆成一个苯基和一个氢原子。反之，如果先对苯应用 <code>FragProc Extlib</code>，它可能无意中划分苯丙氨酸残基，导致不希望的结构拆分。</p>
+<p>实现目标片段划分的一种可行方法是先用 <code>FragProc Aminoacids</code> 识别氨基酸。该流程分配所有属于氨基酸片段的原子，从而保护它们不被后续片段划分步骤重新分配。然后可以用 <code>FragProc Extlib</code> 通过外部库划分苯分子。最后用 <code>FragProc DelAminoacids</code> 删除苯丙氨酸片段，以便按需要重新划分。所有这些操作只需按如下方式串联流程即可执行：<code>FragProc Aminoacids, Extlib, DelAminoacids, AABackbone, Extend, AASCFinegrained</code></p>
+<p><a id="sec:essentialelements.fragmentation.intdelaa"></a></p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 17">
+<pre class="mol-xyz" data-format="xyz">35
+structure (0 1)
+O      1.300780     3.093320     1.571260
+C      0.407700     2.826000     0.770390
+O     -0.101890     3.606620    -0.030470
+C     -0.115350     1.396690     0.770390
+N     -1.564350     1.396690     0.770390
+H     -1.900780     1.872730     1.595200
+H      0.242580     0.884560     1.663540
+H     -1.901490     0.444630     0.770390
+H     -1.901016     1.873069    -0.054118
+C      0.436090     0.696200    -0.461750
+H      1.512450     0.863150    -0.502770
+H     -0.018950     1.150700    -1.341790
+C      0.178410    -0.790680    -0.515340
+C     -0.895760    -1.288470    -1.262580
+C     -1.134680    -2.667040    -1.312270
+C     -0.299410    -3.547820    -0.614730
+C      0.774760    -3.050040     0.132500
+C      1.013680    -1.671470     0.182200
+H      1.842330    -1.287460     0.758630
+H      1.419110    -3.729500     0.670600
+H     -0.483720    -4.611290    -0.653070
+H     -1.963330    -3.051050    -1.888700
+H     -1.540110    -0.609010    -1.800680
+C      1.181325    -3.732146    -2.620584
+C      2.016592    -4.612923    -1.923046
+C      3.090772    -4.115131    -1.175824
+C      3.329684    -2.736563    -1.126139
+C      2.494417    -1.855785    -1.823677
+C      1.420237    -2.353577    -2.570900
+H      0.770518    -1.668458    -3.113485
+H      0.422252    -4.288369    -3.129823
+H      1.830753    -5.685253    -1.961693
+H      3.740491    -4.800250    -0.633239
+H      4.165243    -2.349352    -0.544907
+H      2.680256    -0.783455    -1.785030</pre>
+<pre class="mol-input">%frag
+  PrintLevel 3
+  FragProc Aminoacids, Extlib, DelAminoacids, AABackbone, Extend, AASCFinegrained
+  XZYFRAGLIB &quot;Mylib.xyz&quot;
+  STOREFRAGS true
+end
+
+*xyz 0 1
+ O     1.300780     3.093320     1.571260
+ C     0.407700     2.826000     0.770390
+ O    -0.101890     3.606620    -0.030470
+ C    -0.115350     1.396690     0.770390
+ N    -1.564350     1.396690     0.770390
+ H    -1.900780     1.872730     1.595200
+ H     0.242580     0.884560     1.663540
+ H    -1.901490     0.444630     0.770390
+ H    -1.901016     1.873069    -0.054118
+ C     0.436090     0.696200    -0.461750
+ H     1.512450     0.863150    -0.502770
+ H    -0.018950     1.150700    -1.341790
+ C     0.178410    -0.790680    -0.515340
+ C    -0.895760    -1.288470    -1.262580
+ C    -1.134680    -2.667040    -1.312270
+ C    -0.299410    -3.547820    -0.614730
+ C     0.774760    -3.050040     0.132500
+ C     1.013680    -1.671470     0.182200
+ H     1.842330    -1.287460     0.758630
+ H     1.419110    -3.729500     0.670600
+ H    -0.483720    -4.611290    -0.653070
+ H    -1.963330    -3.051050    -1.888700
+ H    -1.540110    -0.609010    -1.800680
+ C     1.181325    -3.732146    -2.620584
+ C     2.016592    -4.612923    -1.923046
+ C     3.090772    -4.115131    -1.175824
+ C     3.329684    -2.736563    -1.126139
+ C     2.494417    -1.855785    -1.823677
+ C     1.420237    -2.353577    -2.570900
+ H     0.770518    -1.668458    -3.113485
+ H     0.422252    -4.288369    -3.129823
+ H     1.830753    -5.685253    -1.961693
+ H     3.740491    -4.800250    -0.633239
+ H     4.165243    -2.349352    -0.544907
+ H     2.680256    -0.783455    -1.785030
+*</pre>
+</div>
+
+<p>其中本例的 "Mylib.xyz" 为：</p>
+<div class="mol-panel" data-mol-theme="chem311" data-mol-height="320px" data-mol-repr="ball-stick" data-mol-title="structure 18">
+<pre class="mol-xyz" data-format="xyz">2
+NAME CH
+C          0.00         0.00         0.00
+H          1.08         0.00         0.00</pre>
+<pre class="mol-input"></pre>
+</div>
+
+<p>完整的片段划分序列与前面的例子结构相同。在本例中，<code>Ext_lib</code> 完成片段分配后会打印消息 <code>Deleted 1 fragments</code>，表明先前由 <code>FragProc Aminoacids</code> 定义的一个片段已被成功移除。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>===================================================
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>Tfragmentator: Fragmenting by Amino_Acids
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>===================================================
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>------------------------------------------
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a> Match: 1, Assigned Fragment: 1
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>------------------------------------------
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>  Name:  CPHE Method: Amino_Acids
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>  Natoms: 21 Charge: -1 Mult: 1
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a> 0 O     1.300780    3.093320    1.571260
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a> 1 C     0.407700    2.826000    0.770390
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a> 2 O    -0.101890    3.606620   -0.030470
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a> 3 C    -0.115350    1.396690    0.770390
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a> 4 N    -1.564350    1.396690    0.770390
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a> 5 H    -1.900780    1.872730    1.595200
+<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a> 6 H     0.242580    0.884560    1.663540
+<a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a> 9 C     0.436090    0.696200   -0.461750
+<a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a> 10 H     1.512450    0.863150   -0.502770
+<a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a> 11 H    -0.018950    1.150700   -1.341790
+<a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a> 12 C     0.178410   -0.790680   -0.515340
+<a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a> 13 C    -0.895760   -1.288470   -1.262580
+<a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a> 14 C    -1.134680   -2.667040   -1.312270
+<a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a> 15 C    -0.299410   -3.547820   -0.614730
+<a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a> 16 C     0.774760   -3.050040    0.132500
+<a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a> 17 C     1.013680   -1.671470    0.182200
+<a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a> 18 H     1.842330   -1.287460    0.758630
+<a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a> 19 H     1.419110   -3.729500    0.670600
+<a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a> 20 H    -0.483720   -4.611290   -0.653070
+<a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a> 21 H    -1.963330   -3.051050   -1.888700
+<a id="__codelineno-9-31" name="__codelineno-9-31" href="#__codelineno-9-31"></a> 22 H    -1.540110   -0.609010   -1.800680
+<a id="__codelineno-9-32" name="__codelineno-9-32" href="#__codelineno-9-32"></a>------------------------------------------
+<a id="__codelineno-9-33" name="__codelineno-9-33" href="#__codelineno-9-33"></a>
+<a id="__codelineno-9-34" name="__codelineno-9-34" href="#__codelineno-9-34"></a>===================================================
+<a id="__codelineno-9-35" name="__codelineno-9-35" href="#__codelineno-9-35"></a>Tfragmentator: Fragmenting by Ext_lib
+<a id="__codelineno-9-36" name="__codelineno-9-36" href="#__codelineno-9-36"></a>===================================================
+<a id="__codelineno-9-37" name="__codelineno-9-37" href="#__codelineno-9-37"></a>****
+<a id="__codelineno-9-38" name="__codelineno-9-38" href="#__codelineno-9-38"></a>**** There are 1 Ref structures found in file Mylib.xyz
+<a id="__codelineno-9-39" name="__codelineno-9-39" href="#__codelineno-9-39"></a>****
+<a id="__codelineno-9-40" name="__codelineno-9-40" href="#__codelineno-9-40"></a>
+<a id="__codelineno-9-41" name="__codelineno-9-41" href="#__codelineno-9-41"></a>------------------------------------------
+<a id="__codelineno-9-42" name="__codelineno-9-42" href="#__codelineno-9-42"></a> Match: 1, Assigned Fragment: 2
+<a id="__codelineno-9-43" name="__codelineno-9-43" href="#__codelineno-9-43"></a>------------------------------------------
+<a id="__codelineno-9-44" name="__codelineno-9-44" href="#__codelineno-9-44"></a>  Name:  CH Method: Ext_lib
+<a id="__codelineno-9-45" name="__codelineno-9-45" href="#__codelineno-9-45"></a>  Natoms: 2 Charge: 0 Mult: 1
+<a id="__codelineno-9-46" name="__codelineno-9-46" href="#__codelineno-9-46"></a>
+<a id="__codelineno-9-47" name="__codelineno-9-47" href="#__codelineno-9-47"></a> 23 C     1.181325   -3.732146   -2.620584
+<a id="__codelineno-9-48" name="__codelineno-9-48" href="#__codelineno-9-48"></a> 30 H     0.422252   -4.288369   -3.129823
+<a id="__codelineno-9-49" name="__codelineno-9-49" href="#__codelineno-9-49"></a>------------------------------------------
+<a id="__codelineno-9-50" name="__codelineno-9-50" href="#__codelineno-9-50"></a>
+<a id="__codelineno-9-51" name="__codelineno-9-51" href="#__codelineno-9-51"></a>------------------------------------------
+<a id="__codelineno-9-52" name="__codelineno-9-52" href="#__codelineno-9-52"></a> Match: 2, Assigned Fragment: 3
+<a id="__codelineno-9-53" name="__codelineno-9-53" href="#__codelineno-9-53"></a>------------------------------------------
+<a id="__codelineno-9-54" name="__codelineno-9-54" href="#__codelineno-9-54"></a>  Name:  CH Method: Ext_lib
+<a id="__codelineno-9-55" name="__codelineno-9-55" href="#__codelineno-9-55"></a>  Natoms: 2 Charge: 0 Mult: 1
+<a id="__codelineno-9-56" name="__codelineno-9-56" href="#__codelineno-9-56"></a>
+<a id="__codelineno-9-57" name="__codelineno-9-57" href="#__codelineno-9-57"></a> 24 C     2.016592   -4.612923   -1.923046
+<a id="__codelineno-9-58" name="__codelineno-9-58" href="#__codelineno-9-58"></a> 31 H     1.830753   -5.685253   -1.961693
+<a id="__codelineno-9-59" name="__codelineno-9-59" href="#__codelineno-9-59"></a>------------------------------------------
+<a id="__codelineno-9-60" name="__codelineno-9-60" href="#__codelineno-9-60"></a>
+<a id="__codelineno-9-61" name="__codelineno-9-61" href="#__codelineno-9-61"></a>...
+<a id="__codelineno-9-62" name="__codelineno-9-62" href="#__codelineno-9-62"></a>
+<a id="__codelineno-9-63" name="__codelineno-9-63" href="#__codelineno-9-63"></a>------------------------------------------
+<a id="__codelineno-9-64" name="__codelineno-9-64" href="#__codelineno-9-64"></a> Match: 6, Assigned Fragment: 7
+<a id="__codelineno-9-65" name="__codelineno-9-65" href="#__codelineno-9-65"></a>------------------------------------------
+<a id="__codelineno-9-66" name="__codelineno-9-66" href="#__codelineno-9-66"></a>  Name:  CH Method: Ext_lib
+<a id="__codelineno-9-67" name="__codelineno-9-67" href="#__codelineno-9-67"></a>  Natoms: 2 Charge: 0 Mult: 1
+<a id="__codelineno-9-68" name="__codelineno-9-68" href="#__codelineno-9-68"></a>
+<a id="__codelineno-9-69" name="__codelineno-9-69" href="#__codelineno-9-69"></a> 28 C     1.420237   -2.353577   -2.570900
+<a id="__codelineno-9-70" name="__codelineno-9-70" href="#__codelineno-9-70"></a> 29 H     0.770518   -1.668458   -3.113485
+<a id="__codelineno-9-71" name="__codelineno-9-71" href="#__codelineno-9-71"></a>------------------------------------------
+<a id="__codelineno-9-72" name="__codelineno-9-72" href="#__codelineno-9-72"></a>
+<a id="__codelineno-9-73" name="__codelineno-9-73" href="#__codelineno-9-73"></a>===================================================
+<a id="__codelineno-9-74" name="__codelineno-9-74" href="#__codelineno-9-74"></a>Tfragmentator: Deleting Fragments (Amino_Acids)
+<a id="__codelineno-9-75" name="__codelineno-9-75" href="#__codelineno-9-75"></a>===================================================
+<a id="__codelineno-9-76" name="__codelineno-9-76" href="#__codelineno-9-76"></a> Deleted 1 fragments
+<a id="__codelineno-9-77" name="__codelineno-9-77" href="#__codelineno-9-77"></a>===================================================
+<a id="__codelineno-9-78" name="__codelineno-9-78" href="#__codelineno-9-78"></a>Tfragmentator: Fragmenting by Backbone
+<a id="__codelineno-9-79" name="__codelineno-9-79" href="#__codelineno-9-79"></a>===================================================
+<a id="__codelineno-9-80" name="__codelineno-9-80" href="#__codelineno-9-80"></a>
+<a id="__codelineno-9-81" name="__codelineno-9-81" href="#__codelineno-9-81"></a>------------------------------------------
+<a id="__codelineno-9-82" name="__codelineno-9-82" href="#__codelineno-9-82"></a> Match: 1, Assigned Fragment: 7
+<a id="__codelineno-9-83" name="__codelineno-9-83" href="#__codelineno-9-83"></a>------------------------------------------
+<a id="__codelineno-9-84" name="__codelineno-9-84" href="#__codelineno-9-84"></a>  Name: CO-NH3-CH Method: AA_Backbone
+<a id="__codelineno-9-85" name="__codelineno-9-85" href="#__codelineno-9-85"></a>  Natoms: 8 Charge: 0 Mult: 0
+<a id="__codelineno-9-86" name="__codelineno-9-86" href="#__codelineno-9-86"></a>
+<a id="__codelineno-9-87" name="__codelineno-9-87" href="#__codelineno-9-87"></a> 0 O     1.300780    3.093320    1.571260
+<a id="__codelineno-9-88" name="__codelineno-9-88" href="#__codelineno-9-88"></a> 1 C     0.407700    2.826000    0.770390
+<a id="__codelineno-9-89" name="__codelineno-9-89" href="#__codelineno-9-89"></a> 3 C    -0.115350    1.396690    0.770390
+<a id="__codelineno-9-90" name="__codelineno-9-90" href="#__codelineno-9-90"></a> 4 N    -1.564350    1.396690    0.770390
+<a id="__codelineno-9-91" name="__codelineno-9-91" href="#__codelineno-9-91"></a> 5 H    -1.900780    1.872730    1.595200
+<a id="__codelineno-9-92" name="__codelineno-9-92" href="#__codelineno-9-92"></a> 6 H     0.242580    0.884560    1.663540
+<a id="__codelineno-9-93" name="__codelineno-9-93" href="#__codelineno-9-93"></a> 7 H    -1.901490    0.444630    0.770390
+<a id="__codelineno-9-94" name="__codelineno-9-94" href="#__codelineno-9-94"></a> 8 H    -1.901016    1.873069   -0.054118
+<a id="__codelineno-9-95" name="__codelineno-9-95" href="#__codelineno-9-95"></a>------------------------------------------
+<a id="__codelineno-9-96" name="__codelineno-9-96" href="#__codelineno-9-96"></a>===================================================
+<a id="__codelineno-9-97" name="__codelineno-9-97" href="#__codelineno-9-97"></a>Tfragmentator: Extending Fragments
+<a id="__codelineno-9-98" name="__codelineno-9-98" href="#__codelineno-9-98"></a>===================================================
+<a id="__codelineno-9-99" name="__codelineno-9-99" href="#__codelineno-9-99"></a> Extending Fragment 6 with O  (2)
+<a id="__codelineno-9-100" name="__codelineno-9-100" href="#__codelineno-9-100"></a>
+<a id="__codelineno-9-101" name="__codelineno-9-101" href="#__codelineno-9-101"></a>===================================================
+<a id="__codelineno-9-102" name="__codelineno-9-102" href="#__codelineno-9-102"></a>Tfragmentator: Fragmenting by AA_SideChains_FG
+<a id="__codelineno-9-103" name="__codelineno-9-103" href="#__codelineno-9-103"></a>===================================================
+<a id="__codelineno-9-104" name="__codelineno-9-104" href="#__codelineno-9-104"></a>
+<a id="__codelineno-9-105" name="__codelineno-9-105" href="#__codelineno-9-105"></a>------------------------------------------
+<a id="__codelineno-9-106" name="__codelineno-9-106" href="#__codelineno-9-106"></a> Match: 1, Assigned Fragment: 8
+<a id="__codelineno-9-107" name="__codelineno-9-107" href="#__codelineno-9-107"></a>------------------------------------------
+<a id="__codelineno-9-108" name="__codelineno-9-108" href="#__codelineno-9-108"></a>  Name: Ph Method: AA_SideChains_FG
+<a id="__codelineno-9-109" name="__codelineno-9-109" href="#__codelineno-9-109"></a>  Natoms: 11 Charge: 0 Mult: 1
+<a id="__codelineno-9-110" name="__codelineno-9-110" href="#__codelineno-9-110"></a>
+<a id="__codelineno-9-111" name="__codelineno-9-111" href="#__codelineno-9-111"></a> 12 C     0.178410   -0.790680   -0.515340
+<a id="__codelineno-9-112" name="__codelineno-9-112" href="#__codelineno-9-112"></a> 13 C    -0.895760   -1.288470   -1.262580
+<a id="__codelineno-9-113" name="__codelineno-9-113" href="#__codelineno-9-113"></a> 14 C    -1.134680   -2.667040   -1.312270
+<a id="__codelineno-9-114" name="__codelineno-9-114" href="#__codelineno-9-114"></a> 15 C    -0.299410   -3.547820   -0.614730
+<a id="__codelineno-9-115" name="__codelineno-9-115" href="#__codelineno-9-115"></a> 16 C     0.774760   -3.050040    0.132500
+<a id="__codelineno-9-116" name="__codelineno-9-116" href="#__codelineno-9-116"></a> 17 C     1.013680   -1.671470    0.182200
+<a id="__codelineno-9-117" name="__codelineno-9-117" href="#__codelineno-9-117"></a> 18 H     1.842330   -1.287460    0.758630
+<a id="__codelineno-9-118" name="__codelineno-9-118" href="#__codelineno-9-118"></a> 19 H     1.419110   -3.729500    0.670600
+<a id="__codelineno-9-119" name="__codelineno-9-119" href="#__codelineno-9-119"></a> 20 H    -0.483720   -4.611290   -0.653070
+<a id="__codelineno-9-120" name="__codelineno-9-120" href="#__codelineno-9-120"></a> 21 H    -1.963330   -3.051050   -1.888700
+<a id="__codelineno-9-121" name="__codelineno-9-121" href="#__codelineno-9-121"></a> 22 H    -1.540110   -0.609010   -1.800680
+<a id="__codelineno-9-122" name="__codelineno-9-122" href="#__codelineno-9-122"></a>------------------------------------------
+<a id="__codelineno-9-123" name="__codelineno-9-123" href="#__codelineno-9-123"></a>
+<a id="__codelineno-9-124" name="__codelineno-9-124" href="#__codelineno-9-124"></a>------------------------------------------
+<a id="__codelineno-9-125" name="__codelineno-9-125" href="#__codelineno-9-125"></a> Match: 1, Assigned Fragment: 9
+<a id="__codelineno-9-126" name="__codelineno-9-126" href="#__codelineno-9-126"></a>------------------------------------------
+<a id="__codelineno-9-127" name="__codelineno-9-127" href="#__codelineno-9-127"></a>  Name: CH2 Method: AA_SideChains_FG
+<a id="__codelineno-9-128" name="__codelineno-9-128" href="#__codelineno-9-128"></a>  Natoms: 3 Charge: 0 Mult: 1
+<a id="__codelineno-9-129" name="__codelineno-9-129" href="#__codelineno-9-129"></a>
+<a id="__codelineno-9-130" name="__codelineno-9-130" href="#__codelineno-9-130"></a> 9 C     0.436090    0.696200   -0.461750
+<a id="__codelineno-9-131" name="__codelineno-9-131" href="#__codelineno-9-131"></a> 10 H     1.512450    0.863150   -0.502770
+<a id="__codelineno-9-132" name="__codelineno-9-132" href="#__codelineno-9-132"></a> 11 H    -0.018950    1.150700   -1.341790
+<a id="__codelineno-9-133" name="__codelineno-9-133" href="#__codelineno-9-133"></a>------------------------------------------
+</code></pre></div>
+<p>表 <a href="#tab:essentialelements.delprocedures">tab:essentialelements.delprocedures</a> 列出了与每种片段划分方法对应的删除流程。</p>
+<p><a id="tab:essentialelements.delprocedures"></a></p>
+<div class="admonition note">
+<p class="admonition-title">片段检测的简单输入关键字及其对应的删除流程</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Fragment detection Keyword</th>
+<th style="text-align: left;">Fragment deletion Keyword</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>Extlib</code></td>
+<td style="text-align: left;"><code>DELExtlib</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Connectivity</code></td>
+<td style="text-align: left;"><code>DELConnectivity</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Atomic</code></td>
+<td style="text-align: left;"><code>DELAtomic</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FunctionalGroups</code></td>
+<td style="text-align: left;"><code>DELFunctionalGroups</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>NotAssigned</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Backbone</code></td>
+<td style="text-align: left;"><code>DELBackbone</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>SeqBackbone</code></td>
+<td style="text-align: left;"><code>DELSeqBackbone</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>AABackbone</code></td>
+<td style="text-align: left;"><code>DELAABackbone</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Aminoacids</code></td>
+<td style="text-align: left;"><code>DELAminoacids</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>AASideChains</code></td>
+<td style="text-align: left;"><code>DELAASideChains</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>AASCFineGrained</code></td>
+<td style="text-align: left;"><code>DELAASCFineGrained</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>NABackbone</code></td>
+<td style="text-align: left;"><code>DELNABackbone</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>NABBFineGrained</code></td>
+<td style="text-align: left;"><code>DELNABBFineGrained</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>SEQNABackbone</code></td>
+<td style="text-align: left;"><code>DELSEQNABackbone</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>NucleoticAcid</code></td>
+<td style="text-align: left;"><code>DELNucleoticAcid</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>NASideChains</code></td>
+<td style="text-align: left;"><code>DELNASideChains</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Solvents</code></td>
+<td style="text-align: left;"><code>DELSolvents</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Water</code></td>
+<td style="text-align: left;"><code>DELWater</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Extend</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FuseByAtoms</code></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a id="sec:essentialelements.fragmentation.inputfile.keywordlist"></a></p>
+<h2 id="frag"><code>%frag</code> 输入块中的可用选项<a class="headerlink" href="#frag" title="Permanent link">&para;</a></h2>
+<p>表 <a href="#tab:essentialelements.keywordlist">tab:essentialelements.keywordlist</a> 包含 <code>%frag</code> 输入块中可用选项的列表。</p>
+<p><a id="tab:essentialelements.keywordlist"></a></p>
+<div class="admonition note">
+<p class="admonition-title"><code>%frag</code> 输入块中的选项列表</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Printlevel</code></td>
+<td>Integer</td>
+<td><code>1</code></td>
+<td>自动片段划分的详细输出控制。</td>
+</tr>
+<tr>
+<td><code>STOREFRAGS</code></td>
+<td>Boolean</td>
+<td><code>False</code></td>
+<td>将已分配的片段存储到 <code>.fragments.xyz</code> 文件中。</td>
+</tr>
+<tr>
+<td><code>DoInterFragBonds</code></td>
+<td>Boolean</td>
+<td><code>False</code></td>
+<td>自动检测片段之间的键，用于 CoVaLED 分析。</td>
+</tr>
+<tr>
+<td><code>XZYFRAGLIB</code></td>
+<td>String</td>
+<td><code>None</code></td>
+<td><code>FragProc Extlib</code> 中使用的文件名。</td>
+</tr>
+<tr>
+<td><code>FragProc</code></td>
+<td>参见 <a href="#tab:essentialelements.fragmentationprocedures">tab:essentialelements.fragmentationprocedures</a> 和 <a href="#tab:essentialelements.delprocedures">tab:essentialelements.delprocedures</a></td>
+<td><code>ExtLib, Connectivity</code></td>
+<td>要自动应用的片段划分流程。</td>
+</tr>
+<tr>
+<td><code>Usetopology</code></td>
+<td>Boolean</td>
+<td><code>False</code></td>
+<td>基于 .prms 文件生成主几何图。</td>
+</tr>
+<tr>
+<td><code>TopolFile</code></td>
+<td>String</td>
+<td><code>""</code></td>
+<td>当 <code>Usetopology True</code> 时使用的拓扑文件名</td>
+</tr>
+<tr>
+<td><code>PrintInputFrags</code></td>
+<td>Boolean</td>
+<td><code>True</code></td>
+<td>写出与当前计算片段等价的 <code>%frag</code> 模块块。</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "toc.follow"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../../../javascripts/mathjax.js"></script>
+      
+        <script src="../../../../../javascripts/mathjax/tex-mml-chtml.js"></script>
+      
+        <script src="../../../../../javascripts/math-instant.js"></script>
+      
+        <script src="../../../../../javascripts/fast-mol-viewer.iife.js"></script>
+      
+        <script src="../../../../../javascripts/mol-embed.js"></script>
+      
+        <script src="../../../../../javascripts/tabs-pin.js"></script>
+      
+    
+  </body>
+</html>
