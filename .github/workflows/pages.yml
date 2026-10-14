@@ -28,6 +28,13 @@ jobs:
       - run: npm run build
       # The Studio is a local writing tool; the published site must not carry it.
       - run: test ! -e dist/studio && ! grep -q '/studio' dist/sitemap-0.xml
+      # The documentation sites under /doc/ (Multiwfn, Gaussian, ORCA…) are built in
+      # their own repos, which push them to the doc-sites branch; they go out with the blog.
+      - uses: actions/checkout@v4
+        with:
+          ref: doc-sites
+          path: doc-sites
+      - run: test ! -e dist/doc && cp -R doc-sites/doc dist/doc && test -f dist/doc/index.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
