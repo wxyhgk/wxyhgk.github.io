@@ -1,12 +1,20 @@
 import katex from 'katex';
 import 'katex/contrib/mhchem';
 
-import { katexOptions, lenientOptions } from './katex-options.mjs';
+import { prepareFormula, type EquationLabel } from './equations.mjs';
+import { katexOptions, lenientOptions, macrosFor } from './katex-options.mjs';
 
 export type MathRenderResult = {
 	html: string;
 	error?: string;
 };
+
+let macros = macrosFor(null);
+
+/** The article being edited: its formulas use the site's macros, then its own `macros:`. */
+export function useArticleMacros(articleMacros: unknown): void {
+	macros = macrosFor(articleMacros);
+}
 
 function errorMessage(error: unknown): string {
 	return error instanceof Error ? error.message : '无法渲染公式';
@@ -26,17 +34,19 @@ function escapeHtml(value: string): string {
  *
  * Parse failures are represented in the returned HTML and `error`; callers do
  * not need a try/catch. `mhchem` is registered on the same KaTeX instance.
+ * `\label`s are dropped and `\eqref`s shown from `labels` (`equations.mjs`).
  */
-export function renderMathHtml(latex: string, displayMode: boolean): MathRenderResult {
+export function renderMathHtml(latex: string, displayMode: boolean, labels?: Map<string, EquationLabel>): MathRenderResult {
+	const source = prepareFormula(latex, labels);
 	try {
 		return {
-			html: katex.renderToString(latex, { ...katexOptions, displayMode }),
+			html: katex.renderToString(source, { ...katexOptions, macros, displayMode }),
 		};
 	} catch (error) {
 		const message = errorMessage(error);
 		try {
 			return {
-				html: katex.renderToString(latex, { ...katexOptions, ...lenientOptions, displayMode }),
+				html: katex.renderToString(source, { ...katexOptions, ...lenientOptions, macros, displayMode }),
 				error: message,
 			};
 		} catch {
