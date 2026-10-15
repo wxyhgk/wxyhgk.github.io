@@ -5,8 +5,10 @@ import mdx from '@astrojs/mdx';
 import { unified } from '@astrojs/markdown-remark';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
+import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import articleAssets from './src/plugins/article-assets.mjs';
+import { gfmOptions } from './src/plugins/markdown-gfm.mjs';
 import rehypeArticleHtml from './src/plugins/rehype-article-html.mjs';
 import rehypeKatexMhchem from './src/plugins/rehype-katex-mhchem.mjs';
 import remarkMathBrackets from './src/plugins/remark-math-brackets.mjs';
@@ -57,7 +59,9 @@ export default defineConfig({
 	integrations: [mdx(), sitemap(), articleAssets(), studioPage()],
 	markdown: {
 		processor: unified({
-			remarkPlugins: [remarkMath, remarkMathBrackets],
+			// GitHub's Markdown with our options, in place of Astro's.
+			gfm: false,
+			remarkPlugins: [[remarkGfm, gfmOptions], remarkMath, remarkMathBrackets],
 			// Raw HTML in an article becomes elements, without scripts, event handlers or javascript: links.
 			rehypePlugins: [rehypeArticleHtml, rehypeKatexMhchem],
 		}),
