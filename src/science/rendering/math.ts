@@ -1,16 +1,11 @@
 import katex from 'katex';
 import 'katex/contrib/mhchem';
 
+import { katexOptions, lenientOptions } from './katex-options.mjs';
+
 export type MathRenderResult = {
 	html: string;
 	error?: string;
-};
-
-const BASE_OPTIONS: katex.KatexOptions = {
-	trust: false,
-	strict: 'warn',
-	throwOnError: true,
-	output: 'htmlAndMathml',
 };
 
 function errorMessage(error: unknown): string {
@@ -35,18 +30,13 @@ function escapeHtml(value: string): string {
 export function renderMathHtml(latex: string, displayMode: boolean): MathRenderResult {
 	try {
 		return {
-			html: katex.renderToString(latex, { ...BASE_OPTIONS, displayMode }),
+			html: katex.renderToString(latex, { ...katexOptions, displayMode }),
 		};
 	} catch (error) {
 		const message = errorMessage(error);
 		try {
 			return {
-				html: katex.renderToString(latex, {
-					...BASE_OPTIONS,
-					displayMode,
-					strict: 'ignore',
-					throwOnError: false,
-				}),
+				html: katex.renderToString(latex, { ...katexOptions, ...lenientOptions, displayMode }),
 				error: message,
 			};
 		} catch {
