@@ -1,5 +1,6 @@
 // @ts-check
 
+import { fileURLToPath } from 'node:url';
 import mdx from '@astrojs/mdx';
 import { unified } from '@astrojs/markdown-remark';
 import sitemap from '@astrojs/sitemap';
@@ -9,6 +10,7 @@ import articleAssets from './src/plugins/article-assets.mjs';
 import rehypeArticleHtml from './src/plugins/rehype-article-html.mjs';
 import rehypeKatexMhchem from './src/plugins/rehype-katex-mhchem.mjs';
 import remarkMathBrackets from './src/plugins/remark-math-brackets.mjs';
+import milkdownSource from './src/plugins/milkdown-source.mjs';
 import studioDev from './src/plugins/studio-dev.mjs';
 
 const chemistryLanguages = [
@@ -65,7 +67,7 @@ export default defineConfig({
 		},
 	},
 	vite: {
-		plugins: [studioDev()],
+		plugins: [milkdownSource({ root: fileURLToPath(new URL('.', import.meta.url)) }), studioDev()],
 	},
 	fonts: [
 		{
