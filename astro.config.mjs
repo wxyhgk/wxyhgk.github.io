@@ -5,40 +5,11 @@ import mdx from '@astrojs/mdx';
 import { unified } from '@astrojs/markdown-remark';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
 import { codeFileFenceNames } from './src/code-files/languages.mjs';
 import articleAssets from './src/plugins/article-assets.mjs';
-import { gfmOptions } from './src/plugins/markdown-gfm.mjs';
-import rehypeArticleHtml from './src/plugins/rehype-article-html.mjs';
-import rehypeKatexMhchem from './src/plugins/rehype-katex-mhchem.mjs';
-import remarkCodeFiles from './src/plugins/remark-code-files.mjs';
-import remarkFigures from './src/plugins/remark-figures.mjs';
-import remarkMathBrackets from './src/plugins/remark-math-brackets.mjs';
+import { chemistryLanguages, rehypePlugins, remarkPlugins } from './src/plugins/markdown-pipeline.mjs';
 import milkdownSource from './src/plugins/milkdown-source.mjs';
 import studioDev from './src/plugins/studio-dev.mjs';
-
-const chemistryLanguages = [
-	'smiles',
-	'sdf',
-	'mol',
-	'xyz',
-	'gjf',
-	'com',
-	'pdb',
-	'mol2',
-	'cif',
-	'cube',
-	'sdf-2d',
-	'mol-2d',
-	'sdf-3d',
-	'mol-3d',
-	'xyz-3d',
-	'pdb-3d',
-	'mol2-3d',
-	'cif-3d',
-	'cube-3d',
-];
 
 /**
  * The Studio is a writing tool for this machine only: its page joins the dev
@@ -61,13 +32,8 @@ export default defineConfig({
 	site: 'https://wxyhgk.github.io',
 	integrations: [mdx(), sitemap(), articleAssets(), studioPage()],
 	markdown: {
-		processor: unified({
-			// GitHub's Markdown with our options, in place of Astro's.
-			gfm: false,
-			remarkPlugins: [[remarkGfm, gfmOptions], remarkMath, remarkMathBrackets, [remarkCodeFiles, { skip: chemistryLanguages }], remarkFigures],
-			// Raw HTML in an article becomes elements, without scripts, event handlers or javascript: links.
-			rehypePlugins: [rehypeArticleHtml, rehypeKatexMhchem],
-		}),
+		// Our plugins (markdown-pipeline.mjs), with GitHub's Markdown on our options in place of Astro's.
+		processor: unified({ gfm: false, remarkPlugins, rehypePlugins }),
 		syntaxHighlight: {
 			type: 'shiki',
 			// Molecules are drawn in the page; code files are highlighted by remark-code-files.

@@ -9,10 +9,17 @@ const THREE_D_FORMATS: Readonly<Record<string, MoleculeViewerFormat>> = {
 	'mol2-3d': 'mol2', 'cif-3d': 'cif', 'cube-3d': 'cube',
 };
 
+/**
+ * Every fence language drawn as a molecule: the build leaves these to the
+ * page (no code highlighting, no code-file frame), the Studio makes them
+ * chemistry blocks. A new format is added in the tables above, and only there.
+ */
+export const MOLECULE_LANGUAGES: readonly string[] = Object.freeze(['sdf', 'mol', ...EXPLICIT_TWO_D_FORMATS, ...Object.keys(THREE_D_FORMATS)]);
+const MOLECULE_LANGUAGE_SET = new Set(MOLECULE_LANGUAGES);
+
 /** Whether a fence's language is a molecular format, judged from the language alone, so it never throws. */
 export function isMoleculeLanguage(languageInput: string): boolean {
-	const language = languageInput.trim().toLowerCase();
-	return language === 'sdf' || language === 'mol' || EXPLICIT_TWO_D_FORMATS.has(language) || language in THREE_D_FORMATS;
+	return MOLECULE_LANGUAGE_SET.has(languageInput.trim().toLowerCase());
 }
 
 /**
