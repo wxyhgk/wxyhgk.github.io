@@ -16,6 +16,11 @@ export function useArticleMacros(articleMacros: unknown): void {
 	macros = macrosFor(articleMacros);
 }
 
+/** The macros formulas use now: the site's, then the article's. */
+export function currentMacros(): Record<string, unknown> {
+	return macros;
+}
+
 function errorMessage(error: unknown): string {
 	return error instanceof Error ? error.message : '无法渲染公式';
 }
