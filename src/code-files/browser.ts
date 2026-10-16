@@ -59,7 +59,9 @@ function fold(figure: HTMLElement): void {
 	const button = document.createElement('button');
 	button.type = 'button';
 	button.className = 'code-file-unfold';
-	const label = (): string => (figure.classList.contains('is-folded') ? `展开全部 ${total} 行` : '收起');
+	// A file shown in part says how much unfolds, not that it is all of it.
+	const excerpt = lines.some((line) => line.classList.contains('code-file-gap'));
+	const label = (): string => (figure.classList.contains('is-folded') ? (excerpt ? `展开（显示 ${total} 行）` : `展开全部 ${total} 行`) : '收起');
 	button.textContent = label();
 	button.addEventListener('click', () => {
 		const folding = !figure.classList.contains('is-folded');
