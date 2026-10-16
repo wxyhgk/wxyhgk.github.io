@@ -14,9 +14,11 @@ interface Props {
 	crumbs: Crumb[];
 	editHref?: string;
 	wide?: boolean;
+	/** The page's icon, an emoji, shown above its title. */
+	icon?: string;
 }
 
-const { title, description = '', crumbs, editHref = '/studio', wide = false } = Astro.props;
+const { title, description = '', crumbs, editHref = '/studio', wide = false, icon } = Astro.props;
 const localStudio = import.meta.env.DEV;
 const { wiki, posts } = await loadCatalog();
 
@@ -82,7 +84,7 @@ const section = (href: string) => {
 								<nav class="side-pages" aria-label="维基条目">
 									{wiki.map((entry) => (
 										<a class="side-link page-link" href={articleHref(entry)} aria-current={exact(articleHref(entry)) ? 'page' : undefined}>
-											<span class="page-glyph" aria-hidden="true">{entry.data.title.slice(0, 1)}</span>
+											<span class:list={['page-glyph', { 'is-emoji': entry.data.icon }]} aria-hidden="true">{entry.data.icon ?? entry.data.title.slice(0, 1)}</span>
 											<span>{entry.data.title}</span>
 										</a>
 									))}
@@ -97,7 +99,7 @@ const section = (href: string) => {
 								<nav class="side-pages" aria-label="博客文章">
 									{posts.map((entry) => (
 										<a class="side-link page-link" href={articleHref(entry)} aria-current={exact(articleHref(entry)) ? 'page' : undefined}>
-											<span class="page-glyph" aria-hidden="true">{entry.data.title.slice(0, 1)}</span>
+											<span class:list={['page-glyph', { 'is-emoji': entry.data.icon }]} aria-hidden="true">{entry.data.icon ?? entry.data.title.slice(0, 1)}</span>
 											<span>{entry.data.title}</span>
 										</a>
 									))}
@@ -134,6 +136,7 @@ const section = (href: string) => {
 				<div class="workspace-scroll">
 					<slot name="cover" />
 					<article class:list={['notion-page', { 'is-wide': wide }]}>
+						{icon && <div class="notion-icon" aria-hidden="true">{icon}</div>}
 						<h1>{title}</h1>
 						{description && <p class="notion-lead">{description}</p>}
 						<slot name="properties" />
@@ -284,6 +287,7 @@ const section = (href: string) => {
 		font-size: 13px;
 		font-weight: 650;
 	}
+	.page-glyph.is-emoji { font-size: 14px; font-weight: 400; }
 	.workspace-canvas { display: flex; flex-direction: column; min-width: 0; height: 100vh; background: var(--surface); }
 	.workspace-top {
 		display: flex;
@@ -334,7 +338,11 @@ const section = (href: string) => {
 	.workspace-scroll > :global(.notion-cover img) { width: 100%; height: 100%; object-fit: cover; border-radius: 0; }
 	.notion-page { width: min(708px, calc(100% - 120px)); margin: 0 auto; padding: 72px 0 160px; }
 	.notion-page.is-wide { width: min(1040px, calc(100% - 96px)); }
-	.workspace-scroll:has(:global(.notion-cover)) .notion-page { padding-top: 28px; }
+	/* Astro drops a :global() inside :has(), so the whole selector is global. */
+	:global(.workspace-scroll:has(> .notion-cover) .notion-page) { padding-top: 28px; }
+	.notion-icon { margin: 0 0 10px; font-size: 64px; line-height: 1; }
+	/* Under a cover, the icon reaches into it, as in Notion. */
+	:global(.workspace-scroll:has(> .notion-cover) .notion-icon) { position: relative; margin-top: -68px; }
 	.notion-page > h1 { margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; }
 	.notion-lead { margin: 8px 0 0; color: rgb(var(--gray)); font-size: 16px; line-height: 1.6; }
 	.notion-page :global(.page-meta) { margin: 6px 0 0; color: rgb(var(--gray)); font-size: 14px; line-height: 1.5; }

@@ -22,7 +22,7 @@ type Props = CollectionEntry<'blog'>['data'] & {
 	chemistryViews?: Record<string, { format: string; view: number[]; display?: unknown }>;
 	articleSlug: string;
 };
-const { title, description, pubDate, updatedDate, heroImage, tags, kind, headings = [], chemistryViews = {}, articleSlug } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, icon, tags, kind, headings = [], chemistryViews = {}, articleSlug } = Astro.props;
 const wiki = kind === 'wiki';
 const { wiki: wikiPages, posts } = await loadCatalog();
 const current = [...wikiPages, ...posts].find((entry) => entry.id === articleSlug);
@@ -34,6 +34,7 @@ const related = current ? relatedArticles([...wikiPages, ...posts], current) : [
 	description={description}
 	crumbs={[{ label: SITE_TITLE, href: '/' }, { label: wiki ? '维基' : '博客', href: wiki ? '/wiki' : '/blog' }, { label: title }]}
 	editHref={`/studio?article=${articleSlug}`}
+	icon={icon}
 >
 	{heroImage && (
 		<div class="notion-cover" slot="cover">
