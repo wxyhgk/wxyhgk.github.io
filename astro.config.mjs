@@ -7,10 +7,12 @@ import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
+import { codeFileFenceNames } from './src/code-files/languages.mjs';
 import articleAssets from './src/plugins/article-assets.mjs';
 import { gfmOptions } from './src/plugins/markdown-gfm.mjs';
 import rehypeArticleHtml from './src/plugins/rehype-article-html.mjs';
 import rehypeKatexMhchem from './src/plugins/rehype-katex-mhchem.mjs';
+import remarkCodeFiles from './src/plugins/remark-code-files.mjs';
 import remarkMathBrackets from './src/plugins/remark-math-brackets.mjs';
 import milkdownSource from './src/plugins/milkdown-source.mjs';
 import studioDev from './src/plugins/studio-dev.mjs';
@@ -61,13 +63,14 @@ export default defineConfig({
 		processor: unified({
 			// GitHub's Markdown with our options, in place of Astro's.
 			gfm: false,
-			remarkPlugins: [[remarkGfm, gfmOptions], remarkMath, remarkMathBrackets],
+			remarkPlugins: [[remarkGfm, gfmOptions], remarkMath, remarkMathBrackets, [remarkCodeFiles, { skip: chemistryLanguages }]],
 			// Raw HTML in an article becomes elements, without scripts, event handlers or javascript: links.
 			rehypePlugins: [rehypeArticleHtml, rehypeKatexMhchem],
 		}),
 		syntaxHighlight: {
 			type: 'shiki',
-			excludeLangs: chemistryLanguages,
+			// Molecules are drawn in the page; code files are highlighted by remark-code-files.
+			excludeLangs: [...chemistryLanguages, ...codeFileFenceNames],
 		},
 	},
 	vite: {
