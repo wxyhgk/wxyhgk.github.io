@@ -77,11 +77,14 @@ function rows(body) {
 /**
  * Number the display formulas of one article, in order. Returns each one
  * ready for KaTeX (numbers as `\tag`, labels gone), the anchors each one
- * holds, and what every label stands for.
+ * holds, what every label stands for, and the labels given again later
+ * (`duplicates`, with the formula each is in), which the first one keeps.
  */
 export function numberEquations(sources) {
 	let count = 0;
 	const labels = new Map();
+	const duplicates = [];
+	let current = 0;
 
 	const numberRow = (row, anchors) => {
 		const keys = [...row.matchAll(LABEL)].map((match) => match[1].trim()).filter(Boolean);
@@ -97,7 +100,10 @@ export function numberEquations(sources) {
 		}
 		if (tag) {
 			for (const key of keys) {
-				if (labels.has(key)) continue;
+				if (labels.has(key)) {
+					duplicates.push({ key, index: current });
+					continue;
+				}
 				labels.set(key, { tag, anchor: equationAnchor(key) });
 				anchors.push(equationAnchor(key));
 			}
@@ -105,7 +111,8 @@ export function numberEquations(sources) {
 		return text;
 	};
 
-	const results = sources.map((source) => {
+	const results = sources.map((source, index) => {
+		current = index;
 		const anchors = [];
 		if (!ENVIRONMENT.test(source)) return { source: numberRow(source, anchors), anchors };
 		let output = '';
@@ -132,7 +139,7 @@ export function numberEquations(sources) {
 		}
 		return { source: output + source.slice(at).replace(LABEL, ''), anchors };
 	});
-	return { equations: results, labels };
+	return { equations: results, labels, duplicates };
 }
 
 /**
@@ -145,6 +152,11 @@ export function prepareFormula(source, labels = new Map()) {
 		.replace(LABEL, '')
 		.replace(new RegExp(String.raw`\\(begin|end)\{(${NUMBERED_ENVIRONMENTS.join('|')})\}`, 'gu'), '\\$1{$2*}');
 	return resolveReferences(unnumbered, labels);
+}
+
+/** The keys `\eqref{…}` and `\ref{…}` name in `source` that no label gives, as written. */
+export function unresolvedReferences(source, labels) {
+	return [...source.matchAll(REFERENCE)].map((match) => match[2].trim()).filter((key) => !labels.has(key));
 }
 
 /** `\eqref{key}` as a link showing `(1)`, `\ref{key}` as one showing `1`. */
