@@ -1,0 +1,232 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>主功能20：弱相互作用可视化 · Multiwfn中文手册</title><link rel="stylesheet" href="../style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="主功能20弱相互作用可视化">主功能20：弱相互作用可视化</h1>
+<p>功能概述：主功能 20 是弱相互作用可视化方法的集合，覆盖 NCI（RDG）、前分子 NCI、aNCI、IRI / IRI-π、DORI、范德华势、IGM、IGMH、aIGM、mIGM、amIGM 共 11 个子功能。仅需原子坐标的方法（前分子 NCI、IGM、mIGM、范德华势、aNCI/aIGM/amIGM）适用于大体系与动力学轨迹；需要波函数的方法（常规 NCI、DORI、IRI、IGMH）结果更严格。着色统一用 sign(λ₂)ρ 映射，VMD 脚本（RDGfill.vmd、IRIfill.vmd、DORIfill.vmd、IGM_inter/intra.vmd、aIGM.vmd）在 examples 目录下。</p>
+<h2 id="子功能-1ncirdg分析">子功能 1：NCI（RDG）分析</h2>
+<p>说明：约化密度梯度 RDG 方法。RDG 定义为</p>
+<p><div class="mathdisp" data-mi="0" title="点击复制 TeX">$$
+\mathrm{RDG}(\mathbf{r}) = \frac{1}{2(3\pi^2)^{1/3}} \frac{\left| \nabla \rho(\mathbf{r}) \right|}{\rho(\mathbf{r})^{4/3}}
+$$</div></p>
+<p>保留 RDG 取值 0~中等且 ρ 较小的区域即得弱相互作用区域；sign(λ₂)ρ 着色区分氢键（蓝）、范德华（绿）、空间位阻（红）。默认电子密度 ≥ 0.05 处 RDG 置 100.0 屏蔽成键区（<code>settings.ini</code> 中 <code>RDG_maxrho</code>，默认 0.05）。</p>
+<p>菜单路径：主功能 20 → 子功能 1。</p>
+<p>输入要求：含 GTF 的波函数文件（.wfn/.wfx/.mwfn/.fch/.molden 等）。</p>
+<p>操作步骤（绘制颜色填充 RDG 图的最简流程）：</p>
+<p><pre><code class="language-text">xxx.wfn (or wfx/mwfn/fch/molden... file)  // Load input file
+20  // Visual study of weak interaction
+1  // NCI analysis
+3  // Please properly define the grid points at this step. “High-quality grid” is usually adequate for small and medium sized system
+3  // Export func1.cub and func2.cub</code></pre></p>
+<p>将两个 .cub 文件与 <code>examples\RDGfill.vmd</code> 移到 VMD 文件夹，启动 VMD 后在 console 输入 <code>source RDGfill.vmd</code>。默认 RDG 等值面 0.5，颜色范围 −0.035~0.02。</p>
+<p>操作步骤（苯酚二聚体全体系实例）：</p>
+<p><pre><code class="language-text">examples\PhenolDimer.wfn
+20  // Visual study of weak interaction
+1  // NCI analysis
+-10  // Set extension distance in all directions with respect to molecular boundary
+0  // Because weak interaction regions only appear in internal region of present system, we do not need to leave a buffer region at system boundary, so we set the extension distance to 0 Bohr
+2  // Medium-quality grid (about 512000 points). Because the spatial scope of grid data is evidently larger than last example, we need more grid points than last example, otherwise the RDG isosurfaces will look discrete</code></pre></p>
+<p>操作步骤（2-吡哆素 2-氨基吡啶实例）：</p>
+<p><pre><code class="language-text">examples\2-pyridoxine_2-aminopyridine.wfn
+20  // Visual study of weak interaction
+1  // NCI analysis
+2  // Medium-quality grid</code></pre></p>
+<p>后处理：选项 −1 看 RDG–sign(λ₂)ρ 散点图；选项 1 把散点图存文件；选项 2 把散点 <code>output.txt</code> 导出（配合 <code>examples\scripts\RDGscatter.gnu</code> 用 gnuplot 画彩色散点图，命令 <code>gnuplot RDGscatter.gnu</code>）；选项 3 导出 sign(λ₂)ρ 与 RDG 的 cube（func1.cub、func2.cub）；选项 −2 把指定 sign(λ₂)ρ 范围内的 RDG 置大值以屏蔽不需要的等值面，例如：</p>
+<p><pre><code class="language-text">-2  // Set RDG value where sign(λ_2)ρ in within given data range
+-0.035,-0.015  // The lower and upper limit of sign(λ_2)ρ
+100  // Set RDG value in these regions to an arbitrarily large value to screen RDG isosurface</code></pre></p>
+<p>产出：散点图尖峰（峰顶近似对应 AIM 临界点）、颜色填充 RDG 等值面图；可叠加 AIM 临界点与键径（主功能 2 → 2 → 3 → 8 → −4 → 6 导出 CPs.pdb → −5 → 6 导出 paths.pdb）。</p>
+<p>来源链接：<a href="../sec-3-23-visual-study-of-weak-interaction.html">3.23.1</a>、<a href="../sec-4-20-visual-study-of-weak-interactions.html">4.20.1</a>。</p>
+<h2 id="子功能-2基于前分子密度的-nci-分析">子功能 2：基于前分子密度的 NCI 分析</h2>
+<p>说明：以前分子密度（自由原子密度叠加）代替实际密度，免波函数、适用于大体系；其余流程与常规 NCI 完全相同。VMD 脚本为 <code>examples\RDGfill_pro.vmd</code>（默认等值/色标与 RDGfill.vmd 略有不同）。ρ &gt; 0.1 处 RDG 置 100.0，阈值由 <code>settings.ini</code> 中 <code>RDGprodens_maxrho</code> 控制。</p>
+<p>菜单路径：主功能 20 → 子功能 2。</p>
+<p>输入要求：仅原子坐标（如 .pdb/.xyz）。</p>
+<p>操作步骤（DNA 大体系实例，模式 7 定格点盒）：</p>
+<p><pre><code class="language-text">examples\DNA.pdb
+20  // Visual study of weak interaction
+2  // NCI analysis based on promolecular density
+7  // Use mode 7 for defining grid data
+84,565  // Use midpoint of atom 84 and 565 as center of grid data. You can view molecule structure in your favourite visualization tool to find two proper atoms used to define center
+120,120,120  // Because the spatial scope of grid data is large, we need relatively large number of grid points, otherwise the grid spacing will be too large, which results in bad quality of RDG isosurfaces
+9,9,9  // Set the extension distances in all directions to 9 Bohr</code></pre></p>
+<p>也可用模式 10 在 GUI 窗口中交互式设置盒子。格点算完后选项 3 导出 func1.cub/func2.cub，用 <code>RDGfill_pro.vmd</code> 绘图。</p>
+<p>产出：大体系弱相互作用填色 RDG 图（如 DNA 相邻碱基对 π–π 堆积大扁平等值面、每对碱基两个强氢键）。</p>
+<p>来源链接：<a href="../sec-3-23-visual-study-of-weak-interaction.html">3.23.2</a>、<a href="../sec-4-20-visual-study-of-weak-interactions.html">4.20.2</a>。</p>
+<h2 id="子功能-3平均-ncianci分析">子功能 3：平均 NCI（aNCI）分析</h2>
+<p>说明：把 NCI 推广到动力学轨迹：对多帧平均密度求平均约化密度梯度 aRDG</p>
+<p><div class="mathdisp" data-mi="1" title="点击复制 TeX">$$
+\mathrm{aRDG}(\mathbf{r}) = \frac{1}{2(3\pi^2)^{1/3}} \frac{\left| \nabla \overline{\rho}(\mathbf{r}) \right|}{\left[ \overline{\rho}(\mathbf{r}) \right]^{4/3}}
+$$</div></p>
+<p>λ₂ 取平均密度 Hessian 的第二本征值；热涨落指数 $\mathrm{TFI}(\mathbf{r}) = std[\rho(\mathbf{r})]/\overline{\rho}(\mathbf{r})$ 表征稳定性。强制使用前分子近似。注：一般不建议用 aNCI，多数情形 amIGM（子功能 −12）是更好的选择。</p>
+<p>菜单路径：主功能 20 → 子功能 3。</p>
+<p>输入要求：多帧 .xyz 轨迹（感兴趣分子位置固定、远离盒子边界）；至少 500 帧（50 帧太少）。</p>
+<p>操作步骤（体相水 MD 实例）：</p>
+<p><pre><code class="language-text">wat.xyz
+20  // Visual study of weak interaction
+3  // aNCI analysis
+1,1000  // The range of the frames to be analyzed
+7
+301,301  // Using atom 301 (the oxygen of the frozen water) as the box center of the grid data
+80,80,80  // The number of grid points on each side
+4.5,4.5,4.5  // Extend 4.5 Bohr in each side</code></pre></p>
+<p>计算完成后选项 1 看平均 RDG–平均 sign(λ₂)ρ 散点图；选项 6 导出 avgRDG.cub/avgsl2r.cub；选项 7 导出热涨落指数 thermflu.cub（需重算每帧密度，耗时）。VMD 脚本为 <code>examples\aNCI</code> 下的 avgRDG.vmd / avgRDG_TFI.vmd。降噪可用主功能 13 筛除远离选定原子的格点：</p>
+<p><pre><code class="language-text">avgRDG.cub
+13  // Process grid data
+13  // Set the value of the grid points far away from specific atoms
+1.5  // If the distance between a grid point and any selected atoms is longer than 1.5 times of vdW radius of corresponding atom, then the value of the grid point will be set as given value
+100  // An arbitrarily large value (should be larger than the isovalue of the RDG isosurfaces)
+2  // Inputting selected atoms by hand
+301-303  // The indices of the atoms are 301, 302 and 303
+0  // Export the updated grid data to a new cube file
+avgRDG.cub  // The name of the new cube file</code></pre></p>
+<p>产出：平均 RDG 等值面（等值 0.25）+ TFI 着色图；蓝色稳定（氢键给体）、红色不稳定（vdW 区）。</p>
+<p>来源链接：<a href="../sec-3-23-visual-study-of-weak-interaction.html">3.23.3</a>、<a href="../sec-4-20-visual-study-of-weak-interactions.html">4.20.3</a>。</p>
+<h2 id="子功能-4iri-与-iri-π-分析">子功能 4：IRI 与 IRI-π 分析</h2>
+<p>说明：相互作用区域指示函数</p>
+<p><div class="mathdisp" data-mi="2" title="点击复制 TeX">$$
+IRI(\mathbf{r})=\left|\nabla\rho(\mathbf{r})\right|/\left[\rho(\mathbf{r})\right]^{a}
+$$</div></p>
+<p>a 取 <code>settings.ini</code> 中 <code>uservar</code>（0 即推荐值 1.1）；ρ ≤ <code>IRI_rhocut</code>（默认 0.00005 a.u.）处 IRI 置大值 5。推荐等值面 1.0，同时揭示化学键与弱相互作用；定义更简单、比 DORI 更便宜、图形效果显著更好。IRI-π：计算 IRI 前把非 π 轨道占据数置零。</p>
+<p>菜单路径：主功能 20 → 子功能 4。</p>
+<p>输入要求：原子坐标 + GTF。</p>
+<p>操作步骤（苯酚二聚体填色 IRI 图）：</p>
+<p><pre><code class="language-text">examples\PhenolDimer.wfn
+20  // Visual study of weak interaction
+4  // IRI analysis
+3  // High-quality grid
+3  // Export cube file</code></pre></p>
+<p>把 func1.cub、func2.cub 与 <code>examples\IRIfill.vmd</code> 移到 VMD 文件夹，<code>source IRIfill.vmd</code> 绘图。选项 9 屏蔽共价区（sign(λ₂)ρ &lt; −0.1 a.u. 处 IRI 置 100）只看非共价区；选项 2 导出散点 output.txt，配合 <code>examples\scripts\IRIscatter.gnu</code>（<code>gnuplot IRIscatter.gnu</code>）画填色散点图。</p>
+<p>操作步骤（GC 碱基对 IRI 平面图，主功能 4 → 24）：</p>
+<p><pre><code class="language-text">examples\GC.wfn
+4  // Plot plane map
+24  // IRI
+1  // Color-filled map
+[Press ENTER button]  // Use default number of grids
+0  // Modify extension distance
+1  // 1 Bohr
+1  // XY plane, which is the plane all atoms are
+0  // Z=0</code></pre></p>
+<p>产出：sign(λ₂)ρ 着色 IRI 等值面、IRI–sign(λ₂)ρ 散点图、IRI 平面图；IRI 对应第 24 个实空间函数，可做拓扑/盆分析。</p>
+<p>来源链接：<a href="../sec-3-23-visual-study-of-weak-interaction.html">3.23.8</a>、<a href="../sec-4-20-visual-study-of-weak-interactions.html">4.20.4</a>。</p>
+<h2 id="子功能-5dori-分析">子功能 5：DORI 分析</h2>
+<p>说明：密度重叠区域指示函数</p>
+<p><div class="mathdisp" data-mi="3" title="点击复制 TeX">$$
+\mathrm{DORI}(\mathbf{r}) = \frac{\theta(\mathbf{r})}{1 + \theta(\mathbf{r})}
+$$</div></p>
+<p>其中 $\theta(\mathbf{r}) = [\nabla(\nabla \rho(\mathbf{r}) / \rho(\mathbf{r}))^2]^2 / [\nabla \rho(\mathbf{r}) / \rho(\mathbf{r})]^6$，取值 [0,1]，单个函数同时显示共价与非共价区。作者明确更推荐 IRI（定义简单、更便宜、图形更好）。</p>
+<p>菜单路径：主功能 20 → 子功能 5（实例中亦经子功能 4 进入，流程相同）。</p>
+<p>输入要求：原子坐标 + GTF。</p>
+<p>操作步骤（苯酚二聚体）：</p>
+<p><pre><code class="language-text">examples\PhenolDimer.wfn
+20  // Visual study of weak interaction
+4  // DORI analysis
+3  // High-quality grid
+3  // Export cube file</code></pre></p>
+<p>把 func1.cub、func2.cub 与 <code>examples\DORIfill.vmd</code> 移到 VMD 文件夹，<code>source DORIfill.vmd</code> 绘图（默认等值 0.95）。</p>
+<p>产出：sign(λ₂)ρ 着色 DORI 等值面图。</p>
+<p>来源链接：<a href="../sec-3-23-visual-study-of-weak-interaction.html">3.23.4</a>、<a href="../sec-4-20-visual-study-of-weak-interactions.html">4.20.5</a>。</p>
+<h2 id="子功能-6范德华势可视化">子功能 6：范德华势可视化</h2>
+<p>说明：基于 UFF 参数（探针原子由 <code>settings.ini</code> 中 <code>ivdwprobe</code> 指定，默认碳；设 0 则运行时输入元素名），计算 $V^{\mathrm{vdW}}$ / $V^{\mathrm{repul}}$ / $V^{\mathrm{disp}}$ 格点并可视化等值面或导出 cube；分别对应自定义函数 92/93/94。</p>
+<p><div class="mathdisp" data-mi="4" title="点击复制 TeX">$$
+V^{\mathrm{vdW}}(\mathbf{r})=V^{\mathrm{repul}}(\mathbf{r})+V^{\mathrm{disp}}(\mathbf{r})=\sum_{A}\varepsilon_{AB}\left(\frac{R_{AB}^{0}}{\left|\mathbf{R}_{A}-\mathbf{r}\right|}\right)^{12}+\sum_{A}\left[-2\varepsilon_{AB}\left(\frac{R_{AB}^{0}}{\left|\mathbf{R}_{A}-\mathbf{r}\right|}\right)^{6}\right]
+$$</div></p>
+<p>菜单路径：主功能 20 → 子功能 6。</p>
+<p>输入要求：仅原子坐标。</p>
+<p>操作步骤：</p>
+<p><pre><code class="language-text">examples\helicene.xyz
+20  // Visual study of weak interaction
+6  // Visualization of van der Waals potential
+3  // High-quality grid (the computational cost of vdW potential is extremely low, therefore we use relatively good grid quality here)</code></pre></p>
+<p>后处理选项可视化等值面或导出 cube；自定义函数 92/93/94 可在主功能 4 画平面图（色标范围如 −0.8~0.8 kcal/mol）、主功能 17 做盆分析找极小点（选项 −3 看吸引子信息，−4 导出 attractors.pdb/pqr/txt/gjf，用 resid 1 选全局极小点）。</p>
+<p>产出：范德华势等值面/平面图、极小点文件。</p>
+<p>来源链接：<a href="../sec-3-23-visual-study-of-weak-interaction.html">3.23.7</a>、<a href="../sec-4-20-visual-study-of-weak-interactions.html">4.20.6</a>。</p>
+<h2 id="子功能-10igm-分析">子功能 10：IGM 分析</h2>
+<p>说明：基于前分子密度的独立梯度模型。$\delta g = g^{\mathrm{IGM}} - g$，$\delta g^{\mathrm{inter}}$ / $\delta g^{\mathrm{intra}}$ 分别揭示片段间/片段内相互作用；BCP 处 δg 与强度正相关；原子对指标 δG 与 IBSIW（$IBSIW(i,j) = 100\,\delta G_{i,j}^{\mathrm{pair}}/(d_{i,j})^2$）定量贡献。相对 NCI 的优势：片段间/内可分离、只依赖几何、等值面更光滑、可定量原子/原子对贡献。</p>
+<p>菜单路径：主功能 20 → 子功能 10。</p>
+<p>输入要求：仅原子坐标（.xyz/.pdb/.mol 或波函数文件）；几何须已优化。</p>
+<p>操作步骤（GC 碱基对，定义两片段并绘图）：</p>
+<p><pre><code class="language-text">examples\GC.pdb
+20  // Visual study of weak interactions
+10  // IGM analysis
+2  // Define two fragments
+1-13  // Range of atoms in the first base
+14-29  // Range of atoms in the second base (you can also input c here to define the rest of the present system as the second fragment)</code></pre></p>
+<p>格点算完后处理：−1 画 δg/δg_inter/δg_intra–sign(λ₂)ρ 散点图；2 导出散点文本；3 导出 cube（sl2r.cub、dg.cub、dg_inter.cub、dg_intra.cub），用 <code>examples\IGM_inter.vmd</code> / <code>IGM_intra.vmd</code>（<code>source IGM_inter.vmd</code>）绘图；4 在 Multiwfn 内看等值面；5/7/8 按 sign(λ₂)ρ 范围置零屏蔽；6 算定量指标（输出 atmdg.txt、IBSIW.txt，可选 atmdg.pdb 按 beta/occupancy 着色找热点原子）。</p>
+<p>操作步骤（三聚体多片段，噁唑烷酮三聚体）：</p>
+<p><pre><code class="language-text">examples\oxazolidinone_trimer.xyz
+20  // Visual study of weak interactions
+10  // IGM analysis
+3   // Define three fragments
+1-11  // Fragment 1: Monomer 1
+12-22  // Fragment 2: Monomer 2</code></pre></p>
+<p>操作步骤（C₆₀–晕苯二聚体）：</p>
+<p><pre><code class="language-text">20  // Visual study of weak interactions
+10  // IGM analysis
+2   // Define two fragments
+1-60  // C_60 is fragment 1
+c  // Other part, namely coronene, is fragment 2</code></pre></p>
+<p>产出：δg 等值面/平面图（主功能 4 → 22 / 主功能 5 → 22）、填色 δg_inter/intra 图、atmdg.txt / IBSIW.txt / atmdg.pdb。</p>
+<p>来源链接：<a href="../sec-3-23-visual-study-of-weak-interaction.html">3.23.5</a>、<a href="../sec-4-20-visual-study-of-weak-interactions.html">4.20.10</a>。</p>
+<h2 id="子功能-11igmh-分析">子功能 11：IGMH 分析</h2>
+<p>说明：基于 Hirshfeld 分区的 IGM（${\rho}_{i}^{\mathrm{Hirsh}}=\rho w_i$），sign(λ₂)ρ 恒用实际密度；等值面更薄、着色更合理、物理意义更严格，对化学键也有效。只要成本可负担，总建议用 IGMH 代替 IGM。δg_inter 亦为第 91 号自定义函数（先经隐藏功能 1000 选项 16 定义两片段）。</p>
+<p>菜单路径：主功能 20 → 子功能 11。</p>
+<p>输入要求：含 GTF 的波函数文件（.wfn/.fch/.mwfn/.molden 等）。</p>
+<p>操作步骤（2-吡哆素 2-氨基吡啶二聚体）：</p>
+<p><pre><code class="language-text">examples\2-pyridoxine_2-aminopyridine.wfn  // Since IGMH relies on wavefunction information, therefore you should use such as .wfn, .fch, .mwfn, .molden, etc. as input file
+20  // Visual study of weak interaction
+11  // IGMH analysis
+2  // Define two fragments
+1-12  // Atom indices in fragment 1
+13-25  // Atom indices in fragment 2</code></pre></p>
+<p>后处理与 IGM 完全相同；导出 sl2r.cub + dg_inter.cub 后 <code>source IGM_inter.vmd</code> 绘图。省时技巧：<code>settings.ini</code> 中 <code>IGMvdwscl</code> 设 2.0 只算片段间重叠区格点（此时只能画 δg_inter）。</p>
+<p>产出：IGMH 填色等值面图、原子/原子对 δg 指标。</p>
+<p>来源链接：<a href="../sec-3-23-visual-study-of-weak-interaction.html">3.23.6</a>、<a href="../sec-4-20-visual-study-of-weak-interactions.html">4.20.11</a>。</p>
+<h2 id="子功能-12平均-igmaigm分析">子功能 12：平均 IGM（aIGM）分析</h2>
+<p>说明：标准 IGM 向动态环境的扩展。图形效果差得多，作者明确建议一律改用 amIGM（子功能 −12）。</p>
+<p>菜单路径：主功能 20 → 子功能 12。</p>
+<p>输入要求：多帧原子坐标。</p>
+<p>操作步骤：用法同 amIGM，见子功能 −12 实例，唯一区别是选子功能 12 而不是 −12。</p>
+<p>产出：平均 δg 相关格点（效果不如 amIGM）。</p>
+<p>来源链接：<a href="../sec-3-23-visual-study-of-weak-interaction.html">3.23.9</a>。</p>
+<h2 id="子功能-10修正-igmmigm分析">子功能 −10：修正 IGM（mIGM）分析</h2>
+<p>说明：以前分子密度代替实际密度、其余与 IGMH 完全一样计算；只依赖坐标、成本与 IGM 相当，效果接近 IGMH。无法用 IGMH 时（太贵或无波函数）的最佳替代。</p>
+<p>菜单路径：主功能 20 → 子功能 −10。</p>
+<p>输入要求：仅原子坐标。</p>
+<p>操作步骤（封端苯丙氨酸三聚体）：</p>
+<p><pre><code class="language-text">examples\phenylalanineresiduestrimer.xyz is optimized trimer of capped phenylalanine, we use mIGM to reveal the interactions within it. Boot up Multiwfn and load this file, then input
+20  // Visual study of weak interaction
+-10  // mIGM analysis
+3  // Define three fragments
+1-29  // Atom indices in fragment 1 (the first monomer)
+30-40,52,53,56,57,63-65,77-87  // Atom indices in fragment 2 (the second monomer)
+c  // All other atoms (the third monomer)
+4  // Manually input grid spacing
+0.2  // Grid spacing of 0.2 Bohr is sufficient to obtain a smooth enough image
+3  // Output cube files to current folder</code></pre></p>
+<p>把 dg_inter.cub + sl2r.cub 移到 VMD 文件夹，<code>source IGM_inter.vmd</code>，等值改为 0.07。</p>
+<p>产出：mIGM 填色等值面图、原子/原子对 δg 指标。</p>
+<p>来源链接：<a href="../sec-3-23-visual-study-of-weak-interaction.html">3.23.10</a>、<a href="../sec-4-20-visual-study-of-weak-interactions.html">4.20.12</a>。</p>
+<h2 id="子功能-12平均修正-igmamigm分析">子功能 −12：平均修正 IGM（amIGM）分析</h2>
+<p>说明：mIGM 向动态环境的扩展，定义平均片段间函数 $\overline{\delta g}^{\mathrm{inter}}=\langle\delta g^{\mathrm{mIGM,inter}}\rangle$，平均 sign(λ₂)ρ 基于平均前分子密度；标准差与 $TFI^{\mathrm{amIGM}} = std(\delta g^{\mathrm{inter}})/\overline{\delta g}^{\mathrm{inter}}$ 表征稳定性。</p>
+<p>菜单路径：主功能 20 → 子功能 −12。</p>
+<p>输入要求：多帧 .xyz 轨迹（关键分子冻结固定，至少 500 帧；片段 1 应为固定的关键区域，<code>amIGMvdwscl</code>=2 默认加速安全）。</p>
+<p>操作步骤（苯酚–体相水实例）：</p>
+<p><pre><code class="language-text">20  // Visual study of weak interactions
+-12  //amIGM analysis
+2  //Define two fragments for amIGM. If you define n fragments, then amIGM will reveal all interactions between the n fragments
+1-13  //Atomic indices of fragment 1, corresponding to the phenol
+c  //The rest of atoms (waters) is defined as fragment 2
+1,1000  //Consider 1 to 1000 frames
+11  //Because the interactions of phenol-water occur in various regions around phenol, the box containing the grids to be calculated should cover the entire phenol, we choose mode 11 to realize this aim, namely we will select a set of atoms, set extension distance around them and grid spacing
+1-13  //The atoms for defining the box
+3 A  //Extension distance is set to 3 Å
+[Press ENTER button]  //Grid spacing is set to the default 0.2 Bohr, which is adequate of obtaining fine enough amIGM maps</code></pre></p>
+<p>后处理选项 3 导出 avgdg_inter.cub / avgsl2r.cub，用 <code>examples\aIGM.vmd</code>（<code>source aIGM.vmd</code>，等值如 0.003）绘图；选项 8 生成标准差与 TFI_amIGM 格点（stddg_inter.cub、TFI_amIGM.cub，脚本 aIGM_TFI.vmd）。</p>
+<p>产出：平均 δg_inter 填色等值面图、稳定性着色图。</p>
+<p>来源链接：<a href="../sec-3-23-visual-study-of-weak-interaction.html">3.23.11</a>、<a href="../sec-4-20-visual-study-of-weak-interactions.html">4.20.13</a>。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="menu/func-20";const ROOT="../";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script><script>const MATHS=["\\mathrm{RDG}(\\mathbf{r}) = \\frac{1}{2(3\\pi^2)^{1/3}} \\frac{\\left| \\nabla \\rho(\\mathbf{r}) \\right|}{\\rho(\\mathbf{r})^{4/3}}","\\mathrm{aRDG}(\\mathbf{r}) = \\frac{1}{2(3\\pi^2)^{1/3}} \\frac{\\left| \\nabla \\overline{\\rho}(\\mathbf{r}) \\right|}{\\left[ \\overline{\\rho}(\\mathbf{r}) \\right]^{4/3}}","IRI(\\mathbf{r})=\\left|\\nabla\\rho(\\mathbf{r})\\right|/\\left[\\rho(\\mathbf{r})\\right]^{a}","\\mathrm{DORI}(\\mathbf{r}) = \\frac{\\theta(\\mathbf{r})}{1 + \\theta(\\mathbf{r})}","V^{\\mathrm{vdW}}(\\mathbf{r})=V^{\\mathrm{repul}}(\\mathbf{r})+V^{\\mathrm{disp}}(\\mathbf{r})=\\sum_{A}\\varepsilon_{AB}\\left(\\frac{R_{AB}^{0}}{\\left|\\mathbf{R}_{A}-\\mathbf{r}\\right|}\\right)^{12}+\\sum_{A}\\left[-2\\varepsilon_{AB}\\left(\\frac{R_{AB}^{0}}{\\left|\\mathbf{R}_{A}-\\mathbf{r}\\right|}\\right)^{6}\\right]"];</script>
+<script src="../app.js"></script></body></html>

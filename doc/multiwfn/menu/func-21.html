@@ -1,0 +1,147 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>主功能21：能量分解分析 · Multiwfn中文手册</title><link rel="stylesheet" href="../style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="主功能21能量分解分析">主功能21：能量分解分析</h1>
+<p>功能概述：主功能 21 提供四类能量分解：子功能 1 的 EDA-FF（基于分子力场的片段间静电/排斥/色散分解，适用于数百至上万原子）；子功能 2 的 Shubin Liu 能量分解（需 Gaussian 输出 + .fch）；sobEDA / sobEDAw（外部 sobEDA.sh 脚本，作者强烈推荐，通用稳健）；子功能 4 的原子对色散能贡献分析（基于 DFT-D3(BJ)，支持周期体系与两体系差值、色散密度）。</p>
+<h2 id="子功能-1eda-ff-能量分解">子功能 1：EDA-FF 能量分解</h2>
+<p>说明：基于经典力场把片段间相互作用分解为静电、排斥（交换排斥）、色散三项：</p>
+<p><div class="mathdisp" data-mi="0" title="点击复制 TeX">$$
+E_{IJ}^{\mathrm{ele}}=\sum_{A\in I}\sum_{B\in J}E_{AB}^{\mathrm{ele}}\qquad E_{IJ}^{\mathrm{rep}}=\sum_{A\in I}\sum_{B\in J}E_{AB}^{\mathrm{rep}}\qquad E_{IJ}^{\mathrm{disp}}=\sum_{A\in I}\sum_{B\in J}E_{AB}^{\mathrm{disp}}
+$$</div></p>
+<p>注意“弱相互作用”指相隔三个以上化学键的原子间作用，不能用于化学键本质讨论。力场默认 AMBER99 &amp; GAFF（选项 −1 可换 UFF；一般不建议 UFF，易高估排斥致总能量为正）。静电算符默认 1/r（选项 −2 可改 1/r² 以有效体现水屏蔽）。选项 −3 输出原子对明细 interatm.txt；选项 −4 输出按能量贡献着色的 .pqr（atmint_tot/ele/rep/disp/vdW.pqr，按 charge 着色）。</p>
+<p>菜单路径：主功能 21 → 子功能 1。</p>
+<p>输入要求：体系几何文件（.xyz/.mol/.pdb/.fch 等）+ 分子列表文件（记录各分子类型文件路径与数目）+ 分子类型文件（原子类型 + 电荷；UFF 只需电荷一列）。电荷建议 ESP 拟合电荷（CHELPG/MK，主功能 7 子功能 12/13；大体系可用 EEM，主功能 7 子功能 17）。原子类型：AMBER 见 <em>J. Am. Chem. Soc.</em>, <strong>117</strong>, 5179 (1995) 表 1；GAFF 见 <em>J. Comput. Chem.</em>, <strong>25</strong>, 1157 (2004) 表 1；<code>examples\EDA\EDA_FF</code> 下 AMBER99.txt/GAFF.txt 可查；UF 类型写作 UF 即用 UFF 参数。</p>
+<p>操作步骤（水二聚体）：分子列表 mollist.txt 内容为：</p>
+<p><pre><code class="language-text">water.txt 2</code></pre></p>
+<p>分子类型 water.txt 内容为：</p>
+<p><pre><code class="language-text">OW -0.737121
+HW  0.368560
+HW  0.368560</code></pre></p>
+<p>启动 Multiwfn 并输入：</p>
+<p><pre><code class="language-text">dimer.mol  // The file containing dimer structure information (you can also use other formats containing the geometry information as input file, such as the .fch file produced during optimization task of the dimer)
+21  // Energy decomposition analysis
+1  // Energy decomposition analysis based on forcefield
+3  // Load atom types and atomic charges
+mollist.txt  // The actual path of the molecular list file. At this point, the program read atom types and charges from the water.txt and assign them to the two water molecules in the current system
+2  // Define fragments
+2  // Two fragments will be defined
+1-3  // The atomic indices of the fragment 1
+4-6  // The atomic indices of the fragment 2</code></pre></p>
+<p>选项 4 检查电荷/类型指派，选项 1 开始计算。输出（kJ/mol）：</p>
+<p><pre><code class="language-text">Contribution of each atom in defined fragments to overall interfragment interac
+tion energies:
+ Atom    1(O )   Elec:   12.53  Rep:    3.85  Disp:   -2.21  Total:   14.17
+ Atom    2(H )   Elec:   -6.24  Rep:    0.00  Disp:    0.00  Total:   -6.24
+ Atom    3(H )   Elec:  -16.87  Rep:    0.00  Disp:    0.00  Total:  -16.87
+ Atom    4(O )   Elec:  -23.52  Rep:    3.85  Disp:   -2.21  Total:  -21.88
+ Atom    5(H )   Elec:    6.47  Rep:    0.00  Disp:    0.00  Total:    6.47
+ Atom    6(H )   Elec:    6.47  Rep:    0.00  Disp:    0.00  Total:    6.47
+
+ Interaction energy components between all fragments:
+                         Electrostatic   Repulsive   Dispersion     Total
+ Frag   1 -- Frag   2:       -21.15         7.71        -4.43       -17.87</code></pre></p>
+<p>操作步骤（C3GC 三聚体，三个片段）：</p>
+<p><pre><code class="language-text">C3GC.pdb
+21  // Energy decomposition analysis
+1  // EDA-FF
+3  // Load atom types and charges
+mollist.txt  // Input actual path of mollist.txt
+2  // Define fragments
+3  // Three fragments will be defined
+1-13  // Atom indices in fragment 1, namely cytosine (C)
+14-29  // Atom indices in fragment 2, namely guanine (G)
+30-101  // Atom indices in fragment 3, namely C3</code></pre></p>
+<p>输出：</p>
+<p><pre><code class="language-text">                         Electrostatic   Repulsion   Dispersion     Total
+ Frag   1 -- Frag   2:      -120.98        60.26       -45.54      -106.27
+ Frag   1 -- Frag   3:         1.88        44.86       -94.69       -47.95
+ Frag   2 -- Frag   3:         0.71        62.08      -132.62       -69.84</code></pre></p>
+<p>重定义两片段（GC 对 vs C3）再算：</p>
+<p><pre><code class="language-text">2  // Redefine fragments
+2  // Two fragments will be defined
+1-29  // Fragment 1, the GC base pair
+30-101  // Fragment 2, the C3 part
+1  // Start the EDA-FF calculation</code></pre></p>
+<p>产出：每对片段的静电/排斥/色散/总量（kJ/mol）及原子贡献；interatm.txt（原子对距离与分量）；.pqr 文件供 VMD 按 charge 着色。</p>
+<p>来源链接：<a href="../sec-3-24-energy-decomposition-analysis.html">3.24.1</a>、<a href="../sec-4-21-energy-decomposition-analysis.html">4.21.1</a>。</p>
+<h2 id="子功能-2shubin-liu-能量分解eda-sbl">子功能 2：Shubin Liu 能量分解（EDA-SBL）</h2>
+<p>说明：总能量分解为 $E=E_{\mathrm{steric}}+E_{\mathrm{electrostatic}}+E_{\mathrm{quantum}}$，其中 $E_{\mathrm{steric}}=T_{\mathrm{W}}=|\nabla\rho|^{2}/[8\rho]$，$E_{\mathrm{quantum}}=E_{\mathrm{Pauli}}+E_{\mathrm{XC}}$。Multiwfn 读 Gaussian 输出相关量并算位阻项，同时打印 Pauli 动能等中间量。</p>
+<p>菜单路径：主功能 21 → 子功能 2。</p>
+<p>输入要求：.fch/.fchk + 含 <code>ExtraLinks=L608</code> 分解量的 Gaussian 输出。输入文件末尾按泛函写 IOp(3/74) 值：−73 (MN15)、−58 (ωB97XD)、−55 (M06-2X)、−54 (M06)、−53 (M06L)、−40 (CAM-B3LYP)、−35 (TPSSh)、−13 (PBE0)、−5 (B3LYP)、−6 (B3PW91)、−3 (BHandHLYP)、402 (BLYP)、1009 (PBE)、2523 (TPSS)；G16 用 ultrafine 格点时序号后加 5（如 −55 5）。</p>
+<p>操作步骤（先准备特殊 Gaussian 输入，乙烷 staggered 为例）：</p>
+<p><pre><code class="language-text">%chk=H2O.chk
+# B3LYP/6-31G* ExtraLinks=L608
+
+Optimized water
+
+0 1
+O 0.00000000     0.00000000     0.11930801
+H 0.00000000     0.75895306    -0.47723204
+H 0.00000000    -0.75895306    -0.47723204
+
+-5</code></pre></p>
+<p>Gaussian 算完后 formchk 转 .fch，启动 Multiwfn 并输入：</p>
+<p><pre><code class="language-text">examples\EDA\EDA_SBL\ethane_staggered.fch
+21  // Energy decomposition analysis
+2  // Shubin Liu's energy decomposition
+examples\EDA\EDA_SBL\ethane_staggered.out</code></pre></p>
+<p>输出：</p>
+<p><pre><code class="language-text"> E_steric:              64.213411 Hartree
+ E_electrostatic:     -146.114859 Hartree
+ E_quantum:              2.037465 Hartree
+
+ E_total:              -79.863983 Hartree</code></pre></p>
+<p>对 eclipsed 重复上述流程，两构象差值（kJ/mol）：ΔE_tot 11.2、ΔE_steric 15.3、ΔE_electrostatic 18.5、ΔE_quantum −22.7，位垒主要来自空间位阻与静电，量子项抵消。</p>
+<p>产出：三项能量分量 + Pauli 动能等中间量。</p>
+<p>来源链接：<a href="../sec-3-24-energy-decomposition-analysis.html">3.24.2</a>、<a href="../sec-4-21-energy-decomposition-analysis.html">4.21.2</a>。</p>
+<h2 id="sobeda--sobedaw-能量分解外部脚本">sobEDA / sobEDAw 能量分解（外部脚本）</h2>
+<p>说明：基于色散校正 DFT 的稳健、高效、通用、易用的能量分解，作者强烈推荐。无主功能菜单入口，用 sobEDA.sh 脚本配合 Gaussian + Multiwfn 运行。</p>
+<p>菜单路径：主功能 21 之外（sobEDA.sh 脚本）。</p>
+<p>输入要求：Gaussian 算的复合物与片段能量文件（见 sobEDA 教程）。</p>
+<p>操作步骤：按 <code>sobEDA_tutorial.zip</code>（<a href="http://sobereva.com/soft/sobEDA_tutorial.zip">http://sobereva.com/soft/sobEDA_tutorial.zip</a>）流程运行脚本；理论见 <em>J. Phys. Chem. A</em>, <strong>127</strong>, 7023 (2023)；讨论见 <a href="http://sobereva.com/685">http://sobereva.com/685</a>。</p>
+<p>产出：sobEDA / sobEDAw 分解结果（详见教程）。</p>
+<p>来源链接：<a href="../sec-3-24-energy-decomposition-analysis.html">3.24.3</a>、<a href="../sec-4-21-energy-decomposition-analysis.html">4.21.3</a>。</p>
+<h2 id="子功能-4原子对色散能贡献分析">子功能 4：原子对色散能贡献分析</h2>
+<p>说明：基于以 B3LYP 拟合参数的 DFT-D3(BJ) 色散校正能：原子贡献 ${\varepsilon}_{A}=(1/2)\sum_{B\ne A}{\varepsilon}_{A,B}$；色散密度</p>
+<p><div class="mathdisp" data-mi="1" title="点击复制 TeX">$$
+{\rho}_{\mathrm{disp}}\left( \mathbf{r} \right)={\left( \frac{\pi}{\alpha} \right)}^{-3/2}\sum_{A} {\varepsilon}_{A}{e}^{-\alpha{(\mathbf{r}-{\mathbf{R}}_{A})}^{2}}
+$$</div></p>
+<p>（α 通常 0.5）；支持两体系差值 Δε_A / Δρ_disp、片段对贡献、两片段间色散作用能；支持周期体系。需经 Tian Lu 修改的 dftd3 程序（<a href="http://sobereva.com/soft/dftd3_TLmod.zip">http://sobereva.com/soft/dftd3_TLmod.zip</a>），<code>settings.ini</code> 中 <code>dftd3path</code> 指向可执行文件（Linux 下 chmod +x）。</p>
+<p>菜单路径：主功能 21 → 子功能 4。</p>
+<p>输入要求：原子信息文件（.xyz/.pdb/.mol2/.gjf/.fch/.mwfn；含晶胞信息即按周期体系算）。两体系差值比较时感兴趣原子数与顺序必须一致。</p>
+<p>操作步骤（6-helicene 原子贡献 + 色散密度 + 片段间作用能）：</p>
+<p><pre><code class="language-text">examples\helicene.xyz  // Structure file of 6-helicene
+21  // Energy decomposition analysis
+4  // Analysis of atomic contribution to dispersion energy
+1  // Calculate atomic contributions to dispersion energy for current system</code></pre></p>
+<p>屏幕输出总色散 −74.468 kcal/mol 及各原子贡献；输入 y 导出 atomdisp.pqr（VMD 按 charge 着色，色标 −5.0~5.0）。选项 2 算色散密度（选 Medium-quality grid），导出 dispdens.cub（kcal/mol/Bohr³）。选项 6 算两片段间色散作用能，如输入 <code>17-22</code> 再输入 <code>11-12,23-26</code> 得 −2.809 kcal/mol。</p>
+<p>操作步骤（Actos 卷曲 vs 线型构象差值）：</p>
+<p><pre><code class="language-text">examples\Actos_curly.xyz
+21  // Energy decomposition analysis
+4  // Analysis of atomic contribution to dispersion energy
+3  // Calculate difference of atomic contributions to dispersion energy between current and another systems
+[Press ENTER button]  // All atoms in the present system (Actos_curly.xyz) are of interest
+examples\Actos_linear.xyz
+[Press ENTER button]  // All atoms in Actos_curly.xyz are of interest</code></pre></p>
+<p>输入 y 导出 diffatomdisp.pqr（坐标同 curly，charge 为 curly−linear 差值）。色散密度差值：</p>
+<p><pre><code class="language-text">4  // Calculate dispersion density difference between current and another system
+[Press ENTER button]  //All atoms in the present system (Actos_curly.xyz) are of interest
+examples\Actos_linear.xyz  // Another system</code></pre></p>
+<p>操作步骤（沸石–甲苯周期体系差值）：</p>
+<p><pre><code class="language-text">examples\zeolite-mol.cif
+21  // Energy decomposition analysis
+4  // Analysis of atomic contribution to dispersion energy
+3  // Calculate difference of atomic contributions to dispersion energy between current and another systems
+1-216  // The atoms of interest are those of the zeolite moiety (first 216 atoms) in the current system (zeolite-mol.cif)
+examples\zeolite.cif  // Another system
+[Press ENTER button directly]  // The atoms of interest are all 216 atoms in zeolite.cif, which also correspond to atoms 1-216 in zeolite-mol.cif
+y  // Export diffatomdisp.pqr in current folder</code></pre></p>
+<p>产出：总色散能、各原子贡献（屏幕 + atomdisp.pqr）、dispdens.cub、差值 diffatomdisp.pqr / dispdensdiff.cub、片段对/片段间色散作用能。</p>
+<p>来源链接：<a href="../sec-3-24-energy-decomposition-analysis.html">3.24.4</a>、<a href="../sec-4-21-energy-decomposition-analysis.html">4.21.4</a>。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="menu/func-21";const ROOT="../";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script><script>const MATHS=["E_{IJ}^{\\mathrm{ele}}=\\sum_{A\\in I}\\sum_{B\\in J}E_{AB}^{\\mathrm{ele}}\\qquad E_{IJ}^{\\mathrm{rep}}=\\sum_{A\\in I}\\sum_{B\\in J}E_{AB}^{\\mathrm{rep}}\\qquad E_{IJ}^{\\mathrm{disp}}=\\sum_{A\\in I}\\sum_{B\\in J}E_{AB}^{\\mathrm{disp}}","{\\rho}_{\\mathrm{disp}}\\left( \\mathbf{r} \\right)={\\left( \\frac{\\pi}{\\alpha} \\right)}^{-3/2}\\sum_{A} {\\varepsilon}_{A}{e}^{-\\alpha{(\\mathbf{r}-{\\mathbf{R}}_{A})}^{2}}"];</script>
+<script src="../app.js"></script></body></html>

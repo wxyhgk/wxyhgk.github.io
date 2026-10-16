@@ -1,0 +1,262 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4.5 产生格点数据并查看等值面图 · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="45-产生格点数据并查看等值面图"><strong>4.5 产生格点数据并查看等值面图</strong></h1>
+<p>本节包含 Multiwfn 主功能 5 的例子，都需要计算格点数据。格点数据产生后，可可视化为等值面图，或导出为 .cub 文件以便用 VMD 等第三方工具渲染，或被其他分析程序进一步利用。</p>
+<p>注意，用我准备的 VMD 脚本渲染 Multiwfn 产生的 cube 文件极其容易，而图形质量非常好，如何实现请查看 4.A.14 节 <a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a14-%E7%94%A8vmd%E8%84%9A%E6%9C%AC%E5%B0%86cube%E6%96%87%E4%BB%B6%E6%B8%B2%E6%9F%93%E4%B8%BA%E6%9C%80%E5%85%88%E8%BF%9B%E6%B0%B4%E5%B9%B3%E7%9A%84%E7%AD%89%E5%80%BC%E9%9D%A2%E5%9B%BE">4.A.14</a>。</p>
+<h2 id="451-三氟化氯的电子定域函数"><strong>4.5.1 三氟化氯的电子定域函数</strong></h2>
+<p>本节绘制三氟化氯电子定域函数（ELF，electron localization function）的等值面图。启动 Multiwfn 并输入以下命令</p>
+<p><pre><code class="language-text">examples\ClF3.wfn  // Generated at B3LYP/6-31G* level
+5  // Generate grid data and view isosurface
+9  // Electron localization function (ELF)
+2  // Medium-quality grid, about 512000 points will be evaluated, this setting is fine enough for small system but inadequate for medium and especially large system. Please consult Section 3.6 for more knowledge about grid setting.</code></pre></p>
+<p>现在 Multiwfn 开始计算格点数据。计算完成后，Multiwfn 输出一些统计信息。新出现的菜单中有很多选项，选择选项 -1 可绘制等值面图，之后弹出图形界面窗口。在文本框中输入等值面数值 0.85 并按回车，可看到以下等值面图</p>
+<p><img src="assets/figures/ch4/image933.png" alt="带原子标签的三氟化氯 ELF 等值面"></p>
+<p>ELF 等值面清晰地揭示了氟和氯原子的孤对区域。</p>
+<p>若想将格点数据导出为当前目录下的 Gaussian cube 文件，应点击“Return”按钮关闭图形界面窗口再选择选项 2。</p>
+<p>若用 ChimeraX 基于 Multiwfn 导出的 ELF cube 文件绘制等值面图，可为不同区域的各个域自由设置颜色。例如，下图是用 ChimeraX 绘制的乙酸 ELF=0.83 等值面，若认真跟随视频教程&quot;Plotting electron localization function (ELF) isosurface using Multiwfn and ChimeraX&quot;（<a href="https://youtu.be/vC48iEB8PwI">https://youtu.be/vC48iEB8PwI</a>），可轻松再现该图。</p>
+<p><img src="assets/figures/ch4/image934.png" alt="1,3-丁二烯电子密度拉普拉斯的等值面"></p>
+<p>有些论文绘制了按相应盆类型（单触或双触）着色的 ELF 等值面图，虽然可用上述方式实现，但有明显的缺点：若改变等值面数值，等值面的着色会改变，而且不可能用不同颜色为整个等值面着色以展示对应于不同类型盆的各个子区域。4.17.10 节 <a href="sec-4-17-basin-analysis.html#41710-%E7%BB%98%E5%88%B6%E6%8C%89%E6%B5%81%E5%9F%9F%E7%B1%BB%E5%9E%8B%E7%9D%80%E8%89%B2%E7%9A%84-elf-%E7%AD%89%E5%80%BC%E9%9D%A2%E5%9B%BE">4.17.10</a>介绍的方法完美解决了这些问题，它需要使用盆分析模块。</p>
+<h2 id="452-13-丁二烯的电子密度拉普拉斯"><strong>4.5.2 1,3-丁二烯的电子密度拉普拉斯</strong></h2>
+<p>电子密度拉普拉斯是另一个像 ELF 和 LOL 一样揭示电子结构的有用实空间函数。由于分辨能力差，拉普拉斯不如 ELF 和 LOL 善于突出定域区域。例如，比氪重的原子的壳层结构不能被拉普拉斯完整展示，若尝试用拉普拉斯分析三氟化氯，会发现氟原子的孤对区域难以辨认。而且，拉普拉斯的数值范围太大，给直观分析带来困难。不过，对很多体系电子密度的拉普拉斯仍有用。本例为 1,3-丁二烯绘制该函数的等值面图。</p>
+<p>启动 Multiwfn 并输入以下命令</p>
+<p><pre><code class="language-text">examples\butadiene.fch  // Yielded at B3LYP/6-31G** level
+5  // Generate grid data and view isosurface
+3  // Electron density Laplacian
+2  // Medium-quality grid (If you want to obtain better graphical effect, choose "high-quality grid" instead)
+-1  // View isosurface</code></pre></p>
+<p>在新弹出的窗口中，将等值面数值从默认值改为 0.3，绿色和蓝色等值面将分别对应于 0.3 和 -0.3 的等值面数值。当前图形如下所示</p>
+<p><img src="assets/figures/ch4/image935.png" alt="带原子编号的 1,3-丁二烯分子结构"></p>
+<p><img src="assets/figures/ch4/image936.png" alt="1,3-丁二烯拉普拉斯等值面的侧视图"></p>
+<p>C-C 和 C-H 之间蓝色等值面的存在表明价层电子强烈集中在这些区域，这是共价键的典型模式。若仔细观察碳原子之间的等值面，会发现 C6-C8 或 C1-C4 之间的等值面比 C4-C6 之间的等值面更宽，该现象反映两边的 C-C 共价键比中央的强。该结论也可用其他波函数分析方法验证，例如 Mayer 键级（C6-C8 之间的键级为 1.863，而 C4-C6 之间的键级仅为 1.136）。</p>
+<p>本节得到的等值面图不太光滑，这是因为只用了中等质量格点。若改用高质量格点，可得到好得多的等值面。</p>
+<h2 id="453-计算-elf-σ-和-elf-π-以研究苯的芳香性"><strong>4.5.3 计算 ELF-σ 和 ELF-π 以研究苯的芳香性</strong></h2>
+<p>ELF-σ 和 ELF-π 是常用的 σ 和 π 芳香性指标，分别定义为仅由 σ 轨道和 π 轨道贡献的 ELF 域的分岔点（即 (3,-1) 型临界点）处的 ELF 值，细节见 <em>J. Chem. Phys.</em>, <strong>120</strong>, 1670 (2004) 和 <em>J. Chem. Theory Comput.</em>, <strong>1</strong>, 83 (2005)。这两篇论文包含用 ELF-π 分析 π 离域很好的例子：<em>Theor. Chem. Acc.</em>, <strong>139</strong>, 25 (2020) 和 <em>Carbon</em>, <strong>165</strong>, 468 (2020)。</p>
+<p>这些指标的理论基础是，分岔点处的 ELF 值衡量相邻 ELF 域之间的相互作用，值越大意味着电子在这些域之间离域得越好。强多中心离域被公认为芳香性的本质。据认为，若 ELF-π 大于 0.70，则分子有 π 芳香性。而若 ELF-π 和 ELF-σ 的平均值大于 0.70，则可说分子是全局芳香的。本例将计算苯的 ELF-σ 和 ELF-π。</p>
+<p>为了分离 σ 和 π 轨道，首先需要知道哪些轨道是 π 轨道。启动 Multiwfn 并输入以下命令</p>
+<p><pre><code class="language-text">examples\benzene.wfn  // Optimized at B3LYP/6-311G* level
+0  // View molecular orbitals (MOs)</code></pre></p>
+<p>现在依次查看每个分子轨道的形状，发现第 17、20、21 个分子轨道是 π 轨道，如下所示。所有其他分子轨道都被认定为 σ 轨道。</p>
+<p><img src="assets/figures/ch4/image937.png" alt="苯的 MO 17、MO 20 和 MO 21 的等值面"></p>
+<p>先计算 ELF-π。应去掉 σ 轨道对 ELF 的贡献；<strong>这可通过将所有 σ 轨道的占据数设为零来实现</strong>。</p>
+<p><pre><code class="language-text">6  // Enter "Modify &amp; Check wavefunction" interface
+26  // Set occupation number for some orbitals
+0  // Selecting all orbitals
+0  // Set occupation number of all orbitals to zero
+17,20,21  // Select MO 17, 20 and 21, namely all π orbitals
+2  // Set occupation numbers of MO 17, 20 and 21 to 2.0 (doubly occupied). If you want to check if occupation numbers have been correctly set, choose option 3. You will find occupation number of all σ orbitals have become zero, namely they will have no contribution to all results yielded in following calculations
+q  // Return to last menu
+-1  // Return to main menu</code></pre></p>
+<p>对本体系，事实上有一个方便得多的方法将除 π 轨道外所有轨道的占据数设为零。做法是：进入主功能 100 的子功能 22，选择 0，则所有 π 轨道将被自动识别，再选择 1 将所有其他轨道的占据数设为零（若本体系涉及硅等较重元素，则选择选项 3）。最后，选择 0 返回主菜单。关于 π 轨道自动识别的更多细节见 3.100.22 节 <a href="sec-3-100-other-functions-part-1.html#310022-%E6%A3%80%E6%B5%8B%CF%80%E8%BD%A8%E9%81%93%E8%AE%BE%E7%BD%AE%E5%8D%A0%E6%8D%AE%E6%95%B0%E5%B9%B6%E8%AE%A1%E7%AE%97%CF%80%E7%BB%84%E6%88%90detect-%CF%80-orbitals-set-occupation-numbers-and-calculate-%CF%80-composition">3.100.22</a>。</p>
+<h3 id="研究-elf-π"><strong>研究 ELF-π</strong></h3>
+<p>研究 ELF-π 有两种方式，方式 1 是直接查看 ELF 等值面，方式 2 是做拓扑分析。方式 1 更直观但不如方式 2 准确。这里先说明方式 1。按常规用主功能 5 产生并查看 ELF 的等值面（回想 4.5.1 节 <a href="#451-%E4%B8%89%E6%B0%9F%E5%8C%96%E6%B0%AF%E7%9A%84%E7%94%B5%E5%AD%90%E5%AE%9A%E5%9F%9F%E5%87%BD%E6%95%B0">4.5.1</a>。建议用高质量格点）。此时的 ELF 等值面只反映 π 电子定域特征。逐渐增大等值面数值，会发现在等值面数值约为 0.91 时，两个圆环形 ELF 域分岔为十二个球状域（见下图），说明苯的 ELF-π 指标约为 0.91。</p>
+<p><img src="assets/figures/ch4/image938.png" alt="等值面数值为 0.85、0.91 和 0.95 的苯 ELF-π 等值面"></p>
+<p>接着，用方式 2 再次求 ELF-π 指标，该方式比方式 1 更严格。选择 0 返回主菜单。</p>
+<p><pre><code class="language-text">2  // Topology analysis
+-11  // Select real space function
+9  // ELF
+6  // The starting points will be distributed around each atom in turn. This searching mode is the most appropriate one for locating ELF CPs
+-1  // Start the CP search
+-9  // Return to upper menu
+0  // Visualize results. The resulting graph is shown below, two (3,+1) CPs are not shown</code></pre></p>
+<p><img src="assets/figures/ch4/image939.png" alt="带轨道等值面和定域轨道吸引子的苯"></p>
+<p>将该图与 ELF 等值面图比较，很清楚 (3,-1) 临界点（橙色）是 ELF 域的分岔位置，而 (3,-3) 临界点（紫色）对应于十二个 ELF 域的极大值点。现在查看一个 (3,-1) 临界点处的 ELF 值，任选一个即可，因为它们都等价。</p>
+<p><pre><code class="language-text">7  // Show all properties at a CP
+23  // CP23</code></pre></p>
+<p>从输出发现 CP 23 处的 ELF 值，即苯的 ELF-π 指标为 0.91247，该结果与 <em>Chem. Phys. Lett.</em>, <strong>443</strong>, 439 (2007)给出的 0.913 非常吻合，注意我们的计算水平与该论文完全相同。显然，该值超过了 π 芳香性的标准（0.70），说明苯有很强的 π 芳香性。</p>
+<h3 id="研究-elf-σ"><strong>研究 ELF-σ</strong></h3>
+<p>现在计算苯的 ELF-σ。重启 Multiwfn 并载入 <em>benzene.wfn</em>，将 MO 17、20、21 的占据数设为零（用主功能 100 的子功能 22 做更方便）。然后按常规产生 ELF 的等值面，逐渐调节等值面数值，找出碳原子间 σ 键对应的域在哪个等值面数值下分岔。最终可发现在等值面数值等于 0.71 时域分岔，说明 ELF-σ 指标约为 0.71。分岔点在下图中用红箭头指出：</p>
+<p><img src="assets/figures/ch4/image940.png" alt="等值面数值为 0.60、0.71 和 0.80 的苯 ELF-π 等值面"></p>
+<p>进入拓扑分析模块并搜索 ELF 临界点，如同在 ELF-π 分析的方式 2 中所做的。可得到下图。为清楚起见，隐藏了 (3,+1) 和 (3,+3) 临界点。</p>
+<p><img src="assets/figures/ch4/image941.png" alt="标注定域轨道吸引子位置的苯"></p>
+<p>将临界点的位置与 ELF 等值面图比较，很清楚 (3,-1) 临界点（如 CP 48 和 58）对应于碳原子间 σ 键域的分岔点。查看 CP 48 处的 ELF 值，得到 0.70907，这就是精确的 ELF-σ 值。我们的结果与 <em>Chem. Phys. Lett.</em>, <strong>443</strong>, 439 (2007)的 0.717 吻合得很好。</p>
+<p>ELF-σ 和 ELF-π 的平均值为 (0.70907+0.91247)/2=0.81077，大于全局芳香性的标准，因此苯具有全局芳香特征。</p>
+<h2 id="454-用福井函数和对偶描述符研究苯酚亲电进攻的有利位点"><strong>4.5.4 用福井函数和对偶描述符研究苯酚亲电进攻的有利位点</strong></h2>
+<p>Multiwfn 支持一批预测最活泼位点的方法，细节见 4.A.4 节 <a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a4-%E5%8F%8D%E5%BA%94%E4%BD%8D%E7%82%B9%E9%A2%84%E6%B5%8B%E6%96%B9%E6%B3%95%E6%A6%82%E8%BF%B0">4.A.4</a>。本节介绍如何实现福井（Fukui）函数和对偶描述符（dual descriptor），它们是揭示活泼位点最常用的两种方法。</p>
+<p><strong>重要提示</strong>：在日常研究中，强烈建议直接用主功能 22 自动计算福井函数和对偶描述符，因为步骤比下面介绍的简单得多，同时还能得到概念密度泛函理论中很多有用的量作为副产品，介绍见 3.25 节 <a href="sec-3-25-conceptual-density-functional-theory-analysis.html">3.25</a>，例子见 <a href="sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis.html#4221-%E8%87%AA%E5%8A%A8%E8%AE%A1%E7%AE%97%E8%8B%AF%E9%85%9A%E7%9A%84%E6%A6%82%E5%BF%B5%E5%AF%86%E5%BA%A6%E6%B3%9B%E5%87%BD%E7%90%86%E8%AE%BA%E9%87%8F">4.22.1</a>。</p>
+<h3 id="4541-福井函数"><strong>4.5.4.1 福井函数</strong></h3>
+<h4 id="理论"><strong>理论</strong></h4>
+<p>福井函数是概念密度泛函理论中非常重要的概念，已广泛用于预测活泼位点。福井函数定义如下，原始论文见 <em>J. Am. Chem. Soc.</em>, <strong>106</strong>, 4049 (1984)，相关讨论和比较见我的论文 <a href="http://www.whxb.pku.edu.cn/CN/abstract/abstract28694.shtml"><em>Acta Phys. -Chim. Sin.</em></a><a href="http://www.whxb.pku.edu.cn/CN/abstract/abstract28694.shtml">,</a> <a href="http://www.whxb.pku.edu.cn/CN/abstract/abstract28694.shtml"><strong>30</strong></a><a href="http://www.whxb.pku.edu.cn/CN/abstract/abstract28694.shtml">, 628 (2014)</a>。</p>
+<p><div class="mathdisp" data-mi="0" title="点击复制 TeX">$$
+f(\mathbf{r})=\left[\frac{\partial\rho(\mathbf{r})}{\partial N}\right]_{\nu}
+$$</div></p>
+<p>其中 <em>N</em> 为本体系的电子数，偏导数中的常数项 <em>ν</em> 为外势。一般外势只来自核电荷，因此对孤立化学体系 <em>ν</em> 可简单视为核坐标。据认为，活泼位点的福井函数值应比其他区域大。由于 <em>N</em> 为整数时不连续，无法直接求该偏导数。用有限差分近似，福井函数可明确地计算三种情形：</p>
+<p>Nucleophilic attack: $\displaystyle f^{+}(\mathbf{r})=\rho_{N+1}(\mathbf{r})-\rho_{N}(\mathbf{r})\approx\rho^{\mathrm{LUMO}}(\mathbf{r})$</p>
+<p>Electrophilic attack: $\displaystyle f^{-}(\mathbf{r})=\rho_{N}(\mathbf{r})-\rho_{N-1}(\mathbf{r})\approx\rho^{\mathrm{HOMO}}(\mathbf{r})$</p>
+<p>Radical attack: $\displaystyle f^{0}(\mathbf{r})=\frac{f^{+}(\mathbf{r})+f^{-}(\mathbf{r})}{2}=\frac{\rho_{N+1}(\mathbf{r})-\rho_{N-1}(\mathbf{r})}{2}\approx\frac{\rho^{\mathrm{HOMO}}(\mathbf{r})+\rho^{\mathrm{LUMO}}(\mathbf{r})}{2}$</p>
+<h4 id="准备波函数文件"><strong>准备波函数文件</strong></h4>
+<p>下面先用上面所示的福井函数 $f^-$ 揭示苯酚亲电进攻的活泼位点。这里不用基于前线轨道的近似形式的福井函数。</p>
+<p>需要准备 $f^-$ 计算所需的文件。假设你是 Gaussian 用户，可用 .wfn、.wfx 或 .fch 作为本目的的输入文件。本例做以下计算以产生所需的 .wfn 文件，所有计算都在 B3LYP/6-31G* 水平下进行，这是产生有意义结果最低可接受的水平（当然可用更好的水平改进结果）：</p>
+<ul>
+<li><p>(1) 优化中性态苯酚的几何结构。得到的几何结构将用于后续步骤</p>
+</li>
+<li><p>(2) 对中性态苯酚做单点任务以产生 <em>phenol.wfn</em>（见 <em>examples\phenol.gjf</em>）</p>
+</li>
+<li><p>(3) 对 <em>N</em>-1 态（即阳离子态）苯酚做单点任务以产生 <em>phenol_N-1.wfn</em>（见 <em>examples\phenol_N-1.gjf</em>）</p>
+</li>
+</ul>
+<p>注意，在做 <em>N</em>-1 态单点任务之前不应优化 <em>N</em>-1 态的几何结构，因为在福井函数的偏导数中 <em>ν</em>（此语境下即核坐标）是常数。顺便一提，若在步骤 (1) 直接指定 <em>out=wfn</em> 关键词和 .wfn 文件的输出路径，事实上可省略步骤 (2)。</p>
+<h4 id="计算福井函数-f"><strong>计算福井函数 <em>f</em>⁻</strong></h4>
+<p>要研究 $f^-$ 的等值面，需正确使用 Multiwfn 的“自定义操作”功能（细节见 3.7.1 节 <a href="sec-3-7-custom-operation-promolecular-and-deformation-properties.html#371-%E5%A4%9A%E4%B8%AA%E6%B3%A2%E5%87%BD%E6%95%B0%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E6%93%8D%E4%BD%9C-custom-operation-for-multiple-wavefunctions0">3.7.1</a>）。启动 Multiwfn 并输入以下命令：</p>
+<p><pre><code class="language-text">examples\phenol.wfn  // Phenol of neutral state
+5  // Calculate grid data
+0  // Set custom operation
+1  // Only one file will be operated with the file that has been loaded (namely phenol.wfn)
+-,examples\phenol_N-1.wfn  // “-“ is subtraction sign. Property of the firstly loaded file (namely phenol.wfn) will be subtracted by corresponding property of phenol_N-1.wfn
+1  // Electron density
+2  // Medium-quality grid</code></pre></p>
+<p>现在 Multiwfn 开始计算 <em>phenol.wfn</em> 的电子密度格点数据，再计算 <em>phenol_N-1.wfn</em> 的，最后求它们的差得到 $f^-$ 的格点数据。选择选项 -1 查看等值面，将等值面数值调到合适的值（0.007）后，图形为</p>
+<p><img src="assets/figures/ch4/image946.png" alt="苯酚亲电进攻福井函数（f-）的等值面图"></p>
+<p>图中绿色和蓝色等值面分别对应于 $f^-$ 的正值和负值区域。显然，$f^-$ 最正的部分定域在 O12、C1、C3、C4 和 C5 上，意味着羟基的<em>对位</em>和<em>邻位</em>是亲电进攻有利的活泼位点，该结论与常识一致，即羟基是<em>邻对位</em>定位基。</p>
+<h4 id="计算福井函数-f⁰">*<em>计算福井函数 <em>f</em>⁰</em>*</h4>
+<p>接着，以丙烯为例说明如何绘制自由基进攻的福井函数，即 $f^0 = (\rho_{N+1}-\rho_{N-1})/2$。当然，应产生对应于 <em>N</em>+1 态和 <em>N</em>-1 态的波函数文件。先优化中性态的几何结构（<em>examples\propylene\opt_N.gjf</em>），再用该几何结构做 <em>N</em>-1 和 <em>N</em>+1 态的单点任务以产生相应的 .fch 文件。</p>
+<p>启动 Multiwfn 并输入：</p>
+<p><pre><code class="language-text">examples\propylene\N+1.fch  // N+1 electrons state, namely -1 charged state
+5  // Calculate grid data
+0  // Set custom operation
+1  // One file will be operated with propylene-1.fch
+-,examples\propylene\N-1.fch  // N-1 electrons state, namely +1 charged state
+1  // Electron density
+2  // Medium-quality grid
+6  // Divide all grid data by a factor
+2  // Divided by 2
+-1  // Visualize isosurface map</code></pre></p>
+<p>$f^0$ = 0.01 的等值面图如下所示</p>
+<p><img src="assets/figures/ch4/image947.png" alt="丙烯自由基进攻福井函数（f0 = 0.01）的等值面图"></p>
+<h3 id="4542-对偶描述符"><strong>4.5.4.2 对偶描述符</strong></h3>
+<h4 id="理论"><strong>理论</strong></h4>
+<p>对偶描述符是另一个用于揭示活泼位点的有用函数，细节见 <em>J. Phys. Chem. A</em>, <strong>109</strong>, 205 (2005)。形式上，对偶描述符 Δ<em>f</em> 的定义与福井函数有密切关系：</p>
+<p><div class="mathdisp" data-mi="1" title="点击复制 TeX">$$
+\begin{aligned}\Delta f(\mathbf{r})&=f^{+}(\mathbf{r})-f^{-}(\mathbf{r})\\ &=[\rho_{N+1}(\mathbf{r})-\rho_{N}(\mathbf{r})]-[\rho_{N}(\mathbf{r})-\rho_{N-1}(\mathbf{r})]=\rho_{N+1}(\mathbf{r})-2\rho_{N}(\mathbf{r})+\rho_{N-1}(\mathbf{r})\end{aligned}
+$$</div></p>
+<p>值得注意的是，对偶描述符也可用自旋密度 ${\rho}^{s}$ 求值。由于 ${\rho}_{N+1}-{\rho}_{N}$ 和 ${\rho}_{N}-{\rho}_{N-1}$ 可分别近似为 ${\rho}_{N+1}^{s}$ 和 ${\rho}_{N-1}^{s}$，显然 $\Delta f\left( \mathbf{r} \right)\approx {\rho}_{N+1}^{s}\left( \mathbf{r} \right)-{\rho}_{N-1}^{s}(\mathbf{r})$。通常，基于三个态（<em>N</em>+1、<em>N</em>、<em>N</em>-1）电子密度求的对偶描述符与基于两个态（<em>N</em>+1、<em>N</em>-1）自旋密度求的对偶描述符之间没有明显的定性差别。</p>
+<p>与福井函数不同，用 Δ<em>f</em> 可同时揭示两类活泼位点。据认为，若 Δ<em>f</em> &gt; 0，则该位点有利于亲核进攻，而若 Δ<em>f</em> &lt; 0，则该位点有利于亲电进攻。但根据我的经验，若目的是弄清很多潜在位点中哪些更有利，不必关心 Δ<em>f</em> 的符号，只需研究哪些位点的 Δ<em>f</em> 更正或更负。若某位点 <em>A</em> 周围 Δ<em>f</em> 的分布比另一位点 <em>B</em> 更正，则可说 <em>A</em> 是比 <em>B</em> 更有利的亲核进攻位点，同时 <em>B</em> 是比 <em>A</em> 更优先的亲电进攻位点。</p>
+<h4 id="基于自旋密度近似求对偶描述符"><strong>基于自旋密度近似求对偶描述符</strong></h4>
+<p>这里基于 <em>N</em>-1 和 <em>N</em>+1 态的自旋密度计算苯酚的对偶描述符。由于前面已算得 <em>phenol_N-1.wfn</em>，现在只需计算 <em>phenol_N+1.wfn</em>（该文件和相应的输入文件 <em>phenol_N+1.gjf</em> 已在 &quot;example&quot; 文件夹中提供）。之后，启动 Multiwfn 并输入：</p>
+<p><pre><code class="language-text">examples\phenol_N+1.wfn  // N+1 electron system, namely anionic state
+5  // Calculate grid data
+0  // Set custom operation
+1  // Only one file will be operated with the file that has been loaded
+-,examples\phenol_N-1.wfn  // N-1 electron system, namely cationic state
+5  // Electron spin density
+2  // Medium-quality grid
+-1  // Visualize isosurface of dual descriptor</code></pre></p>
+<p>逐渐改变等值面数值以便清晰区分不同位点的对偶描述符，发现 0.02 是合适的值，相应的等值面如下所示</p>
+<p><img src="assets/figures/ch4/image949.png" alt="等值面数值为 0.02 的苯酚对偶描述符等值面"></p>
+<p>可见，在环内（不能参与反应的 C4 除外），<em>对位</em>碳有明显的 Δ<em>f</em> 负值，同时两个<em>邻位</em>碳的 Δ<em>f</em> 不如两个间位碳正，因此 Δ<em>f</em> 的结论与福井函数 $f^-$ 完全相同，即只有<em>对位</em>和<em>邻位</em>碳被羟基活化为亲电进攻位点。</p>
+<h4 id="基于电子密度精确求对偶描述符"><strong>基于电子密度精确求对偶描述符</strong></h4>
+<p>若想以精确形式（基于三个态的 <em>ρ</em>）求 Δ<em>f</em>，可按以下步骤：</p>
+<p><pre><code class="language-text">examples\phenol_N+1.wfn  // N+1 electron system
+5  // Calculate grid data
+0  // Set custom operation
+3  // Three files will be operated with the file that has been loaded
+-,examples\phenol.wfn  // N electron system
+-,examples\phenol.wfn  // N electron system
++,examples\phenol_N-1.wfn  // N-1 electron system
+1  // Electron density
+2  // Medium-quality grid
+-1  // Visualize isosurface of dual descriptor</code></pre></p>
+<p>等值面数值为 0.01 对应的图形如下所示</p>
+<p><img src="assets/figures/ch4/image950.png" alt="等值面数值为 0.01 的苯酚对偶描述符等值面"></p>
+<p>可见，虽然该图与基于自旋密度求的 Δ<em>f</em> 图定性一致，但<em>邻位</em>碳与<em>间位</em>碳的差别不那么显著，表明这次的 Δ<em>f</em> 辨别优先位点的能力不好。因此，用精确形式求 Δ<em>f</em> 不一定比用自旋密度近似求 Δ<em>f</em> 得到更好的结果！</p>
+<h4 id="关于凝聚福井函数和对偶描述符"><strong>关于“凝聚”福井函数和对偶描述符</strong></h4>
+<p>上面用可视化方式考察了福井函数和对偶描述符，得到了预期的结论。但直观分析有些含糊和主观。因此，有时希望将福井函数和对偶描述符的讨论定量化，即为每个原子赋一个值以展示它作为活泼位点的程度。为此，应基于布居分析技术计算“凝聚”版的福井函数和对偶描述符。由于布居分析在 4.7 节 <a href="sec-4-7-population-analysis-and-atomic-charge-calculation.html">4.7</a>举例说明，凝聚福井函数和凝聚对偶描述符的计算方法将推迟到 4.7.3 节 <a href="sec-4-7-population-analysis-and-atomic-charge-calculation.html#473-%E8%AE%A1%E7%AE%97%E5%87%9D%E8%81%9Afukui%E5%87%BD%E6%95%B0%E5%92%8C%E5%87%9D%E8%81%9A%E5%AF%B9%E5%81%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6">4.7.3</a>介绍。研究福井函数和对偶描述符的另一种方案是先将整个分子表面分割为每个原子对应的局域表面，再考察它们在这些局域表面上的平均值。由于该方案依赖于定量分子表面分析技术，说明推迟到 4.12.4 节 <a href="sec-4-12-quantitative-analysis-of-molecular-surface.html#4124-%E8%8B%AF%E9%85%9A-phenol%E5%88%86%E5%AD%90%E8%A1%A8%E9%9D%A2-molecular-surface%E4%B8%8A%E7%A6%8F%E4%BA%95%E5%87%BD%E6%95%B0-fukui-function%E7%9A%84%E5%AE%9A%E9%87%8F%E5%88%86%E6%9E%90">4.12.4</a>。</p>
+<h2 id="455-绘制电子密度差值图以研究咪唑配位镁卟啉的电子转移"><strong>4.5.5 绘制电子密度差值图以研究咪唑配位镁卟啉的电子转移</strong></h2>
+<p>本例展示如何在 Multiwfn 中绘制片段电子密度差值。在咪唑与镁卟啉配位过程中，发生电子转移和极化，用整个体系（以下称为 MN-NN）减去孤立态的咪唑（以下称为 NN）和镁卟啉（以下称为 MN）的电子密度，可清晰揭示电子密度的变化。MN-NN 的几何结构如下所示：</p>
+<p><img src="assets/figures/ch4/image951.png" alt="带原子编号的咪唑配位镁卟啉的结构"></p>
+<p><em>examples\MN-NN.gjf</em> 是 MN-NN 体系的 Gaussian 输入文件（几何结构已优化），修改最后一行的 .wfn 输出路径后用 Gaussian 运行它，即产生 <em>MN-NN.wfn</em>。接着，分别从 <em>MN-NN.gjf</em> 中删除 MN 和 NN 部分并适当修改 .wfn 输出路径，再保存为 <em>MN.gjf</em> 和 <em>NN.gjf</em>（它们已在 &quot;example&quot; 文件夹中提供）。然后用 Gaussian 运行它们以得到 <em>MN.wfn</em> 和 <em>NN.wfn</em>。应注意，默认情况下 Gaussian 总是将体系放到标准取向，这使 <em>MN.wfn</em> 和 <em>NN.wfn</em> 中的坐标与 <em>MN-NN.wfn</em> 不一致，从而密度差值将毫无意义。因此，<em><strong>nosymm</strong></em> 关键词必须写在输入文件的 route 部分以避免坐标被自动调整。（<em>MN.wfn</em>、<em>NN.wfn</em> 和 <em>MN-NN.wfn</em> 也可从这里直接载入：<a href="http://sobereva.com/multiwfn/extrafiles/MN-NN.zip">http://sobereva.com/multiwfn/extrafiles/MN-NN.zip</a>）</p>
+<p>现在用 Multiwfn 产生电子密度差值的格点数据。启动 Multiwfn 并输入以下命令</p>
+<p><pre><code class="language-text">MN-NN.wfn
+5  // Calculate grid data
+0  // Set custom operation
+2  // Two files will be operated with MN-NN.wfn
+-,MN.wfn  // Will subtract property of MN.wfn from that of MN-NN.wfn
+-,NN.wfn  // Will subtract property of NN.wfn from that of MN-NN.wfn
+1  // The property is selected as electron density
+3  // Since present system is relatively huge, we need more grid points than normal cases, so we choose high-quality grid</code></pre></p>
+<p>计算完成后，选择选项 -1 再将等值面数值设为约 0.001 以可视化格点数据的等值面，如下所示。</p>
+<p><img src="assets/figures/ch4/image952.png" alt="咪唑配位镁卟啉的电子密度差值等值面"></p>
+<h3 id="在-vmd-中绘制等值面图"><strong>在 VMD 中绘制等值面图</strong></h3>
+<p>Multiwfn 在格点数据可视化方面不是很专业，对大尺寸格点数据可视化速度相对较慢。可选择选项 2 将格点数据导出为 cube 文件再用 VMD 等外部工具可视化。下面是用 VMD（在 <a href="http://www.ks.uiuc.edu/Research/vmd/">http://www.ks.uiuc.edu/Research/vmd/</a> 免费获得）基于 Multiwfn 产生的 cube 文件生成的图。</p>
+<p><img src="assets/figures/ch4/image953.png" alt="VMD 中绘制的咪唑配位镁卟啉的电子密度差值"></p>
+<p>红色和蓝色等值面（分别为 +0.0012 和 -0.0012 a.u.）分别表示 NN 配位到 MN 后电子密度增加和减少的区域。显然，电子密度从 NN 中氮背侧移向镁原子以加强配位键。此外可见，NN 的出现没有显著扰动卟啉环的电子密度分布，只在 MN 的四个配位氮上发生轻微极化。</p>
+<blockquote>
+<p><strong>注记</strong></p>
+<p>在 VMD 中绘制上图的详细步骤：首先，将 cube 文件 <em>density.cub</em> 拖入 VMD 主窗口。选择 &quot;Graphics&quot; - &quot;Representations&quot;，点击 &quot;Create Rep&quot; 按钮新建一个 representation，将 &quot;drawing method&quot; 改为 &quot;isosurface&quot;，将 &quot;Draw&quot; 设为 &quot;solid surface&quot;，将 &quot;Show&quot; 设为 &quot;Isosurface&quot;，将等值面数值改为 0.0012，将 &quot;coloring method&quot; 设为 &quot;ColorID&quot; 并选择红色。现在密度差值正部分的等值面已显示。再点击 &quot;Create Rep&quot; 按钮新建另一个 representation，在 &quot;ColorID&quot; 中选蓝色并将等值面数值改为 -0.0012。若想用白色背景代替默认的黑色背景，选择 Graphics - Colors - Display - Background - 8 white。</p>
+</blockquote>
+<p>事实上，用我提供的 VMD 绘图脚本和批处理文件，用少得多的步骤可得到比上图好得多的效果。务必查看 4.A.14 节 <a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a14-%E7%94%A8vmd%E8%84%9A%E6%9C%AC%E5%B0%86cube%E6%96%87%E4%BB%B6%E6%B8%B2%E6%9F%93%E4%B8%BA%E6%9C%80%E5%85%88%E8%BF%9B%E6%B0%B4%E5%B9%B3%E7%9A%84%E7%AD%89%E5%80%BC%E9%9D%A2%E5%9B%BE">4.A.14</a>，其中说明了如何实现。</p>
+<h3 id="绘制等值线图"><strong>绘制等值线图</strong></h3>
+<p>接着，在原子 16、14、9 定义的平面内绘制电子密度差值的等值线图。输入以下命令：</p>
+<p><pre><code class="language-text">0  // Return to main menu
+4  // Draw a plane graph
+0
+2
+-,MN.wfn
+-,NN.wfn
+1
+2  // Contour line map
+[Press ENTER button to use default grid setting]
+4  // Define the plane by three atoms
+16,14,9</code></pre></p>
+<p>等值线图立即弹出。实和虚等值线分别表示电子密度增加和减少的位置。图中等值线有点稀疏，因此调节等值线设置使图形看起来更密从而信息更丰富。关闭图形再输入</p>
+<p><pre><code class="language-text">3  // Change contour line setting
+9  // Generate contour value by geometric series
+0.0001,2,30  // Start value, step size and the number of steps, respectively
+y  // Clean existing contour lines
+9
+-0.0001,2,30  // Set negative contour lines
+n  // Append the newly generated contour lines to existing ones
+1  // Save setting and return
+-1  // Redraw the graph</code></pre></p>
+<p>下面是最终的图形，很漂亮！</p>
+<p><img src="assets/figures/ch4/image954.png" alt="咪唑配位镁卟啉电子密度差值的等值线图"></p>
+<blockquote>
+<p><strong>提示</strong></p>
+<p>完成等值线的定义后，可选择选项 6 将设置保存到外部纯文本文件。下次可用选项 7 直接载入该设置。</p>
+</blockquote>
+<p>注意，在 Multiwfn 中，绘制电子密度或其他实空间函数的差值图可轻松推广到多于两个片段的情形，例子见 4.4.8 节 <a href="sec-4-4-output-and-plot-various-properties-in-a-plane.html#448-%E7%BB%98%E5%88%B6%E6%B0%B4%E5%9B%9B%E8%81%9A%E4%BD%93%E7%9B%B8%E5%AF%B9%E5%85%B6%E7%BB%84%E6%88%90%E5%8D%95%E4%BD%93%E7%9A%84%E7%94%B5%E5%AD%90%E5%AF%86%E5%BA%A6%E5%92%8C-elf-%E5%B7%AE%E5%80%BC%E5%9B%BE">4.4.8</a>。</p>
+<h2 id="456-研究阴离子水二聚体的电子离域范围函数-edrrd"><strong>4.5.6 研究阴离子水二聚体的电子离域范围函数 EDR(r;d)</strong></h2>
+<blockquote>
+<p><strong>注记</strong></p>
+<p>本节由 Arshad Mehmood 撰写，Tian Lu 略作修改。</p>
+</blockquote>
+<p>本例展示如何在用户定义的长度尺度 <em>d</em> 下计算阴离子水团簇 (H₂O)₂⁻ 的电子离域范围函数 EDR(<strong>r</strong>;<em>d</em>)（参见 <em>Phys. Chem. Chem. Phys.</em>, <strong>17</strong>, 18305 (2015)）。用 EDR(<strong>r</strong>;<em>d</em>) 可生动地观察溶剂化电子的分布。</p>
+<p>启动 Multiwfn 并输入以下命令：</p>
+<p><pre><code class="language-text">examples\solvatedelectron.wfn  // Anionic water dimer optimized at B3LYP/6-311++G(2d,2p) level
+5  // Calculate grid data
+20  // EDR(r;d)
+11.22  // Input length scale d (Bohr). Here we consider the relatively delocalized solvated electron at d=11.22 Bohr. Further details are given in J. Chem. Phys., 141, 144104 (2014).
+2  // Medium-quality grid
+-1  // Show isosurface graph</code></pre></p>
+<p>现在弹出图形界面窗口。在“Isosurface value”框中输入等值面数值 0.74 并按回车。出现以下等值面。</p>
+<p><img src="assets/figures/ch4/image955.png" alt="阴离子水二聚体的电子离域范围 EDR(r;d) 等值面"></p>
+<p>该图表明，在 <em>d</em>=11.22 Bohr 的长度尺度下，溶剂化电子位于两个 H₂O 分子之间。</p>
+<h2 id="457-研究硫代甲酸的轨道重叠距离函数-dr"><strong>4.5.7 研究硫代甲酸的轨道重叠距离函数 D(r)</strong></h2>
+<blockquote>
+<p><strong>注记</strong></p>
+<p>本节由 Arshad Mehmood 撰写，Tian Lu 略作修改。</p>
+</blockquote>
+<p>本例展示硫代甲酸的轨道重叠距离函数 <em>D</em>(<strong>r</strong>) 的计算流程，并将其映射到分子电子密度表面上。若对 <em>D</em>(<strong>r</strong>) 不熟悉，可查看 2.6 节 <a href="sec-2-6-real-space-functions.html">2.6</a>的条目 21 或 <em>J. Chem. Theory Comput.</em>, <strong>12</strong>, 3185 (2016)。</p>
+<p>启动 Multiwfn 并输入以下命令：</p>
+<p><pre><code class="language-text">examples\ThioformicAcid.wfn  // Thioformic acid optimized at B3LYP/6-311++G(2d,2p)
+5  // Calculate grid data
+21  // Orbital overlap length function D(r), which maximizes EDR(r;d) with respect to d</code></pre></p>
+<p>现在需要设置 EDR 指数 $α_{i}$=1/$d_{i}$² 的输入总数、起始值和增量，因为重叠距离是用指数的均匀递变格点拟合的。起始值为最大指数（<em>α</em>₁），后续指数由 $α_{i}$₊₁/$α_{i}$ = 1/<em>α</em>$_{inc}$ 产生，其中 <em>α</em>$_{inc}$ 为增量。默认设置（即 <em>n</em>=20、<em>α</em>₁=2.50、<em>α</em>$_{inc}$=1.50）对常见体系足够。选择手动输入（选项 1）或默认设置（选项 2）后，出现将用于求 <em>D</em>(<strong>r</strong>) 的指数列表</p>
+<p><pre><code class="language-text">2  // Medium-quality grid</code></pre></p>
+<p>此时 Multiwfn 开始计算。等待计算完成，再选择选项 2 将 <em>D</em>(<strong>r</strong>) 的格点数据导出为当前目录下的 <em>EDRDmax.cub</em>。下一步是产生分子密度等值面。</p>
+<p><pre><code class="language-text">0  // Return to main menu
+5  // Calculate grid data
+1  // Electron density
+2  // Medium-quality grid (The grid setting must be the same as for D(r) calculation)</code></pre></p>
+<p>再选择选项 2 将电子密度的格点数据导出为当前目录下的 density.cub。</p>
+<p>基于 <em>EDRDmax.cub</em> 和 <em>density.cub</em>，再用 VMD、GaussView 等很多可视化程序将 <em>D</em>(<strong>r</strong>) 格点数据映射到分子密度等值面上。下面是用 GaussView 绘制的映射到电子密度等值面（<em>ρ</em> = 0.001 a.u.）上的 <em>D</em>(<strong>r</strong>)（若不知道如何用 GaussView 和 VMD 基于两个 cube 文件将实空间函数用各种颜色映射到另一实空间函数的等值面上，可查阅我的博文“基于 Multiwfn 产生的 cube 文件绘制填充色等值面图的方法”（<a href="http://sobereva.com/402">http://sobereva.com/402</a>，中文）。</p>
+<p><img src="assets/figures/ch4/image956.png" alt="显示为颜色映射表面的硫代甲酸轨道重叠距离函数 D(r)"></p>
+<p>从图中可见，绘制在 2.9 Bohr（红）到 3.4 Bohr（蓝）之间的 <em>D</em>(<strong>r</strong>) 清晰地区分了化学上硬的氧孤对（红）与较软的硫孤对（蓝）。</p>
+<p>该体系将用定量分子表面分析模块在 4.12.8 节 <a href="sec-4-12-quantitative-analysis-of-molecular-surface.html#4128-%E7%A1%AB%E4%BB%A3%E7%94%B2%E9%85%B8%E5%88%86%E5%AD%90%E8%A1%A8%E9%9D%A2%E4%B8%8A%E8%BD%A8%E9%81%93%E9%87%8D%E5%8F%A0%E8%B7%9D%E7%A6%BB%E5%87%BD%E6%95%B0-orbital-overlap-distance-function-dr%E7%9A%84%E5%AE%9A%E9%87%8F%E5%88%86%E6%9E%90">4.12.8</a>进一步研究。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-4-5-generate-grid-data-and-view-isosurface-map";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script><script>const MATHS=["f(\\mathbf{r})=\\left[\\frac{\\partial\\rho(\\mathbf{r})}{\\partial N}\\right]_{\\nu}","\\begin{aligned}\\Delta f(\\mathbf{r})&=f^{+}(\\mathbf{r})-f^{-}(\\mathbf{r})\\\\ &=[\\rho_{N+1}(\\mathbf{r})-\\rho_{N}(\\mathbf{r})]-[\\rho_{N}(\\mathbf{r})-\\rho_{N-1}(\\mathbf{r})]=\\rho_{N+1}(\\mathbf{r})-2\\rho_{N}(\\mathbf{r})+\\rho_{N-1}(\\mathbf{r})\\end{aligned}"];</script>
+<script src="app.js"></script></body></html>

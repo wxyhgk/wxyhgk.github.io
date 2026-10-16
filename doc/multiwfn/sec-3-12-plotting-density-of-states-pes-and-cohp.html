@@ -1,0 +1,165 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10) · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="312-绘制态密度density-of-states-dos光电子能谱photoelectron-spectrum-pes和cohp-10"><strong>3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)</strong></h1>
+<p>总态密度(TDOS)、分态密度(PDOS)和重叠布居态密度(OPDOS)是最常研究的态密度类型，它们的定义和在Multiwfn中的绘制方法将在<a href="#3121-%E7%90%86%E8%AE%BAtheory">3.12.1</a>、<a href="#3122-%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6input-file">3.12.2</a>和<a href="#3123-%E7%BB%98%E5%88%B6%E6%80%81%E5%AF%86%E5%BA%A6dos%E5%9B%BE%E7%9A%84%E9%80%89%E9%A1%B9%E4%B8%8E%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95">3.12.3</a>节中描述。局域态密度(local DOS, LDOS)是一种特殊的态密度，将在<a href="#3124-%E5%B1%80%E5%9F%9F%E6%80%81%E5%AF%86%E5%BA%A6local-dos">3.12.4</a>节中介绍。由于总态密度与光电子能谱密切相关，该模块还能够绘制光电子能谱，这将在<a href="#3125-%E5%85%89%E7%94%B5%E5%AD%90%E8%83%BD%E8%B0%B1photoelectron-spectrum">3.12.5</a>节中介绍。在<a href="#3126-cohp">3.12.6</a>节中，将介绍晶体重叠哈密顿布居(crystal overlap Hamilton populations, COHP)，其与重叠布居态密度密切相关。</p>
+<h2 id="3121-理论theory"><strong>3.12.1 理论(Theory)</strong></h2>
+<p>态密度是固体物理(solid physics)的一个重要概念，其表示单位能量区间内的状态数，由于能级是连续的，因此态密度可以绘制为曲线图。在孤立体系(isolated system)（如分子）中，能级是分立的，态密度的概念是有疑问的，有人认为在这种情况下态密度完全没有价值。然而，如果将分立能级人为展宽为曲线，态密度图可用作分析电子结构(electron structure)性质的有价值工具。</p>
+<p>孤立体系的总态密度可写为
+<div class="mathdisp" data-mi="0" title="点击复制 TeX">$$
+\mathrm{TDOS}(E)=\sum_i\delta(E-\varepsilon_i)
+$$</div>
+其中 {<em>ε</em>} 是单粒子哈密顿(single-particle Hamilton)的本征值集合(eigenvalue set)，<em>δ</em> 是狄拉克δ函数(Dirac delta function)。如果 <em>δ</em> 被展宽函数(broadening function) <em>F</em>(<em>x</em>)取代，例如高斯函数(Gaussian)、洛伦兹函数(Lorentzian)和赝沃伊特函数(pseudo-Voigt function)，则得到加宽的总态密度(broadened TDOS)。</p>
+<p>归一化高斯函数(normalized Gaussian function)定义为</p>
+<p>$G(x)=\frac{1}{c\sqrt{2\pi}}e^{-\frac{x^2}{2c^2}}$ 其中 $c=\frac{\mathrm{FWHM}}{2\sqrt{2\ln 2}}$</p>
+<p>半高宽(FWHM)是“半高全宽(full width at half maximum)”的首字母缩写(acronym)，它是Multiwfn中的可调参数(adjustable parameter)。半高宽越大，总态密度图越平滑，但损失的关于能级分布(energy level distribution)的详细信息越多。</p>
+<p>归一化洛伦兹函数(normalized Lorentzian function)定义为
+<div class="mathdisp" data-mi="1" title="点击复制 TeX">$$
+L(x)=\frac{\mathrm{FWHM}}{2\pi}\frac{1}{x^2+0.25\times\mathrm{FWHM}^2}
+$$</div>
+赝Voigt函数(Pseudo-Voigt function)是高斯函数(Gaussian function)和洛伦兹函数(Lorentzian function)的加权线性组合：
+<div class="mathdisp" data-mi="2" title="点击复制 TeX">$$
+P(x)=w_{\mathrm{Gauss}}G(x)+(1-w_{\mathrm{Gauss}})L(x)
+$$</div>
+显然，如果<em>G</em>(<em>x</em>)和<em>L</em>(<em>x</em>)是归一化的，则无论$w_{\mathrm{Gauss}}$的选择如何，<em>P</em>(<em>x</em>)的归一化条件恒成立。</p>
+<p>加宽的部分态密度(partial DOS, PDOS)和重叠态密度(overlap DOS, OPDOS)的曲线图对于轨道组成的可视化研究非常有价值。碎片<em>A</em>的部分态密度定义为
+<div class="mathdisp" data-mi="3" title="点击复制 TeX">$$
+\mathrm{PDOS}_A(E)=\sum_i\Theta_{i,A}F(E-\varepsilon_i)
+$$</div>
+其中 $\Theta_{i,A}$ 是片段(fragment) <em>A</em> 在轨道(orbital) <em>i</em> 中的组成(composition)。注意，一些论文中使用的词语 &quot;投影态密度(projected DOS)&quot; 本质上等同于分态密度(partial DOS)。</p>
+<p>片段 <em>A</em> 和 <em>B</em> 之间的重叠布居态密度(OPDOS)定义为
+<div class="mathdisp" data-mi="4" title="点击复制 TeX">$$
+\mathrm{OPDOS}_{A,B}(E)=\sum_i X_{A,B}^i F(E-\varepsilon_i)
+$$</div>
+其中${\mathrm{X}}_{A,B}^{i}$是轨道<em>i</em>中碎片<em>A</em>和<em>B</em>之间总交叉项的组成。我已在<a href="sec-3-10-orbital-composition-analysis.html#3103-%E7%94%A8-mullikenstout-politzer-%E5%92%8C-scpa-%E6%96%B9%E6%B3%95%E8%BE%93%E5%87%BA%E7%89%87%E6%AE%B5-1-%E7%9A%84%E6%88%90%E5%88%86%E5%92%8C%E7%89%87%E6%AE%B5%E9%97%B4%E6%88%90%E5%88%86-4-5-6">3.10.3</a>节中讨论了如何计算Θ和Χ。</p>
+<p>在Multiwfn中，重叠布居态密度(OPDOS)也可以在所有最近邻原子之间计算。在这种情况下，重叠布居态密度计算为
+<div class="mathdisp" data-mi="5" title="点击复制 TeX">$$
+\mathrm{OPDOS}^{\mathrm{near}}(E)=\sum_i\sum_A n_{A,A_{\mathrm{adj}}}^i F(E-\varepsilon_i)
+$$</div>
+其中<em>A</em>遍历所有原子(atom)，$A_{\mathrm{adj}}$表示体系中与<em>A</em>最接近的原子。${n}_{{A,A}_{\mathrm{adj}}}^{i}$对应于轨道(orbital)<em>i</em>中<em>A</em>与$A_{\mathrm{adj}}$之间的重叠布居(overlap population)。</p>
+<p>当用户定义了一个或多个片段(fragment)时，Multiwfn在显示DOS图(DOS map)时将自动按下式计算每个片段的PDOS中心(center of PDOS)，并将其打印在命令行窗口(command-line window)中
+<div class="mathdisp" data-mi="6" title="点击复制 TeX">$$
+\varepsilon_{c,F}=\frac{\int_{\mathrm{low}}^{\mathrm{high}} E\times\mathrm{PDOS}_F(E)\mathrm{d}E}{\int_{\mathrm{low}}^{\mathrm{high}}\mathrm{PDOS}_F(E)\mathrm{d}E}
+$$</div>
+其中<em>low</em>和<em>high</em>分别是当前X轴即能量范围(energy range)的下限和上限，<em>F</em>表示所考虑的碎片(fragment)。通过此功能，可以轻松计算<em>d</em>带中心(d-band center)，这对研究过渡金属(transition metal)表面上的化学吸附(chemisorption)很重要。示例见第<a href="sec-4-10-plot-density-of-states-dos-maps.html#4106-%E8%AE%A1%E7%AE%97%E8%BF%87%E6%B8%A1%E9%87%91%E5%B1%9E%E5%9B%A2%E7%B0%87%E7%9A%84-d-%E5%B8%A6%E4%B8%AD%E5%BF%83-d-band-center">4.10.6</a>节。</p>
+<h3 id="态密度dos图示二茂铁ferrocene"><strong>态密度(DOS)图示：二茂铁(Ferrocene)</strong></h3>
+<p>下面是一个典型分子二茂铁的态密度图，对铁采用了Lanl2DZ基组(basis set)结合Lanl2赝势(pseudopotential)，而对其它元素采用了6-31G*。在此体系中，Z轴垂直于环戊二烯基(cyclopentadienyl groups)。</p>
+<p><img src="assets/figures/sec3-12/fig1-ferrocene-dos-tdos-pdos-opdos.png" alt="二茂铁的总态密度(TDOS)、分态密度(PDOS)和重叠态密度(OPDOS)图，内嵌有相应轨道"></p>
+<p>该图清楚地展示了不同能量范围内的轨道(orbital)特征，每条分立线对应一个分子轨道(MO)。这些曲线是通过对分立线应用展宽函数(broadening function)得到的。左右Y轴分别对应曲线和分立线。注意，只有曲线的相对高度而非绝对高度是有意义的。显然，碳的<em>s</em>、$p_{x}$和$p_{y}$原子轨道(atomic orbitals)的主要贡献（品红色曲线）来自低能分子轨道，而非前线分子轨道(frontier MOs)。-0.25 a.u.附近的分子轨道的主要组成来自碳的$p_{z}$轨道（蓝色曲线）和铁原子（红色曲线）。考察对应于碳$p_{z}$与铁原子之间成键的绿色重叠态密度曲线，可以发现碳$p_{z}$轨道对二茂铁的稳定非常重要，因为重叠态密度在这些范围内具有很大的正值。最高占据分子轨道(HOMO)几乎完全由铁轨道贡献，但其与碳$p_{z}$轨道的轻微重叠仍有利于成键。对于所有虚分子轨道，重叠态密度曲线位于负值区域并表现出反键(antibonding)特征，这是由于轨道相位(orbital phase)的不利重叠所致，从最低未占据分子轨道(LUMO)等值面(isosurface)可以看出。</p>
+<h2 id="3122-输入文件input-file"><strong>3.12.2 输入文件(Input file)</strong></h2>
+<p>.mwfn/.fch/.molden/.gms文件可用作输入。也可以使用Gaussian程序单点任务(single point task)的输出文件作为输入（必须指定<em>pop=full</em>关键词(keyword)）。</p>
+<p>为了通用性，Multiwfn还支持使用纯文本文件(plain text file)作为输入文件，格式自由，轨道数量没有上限。文件的格式应为
+<pre><code class="language-text">nmo inp
+energy occ [strength] [FWHM]         ← For orbital 1
+energy occ [strength] [FWHM]         ← For orbital 2
+energy occ [strength] [FWHM]         ← For orbital 3
+...
+energy occ [strength] [FWHM]         ← For orbital nmo</code></pre>
+其中<em>energy</em>和<em>occ</em>分别表示轨道能量(orbital energy)和占据数(occupation number)。<em>nmo</em>是此文件中记录的轨道数量。<em>inp</em>是输入类型(input type)，有四种情况：</p>
+<ul>
+<li><p>1：仅载入能量(以a.u.为单位)和占据数，而所有轨道的强度(strengths)和半高宽(FWHMs)将分别自动设置为1.0和0.25 a.u.</p>
+</li>
+<li><p>2：与1相同，但你还必须将每个轨道的强度和半高宽作为第3列和第4列指定，因为在这种情况下它们也将被载入。如果某轨道的强度设为<em>k</em>，则来自该轨道的展宽曲线(broadened curve)将被归一化为<em>k</em>而不是1(默认值)</p>
+</li>
+<li><p>3：与1相同，但能量单位(energy unit)为eV。</p>
+</li>
+<li><p>4：与2相同，但能量单位为eV。</p>
+</li>
+</ul>
+<h2 id="3123-绘制态密度dos图的选项与基本用法"><strong>3.12.3 绘制态密度(DOS)图的选项与基本用法</strong></h2>
+<p>当你进入绘制态密度的界面时，你将看到以下选项。注意，仅当输入文件包含基函数(basis function)信息时才会出现选项-1和7，也就是说，如果你想绘制部分态密度(PDOS)和重叠布居态密度(OPDOS)图，就必须使用.mwfn/.fch/.molden/.gms文件作为输入。</p>
+<p>还请注意，在此界面中，你可以输入<em>s</em>将当前状态(绘图设置(plotting settings)、片段定义(fragment definition)和轨道信息(orbital information))保存到特定文件，也可以输入<em>l</em>从特定文件载入状态，以便无需重复设置即可快速重绘图谱。</p>
+<p>**-6 设置能级(energy levels)位移：*<em>在此选项中，轨道能量可按输入值进行位移。如果你输入</em>H*，则位移将被设为最高占据分子轨道(HOMO)能量的负值，从而使态密度图中的最高占据分子轨道对应于0的位置。</p>
+<p>**-5 自定义特定分子轨道(MOs)的能级、占据数、强度和半高宽：**通过此选项，你可以手动设置特定轨道的能量、占据数、强度和半高宽。例如，如果你只想绘制少数几个分子轨道的态密度，可以将其它分子轨道的强度设为零(默认情况下，所有分子轨道的强度均为1.0)。</p>
+<p>**-4 显示所有轨道信息：**在屏幕上打印所有轨道的信息。</p>
+<p>**-3 将能级、强度、半高宽导出到纯文本文件(plain text file)：*<em>将每个轨道的能量、强度和半高宽导出到当前目录下的</em>orginfo.txt*，此文件符合上一节介绍的格式，因此可直接用作输入文件。</p>
+<p><strong>-2 定义用于MO分态密度(MO-PDOS)的MO片段(MO fragments)：</strong>&quot;MO分态密度&quot;是一种特殊的部分态密度，用于揭示不同分子轨道集合(而非原子(atoms)或基函数)贡献的态密度，对应于不同分子轨道集合的态密度曲线和离散线(discrete lines)用不同颜色绘制。此选项用于定义&quot;MO分态密度&quot;图中涉及的不同分子轨道集合。有关示例，见<a href="sec-4-10-plot-density-of-states-dos-maps.html#4105-%E7%BB%98%E5%88%B6cyclo18carbon%E7%9A%84mo-pdos%E5%9B%BE-mo-pdos-map%E4%BB%A5%E6%8F%AD%E7%A4%BA%E7%94%B1%E4%B8%8D%E5%90%8C%E5%88%86%E5%AD%90%E8%BD%A8%E9%81%93-molecular-orbitals-mos%E8%B4%A1%E7%8C%AE%E7%9A%84%E6%8A%95%E5%BD%B1%E6%80%81%E5%AF%86%E5%BA%A6-projected-density-of-states-pdos">4.10.5节</a>。</p>
+<p>**-1 定义用于部分态密度/重叠布居态密度的片段：*<em>在此选项中，你最多可定义10个片段，以便绘制部分态密度和重叠布居态密度。进入此选项后，屏幕上会显示当前片段的信息。你可以输入</em>x<em>来定义片段</em>x*，输入-<em>x</em>来取消片段<em>x</em>的定义，或输入<em>i</em>,<em>j</em>来交换片段<em>i</em>和<em>j</em>的定义。要离开此界面，请输入<em>0</em>或<em>q</em>。通过选项0，将为在此选项中定义的每个片段绘制部分态密度。只有当片段1和2均已定义时，才能绘制重叠布居态密度。</p>
+<blockquote>
+<p><strong>注(Note)</strong></p>
+<p>值得注意的是，在绘制重叠布居态密度时，所定义的片段1和片段2可以共用一个或多个基函数，两个片段甚至可以具有相同定义。在这种情况下，仅计算基函数之间的交叉项(cross terms)，而局域项(local terms)(表征在位相互作用(on-site interactions))将被忽略。</p>
+</blockquote>
+<p><strong>0 绘制总态密度(TDOS)/分态密度(PDOS)/重叠分态密度(OPDOS)图：</strong> 选择此选项后，总态密度图将立即显示在屏幕上。如果已定义了任何碎片(fragment)，将绘制总态密度+分态密度。如果碎片1和2均已定义，将绘制总态密度+分态密度+重叠分态密度，但在这种情况下你也可以选择选项-0以仅绘制总态密度+分态密度。</p>
+<p><strong>00 绘制最近原子间的总态密度和重叠分态密度：</strong> 如果你尚未定义任何碎片，此选项可见。选择它后，总态密度和第<a href="#3121-%E7%90%86%E8%AE%BAtheory">3.12.1</a>节中提到的OPDO $S^{\mathrm{near}}$将一起绘制。</p>
+<p><strong>1 选择展宽函数(broadening function)：</strong> 选择将使用哪种展宽函数，你可以选择洛伦兹(Lorentzian)、高斯(Gaussian)或赝Voigt(Pseudo-Voigt)函数。默认是高斯函数。</p>
+<p><strong>2 设置能量范围(energy range)和步长(step)：</strong> 此选项用于设置X轴(X-axis)刻度间的下限(lower limit)、上限(upper limit)和步长。</p>
+<p><strong>3 设置半高全宽(full width at half maximum, FWHM)：</strong> 如标题所述。</p>
+<p><strong>4 设置DOS曲线(DOS curve)的放缩比(scale ratio)：</strong> 如果此选项设为<em>k</em>，则所有曲线的高度将乘以<em>k</em>(在整个能量范围内)。</p>
+<p><strong>5 设置高斯权重系数(Gaussian-weighting coefficient)：</strong> 此选项设置$w_{\mathrm{gauss}}$，其在上一节中提到。此选项仅在选择赝Voigt函数时出现。</p>
+<p><strong>6 选择轨道自旋(orbital spin)：</strong> 此选项仅在载入的文件包含基函数信息(basis function information)且波函数(wavefunction)是非限制(unrestricted)时出现。此选项决定将考虑哪组轨道(orbitals)(alpha、beta或同时alpha和beta)。</p>
+<p><strong>7 设置计算分态密度的方法：</strong> 支持Mulliken、SCPA、Hirshfeld和Becke方法用于计算绘制分态密度所用的轨道组成(orbital compositions)，通过此选项你可以选择其中之一。Hirshfeld和Becke方法比Mulliken和SCPA方法更稳健，尤其是对于未占据分子轨道(unoccupied MOs)，不幸的是它们更耗时，在这种情况下不能绘制重叠分态密度(*i.e.*碎片只能定义为一个原子集(set of atoms))。**非常重要的一点是，当存在弥散函数(diffuse functions)时，基于Mulliken或SCPA方法绘制的分态密度图将毫无意义！**如果你因特殊原因不能忽略弥散函数，则必须采用Hirshfeld或Becke方法。</p>
+<p>对于孤立体系(isolated systems)，Mulliken是默认方法；而对于周期体系(periodic systems)，SCPA是默认方法，因为对大的周期性晶胞(periodic cell)计算重叠矩阵(overlap matrix)可能非常耗时，而SCPA不需要重叠矩阵。</p>
+<p><strong>8 在a.u.和eV之间切换单位(unit)</strong>： 你可以通过此选项切换态密度图的X轴单位。eV更常用。</p>
+<p><strong>9 切换是否用线高(line height)显示轨道简并(orbital degeneracy)</strong>： 如果你想在态密度图中显示轨道的简并，你可以选择此选项以启用此效果，然后你将被要求输入用于判断简并的能量差(energy difference)阈值(threshold)。此功能可用于绘制总态密度和分子轨道分态密度(MO-PDOS)时，但不能用于绘制分态密度时。</p>
+<p>一旦你在态密度模块(DOS module)中选择选项0，Multiwfn即开始计算数据，然后态密度图弹出。你可以看到有一条垂直虚线(vertical dash line)，它标示了HOMO能级(HOMO level)的位置。请注意，有些人认为这是费米能量(Fermi energy)，然而对于孤立体系，这是一个定义不清的概念，任何≥ $E_{\mathrm{HOMO}}$且&lt; $E_{\mathrm{LUMO}}$的能量都可被视为“费米能量”。</p>
+<p>关闭图形后，屏幕上会出现一个后处理菜单(post-processing menu)，其中包含许多选项，这些选项是不言自明的，可用于调整各种绘图参数。更改参数后，可以选择“1 再次显示图形”查看效果。值得注意的是，有一个名为“设置重叠态密度(OPDOS)的Y轴(Y-axis)范围缩放因子”的选项，如果该值设为<em>k</em>且左轴（对应总态密度(TDOS)/偏态密度(PDOS)）的范围设为<em>例如</em>[-3.5, 2.0]，则右轴（对应重叠态密度）的范围将变为[-3.5*<em>k</em>, 2.0*<em>k</em>]。Multiwfn使用双轴的原因是重叠态密度的量级一般远小于总态密度和偏态密度。你还可以选择将态密度(DOS)图导出为当前文件夹中的图形文件，或将态密度的X-Y数据集导出为纯文本文件，以便用第三方软件（如Origin）重现图形。通过选择选项0可以返回上一界面，通过重复调整直到满意，可以逐步提高态密度图的绘制质量。</p>
+<p>态密度曲线的绝对值没有明显的实际意义，只有曲线在不同能量区域的相对高度值得关注。因此，在正确设置各项绘图参数后，可以在后处理菜单中选择选项“13 切换Y轴标签和刻度的显示”将其状态切换为“否”。</p>
+<p>在第<a href="sec-4-10-plot-density-of-states-dos-maps.html#4101-%E7%BB%98%E5%88%B6-n-phenylpyrrole-%E7%9A%84%E6%80%BB%E6%80%81%E5%AF%86%E5%BA%A6%E5%81%8F%E6%80%81%E5%AF%86%E5%BA%A6%E5%92%8C%E9%87%8D%E5%8F%A0%E6%80%81%E5%AF%86%E5%BA%A6-total-partial-and-overlap-dos">4.10.1</a>节中给出了绘制总态密度、偏态密度和重叠态密度的非常详细的示例，而第<a href="sec-4-10-plot-density-of-states-dos-maps.html#4103-%E7%BB%98%E5%88%B6%E9%9D%9E%E9%99%90%E5%88%B6%E5%BC%80%E5%A3%B3%E4%BD%93%E7%B3%BB%E7%9A%84dos%E5%9B%BEna%E2%82%83osi%E2%82%81%E2%82%82c%E2%82%81%E2%82%82">4.10.3</a>节说明了如何通过Multiwfn结合Origin软件绘制开壳体系(open-shell systems)的态密度以获得更好的效果。</p>
+<h2 id="3124-局域态密度local-dos"><strong>3.12.4 局域态密度(Local DOS)</strong></h2>
+<p>有一种特殊的态密度称为局域态密度(LDOS)，它也被称为空间态密度(spatial DOS)。给定点<strong>r</strong>的局域态密度曲线按如下方式计算：
+<div class="mathdisp" data-mi="7" title="点击复制 TeX">$$
+\mathrm{LDOS}(\mathbf{r},E)=\sum_i\varphi_i^2(\mathbf{r})f(E-\varepsilon_i)
+$$</div></p>
+<blockquote>
+<p><strong>注记(Note)</strong></p>
+<p>值得注意的是，在一些第一性原理(first-principles)书籍和论文中，词语“局域态密度(Local DOS)”实际上指的是在<a href="#3121-%E7%90%86%E8%AE%BAtheory">3.12.1节</a>中介绍的部分态密度(Partial DOS, PDOS)，不要混淆！</p>
+</blockquote>
+<p>要绘制局域态密度(LDOS)图，在进入主功能(Main function)10后选择选项“10 Draw local DOS for a point”，程序将提示你输入点<strong>r</strong>的坐标。</p>
+<p>也可以将均匀分布在一条直线上的一组点的局域态密度绘制为颜色填充图，X轴对应于能量(Energy)，Y轴对应于直线上相对于起始点的坐标。要绘制这种局域态密度图，选择选项“11 Draw local DOS along a line”，程序将提示你输入定义该直线的起始点和终点的坐标，以及构成该直线的点的数目。</p>
+<p>在态密度(Density of States, DOS)模块中，控制半峰全宽(Full Width at Half Maximum, FWHM)、能量单位(Energy unit)、能量范围(Energy range)和缩放比例(Scale ratio)的选项会影响所得的局域态密度图形。</p>
+<p>注意，碎片定义(Fragment definition)不影响局域态密度的结果，<em>即</em>局域态密度始终对应于总态密度(Total DOS)。然而，如果你想分离对局域态密度的角矩(Angular moment)贡献，你可以使用主功能6的子功能(Subfunction)25将所有分子轨道(Molecular Orbital, MO)中不需要的高斯型函数(Gaussian-type function, GTF)的系数设为零，然后它们将不对局域态密度产生贡献。</p>
+<p>绘制局域态密度的例子可在<a href="sec-4-10-plot-density-of-states-dos-maps.html#4102-%E7%BB%98%E5%88%B613-%E4%B8%81%E4%BA%8C%E7%83%AF-13-butadiene%E7%9A%84%E5%B1%80%E5%9F%9F%E6%80%81%E5%AF%86%E5%BA%A6-local-dos">4.10.2节</a>中找到。</p>
+<h2 id="3125-光电子能谱photoelectron-spectrum"><strong>3.12.5 光电子能谱(Photoelectron spectrum)</strong></h2>
+<p>基于(广义)Koopmans定理(Koopmans&#39; theorem)的光电子能谱(PES)谱的绘制与绘制总态密度(TDOS)密切相关。由于光电子能谱是一种经常被研究的谱，在态密度模块中提供了一个专用接口，用于方便地生成理论模拟的光电子能谱。</p>
+<h3 id="理论theory"><strong>理论(Theory)</strong></h3>
+<p>光电子能谱中峰的位置反映了各种<em>N</em>-1态与原始<em>N</em>电子态之间的能量差。如果一个体系是中性的，该体系通常处于中性电子态(Neutral electronic state)的振动基态(Vibrational ground state)。在电离出一个电子后，体系可以处于阳离子态(Cationic state)的不同振动态。因此，光电子能谱具有精细结构，其反映了振动耦合效应(Vibration coupling effect)。然而，为了简化问题，我们常常忽略核运动的量子效应(Quantum effect of nuclear motion)，并且电离被假设为从初态势能面(Potential energy surface)极小点开始的垂直过程(Vertical process)。此时，光电子能谱中的峰位置等价于当前体系不同壳层(Shell)电子的垂直电离能(Vertical ionization energy, VIP)。显然，只要我们对体系进行优化然后计算垂直电离能，我们就可以模拟光电子能谱。</p>
+<p>第一个垂直电离能对应于电离掉最外层(Outermost shell)电子所需的能量，它通常计算为在<em>N</em>电子态势能面极小点几何下含有<em>N</em>个电子的体系的<em>E</em>(<em>N</em>-1) - <em>E</em>(<em>N</em>)；其中<em>E</em>表示电子能量(Electronic energy)。对应于内层电子(Inner electrons)的垂直电离能也可以在理论上计算，但需要特殊方法，如OVGF、IP-EOM-CC、ADC等。</p>
+<p>绘制光电子能谱的最简单方法是基于Koopmans定理，该定理指出一个电子的电离能(Ionization energy)等于相应壳层轨道能量(Orbital energy)的负值。注意，这只是一种近似关系，它完全忽略了电子相关(Electron correlation)和轨道弛豫效应(Orbital relaxation effect)。在Koopmans定理下，模拟的光电子能谱简单地对应于由所有占据分子轨道展宽的总态密度曲线，然而在展宽之前轨道能量的符号应反转（对应于“电子结合能(Electronic binding energy)”）。</p>
+<p>由于库普曼斯定理(Koopmans&#39; theorem)对大多数流行的DFT泛函(DFT functionals)效果不佳（除了一些特殊的泛函，如QTP17），分子轨道能量(MO energies)的负值与实际垂直电离势(VIP)明显偏离，导致与实验相比光电子能谱(PES)较差。幸运的是，存在所谓的广义库普曼斯定理(generalized Koopmans&#39; theorem)，如果将其应用于光电子能谱的理论模拟，它本质上相当于在光电子能谱绘制之前对所有电子结合能(electronic binding energies)加上一个偏移值(shift value)，该偏移值定义为第1垂直电离势 + E(HOMO)。在考虑该偏移值后，模拟光电子能谱的第一个峰将恰好对应于第1垂直电离势，只要DFT泛函和基组(basis set)选择得当，几何构型(geometry)已充分优化，且待计算的电子态(electronic state)对应于实际基态(ground state)，它与实验光电子能谱的第一个峰就不会有明显偏离。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>光电子能谱绘制界面(PES plotting interface)作为选项12嵌入在态密度模块(DOS module)中，它允许用户基于(广义)库普曼斯定理极其容易地绘制光电子能谱。任何用于绘制态密度的输入文件(input files)也可用于光电子能谱绘制目的。</p>
+<p>如果您想基于库普曼斯定理绘制光电子能谱，只需在进入光电子能谱绘制界面后选择选项1。如果您想采用广义库普曼斯定理，您应在绘制之前选择选项3以设置偏移值。</p>
+<p>在光电子能谱绘制界面中有许多与态密度绘制界面中相似的参数和选项(parameters and options)，例如X和Y轴的范围和步长(range and step of X and Y axes)、半峰全宽(FWHM)、是否显示分立线(discrete lines)等，然而大多数参数并不被这两个界面共享。注意，对于光电子能谱绘制，只能采用eV单位(eV unit)和高斯展宽函数(Gaussian broadening function)。如果当前波函数(wavefunction)是非限制性开壳层(unrestricted open-shell)波函数，则不区分轨道自旋(orbital spin)的类型。</p>
+<p>如果您想调节光电子能谱曲线(PES curve)与对应于各种结合能级(binding energy levels)的分立线之间的相对高度，您可以使用&quot;11 设置光电子能谱曲线的缩放比&quot;来设置缩放比(scale ratio)。该比值越小，曲线越低。</p>
+<p>如果在选择选项1绘制光电子能谱后未显示任何内容，您应该：</p>
+<ul>
+<li><p>选择选项&quot;-2 显示所有结合能级信息&quot;，然后检查结合能的值是否正确。</p>
+</li>
+<li><p>检查X轴(X-axis)的范围是否已正确设置。要绘制光电子能谱，当前X轴范围内必须至少存在一个结合能。</p>
+</li>
+</ul>
+<p>默认情况下，所有轨道(orbitals)具有相同的强度(strength)（1.0）和半峰全宽（0.2 eV），后者可通过选项6在光电子能谱界面中直接设置。如果您想调节单个轨道的强度和半峰全宽，您可以选择&quot;-3 将占据分子轨道能量、强度和半峰全宽导出为纯文本文件(plain text file)&quot;，然后将以节<a href="#3122-%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6input-file">3.12.2</a>中所述格式的文件<em>PESinfo.txt</em>导出到当前文件夹(current folder)。然后您可以在此文件中手动调节某些轨道的强度和半峰全宽，再使用此文件作为输入文件绘制光电子能谱，从而使模拟光电子能谱更接近实验光电子能谱。</p>
+<p>光电子能谱曲线的绝对值没有实际意义。因此，在您已正确设置Y轴(Y-axis)的范围后，您可以选择&quot;13 切换是否在Y轴上显示标签和刻度&quot;将其状态切换为&quot;No&quot;。</p>
+<p>在节<a href="sec-4-10-plot-density-of-states-dos-maps.html#4104-%E7%BB%98%E5%88%B6cr%E2%82%83si%E2%82%81%E2%82%82%E5%9B%A2%E7%B0%87%E7%9A%84%E5%85%89%E7%94%B5%E5%AD%90%E8%B0%B1-photoelectron-spectrum-pes">4.10.4</a>中给出了绘制光电子能谱的一个例子。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>对于部分态密度(PDOS)、重叠布居态密度(OPDOS)和局域态密度(local DOS)，见节<a href="#3122-%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6input-file">3.12.2</a>。对于总态密度(TDOS)和光电子能谱，使用.mwfn/.fch/.molden/.gms文件，或带有<em>pop=full</em>的Gaussian输出文件，或如节<a href="#3122-%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6input-file">3.12.2</a>中所述格式的纯文本文件。</p>
+</blockquote>
+<h2 id="3126-cohp"><strong>3.12.6 COHP</strong></h2>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>在第一性原理(first-principles)研究领域，重叠布居态密度(OPDOS)常被称为晶体轨道重叠布居(crystal orbital overlap population, COOP)，还有一个与其密切相关的概念，名为晶体重叠哈密顿布居(crystal overlap Hamilton populations, COHP)。晶体重叠哈密顿布居最初在<em>J. Phys. Chem.</em>, <strong>97</strong>, 8617 (1993)中提出，在理解固体成键和材料设计中有广泛应用，综述见<em>J. Phys. Chem. A</em>, <strong>115</strong>, 5461 (2011)和<em>Angew. Chem. Int. Ed.</em>, <strong>39</strong>, 1560 (2000)。</p>
+<p>对于由以原子为中心的基函数(atomic-centered basis function)表示的波函数(wavefunction)，例如由Gaussian和CP2K产生的波函数，晶体重叠哈密顿布居可视为仅将晶体轨道重叠布居中的重叠矩阵(overlap matrix)替换为Kohn-Sham矩阵(Kohn-Sham matrix)，因此晶体重叠哈密顿布居从能量角度与原子间或片段(fragment)间相互作用相关。每个分子轨道(molecular orbital, MO)对所关注的相互作用都有其晶体轨道重叠布居值和晶体重叠哈密顿布居值，正的晶体轨道重叠布居和负的晶体重叠哈密顿布居均表明该分子轨道在被占据时(*i.e.*成键态(bonding state))对原子间或片段间成键有正贡献，晶体轨道重叠布居越正、晶体重叠哈密顿布居越负，贡献越大。相反，反键态(antibonding state)的分子轨道具有负的晶体轨道重叠布居和正的晶体重叠哈密顿布居。由于考虑了能量因素，晶体重叠哈密顿布居与原子间/片段间成键强度的相关性可能比晶体轨道重叠布居更好。然而，我发现晶体重叠哈密顿布居曲线对所用基组(basis set)较为敏感。因此，在比较不同情形的晶体重叠哈密顿布居时，应使用完全相同的基组。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>Multiwfn的态密度(DOS)模块还支持绘制片段间或最近邻原子(nearest atom)间的晶体重叠哈密顿布居。要绘制晶体重叠哈密顿布居，应执行以下步骤</p>
+<ul>
+<li><p>(1) 加载包含基函数信息的文件，例如.mwfn、.fch或.molden文件，见节<a href="sec-2-5-input-files-and-wavefunction-types.html">2.5</a>。</p>
+</li>
+<li><p>(2) 进入态密度绘制模块(主功能10)，并选择选项“-7切换到晶体重叠哈密顿布居绘制模式”。</p>
+</li>
+<li><p>(3) 现在Multiwfn要求你提供Kohn-Sham矩阵。你可以直接让Multiwfn基于波函数信息生成它，或从外部文件加载它，详情见节<a href="sec-6-7-about-providing-fock-ks-matrix-to-multiwfn.html">6.7</a>。</p>
+</li>
+<li><p>(4) 如果你想绘制最近邻原子间的晶体重叠哈密顿布居，只需选择选项0。如果你想绘制两个片段间的晶体重叠哈密顿布居，应先在选项-1中定义两个片段，然后再选择选项0。注意，定义晶体重叠哈密顿布居片段的界面与定义部分态密度(PDOS)片段的界面完全相同。</p>
+</li>
+<li><p>(5) 现在Multiwfn计算绘制的能量范围内每个分子轨道的最近邻原子间或片段间的晶体重叠哈密顿布居，然后将其展宽为曲线并显示在屏幕上。</p>
+</li>
+<li><p>(6) 绘制晶体重叠哈密顿布居的后处理菜单与绘制态密度的后处理菜单非常相似。然而，有一个专用选项“-2显示晶体重叠哈密顿布居原始数据和积分晶体重叠哈密顿布居(ICOHP)”，通过它你可以让Multiwfn打印晶体重叠哈密顿布居图中所有分子轨道的晶体重叠哈密顿布居值，以便定量比较不同情形间的晶体重叠哈密顿布居数据。图中占据能级的晶体重叠哈密顿布居值之和也会被打印，可用于评估分子轨道对原子间或片段间成键的贡献。</p>
+</li>
+</ul>
+<p>在节<a href="sec-4-10-plot-density-of-states-dos-maps.html#4107-%E4%B8%BAc%E2%82%86%E2%82%80%E5%AF%8C%E5%8B%92%E7%83%AF-fullerene%E5%92%8Cn-phenylpyrrole%E7%BB%98%E5%88%B6%E6%99%B6%E4%BD%93%E8%BD%A8%E9%81%93%E5%93%88%E5%AF%86%E9%A1%BF%E5%B8%83%E5%B1%85-cohp">4.10.7</a>中给出了一个绘制晶体重叠哈密顿布居的例子。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-3-12-plotting-density-of-states-pes-and-cohp";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script><script>const MATHS=["\\mathrm{TDOS}(E)=\\sum_i\\delta(E-\\varepsilon_i)","L(x)=\\frac{\\mathrm{FWHM}}{2\\pi}\\frac{1}{x^2+0.25\\times\\mathrm{FWHM}^2}","P(x)=w_{\\mathrm{Gauss}}G(x)+(1-w_{\\mathrm{Gauss}})L(x)","\\mathrm{PDOS}_A(E)=\\sum_i\\Theta_{i,A}F(E-\\varepsilon_i)","\\mathrm{OPDOS}_{A,B}(E)=\\sum_i X_{A,B}^i F(E-\\varepsilon_i)","\\mathrm{OPDOS}^{\\mathrm{near}}(E)=\\sum_i\\sum_A n_{A,A_{\\mathrm{adj}}}^i F(E-\\varepsilon_i)","\\varepsilon_{c,F}=\\frac{\\int_{\\mathrm{low}}^{\\mathrm{high}} E\\times\\mathrm{PDOS}_F(E)\\mathrm{d}E}{\\int_{\\mathrm{low}}^{\\mathrm{high}}\\mathrm{PDOS}_F(E)\\mathrm{d}E}","\\mathrm{LDOS}(\\mathbf{r},E)=\\sum_i\\varphi_i^2(\\mathbf{r})f(E-\\varepsilon_i)"];</script>
+<script src="app.js"></script></body></html>

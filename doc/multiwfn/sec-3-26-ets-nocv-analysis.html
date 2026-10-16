@@ -1,0 +1,175 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="326-扩展过渡态-化学价自然轨道-extended-transition-state---natural-orbitals-for-chemical-valence-ets-nocv-分析"><strong>3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Valence, ETS-NOCV) 分析</strong></h1>
+<p>扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Valence, ETS-NOCV) 方法 (ETS-NOCV 方法)由 Ziegler 等人在 <em>J. Chem. Theory Comput.</em>, <strong>5</strong>, 962 (2009) 中提出，它是 <em>J. Phys. Chem. A</em>, <strong>112</strong>, 1933 (2008) 中提出的 NOCV 方法与 <em>Theor. Chim. Acta</em>, <strong>46</strong>, 1 (1977) 中提出的 ETS 思想的结合。ETS-NOCV 已被广泛用于研究化学键以及片段之间的弱相互作用 (weak interaction)。简单地说，ETS-NOCV 通过对相互作用引起的密度矩阵变化作可视化分解分析，使人们能够深入理解片段间相互作用。</p>
+<p>我将首先在第 <a href="#3261-%E7%90%86%E8%AE%BA">3.26.1</a> 节中尽可能清晰、详细地介绍 ETS-NOCV 的理论，然后在第 <a href="#3262-%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82">3.26.2</a> 节中提及 Multiwfn 中该分析的一些实现细节。在第 <a href="#3263-%E7%94%A8%E6%B3%95">3.26.3</a> 节我将描述 Multiwfn 中 ETS-NOCV 模块的功能和用法。ETS-NOCV 分析的应用示例见第 <a href="sec-4-23-examples-of-ets-nocv-analysis.html">4.23</a> 节。</p>
+<h2 id="3261-理论"><strong>3.26.1 理论</strong></h2>
+<p>Multiwfn 中的 ETS-NOCV 分析支持任意数目的片段。但为简单起见，下面介绍 ETS-NOCV 理论时只涉及两个片段。</p>
+<h3 id="片段间相互作用能的物理分量"><strong>片段间相互作用能的物理分量</strong></h3>
+<p>我先回顾片段间相互作用能的物理分量，这是理解 ETS-NOCV 的重要预备知识。</p>
+<p>片段 <em>A</em> 与 $B$ 之间因片段间相互作用引起的总能量变化可表示为（下文提到的片段均处于复合物结构中，因此此处不考虑组合过程中因片段结构畸变引起的变形能）：</p>
+<p><div class="mathdisp" data-mi="0" title="点击复制 TeX">$$
+\Delta {E}_{\mathrm{int}}={E}_{AB}-{E}_{A}-{E}_{B}=\Delta {E}_{\mathrm{els}}+\Delta {E}_{\mathrm{XC}}^{0}+\Delta {E}_{\mathrm{Pauli}}+\Delta {E}_{\mathrm{orb}}
+$$</div></p>
+<p>其中 $E$ <em>$_{AB}$</em> 为复合物电子能量，$E$ <em>$_{A}$</em> 和 $E$ <em>$_{B}$</em> 为 $A$ 和 $B$ 在复合物几何结构下的电子能量。这四个物理分量定义如下</p>
+<ul>
+<li><p>$\Delta {E}_{\mathrm{els}}$ ：片段间静电相互作用能。它按 A 与 B 原始波函数（ ${\Psi}_{A}$ 和 ${\Psi}_{B}$ ）之间的经典库仑相互作用能计算。</p>
+</li>
+<li><p>$\Delta {E}_{\mathrm{XC}}^{0}$ ：从 ${\Psi}_{A}$ 和 ${\Psi}_{B}$ 组合成 ${\Psi}_{A}{\Psi}_{B}$ 过程中交换-相关 (XC) 能量的变化。由于色散效应本质上是片段间库仑相关，它也包含了片段间色散相互作用。</p>
+</li>
+<li><p>$\Delta {E}_{\mathrm{Pauli}}$ ：因两片段电子间 Pauli 排斥引起的能量升高。它也被称为交换-排斥项。</p>
+</li>
+<li><p>$\Delta {E}_{\mathrm{orb}}$ ：因片段轨道混合引起的轨道相互作用能，它包括极化效应（占据轨道与非占据轨道的片段内混合）和电荷转移效应（占据轨道与非占据轨道的片段间混合）。</p>
+<p>具体地，Δ $E_{\mathrm{Pauli}}$ 可表示为</p>
+</li>
+</ul>
+<p><div class="mathdisp" data-mi="1" title="点击复制 TeX">$$
+\Delta {E}_{\mathrm{Pauli}}=E\left[ {\Psi}_{AB}^{0} \right]-E\left[ {\Psi}_{A}{\Psi}_{B} \right]
+$$</div></p>
+<p>  其中 $E[\,]$ 表示复合物的能量泛函。 ${\Psi}_{A}$ 和 ${\Psi}_{B}$ 为 $A$ 和 $B$ 的原始波函数。 ${\Psi}_{A}{\Psi}_{B}$ 可称为*前分子 (promolecular)<em>波函数，它是 ${\Psi}_{A}$ 和 ${\Psi}_{B}$ 的 Hartree 乘积，简单对应于由 $A$ 和 $B$ 的全部占据轨道直接构造的 Slater 行列式。 ${\Psi}_{AB}^{0}$ 记为</em>冻结态 (frozen state)*波函数，它定义为 ${\Psi}_{A}$ 和 ${\Psi}_{B}$ 的反对称乘积；具体地，它对应于由 $A$ 和 $B$ 的全部占据轨道构造的 Slater 行列式，并已在这些轨道之间采用 Löwdin 正交归一化使它们彼此正交归一。冻结态可视为一种人为的中间态，它来源于：当两个片段组合在一起形成全同粒子体系时，所有电子轨道必须构成正交归一集，或者说一个片段的占据轨道必须与另一片段的占据轨道正交以遵守 Pauli 不相容原理。片段间的 Löwdin 正交归一化给原始片段轨道带来了额外的节点面，这一现象显然使轨道动能升高，这正是 Δ $E_{\mathrm{Pauli}}$ 必为正值并起去稳定化作用的主要原因。</p>
+<p>  Δ $E_{\mathrm{orb}}$ 可表示为</p>
+<p><div class="mathdisp" data-mi="2" title="点击复制 TeX">$$
+\Delta {E}_{\mathrm{orb}}=E\left[ {\Psi}_{AB} \right]-E\left[ {\Psi}_{AB}^{0} \right]
+$$</div></p>
+<p>  其中 ${\Psi}_{AB}$ 为自洽场 (SCF) 收敛后得到的复合物实际波函数。从 ${\Psi}_{AB}^{0}$ 到 ${\Psi}_{AB}$ 的变化源于片段内和片段间的轨道混合（也称为轨道弛豫）。Δ $E_{\mathrm{orb}}$ 恒为负项，因而稳定复合物。ETS-NOCV 方法着重于对 Δ $E_{\mathrm{orb}}$ 项给出深入的化学理解。</p>
+<p>总之，上述各项可整理为如下关系</p>
+<p><div class="mathdisp" data-mi="3" title="点击复制 TeX">$$
+{E}_{A}^{\mathrm{iso}}+{E}_{B}^{\mathrm{iso}}\xrightarrow{\Delta{E}_{\mathrm{prep}}}{E}_{A}\left[ {\Psi}_{A} \right]+{E}_{B}\left[ {\Psi}_{B} \right]\xrightarrow{\Delta{E}_{\mathrm{els}}+\Delta{E}_{\mathrm{XC}}^{0}}E[{\Psi}_{A}{\Psi}_{B}]\xrightarrow{{\Delta E}_{\mathrm{Pauli}}}E[{\Psi}_{AB}^{0}]\xrightarrow{{\Delta E}_{\mathrm{orb}}}E[{\Psi}_{AB}]
+$$</div></p>
+<p>其中 Δ $E_{\mathrm{prep}}$ 称为制备能，它包括片段 <em>A</em> 和 $B$ 从孤立几何结构到复合物几何结构的畸变能，还包括它们的电子态从最稳定态到参考态 Ψ<em>$_{A}$</em> 和 Ψ<em>$_{B}$</em> 的能量变化（例如，用 ETS-NOCV 研究 H₂Ge=GeH₂ 的双键时，合理的片段参考态应为三重态，而 GeH₂ 在孤立状态下的最稳定态为单重态，这一差别应计入 Δ $E_{\mathrm{prep}}$ ）。显然片段参考态的选择会影响 ETS-NOCV 分析结果，而在某些情况下这种选择多少有些任意性。</p>
+<p>坦率地说，在我看来，上述广为接受的相互作用能划分并不完全严格。因为在复合物波函数从前分子（参考）态 Ψ<em>$_{A}$</em>Ψ<em>$_{B}$</em> 到实际态 Ψ<em>$_{AB}$</em> 的转变过程中，静电相互作用能和交换-相关能也必然显著变化，因此 Δ $E_{\mathrm{orb}}$ 项不应被视为仅反映轨道混合效应对相互作用能的贡献。</p>
+<p>文献中为讨论方便，有时把 $\Delta {E}_{\mathrm{els}}+\Delta {E}_{\mathrm{XC}}^{0}+\Delta {E}_{\mathrm{Pauli}}$ 称为空间位阻项 Δ $E_{\mathrm{steric}}$ 。Multiwfn 无法直接计算它或其分量，但你可以用 Gaussian 结合 Multiwfn 计算 Δ $E_{\mathrm{steric}}$ ，见第 <a href="sec-3-100-other-functions-part-1.html#31008-%E7%94%9F%E6%88%90%E4%BB%A5%E7%A2%8E%E7%89%87%E6%B3%A2%E5%87%BD%E6%95%B0%E7%BB%84%E5%90%88%E4%B8%BA%E5%88%9D%E7%8C%9C%E7%9A%84gaussian%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6generate-gaussian-input-file-with-initial-guess-combined-from-fragment-wavefunctions">3.100.8</a> 节。Δ $E_{\mathrm{prep}}$ 可直接用任何量子化学程序手工计算。</p>
+<h3 id="nocv-理论"><strong>NOCV 理论</strong></h3>
+<p>首先，我们看化学价自然轨道 (natural orbitals for chemical valence, NOCV)理论。两片段间的轨道相互作用导致密度矩阵差</p>
+<p><div class="mathdisp" data-mi="4" title="点击复制 TeX">$$
+\Delta {\mathbf{P}}^{\mathrm{orb}}=\mathbf{P}-{\mathbf{P}}^{0}=\mathbf{P}\left[ {\Psi}_{AB} \right]-\mathbf{P}\left[ {\Psi}_{AB}^{0} \right]
+$$</div></p>
+<p>其中 <strong>P</strong> 和 <strong>P</strong>⁰ 分别为复合物实际态和冻结态的密度矩阵；它们可基于相应状态下占据轨道的系数矩阵很容易地生成。NOCV 方法对角化 $\Delta {\mathbf{P}}^{\mathrm{orb}}$ 以求其本征值和本征矢量，即有如下关系（矩阵表示在 Löwdin 正交归一化的基函数下）</p>
+<p><div class="mathdisp" data-mi="5" title="点击复制 TeX">$$
+\Delta {\mathbf{P}}^{\mathrm{orb}}{\mathbf{C}}^{\mathrm{NOCV}}={\mathbf{C}}^{\mathrm{NOCV}}\mathbf{v}
+$$</div></p>
+<p>其中 <strong>C</strong>$^{NOCV}$ 为 NOCV 轨道的系数矩阵，它的每一列对应一个 NOCV 轨道相对 Löwdin 正交归一化基函数的展开系数。<strong>v</strong> 为对角矩阵，$v$ <em>$_{i,i}$</em> 对应第 $i$ 个 NOCV 轨道的本征值。也可以说 NOCV 轨道是密度矩阵差算符的本征函数，即</p>
+<p><div class="mathdisp" data-mi="6" title="点击复制 TeX">$$
+\Delta {\hat{P}}^{\mathrm{orb}}{\varphi}_{i}={v}_{i}{\varphi}_{i}
+$$</div></p>
+<p>注意 NOCV 轨道的数目（ $N$ ）等于基函数数目。因此，通常 $N$ 很大，但只有很少的 NOCV 轨道具有显著量级的本征值，分析时应关注这些轨道。</p>
+<p>轨道相互作用导致电子密度变化，可表示为&quot;轨道变形密度 (deformation density)&quot;</p>
+<p><div class="mathdisp" data-mi="7" title="点击复制 TeX">$$
+\Delta {\rho}^{\mathrm{orb}}\left( \mathbf{r} \right)=\rho\left( \mathbf{r} \right)-{\rho}^{0}\left( \mathbf{r} \right)=\rho\left[ {\Psi}_{AB} \right]-\rho\left[ {\Psi}_{AB}^{0} \right]
+$$</div></p>
+<p>$\Delta {\rho}^{\mathrm{orb}}$ 可分解为各个 NOCV 密度 { ${v}_{i}{\varphi}_{i}^{2}$ } 的贡献</p>
+<p><div class="mathdisp" data-mi="8" title="点击复制 TeX">$$
+\Delta {\rho}^{\mathrm{orb}}\left( \mathbf{r} \right)=\sum_{i=1}^{N} {v}_{i}{\varphi}_{i}^{2}\left( \mathbf{r} \right)
+$$</div></p>
+<p>因为 $\Delta {\mathbf{P}}^{\mathrm{orb}}$ 是在一组正交归一基下表示的无迹矩阵，NOCV 轨道的一个显著特征是它们成对出现，即若将本征值从最正到最负排序，则 $v$ <em>$_{N+1-i}$</em> = − $v$ <em>$_{i}$</em>。为简单起见，后文将 $N+1-i$ 简写为 − $i$ 。于是，为便于分析和讨论，$\Delta {\rho}^{\mathrm{orb}}$ 也可分解为 NOCV 对的贡献</p>
+<p><div class="mathdisp" data-mi="9" title="点击复制 TeX">$$
+\Delta {\rho}^{\mathrm{orb}}\left( \mathbf{r} \right)=\sum_{i=1}^{N/2} {v}_{i}{\varphi}_{i}^{2}\left( \mathbf{r} \right)+{{v}_{-i}\varphi}_{-i}^{2}\left( \mathbf{r} \right)=\sum_{i=1}^{N/2} {v}_{i}\left[ {\varphi}_{i}^{2}\left( \mathbf{r} \right)-{\varphi}_{-i}^{2}\left( \mathbf{r} \right) \right]
+$$</div></p>
+<p>显然，NOCV 分析使我们能从 NOCV 轨道或密度的角度审视轨道变形密度的细节，从而更好地理解轨道相互作用的本质。</p>
+<h3 id="ets-与-ets-nocv-理论"><strong>ETS 与 ETS-NOCV 理论</strong></h3>
+<p>扩展过渡态 (ETS) 理论表明</p>
+<p><div class="mathdisp" data-mi="10" title="点击复制 TeX">$$
+\Delta {E}_{\mathrm{orb}}=\mathrm{Tr}\left( \Delta{\mathbf{P}}^{\mathrm{orb}}{\mathbf{F}}^{\mathrm{TS}} \right)=\sum_{\mu}^{N} \sum_{\nu}^{N} \Delta {P}_{\mu\nu}^{\mathrm{orb}}{F}_{\mu\nu}^{\mathrm{TS}}
+$$</div></p>
+<p>其中 <em>µ</em> 和 <em>ν</em> 为 Löwdin 正交归一化基函数的指标。<strong>F</strong>$^{TS}$ 是所谓的扩展过渡态 Fock 矩阵（KS-DFT 情形下为 Kohn-Sham 矩阵），它是用 ${\Psi}_{AB}$ 和 ${\Psi}_{AB}^{0}$ 的平均构造的 Fock 矩阵。注意此处的&quot;扩展过渡态&quot;与通常意义的过渡态很不相同，在此处它指介于 ${\Psi}_{AB}$ 与 ${\Psi}_{AB}^{0}$ 之间的中点处的人为电子结构，此时轨道相互作用只发生了一半。</p>
+<p>ETS-NOCV 理论表明</p>
+<p><div class="mathdisp" data-mi="11" title="点击复制 TeX">$$
+\Delta {E}_{\mathrm{orb}}=\sum_{i=1}^{N} \Delta {E}_{i}^{\mathrm{orb}}=\sum_{i=1}^{N} {\nu}_{i}{\tilde{F}}_{i,i}^{\mathrm{TS}}
+$$</div></p>
+<p>其中 $i$ 为 NOCV 的指标，${\tilde{F}}_{i,i}^{\mathrm{TS}}$ 为 NOCV 轨道基下 Fock 矩阵的第 $i$ 个对角元；换句话说，它对应于用 ${\hat{F}}^{\mathrm{TS}}$ 算符估计的第 $i$ 个 NOCV 轨道的能量，即 ${\tilde{F}}_{i,i}^{\mathrm{TS}}=\left\langle {\varphi}_{i}\middle|{\hat{F}}^{\mathrm{TS}}\middle|{\varphi}_{i} \right\rangle$ 。</p>
+<p>同样，因为 NOCV 轨道是成对的，$\Delta {E}_{\mathrm{orb}}$ 可分解为 NOCV 对的贡献</p>
+<p><div class="mathdisp" data-mi="12" title="点击复制 TeX">$$
+\Delta {E}_{\mathrm{orb}}=\sum_{i=1}^{N/2} {v}_{i}\left[ {\tilde{F}}_{i,i}^{\mathrm{TS}}-{\tilde{F}}_{-i,-i}^{\mathrm{TS}} \right]
+$$</div></p>
+<p>从能量贡献中，我们可以判断哪些 NOCV 对在轨道相互作用中起主要作用，进而着重分析它们的特征。本征值或能量很小的 NOCV 对在讨论时可忽略。</p>
+<h3 id="变形密度"><strong>变形密度</strong></h3>
+<p>最后，下面总结三种变形密度，它们涉及 Multiwfn 中的 ETS-NOCV 分析，注意 <em>ρ</em>、<em>ρ</em>⁰、$ρ_{A}$ 和 $ρ_{B}$ 分别对应 ${\Psi}_{AB}$ 、${\Psi}_{AB}^{0}$ 、${\Psi}_{A}$ 和 ${\Psi}_{B}$ 的电子密度。</p>
+<p>Pauli 变形密度：</p>
+<p><div class="mathdisp" data-mi="13" title="点击复制 TeX">$$
+\Delta {\rho}^{\mathrm{Pauli}}\left( \mathbf{r} \right)={\rho}^{0}\left( \mathbf{r} \right)-[{\rho}_{A}\left( \mathbf{r} \right)+{\rho}_{B}\left( \mathbf{r} \right)]
+$$</div></p>
+<p>轨道变形密度：</p>
+<p><div class="mathdisp" data-mi="14" title="点击复制 TeX">$$
+\Delta {\rho}^{\mathrm{orb}}\left( \mathbf{r} \right)=\rho\left( \mathbf{r} \right)-{\rho}^{0}\left( \mathbf{r} \right)
+$$</div></p>
+<p>总变形密度：</p>
+<p><div class="mathdisp" data-mi="15" title="点击复制 TeX">$$
+\Delta \rho\left( \mathbf{r} \right)=\Delta {\rho}^{\mathrm{orb}}\left( \mathbf{r} \right)+\Delta {\rho}^{\mathrm{Pauli}}\left( \mathbf{r} \right)=\rho\left( \mathbf{r} \right)-[{\rho}_{A}\left( \mathbf{r} \right)+{\rho}_{B}\left( \mathbf{r} \right)]
+$$</div></p>
+<h2 id="3262-实现细节"><strong>3.26.2 实现细节</strong></h2>
+<h3 id="功能特点"><strong>功能特点</strong></h3>
+<p>Multiwfn 中的 ETS-NOCV 模块具有以下功能：</p>
+<ul>
+<li><p>计算 NOCV 轨道波函数、本征值和能量</p>
+</li>
+<li><p>可视化 NOCV 轨道并导出相应的 cube 文件</p>
+</li>
+<li><p>计算 NOCV 对对 Δ $E_{\mathrm{orb}}$ 的能量贡献</p>
+</li>
+<li><p>可视化 NOCV 对密度并导出相应的 cube 文件</p>
+</li>
+<li><p>用 SCPA 方法计算 NOCV 对和轨道的组成</p>
+</li>
+<li><p>可视化前分子态、冻结态和复合物实际态轨道</p>
+</li>
+<li><p>可视化 Δ<em>ρ</em>$^{Pauli}$、Δ<em>ρ</em>$^{orb}$ 和 Δ<em>ρ</em> 等值面</p>
+<p>ETS-NOCV 模块支持定义任意数目的片段。若你定义了 $M$ 个片段，则 ETS-NOCV 将分析全部 $M$ 个片段之间的总相互作用。</p>
+<p>仅支持 Hartree-Fock 和 Kohn-Sham DFT 波函数。不支持耦合簇、CASSCF、双杂化泛函等多组态波函数。</p>
+<p>仅接受限制性闭壳层或非限制性开壳层波函数。不支持限制性开壳层波函数。</p>
+<p>若复合物为开壳层，或任一片段为开壳层，ETS-NOCV 分析将自动以开壳层形式进行。此时 alpha 和 beta NOCV 轨道分别独立求解，其能量分别用 alpha 和 beta Fock 矩阵估计。</p>
+<p>**Multiwfn 中 NOCV 轨道的能量并非按上述标准 ETS-NOCV 方法的严格方式计算！**这是因为 ETS-NOCV 分析中的 <strong>F</strong>$^{TS}$ 在 Multiwfn 中目前无法得到。在 ETS-NOCV 模块的后处理菜单中，你可以选择载入一个文件中由量子化学程序输出的复合物实际 Fock 矩阵，也可以选择让 Multiwfn 根据输入文件中记录的轨道能量和系数经由 <strong>F</strong>=<strong>SCEC</strong>⁻¹ 关系直接生成复合物的实际 Fock 矩阵，然后例如第 $i$ 个 NOCV 轨道的能量将按 $\left\langle {\varphi}_{i}\middle|\hat{F}\middle|{\varphi}_{i} \right\rangle$ 计算，其中 $\hat{F}$ 为与载入或生成的 Fock 矩阵对应的 Fock 算符。根据我与一些已发表的 ETS-NOCV 数据以及 ORCA 程序结果的比较，这种用 $\hat{F}$ 近似计算的 NOCV 能量与基于 ${\hat{F}}^{\mathrm{TS}}$ 的严格意义 NOCV 能量接近（特别是弱相互作用情形），至少这种差别不会定性地影响你对主导 NOCV 轨道/对的判断。注意由于这一差别，Multiwfn 给出的全部 NOCV 轨道或 NOCV 对的能量之和并不严格等于 Δ $E_{\mathrm{orb}}$ 。</p>
+</li>
+</ul>
+<h3 id="输入文件"><strong>输入文件</strong></h3>
+<p>你需要提供复合物的波函数文件以及每个片段的波函数文件。文件应包含基函数信息，例如你可以使用 .fch、.mwfn、.molden 等；但不能使用 .wfn 和 .wfx，因为它们不含基函数信息。若有疑惑，见第 <a href="sec-2-5-input-files-and-wavefunction-types.html">2.5</a> 节。</p>
+<p>为一个体系准备 ETS-NOCV 分析所需的波函数文件，通常应按以下步骤操作</p>
+<ul>
+<li><p>(1) 先用你喜欢的量子化学程序优化复合物的几何结构，同时得到复合物的波函数文件</p>
+</li>
+<li><p>(2) 从优化好的复合物中抽取每个片段的坐标，然后保存为单点任务的输入文件。若你使用 Gaussian，别忘了加 <em>nosymm</em> 关键词以避免计算中自动重定向。</p>
+</li>
+<li><p>(3) 运行每个片段的输入文件以得到它们的波函数文件。</p>
+</li>
+</ul>
+<p>显然，片段的计算水平必须与复合物完全相同。</p>
+<p>若无特殊理由，使用弥散函数不仅完全没有必要，而且不提倡。通常，使用 def2-TZVP 这类 3-zeta 基组绝对足够，而使用 6-31G* 和 def2-SVP 这类 2-zeta 基组对定性研究也足够。</p>
+<p>按在 ETS-NOCV 模块中载入片段的顺序排列好每个片段中的原子后，原子的顺序必须与复合物中的一致。显然，这要求片段文件中的原子顺序与复合物中的相同，且每个片段的原子在复合物中必须连续出现。</p>
+<p>通常应避免使用隐式溶剂化模型，它会使情况复杂得多。</p>
+<h2 id="3263-用法"><strong>3.26.3 用法</strong></h2>
+<p>使用 ETS-NOCV 模块的一般流程为：</p>
+<ul>
+<li><p>(1) 启动 Multiwfn，载入复合物的波函数文件</p>
+</li>
+<li><p>(2) 进入主功能 23</p>
+</li>
+<li><p>(3) 输入片段数目</p>
+</li>
+<li><p>(4) 输入每个片段的波函数文件路径。载入顺序应与片段在复合物中出现的顺序一致</p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>若发现某片段为非限制性开壳层，还会询问你是否翻转自旋。若你选择 <em>y</em>，则 alpha 和 beta 轨道的波函数和占据数将被交换。你应恰当设置自旋翻转，使所有片段的 alpha (beta) 电子数之和与复合物的相同。</p>
+</blockquote>
+</li>
+<li><p>(5) 现在计算 NOCV 轨道波函数和本征值，NOCV 自动配对。从屏幕上的 NOCV 信息中，你可直接找到 NOCV 对指标以及相应的 NOCV 指标和它们的本征值。目前尚未计算 NOCV 能量。</p>
+</li>
+</ul>
+<p>之后出现后处理菜单，你可按需要选择相应选项，简述如下。</p>
+<p>若想再次查看 NOCV 信息，选择&quot;0 Print NOCV information&quot;。默认 NOCV 本征值的打印阈值为 0.001，本征值绝对值小于此阈值的 NOCV 不显示，以免输出过长。你可用&quot;-3 Set printing threshold of NOCV eigenvalues&quot;手工改变阈值。</p>
+<p>要得到 NOCV 能量，需选择&quot;-1 Load Fock/KS matrix and evaluate NOCV orbital energies&quot;以载入一个包含当前复合物在相同水平下计算的 Fock 矩阵的文件（细节见本手册<a href="sec-6-7-about-providing-fock-ks-matrix-to-multiwfn.html">附录 7</a>），或选择&quot;-2 Generate Fock/KS matrix and evaluate NOCV orbital energies&quot;以基于复合物波函数文件（即启动 Multiwfn 后载入的文件）中分子轨道的能量和系数生成当前复合物的 Fock 矩阵（<em>即</em>上述文件）。然后 Multiwfn 将计算 NOCV 能量，并在屏幕上显示带能量的 NOCV 信息。</p>
+<p>&quot;1 Show isosurface of NOCV orbitals&quot;用于可视化 NOCV 轨道。选择此选项后，为方便起见屏幕上会显示 NOCV 信息，并出现一个 GUI 窗口，你可从窗口右下角的列表中选择相应的 NOCV 轨道，也可直接在窗口右下角的文本框中输入想查看的 NOCV 轨道的指标。</p>
+<p>&quot;2 Show isosurface of NOCV pair density&quot;用于直观查看 NOCV 对的密度。选择后，为方便起见屏幕上会显示 NOCV 信息，然后你可输入感兴趣的 NOCV 对指标。例如，若接着输入 <em>6</em>，则将计算 ${v}_{6}\left[ {\varphi}_{6}^{2}\left( \mathbf{r} \right)-{\varphi}_{-6}^{2}\left( \mathbf{r} \right) \right]$ 的格点数据并在 GUI 窗口中显示其等值面图。重要的是，你可输入一串对指标以得到它们的总密度；例如，若输入 <em>2,4-6,9</em>，则将计算 $\sum_{i=2,4,5,6,9} {v}_{i}\left[ {\varphi}_{i}^{2}\left( \mathbf{r} \right)-{\varphi}_{-i}^{2}\left( \mathbf{r} \right) \right]$ 的格点数据并绘制为等值面。若总共有<em>例如</em> 50 个 NOCV 而你输入 <em>1-50</em>，则格点数据就简单对应于轨道变形密度 Δ<em>ρ</em>$^{orb}$。另外值得注意的是，对于开壳层情形，alpha 和 beta 自旋的对指标不同（如屏幕所示），因此你可输入恰当的指标以查看特定的 alpha 与 beta NOCV 对之和。</p>
+<p>若想可视化上述 Δ<em>ρ</em>$^{Pauli}$、Δ<em>ρ</em>$^{orb}$ 和 Δ<em>ρ</em>，可分别选择&quot;3 Show isosurface of Pauli deformation density&quot;、&quot;4 Show isosurface of orbital deformation density&quot;和&quot;5 Show isosurface of total deformation density&quot;。Δ<em>ρ</em>$^{Pauli}$ 使你能生动理解电子在片段间区域如何因 Pauli 排斥而被排开。Δ<em>ρ</em>$^{orb}$ 使你能图形化地考察因共价相互作用形成导致的片段间电子聚集，或因某片段的占据轨道与其它片段的非占据轨道混合导致的片段间电子转移。Δ<em>ρ</em> 即 Δ<em>ρ</em>$^{Pauli}$ 与 Δ<em>ρ</em>$^{orb}$ 之和，事实上它也可用主功能 5 的自定义操作功能计算（第 <a href="sec-3-7-custom-operation-promolecular-and-deformation-properties.html#371-%E5%A4%9A%E4%B8%AA%E6%B3%A2%E5%87%BD%E6%95%B0%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E6%93%8D%E4%BD%9C-custom-operation-for-multiple-wavefunctions0">3.7.1</a> 节）。</p>
+<p>NOCV 轨道、NOCV 对、Δ<em>ρ</em>$^{Pauli}$、Δ<em>ρ</em>$^{orb}$ 和 Δ<em>ρ</em> 的格点数据也可导出为 .cub 文件，以便在第三方可视化软件中可视化，只需选择选项 6~10 中相应的一项。</p>
+<p>用选项 2 至 8 可视化或导出各种密度时，若你尚未通过&quot;-5 Set grid for calculation of various densities&quot;定义格点设置，将自动要求你先设置格点。下次无需再设格点，但你仍可随时经由选项 -5 改变格点设置。</p>
+<p>若你对第 <a href="#3261-%E7%90%86%E8%AE%BA">3.26.1</a> 节中提到的 ${\Psi}_{A}{\Psi}_{B}$ 、${\Psi}_{AB}^{0}$ 和 ${\Psi}_{AB}$ 的占据轨道感兴趣，可分别选择&quot;11 Visualize promolecular orbitals&quot;、&quot;12 Visualize frozen state orbitals&quot;和&quot;13 Visualize actual complex orbitals&quot;以可视化相应轨道的等值面。 ${\Psi}_{A}{\Psi}_{B}$ 的轨道即片段波函数文件中的轨道， ${\Psi}_{AB}$ 的轨道即复合物波函数文件中的轨道。通过比较 ${\Psi}_{AB}^{0}$ 中的轨道与 ${\Psi}_{A}{\Psi}_{B}$ 中的轨道，你可考察片段电子间的 Pauli 排斥（如前所述经由 Löwdin 正交归一化实现）如何使占据的片段分子轨道变形。若等值面值已设得足够小，你将能在 ${\Psi}_{AB}^{0}$ 的片段轨道上观察到 Löwdin 正交归一化造成的额外节点面。注意 Multiwfn 的 ETS-NOCV 分析中正交归一化不施加于非占据轨道，因此 ${\Psi}_{AB}^{0}$ 与 ${\Psi}_{A}{\Psi}_{B}$ 中的非占据轨道完全相同。</p>
+<p>当你想更好地理解 NOCV 对及其相应 NOCV 轨道的本质时，研究它们的组成常有帮助。若选择选项&quot;14 Calculate composition of NOCV orbitals and pairs&quot;，将被要求选择一个 NOCV 对，然后每个基函数、壳层、角动量和原子对该 NOCV 对及相应 NOCV 轨道的贡献将打印在屏幕上。NOCV 轨道的组成用第 <a href="sec-3-10-orbital-composition-analysis.html#3103-%E7%94%A8-mullikenstout-politzer-%E5%92%8C-scpa-%E6%96%B9%E6%B3%95%E8%BE%93%E5%87%BA%E7%89%87%E6%AE%B5-1-%E7%9A%84%E6%88%90%E5%88%86%E5%92%8C%E7%89%87%E6%AE%B5%E9%97%B4%E6%88%90%E5%88%86-4-5-6">3.10.3</a> 节提到的 SCPA 方法计算。NOCV 对的组成按 ${v}_{i}{\Theta}_{i}+{v}_{j}{\Theta}_{j}$ 计算，其中 $i$ 和 $j$ 为配对的两个 NOCV 轨道的指标，${v}_{j}=-{v}_{i}$ ，Θ 为 SCPA 方法计算的轨道组成。此选项在研究电子转移时有用。例如，若用此选项发现原子 <em>A</em> 和 $B$ 对 NOCV 对 1 的贡献分别为 34.12% 和 -20.53%，意味着原子 <em>A</em> 得到了 0.3412 个电子而原子 <em>B</em> 失去了 0.2053 个电子，这是 NOCV 对 1 所表征的相互作用导致的。注意绝不能使用弥散函数，因为 SCPA 方法与它们不兼容。若你确实不得不用弥散函数，在做完 ETS-NOCV 分析后，应回到主菜单（此时内存中的轨道为 NOCV 轨道）再用主功能 8 经由<em>例如</em> Hirshfeld 或 Becke 方法计算轨道组成，这些方法在有弥散函数时也能正常工作。</p>
+<p>选项&quot;-6 Manually define correspondence between NOCV pairs and orbitals&quot;有时有用。Multiwfn 按 NOCV 轨道本征值排序自动构造 NOCV 对。对于对称体系（<em>例如</em>直线型体系 Ne...BeO），某些 NOCV 轨道可能简并，即具有完全相同的本征值；此时它们的顺序（指标）是任意的，自动确定的 NOCV 对与轨道的对应关系可能不符合预期。此时你可用选项 -6 选择一个 NOCV 对，然后手工输入该对应当对应的两个轨道的指标。此选项可多次使用以重定义多个 NOCV 对。</p>
+<p>ETS-NOCV 分析的丰富示例见第 <a href="sec-4-23-examples-of-ets-nocv-analysis.html">4.23</a> 节。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-3-26-ets-nocv-analysis";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script><script>const MATHS=["\\Delta {E}_{\\mathrm{int}}={E}_{AB}-{E}_{A}-{E}_{B}=\\Delta {E}_{\\mathrm{els}}+\\Delta {E}_{\\mathrm{XC}}^{0}+\\Delta {E}_{\\mathrm{Pauli}}+\\Delta {E}_{\\mathrm{orb}}","\\Delta {E}_{\\mathrm{Pauli}}=E\\left[ {\\Psi}_{AB}^{0} \\right]-E\\left[ {\\Psi}_{A}{\\Psi}_{B} \\right]","\\Delta {E}_{\\mathrm{orb}}=E\\left[ {\\Psi}_{AB} \\right]-E\\left[ {\\Psi}_{AB}^{0} \\right]","{E}_{A}^{\\mathrm{iso}}+{E}_{B}^{\\mathrm{iso}}\\xrightarrow{\\Delta{E}_{\\mathrm{prep}}}{E}_{A}\\left[ {\\Psi}_{A} \\right]+{E}_{B}\\left[ {\\Psi}_{B} \\right]\\xrightarrow{\\Delta{E}_{\\mathrm{els}}+\\Delta{E}_{\\mathrm{XC}}^{0}}E[{\\Psi}_{A}{\\Psi}_{B}]\\xrightarrow{{\\Delta E}_{\\mathrm{Pauli}}}E[{\\Psi}_{AB}^{0}]\\xrightarrow{{\\Delta E}_{\\mathrm{orb}}}E[{\\Psi}_{AB}]","\\Delta {\\mathbf{P}}^{\\mathrm{orb}}=\\mathbf{P}-{\\mathbf{P}}^{0}=\\mathbf{P}\\left[ {\\Psi}_{AB} \\right]-\\mathbf{P}\\left[ {\\Psi}_{AB}^{0} \\right]","\\Delta {\\mathbf{P}}^{\\mathrm{orb}}{\\mathbf{C}}^{\\mathrm{NOCV}}={\\mathbf{C}}^{\\mathrm{NOCV}}\\mathbf{v}","\\Delta {\\hat{P}}^{\\mathrm{orb}}{\\varphi}_{i}={v}_{i}{\\varphi}_{i}","\\Delta {\\rho}^{\\mathrm{orb}}\\left( \\mathbf{r} \\right)=\\rho\\left( \\mathbf{r} \\right)-{\\rho}^{0}\\left( \\mathbf{r} \\right)=\\rho\\left[ {\\Psi}_{AB} \\right]-\\rho\\left[ {\\Psi}_{AB}^{0} \\right]","\\Delta {\\rho}^{\\mathrm{orb}}\\left( \\mathbf{r} \\right)=\\sum_{i=1}^{N} {v}_{i}{\\varphi}_{i}^{2}\\left( \\mathbf{r} \\right)","\\Delta {\\rho}^{\\mathrm{orb}}\\left( \\mathbf{r} \\right)=\\sum_{i=1}^{N/2} {v}_{i}{\\varphi}_{i}^{2}\\left( \\mathbf{r} \\right)+{{v}_{-i}\\varphi}_{-i}^{2}\\left( \\mathbf{r} \\right)=\\sum_{i=1}^{N/2} {v}_{i}\\left[ {\\varphi}_{i}^{2}\\left( \\mathbf{r} \\right)-{\\varphi}_{-i}^{2}\\left( \\mathbf{r} \\right) \\right]","\\Delta {E}_{\\mathrm{orb}}=\\mathrm{Tr}\\left( \\Delta{\\mathbf{P}}^{\\mathrm{orb}}{\\mathbf{F}}^{\\mathrm{TS}} \\right)=\\sum_{\\mu}^{N} \\sum_{\\nu}^{N} \\Delta {P}_{\\mu\\nu}^{\\mathrm{orb}}{F}_{\\mu\\nu}^{\\mathrm{TS}}","\\Delta {E}_{\\mathrm{orb}}=\\sum_{i=1}^{N} \\Delta {E}_{i}^{\\mathrm{orb}}=\\sum_{i=1}^{N} {\\nu}_{i}{\\tilde{F}}_{i,i}^{\\mathrm{TS}}","\\Delta {E}_{\\mathrm{orb}}=\\sum_{i=1}^{N/2} {v}_{i}\\left[ {\\tilde{F}}_{i,i}^{\\mathrm{TS}}-{\\tilde{F}}_{-i,-i}^{\\mathrm{TS}} \\right]","\\Delta {\\rho}^{\\mathrm{Pauli}}\\left( \\mathbf{r} \\right)={\\rho}^{0}\\left( \\mathbf{r} \\right)-[{\\rho}_{A}\\left( \\mathbf{r} \\right)+{\\rho}_{B}\\left( \\mathbf{r} \\right)]","\\Delta {\\rho}^{\\mathrm{orb}}\\left( \\mathbf{r} \\right)=\\rho\\left( \\mathbf{r} \\right)-{\\rho}^{0}\\left( \\mathbf{r} \\right)","\\Delta \\rho\\left( \\mathbf{r} \\right)=\\Delta {\\rho}^{\\mathrm{orb}}\\left( \\mathbf{r} \\right)+\\Delta {\\rho}^{\\mathrm{Pauli}}\\left( \\mathbf{r} \\right)=\\rho\\left( \\mathbf{r} \\right)-[{\\rho}_{A}\\left( \\mathbf{r} \\right)+{\\rho}_{B}\\left( \\mathbf{r} \\right)]"];</script>
+<script src="app.js"></script></body></html>

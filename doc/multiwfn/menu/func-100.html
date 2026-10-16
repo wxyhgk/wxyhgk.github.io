@@ -1,0 +1,523 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>主功能100：其他功能，第1部分 · Multiwfn中文手册</title><link rel="stylesheet" href="../style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="主功能100其他功能第1部分">主功能100：其他功能，第1部分</h1>
+<p>Multiwfn 功能太多，其中相对“小”、或与波函数分析关系不密切的功能归为“其他功能”。子功能数量庞大，分为第 1 部分（主功能 100，本文件）与第 2 部分（主功能 200）。本文件按子功能编号逐个给出说明、菜单路径、输入要求、操作步骤与产出。</p>
+<p>理论与实例来源：<a href="../sec-3-100-other-functions-part-1.html">3.100</a>、<a href="../sec-4-100-other-functions-part-1.html">4.100</a>。</p>
+<h2 id="子功能1绘制两个函数之间的散点图并生成它们的-cube-文件">子功能1：绘制两个函数之间的散点图并生成它们的 cube 文件</h2>
+<h3 id="说明">说明</h3>
+<p>在共享网格设置下同时生成两个实空间函数的网格数据，可导出 cube、看等值面、绘制散点图。每个散点对应一个网格点，X/Y 分别为函数 1/2 的值；坐标轴范围按最值自动定，有时须用选项 4/5 手动重置，否则几乎看不到点；点大小由 <em>settings.ini</em> 中 <code>symbolsize</code> 调；选项 1 存图，选项 2 导出 X-Y 数据到 <em>output.txt</em>。选项 -2/-3 分别将函数 1 在特定范围内/外处函数 2 的值设为指定值（修改不可恢复）。</p>
+<h3 id="菜单路径">菜单路径</h3>
+<p>主功能100 → 子功能1。进入后输入如 <code>16,14</code> 选择两个实空间函数（依次为函数 1、函数 2），再选网格设置方式；算完打印 Pearson 相关系数并出现后处理菜单（选项 -1 绘散点图）。</p>
+<h3 id="输入要求">输入要求</h3>
+<p>任意波函数文件。特殊用法：已有两函数 cube（<em>func1.cub</em>、<em>func2.cub</em>，网格必须完全相同）时，启动输入 <em>func1.cub</em>，进子功能 1 选函数时输入 <code>0,0</code>，再输入 <em>func2.cub</em>，两 cube 网格直接当作函数 1/2 用。</p>
+<h3 id="产出">产出</h3>
+<p>Pearson 相关系数、散点图、<em>output.txt</em>、两函数 cube 文件。</p>
+<h3 id="来源">来源</h3>
+<p><a href="../sec-3-100-other-functions-part-1.html#31001-%E7%BB%98%E5%88%B6%E4%B8%A4%E4%B8%AA%E5%87%BD%E6%95%B0%E4%B9%8B%E9%97%B4%E7%9A%84%E6%95%A3%E7%82%B9%E5%9B%BE%E5%B9%B6%E7%94%9F%E6%88%90%E5%AE%83%E4%BB%AC%E7%9A%84cube%E6%96%87%E4%BB%B6draw-scatter-graph-between-two-functions-and-generate-their-cube-files">3.100.1</a>。</p>
+<h2 id="子功能2导出各类文件或生成量子化学程序的输入文件">子功能2：导出各类文件或生成量子化学程序的输入文件</h2>
+<h3 id="说明">说明</h3>
+<p>文件格式转换器：当前结构输出 .pdb/.xyz/.gro/.cif/.cml；仅有 GTF 时波函数导出 .wfn/.wfx；有基函数时还可导出 .mwfn/.molden/.fch/GENNBO 输入（.47）/旧 Molekel 输入（.mkl）。例如 Gaussian/其它程序产生 .fch/.molden → Multiwfn 转 .mkl → <code>orca_2mkl test -gbw</code> 得 <em>test.gbw</em> 作 ORCA 初猜（自动脚本见 <a href="http://sobereva.com/517">http://sobereva.com/517</a>）。输入为 .chg（含原子信息+电荷）时选项 1 转 .pqr（电荷列同 .chg，半径列为 Bondi vdW 半径；第四列若为自旋布居等也可按之着色；用法见 <a href="../sec-4-A-special-topics-and-advanced-tutorials.html#4a10-%E9%80%9A%E8%BF%87%E7%BB%99%E5%8E%9F%E5%AD%90%E7%9D%80%E8%89%B2%E7%9B%B4%E8%A7%82%E5%B1%95%E7%A4%BA%E5%8E%9F%E5%AD%90%E6%80%A7%E8%B4%A8">4.A.10</a>）。</p>
+<p>内存有网格数据时（.cub 载入或主功能 5 算得）：选项 35 导出 .cub；选项 36 导出 .vti（ParaView 格式，可同时导出 Bohr 单位 .cml 以便叠加结构）；选项 37 导出 VASP 网格（CHGCAR/LOCPOT 格式）。</p>
+<p>生成输入文件：Gaussian、GAMESS-US、ORCA、MOPAC、Dalton、MRCC、Molpro、NWChem、PSI4、CFOUR、Molcas，以及 CP2K、Quantum ESPRESSO。Gaussian/GAMESS-US 有基函数时可选写轨道系数作 SCF 初猜（须手动指定与原波函数相同的基组）。Dalton 可写轨道系数作初猜（如 UHF/UKS 的 UNO 作 CASSCF 初猜，Dalton 本身不支持 UHF/UKS，见 <a href="http://sobereva.com/740">http://sobereva.com/740</a>）。ORCA 有专用界面（详见 <a href="http://sobereva.com/490">http://sobereva.com/490</a>，UV-Vis/ECD 例子 <a href="http://sobereva.com/485">http://sobereva.com/485</a>）。PSI4 输入专为 SAPT 设计。CP2K 输入功能强大（见 <a href="http://sobereva.com/587">http://sobereva.com/587</a>）。</p>
+<h3 id="菜单路径">菜单路径</h3>
+<p>主功能100 → 子功能2。</p>
+<h3 id="输入要求">输入要求</h3>
+<p>原子坐标；导出 .wfn/.wfx 需 GTF；导出 .mwfn/.fch/.molden/.47 需基函数；导出 cub/vti/VASP 网格需内存网格数据。</p>
+<h3 id="产出">产出</h3>
+<p>各类结构/波函数/输入文件；选项 35/36/37 导出网格数据。</p>
+<h3 id="来源">来源</h3>
+<p><a href="../sec-3-100-other-functions-part-1.html#31002-%E5%AF%BC%E5%87%BA%E5%90%84%E7%B1%BB%E6%96%87%E4%BB%B6%E6%88%96%E7%94%9F%E6%88%90%E9%87%8F%E5%AD%90%E5%8C%96%E5%AD%A6%E7%A8%8B%E5%BA%8F%E7%9A%84%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6export-various-files-or-generate-input-file-of-quantum-chemistry-programs">3.100.2</a>。</p>
+<h2 id="子功能3计算分子范德华体积">子功能3：计算分子范德华体积</h2>
+<h3 id="说明">说明</h3>
+<p>蒙特卡罗法算 vdW 体积，两种区域定义（<em>settings.ini</em> 中 <code>MCvolmethod</code> 选择）：(1) 原子 vdW 球叠加（快、无需波函数、不准、忽略电子效应）；(2) 电子密度等值面包围区（0.001 适合孤立体系，0.002 更适合凝聚相）。</p>
+<p>原理：盒子体积 $L$ 内随机撒 $N$ 点，$n$ 点落入 vdW 区 → 体积 $n/N\times L$。输入指数 $i$ 定 $N=100\times 2^{i}$（小分子 i=9 一般可接受，大体系逐渐增大至 i 与 i+1 结果收敛）。定义 2 还需输入密度等值面值与盒子因子 $k$（$k$ 太小截断区域，太大则需更多点；等值面 0.001 推荐 $k$=1.7）。</p>
+<h3 id="菜单路径">菜单路径</h3>
+<p>主功能100 → 子功能3。</p>
+<h3 id="输入要求">输入要求</h3>
+<p>原子坐标（定义 1）；GTFs（定义 2）。</p>
+<h3 id="产出">产出</h3>
+<p>vdW 体积。</p>
+<h3 id="来源">来源</h3>
+<p><a href="../sec-3-100-other-functions-part-1.html#31003-%E8%AE%A1%E7%AE%97%E5%88%86%E5%AD%90%E8%8C%83%E5%BE%B7%E5%8D%8E%E4%BD%93%E7%A7%AFcalculate-molecular-van-der-waals-volume">3.100.3</a>。</p>
+<h2 id="子功能4在全空间对函数积分">子功能4：在全空间对函数积分</h2>
+<h3 id="说明">说明</h3>
+<p>Becke 数值积分（<em>J. Chem. Phys.</em>, <strong>88</strong>, 2547 (1988)，DFT 泛函积分法，适用于任何光滑且无穷远趋零的实空间函数）。精度由积分点数定（<em>settings.ini</em> 中 <code>radpot</code> 径向、<code>sphpot</code> 角向）。被积函数选内置或自定义 userfunc（见 sec-2.6、sec-2.7）。<code>outmedinfo</code>=1 时导出 <em>integrate.txt</em>（序号、坐标、函数值、Lebedev 权重、原子权重）。</p>
+<p>隐藏功能 -4/-5：检验两波函数文件间某实空间函数差异，被积分别为 $[f\,(\text{file1})-f\,(\text{file2})]^2$ 或 $\left|f\,(\text{file1})-f\,(\text{file2})\right|$（file1 为启动载入文件，file2 功能内选；可设电子密度判据只算低密度区忽略核区）。算后自动导出 file1 网格纯文本（如 <em>a.wfn_003_0075_0434</em> 表 file1=a.wfn、函数 3、径向 75 角向 434），条件相符时直接载入省时间。</p>
+<p>选 ELF 自动输出球对称平均 ELF $r_{\mathrm{ELF}}$（<em>J. Comput. Chem.</em>, <strong>38</strong>, 2258 (2017)，用于定 universal range-separated 泛函最优 ω）：</p>
+<p><div class="mathdisp" data-mi="0" title="点击复制 TeX">$$
+\begin{gathered}r_{\mathrm{ELF}}=\sqrt{\frac{\int \mathrm{ELF}(\mathbf{r})\mathbf{r}^2\mathrm{ELF}(\mathbf{r})\mathrm{d}\mathbf{r}}{\int \mathrm{ELF}(\mathbf{r})\mathrm{ELF}(\mathbf{r})\mathrm{d}\mathbf{r}}}\end{gathered}
+$$</div></p>
+<p>选 LOL 输出 $r_{\mathrm{LOL}}$（LOL-tuning，<em>J. Phys. Chem. C</em>, <strong>123</strong>, 4407 (2019)）：</p>
+<p><div class="mathdisp" data-mi="1" title="点击复制 TeX">$$
+\begin{gathered}r_{\mathrm{LOL}}=\sqrt{\frac{\int \mathrm{LOL}(\mathbf{r})\mathbf{r}^2\mathrm{LOL}(\mathbf{r})\mathrm{d}\mathbf{r}}{\int \mathrm{LOL}(\mathbf{r})\mathrm{LOL}(\mathbf{r})\mathrm{d}\mathbf{r}}}\end{gathered}
+$$</div></p>
+<h3 id="菜单路径">菜单路径</h3>
+<p>主功能100 → 子功能4（隐藏 -4/-5 比较两文件）。</p>
+<h3 id="输入要求">输入要求</h3>
+<p>原子坐标、GTFs；比较两文件时另需第二个波函数文件。</p>
+<h3 id="操作步骤实例-41004光气动能与核吸引势能">操作步骤（实例 4.100.4：光气动能与核吸引势能）</h3>
+<p><pre><code class="language-text">examples\COCl2.wfn  // HF/6-31G* wavefunction
+100  // Other functions (Part 1)
+4  // Integrate a function over the whole space
+6  // Hamiltonian kinetic density K(r)</code></pre></p>
+<p>结果 1031.1092（Gaussian 1031.1107）。核吸引势能是 userfunc 内置（<code>iuserfunc</code>=12：<code>userfunc = -nucesp(x,y,z)*fdens(x,y,z)</code>；r² 期望是 <code>iuserfunc</code>=3），无需改源码重编译：设 <em>settings.ini</em> 中 <code>iuserfunc</code> 为 12（或 3），选被积函数 100（userfunc）重做即可。核吸引得 −2839.1668（Gaussian −2839.1629）；r² 期望得 444.6523（主功能 300 子功能 5 解析值 444.652363）。特定轨道贡献：先用主功能 6 子功能 26 把其余轨道占据置零再积分。</p>
+<h3 id="产出">产出</h3>
+<p>被积函数全空间积分值（动能、核吸引、球平均 ELF/LOL 等）。</p>
+<h3 id="来源">来源</h3>
+<p><a href="../sec-3-100-other-functions-part-1.html#31004-%E5%9C%A8%E5%85%A8%E7%A9%BA%E9%97%B4%E5%AF%B9%E5%87%BD%E6%95%B0%E7%A7%AF%E5%88%86integrate-a-function-over-the-whole-space">3.100.4</a>、<a href="../sec-4-100-other-functions-part-1.html#41004-%E9%80%9A%E8%BF%87%E6%95%B0%E5%80%BC%E7%A7%AF%E5%88%86-numerical-integration%E8%AE%A1%E7%AE%97%E5%85%89%E6%B0%94-phosgene%E7%9A%84%E5%8A%A8%E8%83%BD-kinetic-energy%E5%92%8C%E6%A0%B8%E5%90%B8%E5%BC%95%E5%8A%BF%E8%83%BD-nuclear-attraction-potential-energy">4.100.4</a>。</p>
+<h2 id="子功能5显示-alpha-和-beta-轨道之间的重叠积分">子功能5：显示 alpha 和 beta 轨道之间的重叠积分</h2>
+<h3 id="说明">说明</h3>
+<p>非限制波函数 α/β 轨道一般不正交归一。计算重叠矩阵：</p>
+<p><div class="mathdisp" data-mi="2" title="点击复制 TeX">$$
+\begin{gathered}S_{i,j}^{\alpha\beta}=\int \varphi_{i}^{\alpha}(\mathbf{r})\varphi_{j}^{\beta}(\mathbf{r})\mathrm{d}\mathbf{r}\end{gathered}
+$$</div></p>
+<p>对角元明显偏离 1 → 自旋极化显著。选项 1：完整矩阵（对角元打印屏幕，全矩阵可选存 <em>ovlpmat.txt</em>，另给最大配对；大体系可能耗时）＋ 输出单行列式 $\langle S^2\rangle$：</p>
+<p><div class="mathdisp" data-mi="3" title="点击复制 TeX">$$
+\begin{gathered}\left\langle S^2 \right\rangle_{\mathrm{SD}}=\left\langle S^2 \right\rangle_{\mathrm{exact}}+N^{\beta}-\sum_{i}^{N^{\alpha}}\sum_{j}^{N^{\beta}}\left| S_{i,j}^{\alpha\beta} \right|^2\end{gathered}
+$$</div></p>
+<p><div class="mathdisp" data-mi="4" title="点击复制 TeX">$$
+\begin{gathered}\left\langle S^2 \right\rangle_{\mathrm{exact}}=S(S+1)=\frac{N^{\alpha}-N^{\beta}}{2}\left( \frac{N^{\alpha}-N^{\beta}}{2}+1 \right)\end{gathered}
+$$</div></p>
+<p>选项 2：只算对角元（总是很快）。</p>
+<h3 id="菜单路径">菜单路径</h3>
+<p>主功能100 → 子功能5。</p>
+<h3 id="输入要求">输入要求</h3>
+<p>GTFs（非限制波函数）。</p>
+<h3 id="产出">产出</h3>
+<p>重叠矩阵/对角元、最大配对、$\langle S^2\rangle$。</p>
+<h3 id="来源">来源</h3>
+<p><a href="../sec-3-100-other-functions-part-1.html#31005-%E6%98%BE%E7%A4%BAalpha%E5%92%8Cbeta%E8%BD%A8%E9%81%93%E4%B9%8B%E9%97%B4%E7%9A%84%E9%87%8D%E5%8F%A0%E7%A7%AF%E5%88%86show-overlap-integral-between-alpha-and-beta-orbitals">3.100.5</a>。</p>
+<h2 id="子功能6监控-gaussian-的-scf-收敛过程">子功能6：监控 Gaussian 的 SCF 收敛过程</h2>
+<h3 id="说明">说明</h3>
+<p>路线须 <code>#P</code> 否则无中间信息。进入后屏幕打印各步信息与收敛阈值，例如：</p>
+<p><pre><code class="language-text">Step#   RMSDP  Conv?   MaxDP  Conv?     DE    Conv?
+    8  3.51D-06  NO   5.15D-05  NO   -8.43D-08  YES
+    9  1.37D-06  NO   9.11D-06  NO   -2.17D-09  YES
+   10  3.03D-07  NO   2.91D-06  NO   -3.75D-10  YES
+   11  3.12D-08  NO   4.76D-07  YES  -1.07D-11  YES
+   12  7.69D-09  YES  5.72D-08  YES  -1.56D-13  YES
+Goal   1.00D-08       1.00D-06        1.00D-06
+ SCF done!</code></pre></p>
+<p>同时弹窗画能量/密度矩阵最大与 RMS 变化曲线（关窗后可选相应选项在指定步数范围重画，Y 轴自动调）。输出文件更新时每次重载 → 显示最新；耗时 SCF 可停留此界面隔段选选项 2 看最近 5 步趋势。灰虚线 Y=0，红虚线收敛阈值；最右 <code>Done</code> 表该项收敛。兼容 <code>SCF=QC</code>/<code>XQC</code>，不兼容 <code>SCF=DM</code>。</p>
+<h3 id="菜单路径">菜单路径</h3>
+<p>主功能100 → 子功能6。</p>
+<h3 id="输入要求">输入要求</h3>
+<p>Gaussian 输出文件（路线含 #P）。</p>
+<h3 id="产出">产出</h3>
+<p>收敛表 + 能量/密度矩阵变化曲线。</p>
+<h3 id="来源">来源</h3>
+<p><a href="../sec-3-100-other-functions-part-1.html#31006-%E7%9B%91%E6%8E%A7gaussian%E7%9A%84scf%E6%94%B6%E6%95%9B%E8%BF%87%E7%A8%8Bmonitor-scf-convergence-process-of-gaussian">3.100.6</a>。</p>
+<h2 id="子功能8生成以碎片波函数组合为初猜的-gaussian-输入文件">子功能8：生成以碎片波函数组合为初猜的 Gaussian 输入文件</h2>
+<h3 id="说明">说明</h3>
+<p>三用途：(1) 为复合物生成高质量初猜（碎片已收敛、相互作用不强时加速 SCF）；(2) 简单能量分解（强烈建议改用 sobEDA/sobEDAw，<em>J. Phys. Chem. A</em>, <strong>127</strong>, 7023 (2023)，教程 <a href="http://sobereva.com/soft/sobEDA_tutorial.zip">http://sobereva.com/soft/sobEDA_tutorial.zip</a>）；(3) 建模反铁磁耦合体系。</p>
+<p>能量分解公式：</p>
+<p><div class="mathdisp" data-mi="5" title="点击复制 TeX">$$
+\Delta E_{\mathrm{tot}} = E^{\mathrm{complex}} - \sum_{i} E_{i}^{\mathrm{frag}} = \left( \Delta E_{\mathrm{els}} + \Delta E_{\mathrm{XC}} + \Delta E_{\mathrm{Pauli}} \right) + \Delta E_{\mathrm{orb}} = \Delta E_{\mathrm{steric}} + \Delta E_{\mathrm{orb}}
+$$</div></p>
+<p><div class="mathdisp" data-mi="6" title="点击复制 TeX">$$
+\Delta E_{\mathrm{orb}}=E_{\mathrm{SCF,last}}-E_{\mathrm{SCF,1st}}
+$$</div></p>
+<p><div class="mathdisp" data-mi="7" title="点击复制 TeX">$$
+\Delta E_{\mathrm{steric}} = \Delta E_{\mathrm{tot}} - \Delta E_{\mathrm{orb}} = E_{\mathrm{SCF,1st}} - \sum_{i} E_{i}^{\mathrm{frag}}
+$$</div></p>
+<p>色散评估两法：(1) $\Delta E_{\mathrm{disp}}=\Delta E_{\mathrm{tot}}^{\mathrm{MP2}}-\Delta E_{\mathrm{tot}}^{\mathrm{HF}}$；(2) 无色散 DFT/HF 相互作用能 + Grimme DFT-D3 校正（见 <a href="http://sobereva.com/210">http://sobereva.com/210</a>）。</p>
+<p>反铁磁示例 Mn₂O₂(NH₃)₈（基态单重态、两 Mn 高自旋反平行；限制闭壳层不适用，默认初猜回塌到闭壳层）：四碎片各算（<code>nosymm pop=full</code>）：碎片1 左 Mn(NH₃)₄（+2，六重态）、碎片2 右 Mn(NH₃)₄（+2，六重态）、碎片3/4 各一桥氧（−2，单重态）。先载入 <em>frag1.out</em> 进子功能 8，输入 <code>4</code>，依次输入 <em>frag2/3/4.out</em>；每碎片问是否翻转自旋——仅碎片2 选 <code>y</code>（自旋向下抵消碎片1，多重度 1）。得 <em>new.gjf</em>（注释 <code>!</code> 后标明各复合物 MO 来源，如 <code>! Alpha orbital:    12 Occ:  1.000000 from fragment   2</code> 接系数，前 8 个属碎片1基函数故为零）。用弥散函数 Link401 报错可加 <code>IOp(3/32=2)</code>。</p>
+<h3 id="菜单路径">菜单路径</h3>
+<p>主功能100 → 子功能8。输入碎片总数并依次载入（首个为启动时已载入文件），可选翻转碎片自旋，得 <em>new.gjf</em>。</p>
+<h3 id="输入要求">输入要求</h3>
+<p>各碎片 Gaussian 输出文件（<code>nosymm pop=full</code>）。</p>
+<h3 id="操作步骤实例-41008nh₃bh₃-简单能量分解b3lyp6-31g文件-examplesedaeda_simpleg16-b01">操作步骤（实例 4.100.8：NH₃BH₃ 简单能量分解，B3LYP/6-31G*，文件 <em>examples\EDA\EDA_simple</em>，G16 B.01）</h3>
+<ul>
+<li>(1) 优化 NH₃BH₃，用优化坐标建 <em>NH3BH3.gjf</em>；(2) 复制为 <em>NH3.gjf</em>/<em>BH3.gjf</em>，分别删去另一碎片，加 <code>pop=full nosymm</code>；(3) 运行得 <em>NH3.out</em>、<em>BH3.out</em>；(4) 启动：</li>
+</ul>
+<p><pre><code class="language-text">NH3.out  // Fragment 1
+100  // Other functions (Part 1)
+8  // Generate Gaussian input file with initial     guess combined from fragment wavefunctions
+2  // There are two fragments in total
+BH3.out  //Fragment 2</code></pre></p>
+<p>得 <em>new.gjf</em>；(5) 确保有 <code>nosymm</code>，<code>#</code> 改 <code>#P</code>（每迭代打印能量），可删 <code>pop=full</code>；(6) 运行得 <em>new.out</em>。</p>
+<p>能量：<em>E</em>(NH₃)=−56.5477099，<em>E</em>(BH₃)=−26.5929634，<em>E</em>(NH₃BH₃)=$E_{\mathrm{SCF,last}}$=−83.2132069；<em>new.out</em> 第 639 行 $E_{\mathrm{SCF,1st}}$=−83.12546124。</p>
+<p>$\Delta E_{\mathrm{tot}}$ = −0.0725336 a.u. = −190.44 kJ/mol；$\Delta E_{\mathrm{orb}}$ = −0.0877456 a.u. = −230.37 kJ/mol；$\Delta E_{\mathrm{steric}}$ = +0.017218 a.u. = +39.93 kJ/mol。色散本体系可忽略；弱作用复合物须另评估色散。</p>
+<h3 id="产出">产出</h3>
+<p><em>new.gjf</em>（碎片组合初猜）；首末 SCF 能量差即轨道作用能。</p>
+<h3 id="来源">来源</h3>
+<p><a href="../sec-3-100-other-functions-part-1.html#31008-%E7%94%9F%E6%88%90%E4%BB%A5%E7%A2%8E%E7%89%87%E6%B3%A2%E5%87%BD%E6%95%B0%E7%BB%84%E5%90%88%E4%B8%BA%E5%88%9D%E7%8C%9C%E7%9A%84gaussian%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6generate-gaussian-input-file-with-initial-guess-combined-from-fragment-wavefunctions">3.100.8</a>、<a href="../sec-4-100-other-functions-part-1.html#41008-%E4%BD%BF%E7%94%A8%E7%BB%84%E5%90%88%E7%9A%84%E7%A2%8E%E7%89%87%E6%B3%A2%E5%87%BD%E6%95%B0-fragment-wavefunction%E8%BF%9B%E8%A1%8C%E7%AE%80%E5%8D%95%E7%9A%84%E8%83%BD%E9%87%8F%E5%88%86%E8%A7%A3-energy-decomposition">4.100.8</a>。</p>
+<h2 id="子功能9计算原子间连接性和原子配位数">子功能9：计算原子间连接性和原子配位数</h2>
+<h3 id="说明">说明</h3>
+<p>DFT-D3 配位数思想（<em>J. Chem. Phys.</em>, <strong>132</strong>, 154104 (2010)；Pyykkö 共价半径 <em>Chem. Eur. J.</em>, <strong>15</strong>, 186 (2009)）。连接性指数：</p>
+<p><div class="mathdisp" data-mi="8" title="点击复制 TeX">$$
+I_{AB}(r_{AB}) = \frac{1}{1 + \exp\{-16 \times [(4/3)(R_{A} + R_{B}) / r_{AB} - 1]\}}
+$$</div></p>
+<p><div class="mathdisp" data-mi="9" title="点击复制 TeX">$$
+CN_{A} = \sum_{B \neq A} \frac{1}{1 + \exp\{-16 \times [(4/3)(R_{A} + R_{B}) / r_{AB} - 1]\}}
+$$</div></p>
+<p>$I$ 接近 1 成键、接近 0 无键；$I$ 不可用作键级（无成键类型/强度分辨）。输出每对原子 $I$（可设打印阈值）与最接近整数 nint($I$)；每原子“连接性之和”（粗略配位数）与“整数连接性之和”（实际配位数）；可选导出 <em>connmat.txt</em> 矩阵。乙炔示例输出：</p>
+<p><pre><code class="language-text">    1C   ---    2C  :   0.99951   Nearest integer:  1
+    1C   ---    3H  :   0.99974   Nearest integer:  1
+    2C   ---    4H  :   0.99974   Nearest integer:  1
+
+    1  C   Sum of connectivity:  2.0016   Sum of integer connectivity:  2
+    2  C   Sum of connectivity:  2.0016   Sum of integer connectivity:  2
+    3  H   Sum of connectivity:  1.0021   Sum of integer connectivity:  1
+    4  H   Sum of connectivity:  1.0021   Sum of integer connectivity:  1</code></pre></p>
+<h3 id="菜单路径">菜单路径</h3>
+<p>主功能100 → 子功能9。</p>
+<h3 id="输入要求">输入要求</h3>
+<p>原子坐标。</p>
+<h3 id="产出">产出</h3>
+<p>原子对 $I$、每原子连接性和、可选 <em>connmat.txt</em>。</p>
+<h3 id="来源">来源</h3>
+<p><a href="../sec-3-100-other-functions-part-1.html#31009-%E8%AE%A1%E7%AE%97%E5%8E%9F%E5%AD%90%E9%97%B4%E8%BF%9E%E6%8E%A5%E6%80%A7%E5%92%8C%E5%8E%9F%E5%AD%90%E9%85%8D%E4%BD%8D%E6%95%B0evaluate-interatomic-connectivity-and-atomic-coordination-number">3.100.9</a>。</p>
+<h2 id="子功能11计算两个轨道之间的重叠和质心距离">子功能11：计算两个轨道之间的重叠和质心距离</h2>
+<h3 id="说明">说明</h3>
+<p>用于电荷转移分析等。输入两轨道序号，质心：</p>
+<p><div class="mathdisp" data-mi="10" title="点击复制 TeX">$$
+\begin{gathered} X_{i} = \int \left| \varphi_{i}(\mathbf{r}) \right|^{2} x \, \mathrm{d}\mathbf{r} \quad\quad Y_{i} = \int \left| \varphi_{i}(\mathbf{r}) \right|^{2} y \, \mathrm{d}\mathbf{r} \quad\quad Z_{i} = \int \left| \varphi_{i}(\mathbf{r}) \right|^{2} z \, \mathrm{d}\mathbf{r} \end{gathered}
+$$</div></p>
+<p><div class="mathdisp" data-mi="11" title="点击复制 TeX">$$
+D_{ij} = \sqrt{\left( X_{i} - X_{j} \right)^{2} + \left( Y_{i} - Y_{j} \right)^{2} + \left( Z_{i} - Z_{j} \right)^{2}}
+$$</div></p>
+<p>重叠程度（直接算波函数重叠因正交归一恒零、无意义，故算下两量，Becke 格点数值积分，<code>radpot</code>/<code>sphpot</code> 可调）：</p>
+<p><div class="mathdisp" data-mi="12" title="点击复制 TeX">$$
+\begin{gathered} \int \left| \varphi_{i}(\mathbf{r}) \right| \left| \varphi_{j}(\mathbf{r}) \right| \mathrm{d}\mathbf{r} \quad\quad \int \left| \varphi_{i}(\mathbf{r}) \right|^{2} \left| \varphi_{j}(\mathbf{r}) \right|^{2} \mathrm{d}\mathbf{r} \end{gathered}
+ PH4 text
+examples\ethanol_triplet.fch
+100  // Other functions (Part 1)
+12  // Perform biorthogonalization between alpha and beta orbitals
+2  // Do biorthogonalization for all orbitals
+0  // Do not evaluate energies of biorthogonalized orbitals
+ PH5 text
+ Doing biorthogonalization for alpha    1 to   14, Beta    1 to   12
+ Singular values of orbital overlap matrix:
+   1.0000   1.0000   1.0000   1.0000   1.0000   1.0000   1.0000   0.9999
+   0.9999   0.9998   0.9995   0.9992
+ PH6 text
+S = Singular value, E = Energy (in eV), O= Occupancy, A=Alpha, B=Beta
+
+ Orb:     1   S= 1.0000   O(A)= 1.0   O(B)= 1.0
+...[ignored]
+ Orb:    11   S= 0.9995   O(A)= 1.0   O(B)= 1.0
+ Orb:    12   S= 0.9992   O(A)= 1.0   O(B)= 1.0
+ -----------------------------------------------
+ Orb:    13   S= 1.0000   O(A)= 1.0   O(B)= 0.0
+ Orb:    14   S= 1.0000   O(A)= 1.0   O(B)= 0.0
+ -----------------------------------------------
+ Orb:    15   S= 1.0000   O(A)= 0.0   O(B)= 0.0
+ Orb:    16   S= 1.0000   O(A)= 0.0   O(B)= 0.0
+...[ignored]
+ PH7 text
+examples\ethanol_triplet.fch
+100  // Other functions (Part 1)
+12  // Biorthogonalization between alpha and beta orbitals
+2  // Perform biorthogonalization for all orbitals
+1  // Evaluate energies of the biorthogonalized orbitals using the Fock matrix generated by MO energies and coefficients via F=SCEC^-1 relationship
+y  // Ordering the biorthogonalized orbitals according to their energies
+ PH8 text
+...[ignored]
+ Orb:    11   S= 0.9992  E(A)=    -13.057  O(A)= 1.0  E(B)=    -11.821  O(B)= 1.0
+ Orb:    12   S= 1.0000  E(A)=    -11.918  O(A)= 1.0  E(B)=    -11.866  O(B)= 1.0
+ -------------------------------------------------------------------------------
+ Orb:    13   S= 1.0000  E(A)=    -11.439  O(A)= 1.0  E(B)=     -5.806  O(B)= 0.0
+ Orb:    14   S= 1.0000  E(A)=     -0.293  O(A)= 1.0  E(B)=      2.817  O(B)= 0.0
+ -------------------------------------------------------------------------------
+ Orb:    15   S= 0.9992  E(A)=     13.876  O(A)= 0.0  E(B)=     15.431  O(B)= 0.0
+ Orb:    16   S= 1.0000  E(A)=     15.057  O(A)= 0.0  E(B)=     15.305  O(B)= 0.0
+...[ignored]
+ PH9 text
+examples/phenanthrene.wfn
+100  // Other functions (Part 1)
+14  // Calculate LOLIPOP
+1  // Choose π orbitals that to be taken into account
+36,40,43,44,45,46,47  // Indices of π orbitals. You can manually find out π orbitals by visualizing orbital isosurfaces via main function 0, or let Multiwfn automatically identify π orbitals by subfunction 22 of main function 100
+0  // Start the calculation
+8,9,11,13,14,15  // The indices of the atoms in the ring that you are interested in. This ring is boundary ring. Note that you should input the indices according to atomic connectivity
+ PH10 text
+examples\biphenyl.fch
+19  // Orbital localization
+1  // Only localize occupied MOs
+100  // Other function (Part 1)
+22  // Automatically detect π orbitals
+-1  // Current orbitals are in localized form
+0  // Start π orbital identification based on default settings
+ PH11 text
+Expected pi orbitals, occupation numbers and orbital energies (eV):
+    32      2.000000    -10.110351
+    34      2.000000     -9.633443
+    38      2.000000     -7.386451
+    39      2.000000     -6.768520
+    40      2.000000     -6.755193
+    41      2.000000     -6.046329
+ PH12 text
+0  // Do not modify orbital occupation numbers
+14  // LOLIPOP calculation
+1  // Choose π orbitals
+32,34,38,39,40,41  // The indices of the π orbitals
+0  // Start calculation
+1,2,3,4,5,6  // Indices of the atoms in a ring
+ PH13 text
+DB-TTFdimer.fchk  // Wavefunction file of dimer
+100  // Other functions (Part 1)
+15  // Function for calculating intermolecular orbital overlap integral
+DB-TTF1.fchk  // Wavefunction file of monomer 1
+DB-TTF2.fchk  // Wavefunction file of monomer 2
+ PH14 text
+examples\ClPO2.fch
+100
+17
+ClPO2_KSmat.txt
+ PH15 text
+examples\phenanthrene_NAOMO.out  //The Gaussian output file containing "NAOMO" matrix
+100  // Other functions (Part 1)
+18  // Yoshizawa's electron transport route analysis
+2  // Select YZ plane, which is the molecular plane
+ PH16 text
+Note: The routes whose absolute value <  0.010000 will not be shown
+Note: The routes whose distance <    0.0000 or > 9999.0000 Angstrom will not be shown
+Atom    7 -- Atom   10  Value and distance:    3.743670    1.359562
+Atom    6 -- Atom   10  Value and distance:    3.098919    5.081382
+Atom    7 -- Atom   14  Value and distance:    3.098919    5.081382
+Atom    7 -- Atom   11  Value and distance:   -2.831680    3.720990
+Atom    2 -- Atom   10  Value and distance:   -2.831680    3.720990
+Atom    6 -- Atom   14  Value and distance:    2.565337    5.765892
+...
+Atom    6 -- Atom    9  Value and distance:   -0.016585    4.927289
+Atom    3 -- Atom   14  Value and distance:   -0.016585    4.927289
+Atom    2 -- Atom    4  Value and distance:   -0.014931    2.456189
+Atom    8 -- Atom   11  Value and distance:   -0.014931    2.456189
+ PH17 text
+To atom    10    Value and distance (Angstrom):   -2.831680    3.720990
+To atom    14    Value and distance (Angstrom):   -2.344569    6.206600
+To atom    11    Value and distance (Angstrom):    2.144432    5.674656
+To atom     5    Value and distance (Angstrom):   -1.571512    2.787501
+...
+ PH18 text
+examples\genpromol\COBH3\CO.wfn  // The path of wavefunction file of fragment 1
+100  // Other functions (Part 1)
+19  // Generate promolecular .wfn file from fragment wavefunctions
+1  // Output to combine.wfn
+2  // Two fragments in total
+examples\genpromol\COBH3\BH3.wfn  // The path of wavefunction file of fragment 2
+ PH19 text
+combine.wfn
+4  // Draw plane map
+9  // ELF
+1  // Color-filled map
+[Press ENTER button]
+2  // XZ plane
+0  // Y=0
+ PH20 text
+examples\genpromol\COBH3\COBH3.wfn  // Wavefunction file of actual state of COBH_3
+4  // Draw plane map
+0  // Custom operation
+1  // Deal with only one file
+-,combine.wfn  // Subtracting property of COBH3.wfn by that of combine.wfn
+9  // ELF
+1  // Color-filled map
+[Press ENTER button]  // Use default grid setting
+2  // XZ plane
+0  // Y=0
+ PH21 text
+1  // Set lower and upper limit of color scale
+-0.2,0.4  // Set the color scale from -0.2 to 0.4, since as you can see from the command-line window, in this plane the data range is from -0.248 to 0.436
+2  // Enable showing contour lines
+4  // Enable showing atom labels
+1  // Red
+-1  // Show the graph again
+ PH22 text
+examples\genpromol\CH3NH2\CH3.wfn
+100  // Other functions (Part 1)
+19  // Generate promolecular .wfn file from fragment wavefunctions
+1  // Output as combine.wfn
+2  // There are totally two fragments (including the loaded one)
+examples\genpromol\CH3NH2\NH2.wfn  // Wavefunction file of the second fragment
+n  // Do not flip spin of orbitals of CH_3
+y  // Flip spin of orbitals of NH_2. If you do not understand why the spin should be flipped, you can consult the corresponding CDA example in Section 4.16.2.
+ PH23 
+
+打印总 H-F 力及电子/核贡献。注意一般 ≠ 量子化学程序解析力 $\mathbf{F}_{A}^{\mathrm{QC}} = -\partial E/\partial\mathbf{R}_{A}$（后者多 Pulay 项 $-2\langle\partial\Psi/\partial\mathbf{R}_{A}|\hat{H}|\Psi\rangle$，含轨道/组态系数与基函数对核坐标偏导）；仅全变分波函数（HF/DFT/MCSCF）+ 基函数与核坐标无关（如平面波）时二者才相等。
+
+### 菜单路径
+
+主功能100 → 子功能20。
+
+### 输入要求
+
+GTFs、原子坐标。
+
+### 产出
+
+各原子总 H-F 力及电子/核贡献。
+
+### 来源
+
+[3.100.20](../sec-3-100-other-functions-part-1.md#310020-计算hellmann-feynman力calculate-hellmann-feynman-forces)。
+
+## 子功能21：基于几何信息计算特定原子的性质
+
+### 说明
+
+多种纯几何结构性质：
+
+- 选原子范围（或  PH73 ）：(1) 质量；(2) 几何中心/质心/核电荷中心；(3) 回转半径 $R_{\mathrm{g}} = \sqrt{\sum_i m_i (\mathbf{r}_i - \mathbf{r}_c)^2/\sum_j m_j}$；(4) 核电荷和与核电荷偶极矩；(5) X/Y/Z 最值原子；(6) 最小/最大距离；(7) 惯量张量（对角 $I_{XX}=\sum m(y^2+z^2)$ 等，非对角 $-\sum mxy$ 等）、主轴（ PH74  矩阵三列本征矢）与主转动惯量（本征值）；(8) 转动常数（amu⋅Å² 惯量，Z 轴如 $h/(8\pi^2 I_{ZZ}\xi)\times10^{11}$ GHz，$\xi$=1.66053878×10⁻²⁷）；(9) 核电荷间静电能。（.chg 输入时“核电荷”即原子电荷。）
+- 输入  PH75 ：旋转使三主轴平行笛卡尔轴，按边界原子 + Bondi vdW 半径（*J. Phys. Chem.*, **68**, 441 (1964)）算半径/直径/长宽高；GUI 可视化包围盒；导出 *new.pdb*（含 CRYST1，VMD  PH76  显示）。例见 4.100.21.1。
+- 输入  PH77 ：定义两碎片，输出最小/最大距离、几何中心/质心间距。
+- 输入  PH78 ：按顺时针输环原子序号（如菲中间环  PH79 ），三角剖分算面积周长（环须凸，大复杂环如卟啉分块算再加和；多环芳香性可用 ΣNICS(1)_ZZ/area²，*J. Org. Chem.*, **72**, 9163 (2007)）。
+- 输入  PH80 （主菜单直接输  PH81  也可）：分子平面性 MPP（均方根偏离）与 SDP（跨度）：$MPP=\sqrt{\sum d_i^2/N_{\mathrm{atom}}}$，$d_i^{\mathrm{s}}=(Ax_i+By_i+Cz_i+D)/\sqrt{A^2+B^2+C^2}$，$SDP=d_{\max}^{\mathrm{s}}-d_{\min}^{\mathrm{s}}$（*J. Mol. Model.*, **27**, 263 (2021)）。输原子序号后输出拟合平面、MPP/SDP，可导出 .pqr（“电荷”列即 $d^{\mathrm{s}}$，VMD 按 Charge 着色）。多帧 .xyz 可选帧，MPP/SDP 存 *MPP_SDP.txt*。例见 4.100.21.2/3。
+- 输入  PH82 （主菜单直接输也可）：空腔直径。选定周围原子 + 球心初位（常用几何中心），算与最近 vdW 球相切半径；最速上升迭代调球心使半径最大（收敛判据位移<0.01 Å，步限 0.3 Å），直径即空腔直径（Bondi 半径）。多空腔：恰当选原子+初位（迭代自动移向最近空腔）。例见 4.100.21.4。详见 <http://sobereva.com/643>。
+
+### 菜单路径
+
+主功能100 → 子功能21（ PH83 / PH84 / PH85 / PH86 / PH87  或原子范围）。
+
+### 输入要求
+
+原子坐标（轨迹分析用多帧 .xyz）。
+
+### 操作步骤（实例 4.100.21.1：alpha-cyclodextrin 直径与长宽高，*examples/alpha-cyclodextrin.pdb*）
+
+ PH24 
+
+ PH25 
+
+直径=14.027+2×1.2。选项 1 图形化包围盒（Ratio of atomic size=4.0 时原子球半径恰为 vdW 半径）；选项 2 导出旋转平移后 *new.pdb*（VMD  PH88 ）。*examples\principal_axes.tcl* 复制到 VMD 控制台显示主轴（红/蓝/绿）。另见 <http://sobereva.com/426>。
+
+实例 4.100.21.2（[14]annulene 平面性，ωB97XD/def2-TZVP，中文版 <http://sobereva.com/618>）：
+
+ PH26 
+
+ PH27 
+
+MPP/SDP 均不小 → 有限平面性。导出 .pqr 图形化：
+
+ PH28 
+
+VMD 载入，Representation 用 Charge 着色 + CPK，Trajectory 色标范围 −0.4~0.4，背景白：红/蓝分居拟合面两侧，色深偏离大。
+
+实例 4.100.21.3（C18 MD 轨迹平面性演化，*examples\C18_MD_500.xyz*，501 帧，首帧全平面；全轨迹下载 <http://sobereva.com/multiwfn/extrafiles/C18-MD.xyz>；背景 *Chem. Asian J.*, **16**, 56 (2021)）：
+
+ PH29 
+
+得 *MPP_SDP.txt*（帧号/MPP/SDP，Origin 画演化曲线）与 *ds.pqr*（每帧 $d^{\mathrm{s}}$）。VMD 载入 xyz + 复制 *ds.pqr*、*examples\scripts\ds.tcl* 到 VMD 安装目录，控制台  PH89 ，播放动画原子按 $d^{\mathrm{s}}$ 自动着色（默认色标 −0.4 蓝 ~ 0.4 红；演示 <http://sobereva.com/multiwfn/res/ds_color.mp4>，配合 RMSD 插件去整体运动更易看）。
+
+实例 4.100.21.4（开口富勒烯空腔，*examples\open_fullerene.pdb*，中文版 <http://sobereva.com/643>）：
+
+ PH30 
+
+ PH31 
+
+VMD 验证命令（载入 pdb，CPK，Sphere Scale 0.7，控制台执行）：
+
+ PH32 
+
+黄色球即空腔（直径 3.414 Å）。不规则空腔、环内径、晶体空腔见博客 <http://sobereva.com/643>。
+
+### 产出
+
+几何中心/质心/回转半径/惯量/转动常数；直径与长宽高（+包围盒图/*new.pdb*）；碎片间距；环面积周长；MPP/SDP（+* MPP_SDP.txt*/.pqr 着色图）；空腔直径/体积（+VMD 球命令）。
+
+### 来源
+
+[3.100.21](../sec-3-100-other-functions-part-1.md#310021-基于几何信息计算特定原子的性质calculate-properties-based-on-geometry-information-for-specific-atoms)、[4.100.21](../sec-4-100-other-functions-part-1.md#410021-几何结构表征示例)。
+
+## 子功能22：检测 π 轨道、设置占据数并计算 π 组成
+
+### 说明
+
+研究 π 电子的关键（*如* ELF-π）。强烈建议读 [*Theor. Chem. Acc.*, **139**, 25 (2020)](https://link.springer.com/article/10.1007%2Fs00214-019-2541-z)（算法详述+例子；引用 Multiwfn 外另引此文）。
+
+离域轨道（MO/NO/NTO 等，所有原子在 XY/YZ/XZ 平面）：选  PH90 ，程序自动找分子平面，列出 π 轨道序号/占据数/能量；选项 1 置零 π 占据，选项 2 置零其余，选项 3 只考虑价 π，选项 4 清除除价 π 外占据。不严格平面体系的局域平面区类 π（如甲苯六元环）：单点前使环严格平行 XY，算完用主功能 6 选项 -4 删甲基 GTF，进子功能 2（原文如此）选 0，手动选 XY 平面 + 两容差，得三类 π 轨道。
+
+定域轨道（LMO/NBO 等，须 Pipek-Mezey 定域；Foster-Boys 成香蕉键不可用）：选  PH91 ，再选  PH92  检测并设占据数。算法：算轨道组成找贡献最大/次大原子 A/B；A 贡献>阈值（默认 85%，选项 1 改）视为单中心跳过；否则算探测点 0.7**R**_A+0.3**R**_B 与 0.3**R**_A+0.7**R**_B 处轨道密度 |φ|²（理想 π 沿键节面应为零；非平面 σ-π 混需容差，阈值默认 0.01 a.u.，选项 2 改）。选项 3 限定轨道范围；选项  PH93  设原子范围约束（如  PH94  只识别贡献前二原子皆在其中的轨道，可锁定共轭环）。组成默认 Mulliken+SCPA（占据 Mulliken、空 SCPA；绝不能带弥散函数，否则无意义；选项  PH95  可换 Hirshfeld/Becke——与弥散兼容但贵、有时误识空 π，因不忠实反映节面；组成计算详见 [3.10](../sec-3-10-orbital-composition-analysis.md)）。
+
+π 组成：选  PH96  界面下再选  PH97 （先检测 π LMO，再输入几何基函数完全相同的另一波函数文件路径），轨道 $i$ 的 π 组成为 $\Theta_i = 100\% \times \sum_j^{\pi\mathrm{LMO}} c_{j,i}^2$，$c_{j,i} = \langle j|i\rangle = \sum_\mu\sum_\nu C_{\mu,i}C_{\nu,j}\langle\chi_\mu|\chi_\nu\rangle$；输入阈值，只打印高于者。非限制 α/β 分别基于各自 π LMO 算；分析后内存波函数为新载入文件。选项  PH98  切换考虑轨道：默认  PH99 （只用占据 π LMO，算占据 MO/双正交化/NTO 组成；须先有占据 LMO）； PH100 （占据+空 π LMO，算空 MO/NTO/双正交化/自然轨道组成；须同时有占据和空 LMO）。
+
+弥散函数重要说明：自动检测 π 最好去弥散；坚持用则 (1) 定域界面选  PH101  →  PH102 （兼容但慢）；(2) 探测界面选  PH103  用 Hirshfeld/Becke 算组成（Mulliken+SCPA 有弥散时失效）。
+
+### 菜单路径
+
+主功能100 → 子功能22（ PH104  离域 /  PH105  定域； PH106  下  PH107  设占据 /  PH108  算他文件轨道 π 组成）。
+
+### 输入要求
+
+GTFs（离域情形）；基函数（定域情形）；原子坐标。
+
+### 操作步骤（实例 4.100.22：环庚三烯 π 特征，*examples\cycloheptatriene.fch*）
+
+探测 π LMO（先定域占据轨道）：
+
+ PH33 
+
+ PH34 
+
+选 2 置零其余占据 → 密度矩阵自动更新，后续分析（主功能 5 密度等值面 0.03、LOL 等值面 0.5）纯 π 贡献：C4-C6、C1-C2、C3-C5 强于 C1-C4、C2-C3。误把孤对 LMO 认成 π 时：主功能 0 检查占据轨道记下孤对号，主功能 6 子功能 26 置零其占据再做 LOL-π。Mayer 键级（做法见 4.9.1）：
+
+ PH35 
+
+π 键级 C4-C6 > C1-C2 > C1-C4，与 ELF-π 一致（helicene LOL-π 0.55、选项  PH109  限中央两环的五 π LMO 密度图、多中心键级 LMO 下照常，见原文图）。
+
+占据 MO π 组成（定域时自动导出 *new.fch* 存占据 LMO）：
+
+ PH36 
+
+ PH37 
+
+之后内存为 cycloheptatriene.fch 轨道，主功能 0 可画 π MO。MO23 π 组成偏低原因：C6-C7/C5-C7 成键区 σ 特征 + H10/H11/H14 周围等值面；MO25 准 π 轨道。
+
+空 MO π 组成（还需空 LMO）：回主菜单：
+
+ PH38 
+
+识别出 6 个 π LMO：
+
+ PH39 
+
+ PH40 
+
+ PH41 
+
+主功能 0 画 MO27（π 组成 72.5%）确以 π 为主。更多讨论见 <http://sobereva.com/432>。离域例另见 [4.5.3](../sec-4-5-generate-grid-data-and-view-isosurface-map.md#453-计算-elf-σ-和-elf-π-以研究苯的芳香性)（ELF-σ/π）、[4.4.9](../sec-4-4-output-and-plot-various-properties-in-a-plane.md#449-绘制卟啉的-lol-π-图以揭示有利的电子离域路径)（卟啉 LOL-π）。
+
+### 产出
+
+π 轨道序号/占据数/能量、占据数修改、他文件轨道 π 组成百分比。
+
+### 来源
+
+[3.100.22](../sec-3-100-other-functions-part-1.md#310022-检测π轨道设置占据数并计算π组成detect-π-orbitals-set-occupation-numbers-and-calculate-π-composition)、[4.100.22](../sec-4-100-other-functions-part-1.md#410022-分析非平面体系-non-planar-system的π电子-π-electron特征环庚三烯-cycloheptatriene)。
+
+## 子功能23：拟合函数分布到原子值
+
+### 说明
+
+类似 ESP 电荷拟合（见 [3.9.10](../sec-3-9-population-analysis-and-calculation-of-atomic-charges.md#3910-chelpg-charges-from-electrostatic-potentials-using-a-grid-based-method-esp-拟合原子电荷-12)、[3.9.11](../sec-3-9-population-analysis-and-calculation-of-atomic-charges.md#3911-merz-kollmann-mk-esp-拟合原子电荷-13)），但被拟合实空间函数不限于 ESP（如表面平均局域电离能、Fukui 函数）。选项 1 选函数后在拟合点算值，最小二乘拟合到原子值：
+
+$$</div>
+F(p_1, p_2 \cdots p_N) = \sum_i \left[ V(\mathbf{r}_i) - V&#39;(\mathbf{r}_i) \right]^2
+<div class="mathdisp" data-mi="13" title="点击复制 TeX">$$
+
+$$</div>
+V&#39;(\mathbf{r}<em>i) = \sum_A \frac{p_A}{r</em>{A,i}}
+<div class="mathdisp" data-mi="14" title="点击复制 TeX">$$
+
+误差：
+
+$$</div>
+\begin{gathered} \mathrm{RMSE} = \sqrt{\frac{\sum_i \left[ V(\mathbf{r}_i) - V&#39;(\mathbf{r}_i) \right]^2}{N}} \quad\quad \mathrm{RRMSE} = \sqrt{\frac{\sum_i \left[ V(\mathbf{r}_i) - V&#39;(\mathbf{r}_i) \right]^2}{\sum_i V(\mathbf{r}_i)^2}} \end{gathered}
+$$</p>
+<p>默认拟合中心全在核上（选项 -2 从外部文件加额外中心，格式见 3.9.10）；默认拟合点同 Merz-Kollman（见 3.9.11），选项 3 层数、选项 2 面点密度、选项 4 每层 vdW 缩放（如两层 1.0/1.2）；选项 5 对总值 $\sum p_i$ 加约束（约束=净电荷 + ESP 函数 = MK 电荷）。选项 -1 从外部纯文本直接定义拟合点（格式见 3.9.10；首行点数写负值且文件含函数值时直接载入不再计算）。基于 ESP cube 算拟合电荷例见 <a href="http://sobereva.com/wfnbbs/viewtopic.php?pid=1542">http://sobereva.com/wfnbbs/viewtopic.php?pid=1542</a> #4。</p>
+<h3 id="菜单路径">菜单路径</h3>
+<p>主功能100 → 子功能23。</p>
+<h3 id="输入要求">输入要求</h3>
+<p>原子坐标（被拟合函数如 ESP/ALIE/Fukui 由 GTFs 算得）。</p>
+<h3 id="产出">产出</h3>
+<p>原子拟合值 + RMSE/RRMSE。</p>
+<h3 id="来源">来源</h3>
+<p><a href="../sec-3-100-other-functions-part-1.html#310023-%E6%8B%9F%E5%90%88%E5%87%BD%E6%95%B0%E5%88%86%E5%B8%83%E5%88%B0%E5%8E%9F%E5%AD%90%E5%80%BCfit-function-distribution-to-atomic-value">3.100.23</a>。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="menu/func-100";const ROOT="../";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script><script>const MATHS=["\\begin{gathered}r_{\\mathrm{ELF}}=\\sqrt{\\frac{\\int \\mathrm{ELF}(\\mathbf{r})\\mathbf{r}^2\\mathrm{ELF}(\\mathbf{r})\\mathrm{d}\\mathbf{r}}{\\int \\mathrm{ELF}(\\mathbf{r})\\mathrm{ELF}(\\mathbf{r})\\mathrm{d}\\mathbf{r}}}\\end{gathered}","\\begin{gathered}r_{\\mathrm{LOL}}=\\sqrt{\\frac{\\int \\mathrm{LOL}(\\mathbf{r})\\mathbf{r}^2\\mathrm{LOL}(\\mathbf{r})\\mathrm{d}\\mathbf{r}}{\\int \\mathrm{LOL}(\\mathbf{r})\\mathrm{LOL}(\\mathbf{r})\\mathrm{d}\\mathbf{r}}}\\end{gathered}","\\begin{gathered}S_{i,j}^{\\alpha\\beta}=\\int \\varphi_{i}^{\\alpha}(\\mathbf{r})\\varphi_{j}^{\\beta}(\\mathbf{r})\\mathrm{d}\\mathbf{r}\\end{gathered}","\\begin{gathered}\\left\\langle S^2 \\right\\rangle_{\\mathrm{SD}}=\\left\\langle S^2 \\right\\rangle_{\\mathrm{exact}}+N^{\\beta}-\\sum_{i}^{N^{\\alpha}}\\sum_{j}^{N^{\\beta}}\\left| S_{i,j}^{\\alpha\\beta} \\right|^2\\end{gathered}","\\begin{gathered}\\left\\langle S^2 \\right\\rangle_{\\mathrm{exact}}=S(S+1)=\\frac{N^{\\alpha}-N^{\\beta}}{2}\\left( \\frac{N^{\\alpha}-N^{\\beta}}{2}+1 \\right)\\end{gathered}","\\Delta E_{\\mathrm{tot}} = E^{\\mathrm{complex}} - \\sum_{i} E_{i}^{\\mathrm{frag}} = \\left( \\Delta E_{\\mathrm{els}} + \\Delta E_{\\mathrm{XC}} + \\Delta E_{\\mathrm{Pauli}} \\right) + \\Delta E_{\\mathrm{orb}} = \\Delta E_{\\mathrm{steric}} + \\Delta E_{\\mathrm{orb}}","\\Delta E_{\\mathrm{orb}}=E_{\\mathrm{SCF,last}}-E_{\\mathrm{SCF,1st}}","\\Delta E_{\\mathrm{steric}} = \\Delta E_{\\mathrm{tot}} - \\Delta E_{\\mathrm{orb}} = E_{\\mathrm{SCF,1st}} - \\sum_{i} E_{i}^{\\mathrm{frag}}","I_{AB}(r_{AB}) = \\frac{1}{1 + \\exp\\{-16 \\times [(4/3)(R_{A} + R_{B}) / r_{AB} - 1]\\}}","CN_{A} = \\sum_{B \\neq A} \\frac{1}{1 + \\exp\\{-16 \\times [(4/3)(R_{A} + R_{B}) / r_{AB} - 1]\\}}","\\begin{gathered} X_{i} = \\int \\left| \\varphi_{i}(\\mathbf{r}) \\right|^{2} x \\, \\mathrm{d}\\mathbf{r} \\quad\\quad Y_{i} = \\int \\left| \\varphi_{i}(\\mathbf{r}) \\right|^{2} y \\, \\mathrm{d}\\mathbf{r} \\quad\\quad Z_{i} = \\int \\left| \\varphi_{i}(\\mathbf{r}) \\right|^{2} z \\, \\mathrm{d}\\mathbf{r} \\end{gathered}","D_{ij} = \\sqrt{\\left( X_{i} - X_{j} \\right)^{2} + \\left( Y_{i} - Y_{j} \\right)^{2} + \\left( Z_{i} - Z_{j} \\right)^{2}}","\\begin{gathered} \\int \\left| \\varphi_{i}(\\mathbf{r}) \\right| \\left| \\varphi_{j}(\\mathbf{r}) \\right| \\mathrm{d}\\mathbf{r} \\quad\\quad \\int \\left| \\varphi_{i}(\\mathbf{r}) \\right|^{2} \\left| \\varphi_{j}(\\mathbf{r}) \\right|^{2} \\mathrm{d}\\mathbf{r} \\end{gathered}\n\u0000PH4\u0000text\nexamples\\ethanol_triplet.fch\n100  // Other functions (Part 1)\n12  // Perform biorthogonalization between alpha and beta orbitals\n2  // Do biorthogonalization for all orbitals\n0  // Do not evaluate energies of biorthogonalized orbitals\n\u0000PH5\u0000text\n Doing biorthogonalization for alpha    1 to   14, Beta    1 to   12\n Singular values of orbital overlap matrix:\n   1.0000   1.0000   1.0000   1.0000   1.0000   1.0000   1.0000   0.9999\n   0.9999   0.9998   0.9995   0.9992\n\u0000PH6\u0000text\nS = Singular value, E = Energy (in eV), O= Occupancy, A=Alpha, B=Beta\n\n Orb:     1   S= 1.0000   O(A)= 1.0   O(B)= 1.0\n...[ignored]\n Orb:    11   S= 0.9995   O(A)= 1.0   O(B)= 1.0\n Orb:    12   S= 0.9992   O(A)= 1.0   O(B)= 1.0\n -----------------------------------------------\n Orb:    13   S= 1.0000   O(A)= 1.0   O(B)= 0.0\n Orb:    14   S= 1.0000   O(A)= 1.0   O(B)= 0.0\n -----------------------------------------------\n Orb:    15   S= 1.0000   O(A)= 0.0   O(B)= 0.0\n Orb:    16   S= 1.0000   O(A)= 0.0   O(B)= 0.0\n...[ignored]\n\u0000PH7\u0000text\nexamples\\ethanol_triplet.fch\n100  // Other functions (Part 1)\n12  // Biorthogonalization between alpha and beta orbitals\n2  // Perform biorthogonalization for all orbitals\n1  // Evaluate energies of the biorthogonalized orbitals using the Fock matrix generated by MO energies and coefficients via F=SCEC^-1 relationship\ny  // Ordering the biorthogonalized orbitals according to their energies\n\u0000PH8\u0000text\n...[ignored]\n Orb:    11   S= 0.9992  E(A)=    -13.057  O(A)= 1.0  E(B)=    -11.821  O(B)= 1.0\n Orb:    12   S= 1.0000  E(A)=    -11.918  O(A)= 1.0  E(B)=    -11.866  O(B)= 1.0\n -------------------------------------------------------------------------------\n Orb:    13   S= 1.0000  E(A)=    -11.439  O(A)= 1.0  E(B)=     -5.806  O(B)= 0.0\n Orb:    14   S= 1.0000  E(A)=     -0.293  O(A)= 1.0  E(B)=      2.817  O(B)= 0.0\n -------------------------------------------------------------------------------\n Orb:    15   S= 0.9992  E(A)=     13.876  O(A)= 0.0  E(B)=     15.431  O(B)= 0.0\n Orb:    16   S= 1.0000  E(A)=     15.057  O(A)= 0.0  E(B)=     15.305  O(B)= 0.0\n...[ignored]\n\u0000PH9\u0000text\nexamples/phenanthrene.wfn\n100  // Other functions (Part 1)\n14  // Calculate LOLIPOP\n1  // Choose π orbitals that to be taken into account\n36,40,43,44,45,46,47  // Indices of π orbitals. You can manually find out π orbitals by visualizing orbital isosurfaces via main function 0, or let Multiwfn automatically identify π orbitals by subfunction 22 of main function 100\n0  // Start the calculation\n8,9,11,13,14,15  // The indices of the atoms in the ring that you are interested in. This ring is boundary ring. Note that you should input the indices according to atomic connectivity\n\u0000PH10\u0000text\nexamples\\biphenyl.fch\n19  // Orbital localization\n1  // Only localize occupied MOs\n100  // Other function (Part 1)\n22  // Automatically detect π orbitals\n-1  // Current orbitals are in localized form\n0  // Start π orbital identification based on default settings\n\u0000PH11\u0000text\nExpected pi orbitals, occupation numbers and orbital energies (eV):\n    32      2.000000    -10.110351\n    34      2.000000     -9.633443\n    38      2.000000     -7.386451\n    39      2.000000     -6.768520\n    40      2.000000     -6.755193\n    41      2.000000     -6.046329\n\u0000PH12\u0000text\n0  // Do not modify orbital occupation numbers\n14  // LOLIPOP calculation\n1  // Choose π orbitals\n32,34,38,39,40,41  // The indices of the π orbitals\n0  // Start calculation\n1,2,3,4,5,6  // Indices of the atoms in a ring\n\u0000PH13\u0000text\nDB-TTFdimer.fchk  // Wavefunction file of dimer\n100  // Other functions (Part 1)\n15  // Function for calculating intermolecular orbital overlap integral\nDB-TTF1.fchk  // Wavefunction file of monomer 1\nDB-TTF2.fchk  // Wavefunction file of monomer 2\n\u0000PH14\u0000text\nexamples\\ClPO2.fch\n100\n17\nClPO2_KSmat.txt\n\u0000PH15\u0000text\nexamples\\phenanthrene_NAOMO.out  //The Gaussian output file containing \"NAOMO\" matrix\n100  // Other functions (Part 1)\n18  // Yoshizawa's electron transport route analysis\n2  // Select YZ plane, which is the molecular plane\n\u0000PH16\u0000text\nNote: The routes whose absolute value <  0.010000 will not be shown\nNote: The routes whose distance <    0.0000 or > 9999.0000 Angstrom will not be shown\nAtom    7 -- Atom   10  Value and distance:    3.743670    1.359562\nAtom    6 -- Atom   10  Value and distance:    3.098919    5.081382\nAtom    7 -- Atom   14  Value and distance:    3.098919    5.081382\nAtom    7 -- Atom   11  Value and distance:   -2.831680    3.720990\nAtom    2 -- Atom   10  Value and distance:   -2.831680    3.720990\nAtom    6 -- Atom   14  Value and distance:    2.565337    5.765892\n...\nAtom    6 -- Atom    9  Value and distance:   -0.016585    4.927289\nAtom    3 -- Atom   14  Value and distance:   -0.016585    4.927289\nAtom    2 -- Atom    4  Value and distance:   -0.014931    2.456189\nAtom    8 -- Atom   11  Value and distance:   -0.014931    2.456189\n\u0000PH17\u0000text\nTo atom    10    Value and distance (Angstrom):   -2.831680    3.720990\nTo atom    14    Value and distance (Angstrom):   -2.344569    6.206600\nTo atom    11    Value and distance (Angstrom):    2.144432    5.674656\nTo atom     5    Value and distance (Angstrom):   -1.571512    2.787501\n...\n\u0000PH18\u0000text\nexamples\\genpromol\\COBH3\\CO.wfn  // The path of wavefunction file of fragment 1\n100  // Other functions (Part 1)\n19  // Generate promolecular .wfn file from fragment wavefunctions\n1  // Output to combine.wfn\n2  // Two fragments in total\nexamples\\genpromol\\COBH3\\BH3.wfn  // The path of wavefunction file of fragment 2\n\u0000PH19\u0000text\ncombine.wfn\n4  // Draw plane map\n9  // ELF\n1  // Color-filled map\n[Press ENTER button]\n2  // XZ plane\n0  // Y=0\n\u0000PH20\u0000text\nexamples\\genpromol\\COBH3\\COBH3.wfn  // Wavefunction file of actual state of COBH_3\n4  // Draw plane map\n0  // Custom operation\n1  // Deal with only one file\n-,combine.wfn  // Subtracting property of COBH3.wfn by that of combine.wfn\n9  // ELF\n1  // Color-filled map\n[Press ENTER button]  // Use default grid setting\n2  // XZ plane\n0  // Y=0\n\u0000PH21\u0000text\n1  // Set lower and upper limit of color scale\n-0.2,0.4  // Set the color scale from -0.2 to 0.4, since as you can see from the command-line window, in this plane the data range is from -0.248 to 0.436\n2  // Enable showing contour lines\n4  // Enable showing atom labels\n1  // Red\n-1  // Show the graph again\n\u0000PH22\u0000text\nexamples\\genpromol\\CH3NH2\\CH3.wfn\n100  // Other functions (Part 1)\n19  // Generate promolecular .wfn file from fragment wavefunctions\n1  // Output as combine.wfn\n2  // There are totally two fragments (including the loaded one)\nexamples\\genpromol\\CH3NH2\\NH2.wfn  // Wavefunction file of the second fragment\nn  // Do not flip spin of orbitals of CH_3\ny  // Flip spin of orbitals of NH_2. If you do not understand why the spin should be flipped, you can consult the corresponding CDA example in Section 4.16.2.\n\u0000PH23\u0000\n\n打印总 H-F 力及电子/核贡献。注意一般 ≠ 量子化学程序解析力 $\\mathbf{F}_{A}^{\\mathrm{QC}} = -\\partial E/\\partial\\mathbf{R}_{A}$（后者多 Pulay 项 $-2\\langle\\partial\\Psi/\\partial\\mathbf{R}_{A}|\\hat{H}|\\Psi\\rangle$，含轨道/组态系数与基函数对核坐标偏导）；仅全变分波函数（HF/DFT/MCSCF）+ 基函数与核坐标无关（如平面波）时二者才相等。\n\n### 菜单路径\n\n主功能100 → 子功能20。\n\n### 输入要求\n\nGTFs、原子坐标。\n\n### 产出\n\n各原子总 H-F 力及电子/核贡献。\n\n### 来源\n\n[3.100.20](../sec-3-100-other-functions-part-1.md#310020-计算hellmann-feynman力calculate-hellmann-feynman-forces)。\n\n## 子功能21：基于几何信息计算特定原子的性质\n\n### 说明\n\n多种纯几何结构性质：\n\n- 选原子范围（或 \u0000PH73\u0000）：(1) 质量；(2) 几何中心/质心/核电荷中心；(3) 回转半径 $R_{\\mathrm{g}} = \\sqrt{\\sum_i m_i (\\mathbf{r}_i - \\mathbf{r}_c)^2/\\sum_j m_j}$；(4) 核电荷和与核电荷偶极矩；(5) X/Y/Z 最值原子；(6) 最小/最大距离；(7) 惯量张量（对角 $I_{XX}=\\sum m(y^2+z^2)$ 等，非对角 $-\\sum mxy$ 等）、主轴（\u0000PH74\u0000 矩阵三列本征矢）与主转动惯量（本征值）；(8) 转动常数（amu⋅Å² 惯量，Z 轴如 $h/(8\\pi^2 I_{ZZ}\\xi)\\times10^{11}$ GHz，$\\xi$=1.66053878×10⁻²⁷）；(9) 核电荷间静电能。（.chg 输入时“核电荷”即原子电荷。）\n- 输入 \u0000PH75\u0000：旋转使三主轴平行笛卡尔轴，按边界原子 + Bondi vdW 半径（*J. Phys. Chem.*, **68**, 441 (1964)）算半径/直径/长宽高；GUI 可视化包围盒；导出 *new.pdb*（含 CRYST1，VMD \u0000PH76\u0000 显示）。例见 4.100.21.1。\n- 输入 \u0000PH77\u0000：定义两碎片，输出最小/最大距离、几何中心/质心间距。\n- 输入 \u0000PH78\u0000：按顺时针输环原子序号（如菲中间环 \u0000PH79\u0000），三角剖分算面积周长（环须凸，大复杂环如卟啉分块算再加和；多环芳香性可用 ΣNICS(1)_ZZ/area²，*J. Org. Chem.*, **72**, 9163 (2007)）。\n- 输入 \u0000PH80\u0000（主菜单直接输 \u0000PH81\u0000 也可）：分子平面性 MPP（均方根偏离）与 SDP（跨度）：$MPP=\\sqrt{\\sum d_i^2/N_{\\mathrm{atom}}}$，$d_i^{\\mathrm{s}}=(Ax_i+By_i+Cz_i+D)/\\sqrt{A^2+B^2+C^2}$，$SDP=d_{\\max}^{\\mathrm{s}}-d_{\\min}^{\\mathrm{s}}$（*J. Mol. Model.*, **27**, 263 (2021)）。输原子序号后输出拟合平面、MPP/SDP，可导出 .pqr（“电荷”列即 $d^{\\mathrm{s}}$，VMD 按 Charge 着色）。多帧 .xyz 可选帧，MPP/SDP 存 *MPP_SDP.txt*。例见 4.100.21.2/3。\n- 输入 \u0000PH82\u0000（主菜单直接输也可）：空腔直径。选定周围原子 + 球心初位（常用几何中心），算与最近 vdW 球相切半径；最速上升迭代调球心使半径最大（收敛判据位移<0.01 Å，步限 0.3 Å），直径即空腔直径（Bondi 半径）。多空腔：恰当选原子+初位（迭代自动移向最近空腔）。例见 4.100.21.4。详见 <http://sobereva.com/643>。\n\n### 菜单路径\n\n主功能100 → 子功能21（\u0000PH83\u0000/\u0000PH84\u0000/\u0000PH85\u0000/\u0000PH86\u0000/\u0000PH87\u0000 或原子范围）。\n\n### 输入要求\n\n原子坐标（轨迹分析用多帧 .xyz）。\n\n### 操作步骤（实例 4.100.21.1：alpha-cyclodextrin 直径与长宽高，*examples/alpha-cyclodextrin.pdb*）\n\n\u0000PH24\u0000\n\n\u0000PH25\u0000\n\n直径=14.027+2×1.2。选项 1 图形化包围盒（Ratio of atomic size=4.0 时原子球半径恰为 vdW 半径）；选项 2 导出旋转平移后 *new.pdb*（VMD \u0000PH88\u0000）。*examples\\principal_axes.tcl* 复制到 VMD 控制台显示主轴（红/蓝/绿）。另见 <http://sobereva.com/426>。\n\n实例 4.100.21.2（[14]annulene 平面性，ωB97XD/def2-TZVP，中文版 <http://sobereva.com/618>）：\n\n\u0000PH26\u0000\n\n\u0000PH27\u0000\n\nMPP/SDP 均不小 → 有限平面性。导出 .pqr 图形化：\n\n\u0000PH28\u0000\n\nVMD 载入，Representation 用 Charge 着色 + CPK，Trajectory 色标范围 −0.4~0.4，背景白：红/蓝分居拟合面两侧，色深偏离大。\n\n实例 4.100.21.3（C18 MD 轨迹平面性演化，*examples\\C18_MD_500.xyz*，501 帧，首帧全平面；全轨迹下载 <http://sobereva.com/multiwfn/extrafiles/C18-MD.xyz>；背景 *Chem. Asian J.*, **16**, 56 (2021)）：\n\n\u0000PH29\u0000\n\n得 *MPP_SDP.txt*（帧号/MPP/SDP，Origin 画演化曲线）与 *ds.pqr*（每帧 $d^{\\mathrm{s}}$）。VMD 载入 xyz + 复制 *ds.pqr*、*examples\\scripts\\ds.tcl* 到 VMD 安装目录，控制台 \u0000PH89\u0000，播放动画原子按 $d^{\\mathrm{s}}$ 自动着色（默认色标 −0.4 蓝 ~ 0.4 红；演示 <http://sobereva.com/multiwfn/res/ds_color.mp4>，配合 RMSD 插件去整体运动更易看）。\n\n实例 4.100.21.4（开口富勒烯空腔，*examples\\open_fullerene.pdb*，中文版 <http://sobereva.com/643>）：\n\n\u0000PH30\u0000\n\n\u0000PH31\u0000\n\nVMD 验证命令（载入 pdb，CPK，Sphere Scale 0.7，控制台执行）：\n\n\u0000PH32\u0000\n\n黄色球即空腔（直径 3.414 Å）。不规则空腔、环内径、晶体空腔见博客 <http://sobereva.com/643>。\n\n### 产出\n\n几何中心/质心/回转半径/惯量/转动常数；直径与长宽高（+包围盒图/*new.pdb*）；碎片间距；环面积周长；MPP/SDP（+* MPP_SDP.txt*/.pqr 着色图）；空腔直径/体积（+VMD 球命令）。\n\n### 来源\n\n[3.100.21](../sec-3-100-other-functions-part-1.md#310021-基于几何信息计算特定原子的性质calculate-properties-based-on-geometry-information-for-specific-atoms)、[4.100.21](../sec-4-100-other-functions-part-1.md#410021-几何结构表征示例)。\n\n## 子功能22：检测 π 轨道、设置占据数并计算 π 组成\n\n### 说明\n\n研究 π 电子的关键（*如* ELF-π）。强烈建议读 [*Theor. Chem. Acc.*, **139**, 25 (2020)](https://link.springer.com/article/10.1007%2Fs00214-019-2541-z)（算法详述+例子；引用 Multiwfn 外另引此文）。\n\n离域轨道（MO/NO/NTO 等，所有原子在 XY/YZ/XZ 平面）：选 \u0000PH90\u0000，程序自动找分子平面，列出 π 轨道序号/占据数/能量；选项 1 置零 π 占据，选项 2 置零其余，选项 3 只考虑价 π，选项 4 清除除价 π 外占据。不严格平面体系的局域平面区类 π（如甲苯六元环）：单点前使环严格平行 XY，算完用主功能 6 选项 -4 删甲基 GTF，进子功能 2（原文如此）选 0，手动选 XY 平面 + 两容差，得三类 π 轨道。\n\n定域轨道（LMO/NBO 等，须 Pipek-Mezey 定域；Foster-Boys 成香蕉键不可用）：选 \u0000PH91\u0000，再选 \u0000PH92\u0000 检测并设占据数。算法：算轨道组成找贡献最大/次大原子 A/B；A 贡献>阈值（默认 85%，选项 1 改）视为单中心跳过；否则算探测点 0.7**R**_A+0.3**R**_B 与 0.3**R**_A+0.7**R**_B 处轨道密度 |φ|²（理想 π 沿键节面应为零；非平面 σ-π 混需容差，阈值默认 0.01 a.u.，选项 2 改）。选项 3 限定轨道范围；选项 \u0000PH93\u0000 设原子范围约束（如 \u0000PH94\u0000 只识别贡献前二原子皆在其中的轨道，可锁定共轭环）。组成默认 Mulliken+SCPA（占据 Mulliken、空 SCPA；绝不能带弥散函数，否则无意义；选项 \u0000PH95\u0000 可换 Hirshfeld/Becke——与弥散兼容但贵、有时误识空 π，因不忠实反映节面；组成计算详见 [3.10](../sec-3-10-orbital-composition-analysis.md)）。\n\nπ 组成：选 \u0000PH96\u0000 界面下再选 \u0000PH97\u0000（先检测 π LMO，再输入几何基函数完全相同的另一波函数文件路径），轨道 $i$ 的 π 组成为 $\\Theta_i = 100\\% \\times \\sum_j^{\\pi\\mathrm{LMO}} c_{j,i}^2$，$c_{j,i} = \\langle j|i\\rangle = \\sum_\\mu\\sum_\\nu C_{\\mu,i}C_{\\nu,j}\\langle\\chi_\\mu|\\chi_\\nu\\rangle$；输入阈值，只打印高于者。非限制 α/β 分别基于各自 π LMO 算；分析后内存波函数为新载入文件。选项 \u0000PH98\u0000 切换考虑轨道：默认 \u0000PH99\u0000（只用占据 π LMO，算占据 MO/双正交化/NTO 组成；须先有占据 LMO）；\u0000PH100\u0000（占据+空 π LMO，算空 MO/NTO/双正交化/自然轨道组成；须同时有占据和空 LMO）。\n\n弥散函数重要说明：自动检测 π 最好去弥散；坚持用则 (1) 定域界面选 \u0000PH101\u0000 → \u0000PH102\u0000（兼容但慢）；(2) 探测界面选 \u0000PH103\u0000 用 Hirshfeld/Becke 算组成（Mulliken+SCPA 有弥散时失效）。\n\n### 菜单路径\n\n主功能100 → 子功能22（\u0000PH104\u0000 离域 / \u0000PH105\u0000 定域；\u0000PH106\u0000 下 \u0000PH107\u0000 设占据 / \u0000PH108\u0000 算他文件轨道 π 组成）。\n\n### 输入要求\n\nGTFs（离域情形）；基函数（定域情形）；原子坐标。\n\n### 操作步骤（实例 4.100.22：环庚三烯 π 特征，*examples\\cycloheptatriene.fch*）\n\n探测 π LMO（先定域占据轨道）：\n\n\u0000PH33\u0000\n\n\u0000PH34\u0000\n\n选 2 置零其余占据 → 密度矩阵自动更新，后续分析（主功能 5 密度等值面 0.03、LOL 等值面 0.5）纯 π 贡献：C4-C6、C1-C2、C3-C5 强于 C1-C4、C2-C3。误把孤对 LMO 认成 π 时：主功能 0 检查占据轨道记下孤对号，主功能 6 子功能 26 置零其占据再做 LOL-π。Mayer 键级（做法见 4.9.1）：\n\n\u0000PH35\u0000\n\nπ 键级 C4-C6 > C1-C2 > C1-C4，与 ELF-π 一致（helicene LOL-π 0.55、选项 \u0000PH109\u0000 限中央两环的五 π LMO 密度图、多中心键级 LMO 下照常，见原文图）。\n\n占据 MO π 组成（定域时自动导出 *new.fch* 存占据 LMO）：\n\n\u0000PH36\u0000\n\n\u0000PH37\u0000\n\n之后内存为 cycloheptatriene.fch 轨道，主功能 0 可画 π MO。MO23 π 组成偏低原因：C6-C7/C5-C7 成键区 σ 特征 + H10/H11/H14 周围等值面；MO25 准 π 轨道。\n\n空 MO π 组成（还需空 LMO）：回主菜单：\n\n\u0000PH38\u0000\n\n识别出 6 个 π LMO：\n\n\u0000PH39\u0000\n\n\u0000PH40\u0000\n\n\u0000PH41\u0000\n\n主功能 0 画 MO27（π 组成 72.5%）确以 π 为主。更多讨论见 <http://sobereva.com/432>。离域例另见 [4.5.3](../sec-4-5-generate-grid-data-and-view-isosurface-map.md#453-计算-elf-σ-和-elf-π-以研究苯的芳香性)（ELF-σ/π）、[4.4.9](../sec-4-4-output-and-plot-various-properties-in-a-plane.md#449-绘制卟啉的-lol-π-图以揭示有利的电子离域路径)（卟啉 LOL-π）。\n\n### 产出\n\nπ 轨道序号/占据数/能量、占据数修改、他文件轨道 π 组成百分比。\n\n### 来源\n\n[3.100.22](../sec-3-100-other-functions-part-1.md#310022-检测π轨道设置占据数并计算π组成detect-π-orbitals-set-occupation-numbers-and-calculate-π-composition)、[4.100.22](../sec-4-100-other-functions-part-1.md#410022-分析非平面体系-non-planar-system的π电子-π-electron特征环庚三烯-cycloheptatriene)。\n\n## 子功能23：拟合函数分布到原子值\n\n### 说明\n\n类似 ESP 电荷拟合（见 [3.9.10](../sec-3-9-population-analysis-and-calculation-of-atomic-charges.md#3910-chelpg-charges-from-electrostatic-potentials-using-a-grid-based-method-esp-拟合原子电荷-12)、[3.9.11](../sec-3-9-population-analysis-and-calculation-of-atomic-charges.md#3911-merz-kollmann-mk-esp-拟合原子电荷-13)），但被拟合实空间函数不限于 ESP（如表面平均局域电离能、Fukui 函数）。选项 1 选函数后在拟合点算值，最小二乘拟合到原子值：","","误差："];</script>
+<script src="../app.js"></script></body></html>

@@ -1,0 +1,672 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.200 其它功能，第二部分 (200) · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="3200-其它功能第二部分-200"><strong>3.200 其它功能，第二部分 (200)</strong></h1>
+<h2 id="32001-计算核-价分叉-cvb-指数及相关量"><strong>3.200.1 计算核-价分叉 (CVB) 指数及相关量</strong></h2>
+<blockquote>
+<p><strong>注</strong></p>
+<p>本节的中文版是我的博客文章“使用 Multiwfn 计算 CVB 指数并衡量氢键强度”(<a href="http://sobereva.com/461">http://sobereva.com/461</a>)。</p>
+</blockquote>
+<h3 id="1-cvb-指数理论"><strong>(1) CVB 指数理论</strong></h3>
+<p>所谓核-价分叉 (CVB, core-valence bifurcation) 指数的想法最早提出于 <em>Theor. Chem. Acc.</em>, <strong>104</strong>, 13 (2000)，该指数基于电子定域函数 (ELF) 定义，主要用于区分各种氢键 (H-bond) 的强弱。对典型形式 (D-H⋅⋅⋅A，其中 D=给体，H=氢，A=受体) 的 H 键，该指数表示为：</p>
+<p>CVB 指数 = ELF(C-V) – ELF(DH-A)</p>
+<p>其中 ELF(C-V) 对应 ELF 芯区与价区之间的 ELF 分叉值，而 ELF(DH-A) 代表 V(D,H) 与 V(A) 之间分叉点处的 ELF 值。</p>
+<p>在上述 <em>Theor. Chem. Acc.</em> 论文中，作者考察了许多由 HF 与各种单体组成的 H 键二聚体，发现 CVB 指数与 H 键结合能有很好的线性关系。在后续一些论文中，如 <em>Struct. Chem.</em>, <strong>16</strong>, 203 (2005) 和 <em>J. Phys. Chem. A</em>, <strong>115</strong>, 10078 (2011)，该结论得到进一步证实，前者指出 CVB 指数“在弱复合物情形为正，在较强复合物情形为负”。此外，<em>Chem. Rev.</em>, <strong>111</strong>, 2597 (2011) 的作者称 CVB 指数“对弱氢键为正，随该相互作用增强而减小；对强氢键该指数通常为负”。</p>
+<p>我发现 ELF(C-V) 和 ELF(DH-A) 本身有时与 H 键结合能的线性关系比 CVB 指数更好，因此建议你在实际研究中打算用 CVB 指数时也考察这一点。</p>
+<h3 id="2-手动计算-cvb-指数"><strong>(2) 手动计算 CVB 指数</strong></h3>
+<p>下面展示如何手动计算 CVB 指数涉及的两项。以 HF⋅⋅⋅HF 二聚体为例，波函数文件为 <em>examples\HF_HF.wfn</em>，在 B3LYP-D3(BJ)/def2-TZVP 水平生成，优化也在该水平进行。该体系中 D、H、A 原子分别对应 F2、H1、F3。</p>
+<p>ELF(DH-A) 项在原始论文中定义明确。Multiwfn 的拓扑分析模块能定位 ELF 的分叉点，即 ELF 的 (3,-1) 临界点。然后可查看位于氢与受体原子之间的分叉点的 ELF 值（第 <a href="sec-4-2-topology-analysis.html#422-%E4%B9%99%E9%85%B8%E7%9A%84%E5%AE%9A%E5%9F%9F%E8%BD%A8%E9%81%93%E6%8C%87%E7%A4%BA%E5%89%82-lol-%E6%8B%93%E6%89%91%E5%88%86%E6%9E%90">4.2.2</a> 节演示了如何对 LOL 做拓扑分析，ELF 可以类似方式分析）。但对大体系 ELF 拓扑分析耗时。考虑到 V(D,H) 与 V(A) 之间的实际 ELF 分叉点几乎恰好落在连接 H 和 A 的直线上，用 Multiwfn 的主功能 3 绘制从 H 到 A 的 ELF 曲线图再直接读出相应极小值更好。下面是 HF⋅⋅⋅HF 二聚体 ELF 拓扑分析结果的截图</p>
+<p><img src="assets/figures/sec3-200/image742.png" alt="HFHF 二聚体的 ELF 拓扑分析"></p>
+<p>紫色和橙色球分别是 (3,-3) 和 (3,-1) 型 ELF 临界点 (CPs)。箭头所指的 (3,-1) CP 对应上述 V(D,H) 与 V(A) 之间的 ELF 分叉点，其 ELF 值为 0.06487，正是当前体系的 ELF(DH-A)。</p>
+<p>由上图可见，红色连线基本穿过橙色球中心，这就是为什么 ELF(DH-A) 也可用 H1 与 F3 之间的 ELF 曲线图近似计算。用主功能 3 绘制的曲线图如下所示</p>
+<p><img src="assets/figures/sec3-200/image743.png" alt="给出 ELF(DH-A) 的 ELF 曲线图"></p>
+<p>箭头标出的极小值为 0.06482，与基于昂贵的 ELF 拓扑分析得到的值 0.06487 非常接近。这很好证明了用 H 与 A 之间的 ELF 曲线图估计 ELF(DH-A) 的合理性。</p>
+<p>至于 ELF(C-V)，其定义相当含糊。由于 CVB 指数原始论文的作者没有明确清楚地说明该量应如何计算，不同论文常用不同规则计算它，导致现有文献中严重混乱。例如，在 CVB 原始论文即 <em>Theor. Chem. Acc.</em>, <strong>104</strong>, 13 (2000) 中，ELF(C-V) 似乎定为 D 与 A 原子之间 ELF 曲线上分隔芯与价壳的所有 ELF 极小中的最大值。但在同一作者后续论文 <em>Struct. Chem.</em>, <strong>16</strong>, 203 (2005) 中，我发现 ELF(C-V) 似乎算的是连接给体原子芯与价 basin 的某个精确定位的 ELF 分叉点处的 ELF 值（而受体原子似乎被忽略了）。</p>
+<p>在我看来，ELF(C-V) 最好的定义应是 D 与 H 之间 ELF 曲线上分隔给体原子芯与价壳的极小处的 ELF 值。仍以 HF⋅⋅⋅HF (H4-F3⋅⋅⋅H1-F2) 二聚体为例，F2 与 H1 之间绘制的 ELF 曲线为：</p>
+<p><img src="assets/figures/sec3-200/image744.png" alt="给出 ELF(C-V) 的 ELF 曲线图"></p>
+<p>即 ELF(C-V) = 0.0936。于是 HF⋅⋅⋅HF 体系的 CVB 指数为 0.0936 − 0.0648 = 0.0288。该值与 <em>Theor. Chem. Acc.</em>, <strong>104</strong>, 13 (2000) 表 2 中的对应值 (-0.006) 很不同，因为计算水平不同、获得 ELF(C-V) 的方式不同，且该论文中数据的符号被错误反转了。</p>
+<h3 id="3-全自动计算-cvb-指数"><strong>(3) 全自动计算 CVB 指数</strong></h3>
+<p>为尽量简化上述 CVB 指数的计算，Multiwfn 提供了全自动计算该指数的功能。仍以 HF⋅⋅⋅HF 二聚体为例，启动 Multiwfn 并输入以下命令</p>
+<p><pre><code class="language-text">examples\HF_HF.wfn
+200  // Other function, part 2
+1  // Calculate CVB index and related quantities
+2,1,3  // Index of donor atom, hydrogen and acceptor atom of the H-bond, respectively</code></pre></p>
+<p>结果为</p>
+<p><pre><code class="language-text">Core-valence bifurcation value at donor, ELF(C-V,D):  0.0936
+Distance between corresponding minimum and the hydrogen:   0.743 Angstrom
+
+Core-valence bifurcation value at acceptor, ELF(C-V,A):  0.1408
+Distance between corresponding minimum and the hydrogen:   1.628 Angstrom
+
+Bifurcation value at H-bond, ELF(DH-A):  0.0648
+Distance between corresponding minimum and the hydrogen:   0.614 Angstrom
+
+The CVB index, namely ELF(C-V,D) - ELF(DH-A):    0.028768</code></pre></p>
+<p>该结果与我们手动计算的完全相同。输出的 ELF(CV,A) 在当前语境无用，但一些用户可能感兴趣。</p>
+<p>为使你更好理解 Multiwfn 如何自动计算 CVB 指数，这里说明实现细节。用户输入 D、H 和 A 原子编号后，依次计算 D-H 和 H-A 对应的 ELF 曲线，再从曲线数据中自动识别 ELF(CV,D)、ELF(DH-A) 和 ELF(CV-A)，如下图所示</p>
+<p><img src="assets/figures/sec3-200/image745.png" alt="在 ELF 曲线图上定位 ELF(C-V,D)、ELF(DH-A) 和 ELF(C-V,A)"></p>
+<h3 id="4-特殊情形计算某些很强-h-键的-cvb-指数"><strong>(4) 特殊情形：计算某些很强 H 键的 CVB 指数</strong></h3>
+<p>原则上，上述 CVB 指数计算流程对大多数有典型 H 键的体系有效，分子间和分子内 H 键都可用同样方式分析。但对某些很强的 H 键，其氢位于两个重原子中点，如 H₂O⋅⋅⋅H⁺⋅⋅⋅OH₂，该流程不再有效，因为其 ELF 曲线没有典型特征，如下所示（由于该体系 O-H-O 角接近 180°，只需一张图）：</p>
+<p><img src="assets/figures/sec3-200/image746.png" alt="H2OH+OH2 的 ELF 曲线图"></p>
+<p>可见 V(D,H) 已分叉为 V(O) 和 V(H)。此时应通过绘制 ELF 曲线图手动计算 CVB 指数，标准 CVB 指数表达式中的 ELF(DH-A) 应换为曲线图中 V(H) 与 V(O) 之间局域极小处的 ELF 值。</p>
+<p>下面是更复杂的情形，F⁻⋅⋅⋅H⋅⋅O-H，也需通过绘制 ELF 曲线图手动计算 CVB 指数。下图所示 ELF 曲线图绘制于 F 与 O 之间（F⋅⋅⋅H⋅⋅⋅O 几乎线性，因此只需一张图），可见 ELF 相对中心氢不对称：</p>
+<p><img src="assets/figures/sec3-200/image747.png" alt="F-HO-H 的 ELF 曲线图"></p>
+<p>该体系可视为有两个 H 键，O-H...F 与 O...H-F 的 H 键结合能必然很不同。对前者，CVB 指数 = ELF(B) - ELF(C)，而对后者，CVB 指数 = ELF(D) - ELF(A)。这是因为把体系看作 O-H...F (O...H-F) 时，O 与 F (F 与 O) 分别充当给体与受体原子。因此，H 与 F 之间 C 点的极小应视为 ELF(DH-A)，而 B 点的极小应视为 ELF(C-V,D)。</p>
+<h3 id="5-特殊情形h-键受体不是单个原子"><strong>(5) 特殊情形：H 键受体不是单个原子</strong></h3>
+<p>有些 H 键的受体不是单个原子。例如 HF⋅⋅⋅ethylene 的受体是 ethylene 的 π 区。这类 H 键称为 π 氢键。此时也必须手动计算 CVB 指数。</p>
+<p>HF⋅⋅⋅ethylene 的波函数文件为 <em>examples\C2H4_HF.wfn</em>，其几何如下所示。</p>
+<p><img src="assets/figures/sec3-200/image748.png" alt="C2H4...HF 复合物的几何"></p>
+<p>对该体系，可通过绘制 F7 与 H8 之间的 ELF 曲线图得到 ELF(C-V,D)，读出极小处的 ELF 值，为 0.0944。</p>
+<p>该体系的 ELF(DH-A) 可通过 ELF 拓扑分析得到。为此，在 Multiwfn 中输入以下命令：</p>
+<p><pre><code class="language-text">2  // Topology analysis
+-11  // Select the real space function to be analyzed
+9  // ELF
+6  // Search critical points by randomly distribute initial guesses within a sphere
+4  // Set the sphere center as geometry center of three atoms
+1,4,8  // Center of C1, C4 and H8 will be set as the sphere center
+0  // Start searching (the sphere radius, the number of starting points can be set by corresponding options in the interface)
+-9  // Return
+0  // Visualize topology analysis result</code></pre></p>
+<p>此时可见下图。显然，临界点 5 对应 V(D,H) 与 π 电子 basin 之间的分叉点。</p>
+<p><img src="assets/figures/sec3-200/image749.png" alt="C2H4...HF 复合物的 ELF 拓扑分析"></p>
+<p>关闭 GUI，选择选项 7，再输入 <em>5</em> 查看临界点 5 的性质，会发现其 ELF 值为 0.1241，正是该 H 键的 ELF(DH-A)。于是该体系的 CVB 指数为 0.0944 - 0.1241 = -0.0297。</p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>事实上，由于该体系对称性高，也可通过绘制 H8 与 C1-C4 中点之间的 ELF 曲线图得到临界点 5 的 ELF 值。</p>
+</blockquote>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>原子坐标、GTFs</p>
+</blockquote>
+<h2 id="32002-在-hilbert-空间计算原子与键偶极矩"><strong>3.200.2 在 Hilbert 空间计算原子与键偶极矩</strong></h2>
+<p>该功能用于直接基于基函数（<em>即</em> 在 Hilbert 空间）计算原子与键偶极矩。也可参阅 <em>Ideas of Quantum Chemistry</em> (L. Piela, 2007) 一书的 12.3.2 节。</p>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>在基函数形式下，体系偶极矩可表示为</p>
+<p><div class="mathdisp" data-mi="0" title="点击复制 TeX">$$
+\boldsymbol{\mu} = \boldsymbol{\mu}^{\mathrm{nuc}} + \boldsymbol{\mu}^{\mathrm{ele}} = \sum_{A} Z_{A}\mathbf{R}_{A} - \sum_{i}\sum_{j} P_{i,j}\left\langle \chi_{i} \left| \mathbf{r} \right| \chi_{j} \right\rangle
+$$</div></p>
+<p>其中 <em>Z</em> 和 <strong>R</strong> 分别是核的电荷和坐标，<em>P</em> 是密度矩阵，$\left\langle \chi_{i} \left| \mathbf{r} \right| \chi_{j} \right\rangle$ 是基函数 <em>i</em> 与 <em>j</em> 之间的偶极矩积分。</p>
+<p>体系偶极矩可分解为单原子项与原子对项之和</p>
+<p><div class="mathdisp" data-mi="1" title="点击复制 TeX">$$
+\boldsymbol{\mu} = \sum_{A} \boldsymbol{\mu}_{A}^{\mathrm{tot}} + \sum_{A}\sum_{B>A} \boldsymbol{\mu}_{AB}^{\mathrm{tot}} = \sum_{A} \left( \boldsymbol{\mu}_{A}^{\mathrm{nuc}} + \boldsymbol{\mu}_{A}^{\mathrm{pop}} + \boldsymbol{\mu}_{A}^{\mathrm{dip}} \right) + \sum_{A}\sum_{B>A} \left( \boldsymbol{\mu}_{AB}^{\mathrm{pop}} + \boldsymbol{\mu}_{AB}^{\mathrm{dip}} \right)
+$$</div></p>
+<p>五项的表达式和物理意义为</p>
+<p>${\boldsymbol{\mu}}_{A}^{\mathrm{nuc}}$：核电荷导致的偶极矩</p>
+<p><div class="mathdisp" data-mi="2" title="点击复制 TeX">$$
+\boldsymbol{\mu}_{A}^{\mathrm{nuc}} = Z_{A}\mathbf{R}_{A}
+$$</div></p>
+<p>${\boldsymbol{\mu}}_{A}^{\mathrm{pop}}$：定域在单个原子上的电子布居数导致的偶极矩（注意这不同于 Mulliken 或类似方法算出的电子布居数，因为重叠布居数没有被吸收到各自原子中）</p>
+<p><div class="mathdisp" data-mi="3" title="点击复制 TeX">$$
+\boldsymbol{\mu}_{A}^{\mathrm{pop}} = -p_{A}^{\mathrm{loc}}\mathbf{R}_{A}\quad\quad p_{A}^{\mathrm{loc}} = \sum_{i \in A}\sum_{j \in A} P_{i,j}\left\langle \chi_{i} \left| \chi_{j} \right. \right\rangle
+$$</div></p>
+<p>${\boldsymbol{\mu}}_{A}^{\mathrm{dip}}$：原子偶极矩，反映原子周围的电子偶极矩。<strong>r</strong>$_{A}$ 是相对于核 <em>A</em> 的坐标变量</p>
+<p><div class="mathdisp" data-mi="4" title="点击复制 TeX">$$
+\begin{aligned}\boldsymbol{\mu}_{A}^{\mathrm{dip}} &= -\sum_{i \in A}\sum_{j \in A} P_{i,j}\left\langle \chi_{i} \left| \mathbf{r}_{A} \right| \chi_{j} \right\rangle\quad\quad \mathrm{where}\ \ \mathbf{r}_{A} = \mathbf{r} - \mathbf{R}_{A}\\ &= -\sum_{i \in A}\sum_{j \in A} P_{i,j}\left\langle \chi_{i} \left| \mathbf{r} \right| \chi_{j} \right\rangle - \boldsymbol{\mu}_{A}^{\mathrm{pop}}\end{aligned}
+$$</div></p>
+<p>${\boldsymbol{\mu}}_{AB}^{\mathrm{pop}}$：原子 <em>A</em> 与 <em>B</em> 之间重叠布居导致的偶极矩</p>
+<p><div class="mathdisp" data-mi="5" title="点击复制 TeX">$$
+\boldsymbol{\mu}_{AB}^{\mathrm{pop}} = -p_{AB}\mathbf{R}_{AB}\quad\quad p_{AB} = 2\sum_{i \in A}\sum_{j \in B} P_{i,j}\left\langle \chi_{i} \left| \chi_{j} \right. \right\rangle\quad\quad \mathbf{R}_{AB} = \left( \mathbf{R}_{A} + \mathbf{R}_{B} \right)/2
+$$</div></p>
+<p>${\boldsymbol{\mu}}_{AB}^{\mathrm{dip}}$：键偶极矩，在一定程度上反映相应两原子几何中心周围的电子偶极矩。当然，若 <em>A</em> 与 <em>B</em> 彼此不靠近，则该项很小，不宜称为键偶极矩。</p>
+<p><div class="mathdisp" data-mi="6" title="点击复制 TeX">$$
+\begin{aligned}\boldsymbol{\mu}_{AB}^{\mathrm{dip}} &= -2\sum_{i \in A}\sum_{j \in B} P_{i,j}\left\langle \chi_{i} \left| \mathbf{r}_{AB} \right| \chi_{j} \right\rangle\quad\quad \mathrm{where}\ \ \mathbf{r}_{AB} = \mathbf{r} - \mathbf{R}_{AB}\\ &= -2\sum_{i \in A}\sum_{j \in B} P_{i,j}\left\langle \chi_{i} \left| \mathbf{r} \right| \chi_{j} \right\rangle - \boldsymbol{\mu}_{AB}^{\mathrm{pop}}\end{aligned}
+$$</div></p>
+<p>通过 Mulliken 型划分，键偶极矩可并入原子偶极矩，从而体系偶极矩可写为单中心项之和</p>
+<p><div class="mathdisp" data-mi="7" title="点击复制 TeX">$$
+\boldsymbol{\mu} = \sum_{A} \left( \boldsymbol{\mu}_{A}^{\mathrm{nuc}} + \boldsymbol{\mu}_{A}^{,\mathrm{pop}} + \boldsymbol{\mu}_{A}^{,\mathrm{dip}} \right)
+$$</div></p>
+<p>其中 ${\boldsymbol{\mu}'}_{A}^{\mathrm{pop}}$ 是原子 <em>A</em> 的 Mulliken 布居数导致的偶极矩</p>
+<p><div class="mathdisp" data-mi="8" title="点击复制 TeX">$$
+\boldsymbol{\mu}_{A}^{,\mathrm{pop}} = -p_{A}^{\mathrm{Mul}}\mathbf{R}_{A}\quad\quad p_{A}^{\mathrm{Mul}} = \sum_{B}\sum_{i \in B}\sum_{j \in B} P_{i,j}\left\langle \chi_{i} \left| \chi_{j} \right. \right\rangle
+$$</div></p>
+<p>${\boldsymbol{\mu}'}_{A}^{\mathrm{dip}}$ 是原子 <em>A</em> 的原子总偶极矩</p>
+<p><div class="mathdisp" data-mi="9" title="点击复制 TeX">$$
+\boldsymbol{\mu}_{A}^{,\mathrm{dip}} = -\sum_{B}\sum_{i \in B}\sum_{j \in B} P_{i,j}\left\langle \chi_{i} \left| \mathbf{r}_{A} \right| \chi_{j} \right\rangle = -\sum_{B}\sum_{i \in B}\sum_{j \in B} P_{i,j}\left\langle \chi_{i} \left| \mathbf{r} \right| \chi_{j} \right\rangle - \boldsymbol{\mu}_{A}^{\mathrm{Mul}}
+$$</div></p>
+<p>注意上式中编号 <em>B</em> 遍历所有原子。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>输入文件必须包含基函数信息（<em>例如</em> .mwfn、.fch、.molden 和 .gms）。</p>
+<p>进入本功能后，可选选项 1 输出特定原子的信息，包括：原子局域布居数 ${p}_{A}^{\mathrm{loc}}$；原子偶极矩 ${\boldsymbol{\mu}}_{A}^{\mathrm{dip}}$；核电荷对体系偶极矩的贡献 ${\boldsymbol{\mu}}_{A}^{\mathrm{nuc}}$；电子对体系偶极矩的贡献 ${\boldsymbol{\mu}}_{A}^{\mathrm{dip}}+{\boldsymbol{\mu}}_{A}^{\mathrm{pop}}$；对体系偶极矩的贡献 ${\boldsymbol{\mu}}_{A}^{\mathrm{nuc}}+{\boldsymbol{\mu}}_{A}^{\mathrm{dip}}+{\boldsymbol{\mu}}_{A}^{\mathrm{pop}}$。</p>
+<p>也可选选项 2 输出特定原子对之间的信息，包括：键布居数 ${\boldsymbol{\mu}}_{AB}^{\mathrm{pop}}$；键偶极矩 ${\boldsymbol{\mu}}_{AB}^{\mathrm{dip}}$；对体系偶极矩的贡献 ${\boldsymbol{\mu}}_{AB}^{\mathrm{pop}}+{\boldsymbol{\mu}}_{AB}^{\mathrm{dip}}$。</p>
+<p>若选 3，将输出所选原子的原子总偶极矩及相关信息，包括：原子 Mulliken 布居数 ${p}_{A}^{\mathrm{Mul}}$；原子总偶极矩 ${\boldsymbol{\mu}'}_{A}^{\mathrm{dip}}$；核电荷对体系偶极矩的贡献 ${\boldsymbol{\mu}}_{A}^{\mathrm{nuc}}$；电子对体系偶极矩的贡献 ${\boldsymbol{\mu}'}_{A}^{\mathrm{dip}}+{\boldsymbol{\mu}'}_{A}^{\mathrm{pop}}$；对体系偶极矩的贡献 ${\boldsymbol{\mu}}_{A}^{\mathrm{nuc}}+{\boldsymbol{\mu}'}_{A}^{\mathrm{dip}}+{\boldsymbol{\mu}'}_{A}^{\mathrm{pop}}$。</p>
+<p>若选选项 10，则电子偶极矩矩阵的 X/Y/Z 分量分别输出到当前文件夹下的 <em>dipmatx.txt</em>、<em>dipmaty.txt</em> 和 <em>dipmatz.txt</em>。例如，电子偶极矩矩阵 Z 分量的 (<em>i</em>, <em>j</em>) 元对应</p>
+<p><div class="mathdisp" data-mi="10" title="点击复制 TeX">$$
+-\sum_{i}\sum_{j} P_{i,j}\left\langle \chi_{i} \left| z \right| \chi_{j} \right\rangle
+$$</div></p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>原子坐标、基函数</p>
+</blockquote>
+<h2 id="32003-为多个轨道波函数生成-cube-文件"><strong>3.200.3 为多个轨道波函数生成 cube 文件</strong></h2>
+<p>通过该功能，可计算多个轨道波函数的格点数据并同时导出到单个 cube 文件或多个 cube 文件。</p>
+<p>进入该功能后，需先选择感兴趣的轨道（<em>例如 3,5,9-17</em>），再定义格点设置，再选择导出格点数据的方案。若选方案 1，则格点数据导出为多个文件，例如 <em>orb000003.cub</em>、<em>orb000005.cub</em>、<em>orb000009.cub</em> 等。文件名中的数字对应轨道编号。若选方案 2，则所选所有轨道的格点数据集体导出到当前文件夹下的 <em>orbital.cub</em>。很多可视化程序包括 VMD 和 Multiwfn 都支持含多套格点数据的 cube 文件。</p>
+<p>对限制性和非限制性单行列式波函数，在该功能中可基于 HOMO 和 LUMO 选择轨道。例如 <em>h-3</em> 指 HOMO-3，<em>l+2</em> 对应 LUMO+2。更多例子见屏幕提示。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>原子坐标、GTFs</p>
+</blockquote>
+<h2 id="32005-对实空间函数绘制径向分布函数"><strong>3.200.5 对实空间函数绘制径向分布函数</strong></h2>
+<p>该功能用于对实空间函数绘制径向分布函数 (RDF, radial distribution function)</p>
+<p><div class="mathdisp" data-mi="11" title="点击复制 TeX">$$
+RDF(r) = \int f(r,\Omega) r^{2} \mathrm{d}\Omega
+$$</div></p>
+<p>其中 <em>r</em> 是到球心的径向距离，Ω 表示球层中的角坐标。</p>
+<p>也可绘制 RDF 的积分曲线</p>
+<p><div class="mathdisp" data-mi="12" title="点击复制 TeX">$$
+I(r^{\prime}) = \int_{r_{\mathrm{low}}}^{r^{\prime}} RDF(r) \mathrm{d}r = \int_{r_{\mathrm{low}}}^{r^{\prime}} \int f(r,\Omega) r^{2} \mathrm{d}\Omega\, \mathrm{d}r
+$$</div></p>
+<p>显然，若 $r_{\mathrm{low}}$ 设为 0（<em>即</em> 球心），则 <em>I</em>(∞) 就是 <em>f</em> 在全空间的积分。</p>
+<p>在本功能中，可选择要研究的实空间函数，设定球心位置，设定要计算和绘制的下限和上限，设定径向和角向部分的点数。点数越多，积分曲线越准确。</p>
+<p>参数设好后，选选项 0 开始计算，会看到新菜单，可在其中绘制 RDF 及其积分曲线、保存图形或导出相应的原始数据。在该菜单中还有一个导出球平均函数 ( $f^{\mathrm{sph}}$ ) 的选项，它与 RDF 有如下关系</p>
+<p><div class="mathdisp" data-mi="13" title="点击复制 TeX">$$
+f^{\mathrm{sph}}(r) = \frac{RDF(r)}{4\pi r^{2}}
+$$</div></p>
+<p>例子见第 <a href="sec-4-200-other-functions-part-2.html#42005-%E7%BB%98%E5%88%B6%E7%94%B5%E5%AD%90%E5%AF%86%E5%BA%A6%E7%9A%84%E5%BE%84%E5%90%91%E5%88%86%E5%B8%83%E5%87%BD%E6%95%B0">4.200.5</a> 节。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>原子坐标、GTFs</p>
+</blockquote>
+<h2 id="32006-分析两个波函数中轨道的对应关系"><strong>3.200.6 分析两个波函数中轨道的对应关系</strong></h2>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>该功能主要用于分析两个波函数中轨道的对应关系。两套轨道可在不同基组下、由不同理论方法、在不同外部环境、不同电子态或略有不同的几何下产生。两套轨道也可以是不同类型，例如第一套轨道是 Hartree-Fock 计算产生的正则 MO，而第二套轨道是 post-HF 计算产生的自然轨道。</p>
+<p>当前波函数（Multiwfn 启动时载入的波函数）中的轨道 {<em>i</em>} 可表示为另一波函数（进入本模块后指定的波函数）中轨道 {<em>j</em>} 的线性组合，<em>即</em></p>
+<p>$\left| i \right\rangle = \sum_{j} C_{i,j} \left| j \right\rangle$ 其中 $C_{i,j} = \left\langle i \middle| j \right\rangle \equiv \int \varphi_{i}(\mathbf{r}) \varphi_{j}(\mathbf{r}) \mathrm{d}\mathbf{r}$</p>
+<p>一旦得到重叠积分，就立刻知道 <em>j</em> 与 <em>i</em> 如何关联。轨道 <em>j</em> 对轨道 <em>i</em> 的贡献就是重叠积分的平方，即 &lt;<em>i</em>|<em>j</em>&gt;²×100%。本功能能计算 <strong>C</strong> 矩阵及相应的贡献，从而轻松弄清两套轨道之间的关系。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>进入该功能后，首先输入当前波函数要考虑的轨道范围（<em>istart1</em>~<em>iend1</em>），再输入第二个波函数的路径和要考虑的轨道范围（<em>istart2</em>~<em>iend2</em>）。之后用 Becke 多中心数值积分方案计算 <em>istart1</em>~<em>iend1</em> 与 <em>istart2</em>~<em>iend2</em> 之间的重叠矩阵。然后看到 <em>istart1</em>~<em>iend1</em> 中每个轨道来自 <em>istart2</em>~<em>iend2</em> 的五个最大贡献。</p>
+<p>若想得到 <em>istart1</em>~<em>iend1</em> 中某个特定轨道里 <em>istart2</em>~<em>iend2</em> 的所有系数（及相应贡献），可直接输入该轨道的编号。</p>
+<p>若当前波函数中的轨道 (<em>i</em>) 可精确展开为 <em>istart2</em>~<em>iend2</em> 的线性组合，则必须满足归一化条件：</p>
+<p><div class="mathdisp" data-mi="14" title="点击复制 TeX">$$
+\sum_{j=\mathrm{istart2}}^{\mathrm{iend2}} \left\langle i \middle| j \right\rangle^{2} \times 100\% = 100\%
+$$</div></p>
+<p>从 Multiwfn 输出中可找到对归一化条件的最大偏离。若该值为零，意味着 <em>istart1</em>~<em>iend1</em> 中的所有轨道都可被 <em>istart2</em>~<em>iend2</em> 中的轨道精确表示。</p>
+<p>注意当前波函数与第二个波函数的原子坐标不一定要相同，两个波函数甚至可对应不同分子。但若两波函数原子坐标分布范围差别大，积分精度必然低，结果不可靠。</p>
+<p>一般默认积分格点足够精细，<em>即</em> 30 个径向点、302 个角向点，&quot;radcut=15&quot;。若想提高精度，应把 <em>settings.ini</em> 中的 &quot;iautointgrid&quot; 设为 0，再在 <em>settings.ini</em> 中定义 &quot;radpot&quot;、&quot;sphpot&quot; 和 &quot;radcut&quot;；增大它们的值会提高积分精度。</p>
+<p>该功能的计算代价直接取决于考虑的轨道数；因此若体系含非常多的轨道，不要一次全选。</p>
+<h3 id="特殊用法计算两套轨道之间的重叠积分和叠加"><strong>特殊用法：计算两套轨道之间的重叠积分和叠加</strong></h3>
+<p>本功能也可用于计算轨道之间的重叠，轨道可来自同一波函数，也可来自两个不同波函数。</p>
+<p>进入本功能的界面后，若想得到上述第一波函数中轨道 <em>istart1~iend1</em> 与第二波函数中轨道 <em>istart2~iend2</em> 之间的所有重叠积分（<em>即</em> 所有 &lt;<em>i</em>|<em>j</em>&gt;），只需输入 <em>-1</em>，这些积分将输出到当前文件夹下的 <em>convmat.txt</em>。</p>
+<p>若需要的不是轨道波函数之间的普通重叠积分，而是轨道波函数<strong>模</strong>之间的重叠积分，它对衡量轨道叠加有用，表示为 $\int \left| {\varphi}_{i}(\mathbf{r}) \right||{\varphi}_{j}(\mathbf{r})|\mathrm{d}\mathbf{r}$，应在界面中输入 <em>-2</em>，则轨道 <em>istart1~iend1</em> 与 <em>istart2~iend2</em> 之间的所有这类积分将输出到当前文件夹下的 <em>Snormmat.txt</em>。类似地，若需要的是 $\int {\left| {\varphi}_{i}(\mathbf{r}) \right|}^{2}{|{\varphi}_{j}(\mathbf{r})|}^{2}\mathrm{d}\mathbf{r}$，应在界面输入 <em>-3</em>，结果将输出到 <em>Snorm2mat.txt</em>。</p>
+<p>事实上，本功能可在一定程度上等价实现第 <a href="sec-3-100-other-functions-part-1.html#31005-%E6%98%BE%E7%A4%BAalpha%E5%92%8Cbeta%E8%BD%A8%E9%81%93%E4%B9%8B%E9%97%B4%E7%9A%84%E9%87%8D%E5%8F%A0%E7%A7%AF%E5%88%86show-overlap-integral-between-alpha-and-beta-orbitals">3.100.5</a>、<a href="sec-3-100-other-functions-part-1.html#310011-%E8%AE%A1%E7%AE%97%E4%B8%A4%E4%B8%AA%E8%BD%A8%E9%81%93%E4%B9%8B%E9%97%B4%E7%9A%84%E9%87%8D%E5%8F%A0%E5%92%8C%E8%B4%A8%E5%BF%83%E8%B7%9D%E7%A6%BBcalculate-overlap-and-centroid-distance-between-two-orbitals">3.100.11</a> 和 <a href="sec-3-100-other-functions-part-1.html#310015-%E8%AE%A1%E7%AE%97%E5%88%86%E5%AD%90%E9%97%B4%E8%BD%A8%E9%81%93%E9%87%8D%E5%8F%A0calculate-intermolecular-orbital-overlap">3.100.15</a> 节介绍的功能，只是输出格式和主要目的不同。</p>
+<p>该功能的一些用例见第 <a href="sec-4-200-other-functions-part-2.html#42006-%E7%A0%94%E7%A9%B6%E4%B8%8D%E5%90%8C%E6%B3%A2%E5%87%BD%E6%95%B0%E6%96%87%E4%BB%B6%E4%B8%AD%E8%BD%A8%E9%81%93%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB">4.200.6</a> 节。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>原子坐标、GTFs</p>
+</blockquote>
+<h2 id="32009-计算平均键长和平均配位数"><strong>3.200.9 计算平均键长和平均配位数</strong></h2>
+<p>该功能用于计算两种元素之间的平均键长和平均配位数。该功能对分析原子团簇的结构特征特别有用，例如下图所示的 Ge₁₂Au 团簇（结构文件为 <em>examples\Ge12Au.pdb</em>）。用该功能可立刻得到平均 Ge-Ge 键长和平均 Au-Ge 键长，以及 Ge 由于 Ge-Au 或 Ge-Ge 键的平均配位数，或 Au 由于 Ge-Au 键的平均配位数。对 Al 团簇的这类分析的一个漂亮应用见 <em>J. Chem. Phys.</em>, <strong>111</strong>, 1890 (1999)。</p>
+<p><img src="assets/figures/sec3-200/image768.png" alt="平均键长例子用的含十二个 Ge 原子的 Au13 团簇"></p>
+<p>平均键长定义为</p>
+<p><div class="mathdisp" data-mi="15" title="点击复制 TeX">$$
+\left\langle R \right\rangle = \frac{1}{n_{\mathrm{b}}} \sum_{i>j} R_{ij}
+$$</div></p>
+<p>其中 $R_{ij}$ 是原子 <em>i</em> 与 <em>j</em> 之间的距离，只有小于或等于给定距离截断（<em>例如</em> 2.2 Å）的项才被视为键并计入求和。$n_{\mathrm{b}}$ 是总键数。</p>
+<p>平均配位数计算为</p>
+<p><div class="mathdisp" data-mi="16" title="点击复制 TeX">$$
+CN = \frac{1}{n} \sum_{i} N_{i}
+$$</div></p>
+<p>其中 $N_{i}$ 是原子 <em>i</em> 周围的键数，<em>n</em> 是总原子数。</p>
+<p>进入该功能后，需输入两种元素，例如 <em>Ge,Au</em>，再输入距离截断，例如 3.2，则 ≤ 3.2 Å 的 Ge-Au 接触被视为 Ge-Au 键并计算平均键长，同时输出最短和最长键长。之后若选 <em>y</em>，将显示 Ge 由于 Ge-Au 键的平均配位数。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>原子坐标</p>
+</blockquote>
+<h2 id="320010-输出轨道之间的各种积分"><strong>3.200.10 输出轨道之间的各种积分</strong></h2>
+<p>该功能用于计算轨道之间的电/磁偶极矩积分、速度积分、动能积分和重叠积分，高级用户当能认出这些数据的意义。对一批轨道的情形，结果导出到当前文件夹下的 <em>orbint.txt</em>，第一、二列对应两个轨道的编号；对一对轨道的情形，结果直接打印在屏幕上。</p>
+<p>两轨道之间的电偶极矩积分矢量定义为</p>
+<p><div class="mathdisp" data-mi="17" title="点击复制 TeX">$$
+\mathbf{\boldsymbol{\mu}}_{ij} = \mathbf{\boldsymbol{\mu}}_{ji} = \left\langle \varphi_{i} \middle| -\mathbf{r} \middle| \varphi_{j} \right\rangle
+$$</div></p>
+<p>两轨道之间的磁偶极矩积分矢量计算为（更多细节见第 <a href="sec-3-21-electron-excitation-analysis.html#32111-%E7%90%86%E8%AE%BA">3.21.1.1</a> 节。忽略负号）</p>
+<p><div class="mathdisp" data-mi="18" title="点击复制 TeX">$$
+\mathbf{M}_{ij} = i \left\langle \varphi_{i} \middle| \mathbf{r} \times \nabla \middle| \varphi_{j} \right\rangle
+$$</div></p>
+<p>两轨道之间的速度积分矢量计算为（忽略负号）</p>
+<p><div class="mathdisp" data-mi="19" title="点击复制 TeX">$$
+\mathbf{v}_{ij} = i \left\langle \varphi_{i} \middle| \nabla \middle| \varphi_{j} \right\rangle
+$$</div></p>
+<p>值得注意的是，由于算符的 Hermiticity，有</p>
+<p><div class="mathdisp" data-mi="20" title="点击复制 TeX">$$
+\begin{gathered}\mathbf{M}_{ii} = 0 \quad\quad \mathbf{M}_{ij} = {\mathbf{M}_{ji}}^{*} = -\mathbf{M}_{ji} \\\mathbf{v}_{ii} = 0 \quad\quad \mathbf{v}_{ij} = {\mathbf{v}_{ji}}^{*} = -\mathbf{v}_{ji}\end{gathered}
+$$</div></p>
+<p>注意输出中没有显式显示虚数符号。</p>
+<p>两轨道之间的动能积分和重叠积分分别计算为</p>
+<p><div class="mathdisp" data-mi="21" title="点击复制 TeX">$$
+K_{ij} = -\frac{1}{2} \left\langle \varphi_{i} \middle| \nabla^{2} \middle| \varphi_{j} \right\rangle \quad\quad S_{ij} = \left\langle \varphi_{i} \middle| \varphi_{j} \right\rangle
+$$</div></p>
+<p>若需计算两轨道之间的 Coulomb 或交换积分，应使用第 <a href="#320017-%E8%AE%A1%E7%AE%97%E4%B8%A4%E8%BD%A8%E9%81%93%E4%B9%8B%E9%97%B4%E7%9A%84-coulomb-%E5%92%8C%E4%BA%A4%E6%8D%A2%E7%A7%AF%E5%88%86">3.200.17</a> 节描述的功能。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>原子坐标、GTFs</p>
+</blockquote>
+<h2 id="320011-计算函数的中心一阶二阶矩回转半径和-">*<em>3.200.11 计算函数的中心、一阶/二阶矩、回转半径和 &lt;<em>r</em>²&gt;</em>*</h2>
+<p>该功能用于计算表征所选实空间函数分布的各种量。</p>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>实空间函数 <em>f</em> 的中心定义为</p>
+<p><div class="mathdisp" data-mi="22" title="点击复制 TeX">$$
+\mathbf{r}_\mathrm{c} = \frac{\int \mathbf{r} \times f(\mathbf{r}) \mathrm{d}\mathbf{r}}{\int f(\mathbf{r}) \mathrm{d}\mathbf{r}}
+$$</div></p>
+<p>其中积分在全空间进行。</p>
+<p>一阶矩是矢量，计算为</p>
+<p><div class="mathdisp" data-mi="23" title="点击复制 TeX">$$
+\mathbf{\boldsymbol{\mu}} = \begin{bmatrix} \mu_{x} \\ \mu_{y} \\ \mu_{z} \end{bmatrix} = \int \begin{bmatrix} x \\ y \\ z \end{bmatrix} f(\mathbf{r}) \mathrm{d}\mathbf{r}
+$$</div></p>
+<p>其中 <em>x</em>、<em>y</em>、<em>z</em> 是相对于 <strong>r</strong>$_{c}$ 的笛卡尔坐标分量。</p>
+<p>二阶矩是矩阵，定义为</p>
+<p><div class="mathdisp" data-mi="24" title="点击复制 TeX">$$
+\mathbf{\Theta} = \begin{bmatrix} \Theta_{xx} & \Theta_{xy} & \Theta_{xz} \\ \Theta_{yx} & \Theta_{yy} & \Theta_{yz} \\ \Theta_{zx} & \Theta_{zy} & \Theta_{zz} \end{bmatrix} = \int \begin{bmatrix} x^{2} & xy & xz \\ yx & y^{2} & yz \\ zx & zy & z^{2} \end{bmatrix} f(\mathbf{r}) \mathrm{d}\mathbf{r}
+$$</div></p>
+<p>若其本征值 {<em>ε</em>} 从小到大排序，则 <strong>Θ</strong> 的各向异性可算为 $\varepsilon_{3} - \left( \varepsilon_{1} + \varepsilon_{2} \right) / 2$。回转半径算为 $\sqrt{\frac{\varepsilon_{1} + \varepsilon_{2} + \varepsilon_{3}}{\int f(\mathbf{r}) \mathrm{d}\mathbf{r}}}$。</p>
+<p>空间范围 $\left\langle {r}^{2} \right\rangle=\int ({x}^{2}+{y}^{2}+{z}^{2})f(\mathbf{r})\mathrm{d}\mathbf{r}$ 就是二阶矩矩阵的迹，或其三个本征值之和。若 <em>f</em>(<strong>r</strong>) 选为电子密度，则 &lt; $r^2$ &gt; 对应著名的电子空间范围 (ESE, electronic spatial extent)。注意 ESE 和电偶极/多极矩可用 Multiwfn 中的专门功能解析且高效得多地计算，见第 <a href="sec-3-300-other-functions-part-3.html#33005-%E8%AE%A1%E7%AE%97%E7%94%B5%E5%81%B6%E6%9E%81%E5%A4%9A%E6%9E%81%E7%9F%A9%E5%92%8C%E7%94%B5%E5%AD%90%E7%A9%BA%E9%97%B4%E8%8C%83%E5%9B%B4">3.300.5</a> 节。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>该功能用 Becke 多中心积分方法计算上述量。精度完全由径向点数和角向点数决定，可分别通过 <em>settings.ini</em> 中的 &quot;radpot&quot; 和 &quot;sphpot&quot; 设置。</p>
+<p>选项 1 计算并输出上述所有量。待研究的实空间函数可用选项 3 选择。中心 (<strong>r</strong>$_{c}$) 默认为 (0,0,0)，可用选项 4 手动设置。选项 2 用于计算所选实空间函数的中心，可直接作为后续选项 1 计算的 <strong>r</strong>$_{c}$（显然，若 <strong>r</strong>$_{c}$ 设为所选函数的中心，算出的一阶矩为零）。</p>
+<p>用选项 1 时，若待研究的实空间函数选为电子密度，还会输出四极矩的核贡献和分子四极矩张量。事实上后者可直接由前者减去电子密度的二阶矩得到。</p>
+<p>若感兴趣的实空间函数正负部分幅度相当（<em>例如</em> 正负相明显的轨道波函数），一般推荐用选项 5 而非选项 2 计算所选实空间函数的分布中心，因为选项 5 在计算中用<em>绝对</em>函数值，可避免抵消效应。此外，对这类实空间函数，为计算上述统计量，建议在选选项 1 之前先选一次选项 -1，此时计算中用<em>绝对</em>函数值。</p>
+<p>这里给一个简例。计算自旋密度的一阶和二阶矩（相对于自旋密度中心），载入波函数文件后应输入</p>
+<p><pre><code class="language-text">200  // Other function (Part 2)
+11  // The present function
+3  // Select a real space function
+5  // Spin density
+2  // Calculate center of spin density
+y  // Take the calculated center for evaluating various data in option 1
+1  // Evaluate various data for spin density</code></pre></p>
+<p>然后数据会显示在屏幕上。</p>
+<p>我的博客文章“使用 Multiwfn 展示多余电子并计算其回转半径”(<a href="http://sobereva.com/658">http://sobereva.com/658</a>，中文) 进一步演示了该模块的用法。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>原子坐标、GTFs</p>
+</blockquote>
+<h2 id="320012-计算能量指数-ei-或键极性指数-bpi"><strong>3.200.12 计算能量指数 (EI) 或键极性指数 (BPI)</strong></h2>
+<p>该功能用于计算能量指数 (EI, energy index) 和键极性指数 (BPI, bond polarity index)，它们定义于 <em>J. Phys. Chem.</em>, <strong>94</strong>, 5602 (1990) 并在 <em>J. Phys. Chem.</em>, <strong>96</strong>, 157 (1992) 中进一步讨论。</p>
+<p>分子中原子 <em>A</em> 的 EI 定义为</p>
+<p><div class="mathdisp" data-mi="25" title="点击复制 TeX">$$
+\mathrm{EI}_{A} = \frac{\sum_{i}^{\mathrm{val}} \varepsilon_{i} \eta_{i} \Theta_{i,A}}{\sum_{i}^{\mathrm{val}} \eta_{i} \Theta_{i,A}}
+$$</div></p>
+<p>其中 Θ<em>$_{i}$</em>$_{,}$<em>$_{A}$</em> 表示 MO <em>i</em> 中原子 <em>A</em> 的组成，<em>η</em>$_{i}$ 和 <em>ε</em>$_{i}$ 分别是 MO <em>i</em> 的占据数和能量。求和遍历价 MO。事实上分母就是原子 <em>A</em> 的价电子数，分子对应其价电子的总能量。因此 EI<em>$_{A}$</em> 可视为原子 <em>A</em> 的平均每个价电子能量。在 EI 原始论文中用 Mulliken 方法计算原子对 MO 的贡献，因此当前 EI 实现也用该方法，尽管 Hirshfeld 划分等其它方法应当同样好甚至更好。（注意由于用了 Mulliken 方法，它与弥散函数不兼容，必须避免用弥散基函数！）</p>
+<p>分子中原子 <em>A</em> 与 <em>B</em> 之间的 BPI 定义为</p>
+<p><div class="mathdisp" data-mi="26" title="点击复制 TeX">$$
+\mathrm{BPI}_{AB} = \left( \mathrm{EI}_{A} - \mathrm{EI}_{A}^{\mathrm{ref}} \right) - \left( \mathrm{EI}_{B} - \mathrm{EI}_{B}^{\mathrm{ref}} \right)
+$$</div></p>
+<p>其中 EI$^{ref}$ 是由同核物种计算得到的参考 EI 值。例如研究 H₃C-NH₂ 的 BPI$_{CN}$，则 ${\mathrm{EI}}_{\mathrm{C}}^{\mathrm{ref}}$ 算为乙烷中的 EI$_{C}$，${\mathrm{EI}}_{\mathrm{N}}^{\mathrm{ref}}$ 算为 H₂N-NH₂ 中的 EI$_{N}$。BPI<em>$_{AB}$</em> 的绝对值越大意味着 <em>A</em>-<em>B</em> 键极性越高。</p>
+<p>基团电负性计算为相应自由基连接原子的负 EI$_{X}$，X 为连接原子。例如求 -CH₃ 基团的电负性，应计算 ⋅CH₃ 自由基的 -EI$_{C}$。</p>
+<p>Multiwfn 的该功能用于计算当前体系中特定原子的 EI，支持所有 R、RO 和 U 型的 HF/DFT 波函数。Multiwfn 自动检测内层芯电子数并确定哪些 MO 是价轨道从而应计入。</p>
+<p>例子见第 <a href="sec-4-200-other-functions-part-2.html#420012-%E8%AE%A1%E7%AE%97%E8%83%BD%E9%87%8F%E6%8C%87%E6%95%B0ei%E4%B8%8E%E9%94%AE%E6%9E%81%E6%80%A7%E6%8C%87%E6%95%B0bpi">4.200.12</a> 节。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>原子坐标、基函数</p>
+</blockquote>
+<h2 id="320013-计算轨道对密度差或其它格点数据的贡献"><strong>3.200.13 计算轨道对密度差或其它格点数据的贡献</strong></h2>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>该功能主要用于计算所选各轨道对给定密度差 Δ<em>ρ</em> 的贡献，从而清楚理解哪个(些)轨道是电子密度分布变化的主要贡献者。类似的想法已用于 <em>J. Mol. Model.</em>, <strong>24</strong>, 25 (2017)，研究各 NBO 轨道对 Fukui 函数（一类特殊的电子密度，见第 <a href="sec-4-5-generate-grid-data-and-view-isosurface-map.html#454-%E7%94%A8%E7%A6%8F%E4%BA%95%E5%87%BD%E6%95%B0%E5%92%8C%E5%AF%B9%E5%81%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6%E7%A0%94%E7%A9%B6%E8%8B%AF%E9%85%9A%E4%BA%B2%E7%94%B5%E8%BF%9B%E6%94%BB%E7%9A%84%E6%9C%89%E5%88%A9%E4%BD%8D%E7%82%B9">4.5.4</a> 节）的贡献以更好揭示其化学意义。下面概述本功能用的理论和算法。</p>
+<p>Δ<em>ρ</em> 可近似表示为轨道概率密度（即相应轨道波函数的模方）的线性组合</p>
+<p><div class="mathdisp" data-mi="27" title="点击复制 TeX">$$
+\Delta\rho(\mathbf{r}) \approx \sum_{i} p_{i} \left| \varphi_{i}(\mathbf{r}) \right|^{2}
+$$</div></p>
+<p>需要求的是展开 Δ<em>ρ</em> 的最优 {<em>p</em>}。$p_{i}$ 可视为轨道 <em>i</em> 对 Δ<em>ρ</em> 的贡献。{<em>p</em>} 可通过最小二乘法得到，即在全空间最小化 Δ<em>ρ</em> 与 $\sum_{i} p_{i} \left| \varphi_{i}(\mathbf{r}) \right|^{2}$ 之差，同时通过 Lagrange 乘子技术把 {<em>p</em>} 之和约束为给定值 <em>P</em>。实际实现中要最小化的误差函数为</p>
+<p><div class="mathdisp" data-mi="28" title="点击复制 TeX">$$
+F = \int \left[ \Delta\rho(\mathbf{r}) - \sum_{i} p_{i} \left| \varphi_{i}(\mathbf{r}) \right|^{2} \right]^{2} \mathrm{d}\mathbf{r} + \lambda \left[ \sum_{i} p_{i} - P \right]
+$$</div></p>
+<p>在 Multiwfn 中，积分按均匀分布格点的数值积分处理，即</p>
+<p><div class="mathdisp" data-mi="29" title="点击复制 TeX">$$
+F = \Delta_{V} \sum_{\mu} \left[ \Delta\rho(\mathbf{r}) - \sum_{i} p_{i} \left| \varphi_{i}(\mathbf{r}) \right|^{2} \right]^{2} + \lambda \left[ \sum_{i} p_{i} - P \right]
+$$</div></p>
+<p>其中 <em>µ</em> 是格点编号，Δ<em>$_{V}$</em> 是格点体积。</p>
+<p>显然，确定最优 {<em>p</em>} 应满足以下条件</p>
+<p><div class="mathdisp" data-mi="30" title="点击复制 TeX">$$
+\begin{gathered} \frac{\partial F}{\partial p_{i}} = 0 \quad\quad i = \{1,2,3...\} \\ \sum_{i} p_{i} = P \end{gathered}
+$$</div></p>
+<p>更明确地，</p>
+<p><div class="mathdisp" data-mi="31" title="点击复制 TeX">$$
+\frac{\partial F}{\partial p_{i}} = 0 \Rightarrow \sum_{j} p_{j} \sum_{\mu} \left| \varphi_{i}(\mathbf{r}_{\mu}) \right|^{2} \left| \varphi_{j}(\mathbf{r}_{\mu}) \right|^{2} + \lambda = \sum_{\mu} \left| \varphi_{i}(\mathbf{r}_{\mu}) \right|^{2} \Delta\rho(\mathbf{r}_{\mu})
+$$</div></p>
+<p>显然，确定 {<em>p</em>} 的工作方程应为</p>
+<p><div class="mathdisp" data-mi="32" title="点击复制 TeX">$$
+\begin{gathered} \begin{bmatrix} A_{1,1} & \cdots & A_{1,N} & 1 \\ \vdots & \ddots & \vdots & \vdots \\ A_{N,1} & \cdots & A_{N,N} & 1 \\ 1 & 1 & 1 & 0 \end{bmatrix} \begin{bmatrix} p_{1} \\ \vdots \\ p_{N} \\ \lambda \end{bmatrix} = \begin{bmatrix} B_{1} \\ \vdots \\ B_{N} \\ P \end{bmatrix} \\ A_{i,j} = A_{j,i} = \sum_{\mu} \left| \varphi_{i}(\mathbf{r}_{\mu}) \right|^{2} \left| \varphi_{j}(\mathbf{r}_{\mu}) \right|^{2} \\ B_{i} = \sum_{\mu} \left| \varphi_{i}(\mathbf{r}_{\mu}) \right|^{2} \Delta\rho(\mathbf{r}_{\mu}) \end{gathered}
+$$</div></p>
+<p>Multiwfn 报告的拟合误差用下式估计</p>
+<p><div class="mathdisp" data-mi="33" title="点击复制 TeX">$$
+\begin{gathered} \mathrm{definition\ 1}: \int \left| \Delta\rho(\mathbf{r}) - \sum_{i} p_{i} \left| \varphi_{i}(\mathbf{r}) \right|^{2} \right| \mathrm{d}\mathbf{r} \\ \mathrm{definition\ 2}: \int \left( \Delta\rho(\mathbf{r}) - \sum_{i} p_{i} \left| \varphi_{i}(\mathbf{r}) \right|^{2} \right)^{2} \mathrm{d}\mathbf{r} \end{gathered}
+$$</div></p>
+<p>原则上该算法对任何 Δ<em>ρ</em> 和轨道都有效。例如 Δ<em>ρ</em> 可对应 Fukui 函数、电子激发中的密度变化等。轨道可以是定域化分子轨道 (LMO)、NBO、MO 等。贡献 <em>p</em> 可正可负，符号反映轨道密度参与 Δ<em>ρ</em> 的相位。注意轨道范围的选择高度任意且明显影响结果。例如范围可包括某类所有轨道，或只包括占据轨道。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>下面是通过本功能得到一套轨道对 Δ<em>ρ</em> 贡献的常用流程</p>
+<ul>
+<li><p>(1) 用 Multiwfn 或其它程序生成 Δ<em>ρ</em> 的 cube 文件。计算 Δ<em>ρ</em> 格点数据的流程已在本手册许多节充分说明，例如第 <a href="sec-4-5-generate-grid-data-and-view-isosurface-map.html#454-%E7%94%A8%E7%A6%8F%E4%BA%95%E5%87%BD%E6%95%B0%E5%92%8C%E5%AF%B9%E5%81%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6%E7%A0%94%E7%A9%B6%E8%8B%AF%E9%85%9A%E4%BA%B2%E7%94%B5%E8%BF%9B%E6%94%BB%E7%9A%84%E6%9C%89%E5%88%A9%E4%BD%8D%E7%82%B9">4.5.4</a> 节（Fukui 函数和 dual descriptor）和第 <a href="sec-4-18-electron-excitation-analysis.html#4183-%E5%9F%BA%E4%BA%8E%E7%94%B5%E5%AD%90%E5%AF%86%E5%BA%A6%E5%B7%AE%E5%88%86%E6%9E%90%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91%E4%B8%AD%E7%9A%84%E7%94%B5%E8%8D%B7%E8%BD%AC%E7%A7%BB">4.18.3</a> 节（对应电子激发的 Δ<em>ρ</em>）。</p>
+</li>
+<li><p>(2) 把含感兴趣轨道的文件载入 Multiwfn，再进入主功能 200 的子功能 13。</p>
+</li>
+<li><p>(3) 输入含 Δ<em>ρ</em> 的 cube 文件的路径让 Multiwfn 载入它。</p>
+</li>
+<li><p>(4) 用选项 1 设定对贡献之和的约束，即上式中的 <em>P</em> 值。<em>P</em> 默认为 1.0。</p>
+</li>
+<li><p>(5) 选选项 0，再设定要考虑的轨道范围。计算后，所有选中轨道的贡献 (<em>p</em>) 显示在屏幕上。</p>
+</li>
+<li><p>(6) 在后处理菜单中，可选择可视化 Δ<em>ρ</em>、拟合密度 $\sum_{i} p_{i} \left| \varphi_{i}(\mathbf{r}) \right|^{2}$ 或其差 $\Delta\rho - \sum_{i} p_{i} \left| \varphi_{i}(\mathbf{r}) \right|^{2}$ 的等值面，从而直观检查拟合质量。拟合密度也可导出为 cube 文件。</p>
+</li>
+</ul>
+<p>在 Multiwfn 中，构建 <strong>A</strong> 矩阵和 <strong>B</strong> 矢量时处理轨道格点数据有以下两种模式，可通过选项 2 切换。</p>
+<ul>
+<li><p>基于内存（默认）：先自动计算所选所有轨道密度的格点数据并记录在内存中，此时计算相当快，但当所选轨道范围大且格点质量较高时对可用内存要求很高。若 Multiwfn 不因内存不足崩溃，强烈推荐用该模式。</p>
+</li>
+<li><p>基于 cube 文件：自动计算所选所有轨道密度的格点数据并作为各自的 cube 文件保存在当前文件夹下如 <em>rho_xxxxx.cub</em>，其中 <em>xxxxx</em> 是轨道编号。在用相应轨道构建 <strong>A</strong> 矩阵和 <strong>B</strong> 矢量时载入该文件。该模式比“基于内存”模式慢得多，优点是内存消耗几乎可忽略。</p>
+<p>注意自动计算的轨道密度的格点设置被程序设为与载入的 Δ<em>ρ</em> 格点数据严格相同。</p>
+</li>
+</ul>
+<p>重要的是注意本功能通用灵活，不一定限于研究轨道对 Δ<em>ρ</em> 的贡献。例如，若提供的 cube 文件含的是 <em>ρ</em> 而非 Δ<em>ρ</em> 的格点数据，则本功能给出所选轨道对 <em>ρ</em> 的贡献（当然，做之前应把 <em>P</em> 设合适以使所得贡献值有意义。若不知如何设，可直接去掉约束）</p>
+<p>本功能的实际分析例子见第 <a href="sec-4-200-other-functions-part-2.html#420013-%E7%A0%94%E7%A9%B6%E8%BD%A8%E9%81%93%E5%AF%B9%E5%AF%86%E5%BA%A6%E5%B7%AE%E7%9A%84%E8%B4%A1%E7%8C%AE">4.200.13</a> 节。</p>
+<h2 id="320014-域分析求函数等值面内的性质"><strong>3.200.14 域分析（求函数等值面内的性质）</strong></h2>
+<p>该功能用于在域中积分特定的实空间函数。域指特定实空间函数等值面包围的各个空间区域。例如可用该功能在约化密度梯度 (RDG) 等值面定义的各域中积分电子密度，以研究不同位置弱相互作用的强度。若灵活运用该模块，可实现许多特殊分析。例如，可视化并求分子空腔体积（例子见第 <a href="sec-4-200-other-functions-part-2.html#4200142-%E7%94%A8%E5%9F%9F%E5%88%86%E6%9E%90%E6%A8%A1%E5%9D%97%E5%8F%AF%E8%A7%86%E5%8C%96%E5%88%86%E5%AD%90%E7%A9%BA%E8%85%94%E5%B9%B6%E8%AE%A1%E7%AE%97%E5%85%B6%E4%BD%93%E7%A7%AF">4.200.14.2</a> 节）。</p>
+<h3 id="基本用法"><strong>基本用法</strong></h3>
+<p>下面是使用该模块的基本流程：</p>
+<ul>
+<li><p>(1) 进入域分析模块后，用选项 2 和 3 设定定义域的方式。例如用选项 2 选 RDG 并在选项 3 输入 <em>&lt;0.5</em>，则 RDG 小于 0.5 的区域被识别为不同的域。</p>
+<p>注意识别域时可考虑周期性。要开启它，选择选项“4 Toggle considering periodicity during domain analysis”将其状态设为“Yes”。</p>
+</li>
+<li><p>(2) 选选项 1 并恰当定义格点，然后 Multiwfn 开始计算所选实空间函数的格点数据并识别满足所设判据的域。</p>
+<p>注：若内存中已有格点数据，例如刚用主功能 5 算过或在 Multiwfn 启动时直接载入了 .cub 文件，也可直接选选项 -1 使用该格点数据而不计算新格点数据。此时选项 2 显然无意义。</p>
+</li>
+<li><p>(3) 上步计算完成后，Multiwfn 打印每个域中的总格点数。在非常简单的情形，可直接从该信息推断哪些域是想研究的，而一般情形需用选项 &quot;3 Visualize domains&quot; 在 GUI 窗口可视化域，可在右下角列表选择域并查看其形状，图上每个绿点对应域中的一个格点。</p>
+</li>
+</ul>
+<p>找到感兴趣的域后，若想在域中积分实空间函数，可选选项 &quot;1 Perform integration for a domain&quot;，然后按提示输入域的编号，再选择被积函数。被积函数可以是 (1) Multiwfn 支持的任意实空间函数 (2) 当前存于内存的格点数据 (3) .cub 文件中记录的格点数据（会被要求输入路径。该文件中的格点分布必须与当前格点数据严格相同）。积分后输出积分值、域体积以及被积函数在域中的平均/最大/最小值。此外还输出属于该域的格点的 X/Y/Z 最小最大值，以及 X/Y/Z 方向的跨度。也可选选项 &quot;2 Perform integration for all domains&quot; 一次得到所有域的积分值。（提示：若只需要域体积，可选用户自定义函数作被积函数，它默认处处为 1.0，因而积分它不花任何计算时间）。</p>
+<p>此外，感兴趣的某些区域可能被识别为分开的域，为更方便研究这些区域的性质，可选选项 &quot;-1 Merge specific domains&quot; 把所选域合并为单个域，就不用手动加总它们的积分值了。</p>
+<p>通过后处理菜单中的选项 12，可把特定域中所有格点的 X、Y、Z 坐标连同格点数据值导出到当前文件夹下的 <em>domain.txt</em>。</p>
+<h3 id="用第三方工具可视化域"><strong>用第三方工具可视化域</strong></h3>
+<p>若想在 VMD 等第三方程序中可视化域，有两种方式：</p>
+<ul>
+<li><p>选 &quot;10 Export a domain as domain.cub file in current folder&quot; 并输入感兴趣域的编号，Multiwfn 把该域导出为 <em>domain.cub</em>，其中属于和不属于该域的格点值分别为 1 和 0（边界格点的值也输出为 0 以保证等值面看起来总是闭合的）。之后可把该 cube 文件载入可视化程序以等值 0.5 可视化等值面。</p>
+</li>
+<li><p>选 &quot;11 Export boundary grids of a domain to domain.pdb file in current folder&quot; 并输入感兴趣域的编号，所得 .pdb 文件含粒子，每个对应一个边界格点。可直接把该文件拖入 VMD 并把粒子渲染为球以可视化域。</p>
+</li>
+</ul>
+<h3 id="特殊用法研究相互作用"><strong>特殊用法：研究相互作用</strong></h3>
+<p>在后处理菜单中，有选项 &quot;5 Calculate q_bind index for a domain&quot;，用于计算定义于 <em>J. Phys. Chem. A</em>, <strong>115</strong>, 12983 (2011) 的 $q_{\mathrm{bind}}$ 指数，其中证明对氢键二聚体 $q_{\mathrm{bind}}$ 指数的扫描曲线很好模仿实际势能曲线。该指数对域定义为：</p>
+<p><div class="mathdisp" data-mi="34" title="点击复制 TeX">$$
+\begin{gathered} q_{\mathrm{att}} = \int_{\lambda_{2}(\mathbf{r}) < 0} \rho^{n}(\mathbf{r}) \mathrm{d}\mathbf{r} \quad\quad \mathrm{attractive\ effect} \\ q_{\mathrm{rep}} = \int_{\lambda_{2}(\mathbf{r}) > 0} \rho^{n}(\mathbf{r}) \mathrm{d}\mathbf{r} \quad\quad \mathrm{repulsive\ effect} \\ q_{\mathrm{bind}} = -\left( q_{\mathrm{att}} - q_{\mathrm{rep}} \right) \end{gathered}
+$$</div></p>
+<p>其中 <em>λ</em>₂(<strong>r</strong>) 是 <strong>r</strong> 处电子密度 Hessian 矩阵的第二大本征值，其符号可用于判别相互作用类型。论文表明 <em>n</em> = 4/3 使 $q_{\mathrm{bind}}$ 与实际势能曲线相关性最好。在 Multiwfn 中 <em>n</em> 可手动设置。注意论文计算该指数时用 RDG = 0.6 的等值面。$q_{\mathrm{bind}}$ 越负可能意味着相互作用越稳定。</p>
+<p>值得注意的是后处理菜单中有一个非常灵活的选项 &quot;Perform integration for subregion of some domains according to range of sign(lambda)*rho&quot;，它在研究相互作用时可能有用。可先选一批域，再通过设定 <em>sign</em>(<em>λ</em>₂)<em>ρ</em> 的范围定义要积分的域的子区域（若不熟悉它，见第 <a href="sec-3-23-visual-study-of-weak-interaction.html#3231-%E9%9D%9E%E5%85%B1%E4%BB%B7%E7%9B%B8%E4%BA%92%E4%BD%9C%E7%94%A8-noncovalent-interaction-nci%E5%88%86%E6%9E%90-1">3.23.1</a> 节），被积的实空间函数可任意选。计算后依次输出所考虑每个域的所选实空间函数的积分和子区域体积；此外子区域中 <em>λ</em>₂ 为正和为负区域的结果也分别打印。通过该选项可实现特殊目的，例如求 RDG &lt; 0.6 且对应分子间相互作用区域的域中 <em>sign</em>(<em>λ</em>₂)<em>ρ</em> 在 -0.015 到 0.015 a.u. 之间的子区域内动能密度的积分。</p>
+<h3 id="关于积分精度"><strong>关于积分精度</strong></h3>
+<p>本模块积分域用的方法是均匀格点积分法。换言之，域的实空间函数积分值就是构成该域的格点的实空间函数值之和乘以格点体积。因此积分结果的精度直接受所设格点质量影响。</p>
+<p>本模块的演示性应用例子见第 <a href="sec-4-200-other-functions-part-2.html#420014-%E5%9F%9F%E5%88%86%E6%9E%90%E4%BE%8B%E5%AD%90">4.200.14</a> 节。</p>
+<h2 id="320015-计算电子相关指数"><strong>3.200.15 计算电子相关指数</strong></h2>
+<p>Matito 等在 <em>Phys. Chem. Chem. Phys.</em>, <strong>18</strong>, 24015 (2016) 中提出的总、动态和非动态电子相关指数是衡量当前体系电子相关大小的有用指标。</p>
+<p>动态和非动态电子相关指数 ( $I_{\mathrm{D}}$ 和 $I_{\mathrm{ND}}$ ) 定义为</p>
+<p><div class="mathdisp" data-mi="35" title="点击复制 TeX">$$
+\begin{aligned} I_{\mathrm{D}} &= \frac{1}{4} \sum_{i} \left\{ \left[ \eta_{i}(1-\eta_{i}) \right]^{1/2} - 2\eta_{i}(1-\eta_{i}) \right\} \\ I_{\mathrm{ND}} &= \frac{1}{2} \sum_{i} \eta_{i}(1-\eta_{i}) \end{aligned}
+$$</div></p>
+<p>其中 <em>i</em> 表示自然自旋轨道的编号，<em>η</em> 是相应的占据数。注意某些情形 <em>η</em> 可能略大于 1.0 或为负，Multiwfn 自动将其设为 1.0 和 0.0 以使计算可行。</p>
+<p>总电子相关指数定义为</p>
+<p><div class="mathdisp" data-mi="36" title="点击复制 TeX">$$
+I_{\mathrm{T}} = I_{\mathrm{D}} + I_{\mathrm{ND}} = \frac{1}{4} \sum_{i} \sqrt{\eta_{i}(1-\eta_{i})}
+$$</div></p>
+<p>本功能用于计算这三个电子相关指数。任何携带自然轨道占据数的波函数文件都可用作输入文件，<em>例如</em> .mwfn、.wfn、.wfx 和 .molden 文件。例子见第 <a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a6-%E8%AE%A1%E7%AE%97%E5%A5%87%E7%94%B5%E5%AD%90%E5%AF%86%E5%BA%A6">4.A.6</a> 节。</p>
+<p>注意 Matito 等还提出了这三个函数的局域版本以表征局域区域的电子相关，Multiwfn 也能研究它们，例子见第 <a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a6-%E8%AE%A1%E7%AE%97%E5%A5%87%E7%94%B5%E5%AD%90%E5%AF%86%E5%BA%A6">4.A.6</a> 节。</p>
+<h2 id="320016-基于-fchfchk-文件中的密度矩阵生成自然轨道自然自旋轨道-nso-和自旋自然轨道-sno"><strong>3.200.16 基于 .fch/.fchk 文件中的密度矩阵生成自然轨道、自然自旋轨道 (NSO) 和自旋自然轨道 (SNO)</strong></h2>
+<p>在 .fch（或 .fchk）文件中总记录密度矩阵。例如，若用 Gaussian 关键词 &quot;# MP2/cc-pVTZ density&quot; 对开壳体系做了 MP2 计算，则所得 .fch 文件有以下四个记录相应类型密度矩阵的字段：</p>
+<p><pre><code class="language-text">Total SCF Density, Spin SCF Density, Total MP2 Density, Spin MP2 Density</code></pre></p>
+<p>而对闭壳体系，若关键词为 &quot;# TD PBE1PBE/6-311G* density&quot;，则所得 .fch 文件含以下类型的密度矩阵：</p>
+<p><pre><code class="language-text">Total SCF Density, Total SCF Density, Total CI Rho(1) Density, Total CI Density</code></pre></p>
+<p>若不知 .fch 文件中记录了哪种密度矩阵，直接在文件中搜索 &quot;Density&quot; 即可。</p>
+<p>各种自然轨道可通过对角化适当类型的密度矩阵得到：</p>
+<ul>
+<li><p><strong>自然轨道 (NOs, natural orbitals)</strong>：对角化总密度矩阵。占据数为 0.0 到 2.0。这类 NO 也称空间 NO，具体地，对非限制性波函数称非限制性自然轨道 (UNO, unrestricted natural orbital)</p>
+</li>
+<li><p><strong>alpha 和 beta 自然轨道</strong>（统称自然自旋轨道，NSOs, natural spin orbitals）：分别对角化 alpha 和 beta 密度矩阵。占据数为 0.0 到 1.0。</p>
+</li>
+<li><p><strong>自旋自然轨道 (SNOs, spin natural orbitals)</strong>：对角化自旋密度矩阵（<em>即</em> alpha 与 beta 密度矩阵之差）。占据数为 -1.0 到 1.0。占据为正（负）的 SNO 代表未成对 alpha (beta) 电子的分布。</p>
+</li>
+</ul>
+<p>用本功能可得到上述任何一套 NO。例如，若想得到三重态水在 CCSD/cc-pVDZ 水平的 SNO，可运行以下 Gaussian 输入文件：</p>
+<p><pre><code class="language-text">%chk=C:\CCSD_water_m3.chk
+#p CCSD/cc-pVDZ density
+
+test
+
+0 3
+O 0.00000000     0.00000000     0.11930801
+H 0.00000000     0.75895306    -0.47723204
+H 0.00000000    -0.75895306    -0.</code></pre></p>
+<p>把 .chk 文件转为 .fch，再启动 Multiwfn 并输入</p>
+<p><pre><code class="language-text">C:\CCSD_water_m3.fch
+200
+16
+CC   // Meaning that we want to analyze coupled-cluster density matrix. You can also input SCF here to analyze Hartree-Fock density matrix
+3  // Generate SNOs (if the system is closed-shell, this selection will not occur, since only NOs can be generated in this case)</code></pre></p>
+<p>此时内存中的基函数信息已更新为 SNO。若之后想可视化 SNO，或做实空间函数分析（<em>例如</em> 通过 Hirshfeld 划分分析 SNO 的轨道组成），应选 <em>y</em> 把波函数信息导出到当前文件夹下的 <em>new.mwfn</em>，程序会自动载入它。之后所有分析都对应 SNO。</p>
+<p>我的一篇博客文章详细讨论并给出了 SNO 的分析例子：“Multiwfn 中基于 fch 文件生成自然轨道的方法以及激发态波函数和自旋自然轨道的分析实例”（中文）<a href="http://sobereva.com/403">http://sobereva.com/403</a>。</p>
+<p>注：一旦含 SNO 的 .mwfn 文件载入 Multiwfn，体系被视为开壳且 alpha 与 beta 轨道数相同，只有前者对应 SNO，后者完全无意义，应直接忽略。</p>
+<p>该功能对 Gaussian 和 PSI4 产生的 .fch/.fchk 文件效果很好，对其它程序可能兼容也可能不兼容。</p>
+<p>若该功能与 PSI4 联用，可分析高达 CCSD(T) 水平的波函数，详见第 <a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a8-%E5%88%86%E6%9E%90%E9%AB%98%E4%BA%8Eccsd%E6%B0%B4%E5%B9%B3%E7%9A%84%E6%B3%A2%E5%87%BD%E6%95%B0">4.A.8</a> 节。</p>
+<p>第 <a href="sec-4-18-electron-excitation-analysis.html#4189-%E4%BA%A7%E7%94%9F%E8%B7%83%E8%BF%81%E5%AF%86%E5%BA%A6%E7%9F%A9%E9%98%B5%E5%B9%B6%E5%8F%98%E6%8D%A2%E4%B8%BA%E8%BD%A8%E9%81%93%E8%A1%A8%E8%B1%A1">4.18.9</a> 节的例子用该功能对跃迁密度矩阵生成了自然轨道。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>.fch/.fchk 文件</p>
+</blockquote>
+<h2 id="320017-计算两轨道之间的-coulomb-和交换积分"><strong>3.200.17 计算两轨道之间的 Coulomb 和交换积分</strong></h2>
+<h3 id="理论与实现"><strong>理论与实现</strong></h3>
+<p>Coulomb (<em>ii</em>|<em>jj</em>) 和交换积分 (<em>ij</em>|<em>ji</em>) 是量子化学中最重要的两类积分。该功能用于计算所选两轨道 <em>i</em> 与 <em>j</em> 之间的它们，表达式为：</p>
+<p><div class="mathdisp" data-mi="37" title="点击复制 TeX">$$
+\begin{gathered} \left( ii \middle| jj \right) = \int\!\!\int \frac{\varphi_{i}^{*}(\mathbf{r}_{1})\varphi_{i}(\mathbf{r}_{1})\varphi_{j}^{*}(\mathbf{r}_{2})\varphi_{j}(\mathbf{r}_{2})}{r_{12}} \mathrm{d}\mathbf{r}_{1} \mathrm{d}\mathbf{r}_{2} \\ \left( ij \middle| ji \right) = \int\!\!\int \frac{\varphi_{i}^{*}(\mathbf{r}_{1})\varphi_{j}(\mathbf{r}_{1})\varphi_{j}^{*}(\mathbf{r}_{2})\varphi_{i}(\mathbf{r}_{2})}{r_{12}} \mathrm{d}\mathbf{r}_{1} \mathrm{d}\mathbf{r}_{2} \end{gathered}
+$$</div></p>
+<p>该功能适用于任何轨道，如分子轨道、定域化分子轨道、自然跃迁轨道等。</p>
+<p>目前积分基于均匀格点（<em>即</em> 均匀放置的格点）计算：</p>
+<p><div class="mathdisp" data-mi="38" title="点击复制 TeX">$$
+\begin{gathered} \left( ii \middle| jj \right) = (d_{\mathrm{x}} d_{\mathrm{y}} d_{\mathrm{z}})^{2} \sum_{k} \varphi_{i}^{2}(\mathbf{r}_{k}) \sum_{l \neq k} \frac{\varphi_{j}^{2}(\mathbf{r}_{l})}{\left| \mathbf{r}_{l} - \mathbf{r}_{k} \right|} \\ \left( ij \middle| ji \right) = (d_{\mathrm{x}} d_{\mathrm{y}} d_{\mathrm{z}})^{2} \sum_{k} \varphi_{i}(\mathbf{r}_{k})\varphi_{j}(\mathbf{r}_{k}) \sum_{l \neq k} \frac{\varphi_{i}(\mathbf{r}_{l})\varphi_{j}(\mathbf{r}_{l})}{\left| \mathbf{r}_{l} - \mathbf{r}_{k} \right|} \end{gathered}
+$$</div></p>
+<p>其中 <em>k</em> 和 <em>l</em> 是格点编号；$d_{\mathrm{x}}$、$d_{\mathrm{y}}$ 和 $d_{\mathrm{z}}$ 分别是 X、Y、Z 方向的格点间距。</p>
+<p>该功能相当耗时。对给定体系，间距越小，计算代价越高而精度越好。若不知当前用的格点间距是否足够小，可做收敛测试，即逐渐减小间距看数值何时收敛。</p>
+<p>有两种可用的输入文件：</p>
+<ul>
+<li><p>含轨道波函数的文件。若在 Multiwfn 启动时用如 .mwfn、.fch 或 .molden 作输入文件，进入本功能后会被要求输入两个轨道编号并选择格点设置，然后自动对它们计算波函数的格点数据。</p>
+</li>
+<li><p>两个含轨道波函数的 cube 文件。应在 Multiwfn 启动时输入第一个轨道的 cube 文件，进入本功能后再输入另一轨道的 cube 文件。cube 文件可由任何量子化学程序生成（也包括 Multiwfn 的主功能 5）。</p>
+</li>
+</ul>
+<p>在本功能的界面中，可在计算前分别设定 Coulomb ( $\zeta_\mathrm{J}$ ) 积分和交换积分 ( $\zeta_\mathrm{K}$ ) 的截断值。若 $\varphi_{i}^{2}(\mathbf{r}_{k}) < \zeta_\mathrm{J}$ 和 $\left| \varphi_{i}(\mathbf{r}_{k})\varphi_{j}(\mathbf{r}_{k}) \right| < \zeta_\mathrm{K}$，则分别忽略 Coulomb 和交换积分的最内层求和。显然，若截断值设得恰当，代价可显著降低而精度几乎不变。一般建议用默认值。</p>
+<p>注意若需计算单电子轨道积分，应使用第 <a href="#320010-%E8%BE%93%E5%87%BA%E8%BD%A8%E9%81%93%E4%B9%8B%E9%97%B4%E7%9A%84%E5%90%84%E7%A7%8D%E7%A7%AF%E5%88%86">3.200.10</a> 节描述的功能。</p>
+<h3 id="例子"><strong>例子</strong></h3>
+<p>这里以水分子为例说明这两类积分的计算。启动 Multiwfn 并输入</p>
+<p><pre><code class="language-text">examples\H2O_iijj.fch  // Containing molecular orbitals at HF/6-31G* level
+200  // Other functions (Part 2)
+17  // Calculate Coulomb and exchange integrals between two orbitals
+4,10  // The two orbitals are selected to be MO4 and MO10
+1  // Low-quality grid (corresponding to grid spacing of 0.2 Bohr)
+1  // Calculate Coulomb integral with default truncation level. The result is 0.615700
+3  // Calculate exchange integral with default truncation level. The result is 0.122246</code></pre></p>
+<p>用解析积分算出的 (<em>ii</em>|<em>jj</em>) 和 (<em>ij</em>|<em>ji</em>) 精确值分别为 0.623256 和 0.129893，显然我们基于数值积分的值精度基本满意。若用更好的格点，例如 0.1 Bohr 间距（对应“中等质量格点”），精度会进一步明显改善（分别为 0.62143 和 0.12793），但代价高八倍，注意代价与格点间距的立方成反比。</p>
+<h2 id="320018-计算键长键级交替-blaboa-以及键角二面角交替"><strong>3.200.18 计算键长/键级交替 (BLA/BOA) 以及键角/二面角交替</strong></h2>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>在共轭聚合物中，共轭链上的原子和键性质呈现交替特征。键长交替 (BLA, bond length alternation) 是研究这类体系的重要量。要计算 BLA，需给出共轭链中的原子序列。例如原子序列为 3-5-6-9-10-12，则键 1 为 3-5，键 2 为 5-6，等等。此时的 BLA 算为</p>
+<p>BLA = (R₅₋₆+R₉₋₁₀)/2 − (R₃₋₅+R₆₋₉+R₁₀₋₁₂)/3</p>
+<p>其中 R 是键长。更一般地，BLA 定义如下（见 Handbook of Thiophene-based Materials: Applications in Organic Electronics and Photonics 的 Eq. 7.6）</p>
+<p>BLA = 偶数键的平均长度 − 奇数键的平均长度</p>
+<p>BLA 绝对值越小意味着沿所选路径电子共轭越好。该量在文献中常用，研究例子见 <em>J. Chem. Phys.</em>, <strong>136</strong>, 094904 (2012)，关于 BLA 与各种分子性质关系的全面综述见 <a href="http://photonicswiki.org/index.php?title=Structure-Property_Relationships">http://photonicswiki.org/index.php?title=Structure-Property_Relationships</a>。</p>
+<p>键级是与键长密切相关的量，因此键级交替 (BOA, bond order alternation) 也是与 BLA 同样有用的量。BOA 与 BLA 的唯一区别是后者中的键长换为键级。相对 BLA，BOA 从电子结构角度而非单纯几何角度体现键交替特征。如第 <a href="sec-3-11-bond-order-analysis.html">3.11</a> 节充分介绍的，键级没有唯一定义。Mayer 键级非常适合算 BOA，因为它相当通用、便宜且大小接近形式键级。</p>
+<p>键角交替和二面角交替也常被研究，Multiwfn 能计算沿链的键角和二面角的变化。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>用该功能必须定义原子序列，这很容易。进入本功能后，会被要求输入组成序列的原子的编号，顺序完全任意。再输入序列中起始原子和终止原子的编号。之后，基于这些信息和原子间连接关系，Multiwfn 自动识别实际原子序列并打印在屏幕上，建议简要检查以确保序列正确。然后，对原子序列中的每根键，Multiwfn 打印其编号、相应的原子编号、键长和 Mayer 键级，再输出 BLA 和 BOA 值。键数据也导出到当前文件夹作 <em>bondalter.txt</em>，可导入 Origin 等数据绘图工具绘制“键长 vs. 键编号”和“键级 vs. 键编号”曲线图。最后，若想研究沿序列的键角和二面角交替，也可让 Multiwfn 输出它们。</p>
+<p>本功能也能用于研究闭合路径（<em>例如</em> 环）的上述性质，此时终止原子的编号应与起始原子相同。</p>
+<p>若输入文件同时含原子信息和基函数信息，如 .mwfn、.fch 和 .molden 文件，如上所述同时输出键长和键级。但若输入文件只含原子信息，如 .xyz、.mol2 和 .pdb 文件，则不计算打印键级信息。</p>
+<p>若输入文件含原子间连接关系，如 .mol 和 .mol2 格式，连接矩阵直接从中载入。对其它文件格式，连接关系基于原子坐标和原子半径猜测。若本功能工作不正常，建议用连接关系正确的 .mol 或 .mol2 文件作输入文件。</p>
+<p>由于 Mayer 键级与弥散函数不兼容，生成波函数时必须避免用弥散函数。</p>
+<p>计算 BLA/BOA 并绘制“键长/键级 vs. 键编号”图的例子见第 <a href="sec-4-200-other-functions-part-2.html#420018-%E7%A0%94%E7%A9%B6%E7%89%B9%E5%AE%9A%E8%B7%AF%E5%BE%84%E7%9A%84%E9%94%AE%E9%95%BF%E9%94%AE%E7%BA%A7%E4%BA%A4%E6%9B%BFblaboa%E4%BB%A5%E5%8F%8A%E9%94%AE%E8%A7%92%E4%B8%8E%E4%BA%8C%E9%9D%A2%E8%A7%92%E7%9A%84%E5%8F%98%E5%8C%96">4.200.18</a> 节。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>原子坐标、基函数（可选）</p>
+</blockquote>
+<h2 id="320019-计算轨道或函数的空间离域指数-sdi"><strong>3.200.19 计算轨道或函数的空间离域指数 (SDI)</strong></h2>
+<h3 id="简介"><strong>简介</strong></h3>
+<p>空间离域指数 (SDI, spatial delocalization index) 由 Tian Lu 定义，用于衡量实空间函数 <em>f</em> 的空间离域程度，表示为</p>
+<p><div class="mathdisp" data-mi="39" title="点击复制 TeX">$$
+\begin{gathered}\mathrm{SDI} = \frac{1}{\sqrt{\int \left| f_{\mathrm{norm}}(\mathbf{r}) \right|^{n} \mathrm{d}\mathbf{r}}}\quad\quad f_{\mathrm{norm}}(\mathbf{r}) = \frac{f(\mathbf{r})}{\int \left| f(\mathbf{r}) \right| \mathrm{d}\mathbf{r}}\end{gathered}
+$$</div></p>
+<p>其中 $f_{\mathrm{norm}}$ 是归一化函数。归一化使要比较的函数归一到不同值时比较空间离域程度成为可能。SDI 标准定义中 <em>n</em> = 2。</p>
+<p>SDI 越大，函数在整个三维空间分布越均匀。若函数分布倾向聚集在某些局域区域，则 SDI 必然小。</p>
+<p>指数因子 <em>n</em> 越大，SDI 值区分空间离域程度的能力越强。若 <em>n</em> = 1，则所有函数的 SDI 总为 1.0。</p>
+<p>SDI 的一个关键应用是确定轨道的空间离域程度。此时轨道 <em>i</em> 的 SDI 可写为</p>
+<p><div class="mathdisp" data-mi="40" title="点击复制 TeX">$$
+\begin{gathered}\mathrm{SDI}_{i} = \frac{1}{\sqrt{\int \left| \rho_{i}(\mathbf{r}) \right|^{n} \mathrm{d}\mathbf{r}}}\quad\quad \rho_{i}(\mathbf{r}) = \left| \varphi_{i}(\mathbf{r}) \right|^{2}\end{gathered}
+$$</div></p>
+<p>其中 $\varphi$ 是轨道波函数。通过 SDI 可轻松定量表征轨道的离域特征。它适用于任何轨道，如分子轨道、自然跃迁轨道等。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>用该功能算 SDI 有三种方式：</p>
+<ul>
+<li><p>(1) 对实空间函数算 SDI：会被要求从菜单选择实空间函数，然后计算 SDI。</p>
+</li>
+<li><p>(2) 对轨道波函数的密度算 SDI：会被要求输入要算 SDI 的轨道的编号。输入文件当然应含波函数信息，见第 <a href="sec-2-5-input-files-and-wavefunction-types.html">2.5</a> 节。Multiwfn 打印所有选中轨道的 SDI。</p>
+</li>
+<li><p>(3) 基于内存中的格点数据算 SDI：用该模式，在 Multiwfn 启动时应载入含 <em>f</em> 在均匀分布格点上值的格点数据文件（<em>例如</em> .cub 文件）。若 <em>f</em> 不能被 Multiwfn 直接计算，该模式有用。</p>
+</li>
+</ul>
+<p>对情形 (1) 和 (2)，SDI 用 Becke 多中心积分算法计算，而对情形 (3)，SDI 基于均匀格点计算。</p>
+<p>在该功能中，选项 -1 用于调整指数因子 <em>n</em>。一般不需要调。</p>
+<p>用该功能的例子见第 <a href="sec-4-200-other-functions-part-2.html#420019-%E8%AE%A1%E7%AE%97%E7%A9%BA%E9%97%B4%E7%A6%BB%E5%9F%9F%E6%8C%87%E6%95%B0%E7%9A%84%E4%BE%8B%E5%AD%90">4.200.19</a> 节。</p>
+<h2 id="320020-键级密度-bod-和自然自适应轨道-nado-分析"><strong>3.200.20 键级密度 (BOD) 和自然自适应轨道 (NAdO) 分析</strong></h2>
+<h3 id="1-前言"><strong>1 前言</strong></h3>
+<p>离域化指数 (DI) 的概念已在第 <a href="sec-3-18-fuzzy-atomic-space-analysis.html#3185-%E5%AE%9A%E5%9F%9F%E5%8C%96%E6%8C%87%E6%95%B0-li%E4%B8%8E%E7%A6%BB%E5%9F%9F%E5%8C%96%E6%8C%87%E6%95%B0-di-4-44">3.18.5</a> 节详细介绍。两区域之间的 DI 与两区域之间的电子相关密切相关。本质上，Mayer 键级和模糊键级是分别基于 Hilbert 划分和模糊划分的原子空间算出的 DI。</p>
+<p>DI 是个数值。若能可视化它，将对理解其本质和原子间相互作用很有帮助。在 <em>J. Phys. Chem. A</em>, <strong>124</strong>, 339 (2020) 中，作者提出了一个名为键级密度 (BOD, bond order density) 的实空间函数，它在全空间的积分正是 DI，因此 BOD 直接揭示对 DI 的局域贡献。显然 BOD 必是表征化学键的有用函数。自然自适应轨道 (NAdO, natural adaptive orbital) 是一种与 BOD 密切相关的轨道，它能以轨道图像展示 DI 的来源。我还推广了 BOD/NAdO 的想法，使它们能研究 basin 之间或特定片段之间的相互作用。下面详细介绍 BOD 和 NAdO 的所有细节。</p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>注意 NAdO 与第 <a href="sec-3-17-adaptive-natural-density-partitioning-analysis.html">3.17</a> 节介绍的自适应自然密度划分 (AdNDP, adaptive natural density partitioning) 轨道没有关系！</p>
+</blockquote>
+<h3 id="2-bod-理论"><strong>2 BOD 理论</strong></h3>
+<p>为充分理解 BOA 背后的想法，首先熟悉一些相关概念至关重要。</p>
+<ul>
+<li><p><em>n</em> 阶累积密度</p>
+<p><em>n</em> 阶累积密度 ${\rho}_{\mathrm{C}}^{n}({\mathbf{r}}_{1}, {\mathbf{r}}_{2}\cdots {\mathbf{r}}_{n})$ 已在 <em>Comput. Theor. Chem.</em>, <strong>1003</strong>, 71 (2013) 中详细介绍，它代表 <em>n</em> 阶约化密度 ${\rho}^{n}({\mathbf{r}}_{1}, {\mathbf{r}}_{2}\cdots {\mathbf{r}}_{n})$ 中不能用低阶约化密度表示的部分，因而恰当衡量体系中存在的 <em>n</em> 电子相关。下面给出 ${\rho}_{\mathrm{C}}^{1}$、${\rho}_{\mathrm{C}}^{2}$ 和 ${\rho}_{\mathrm{C}}^{3}$ 的显式表达式（其它阶的表达式见 <em>Comput. Theor. Chem.</em> 论文）。</p>
+</li>
+</ul>
+<p><div class="mathdisp" data-mi="41" title="点击复制 TeX">$$
+\begin{aligned}& \rho_\mathrm{C}^{1}(\mathbf{r}) = \rho(\mathbf{r})\\& \rho_\mathrm{C}^{2}(\mathbf{r}_{1}, \mathbf{r}_{2}) = \rho(\mathbf{r}_{1})\rho(\mathbf{r}_{2}) - \rho^{2}(\mathbf{r}_{1}, \mathbf{r}_{2})\\& \rho_\mathrm{C}^{3}(\mathbf{r}_{1}, \mathbf{r}_{2}, \mathbf{r}_{3}) = \rho(\mathbf{r}_{1})\rho(\mathbf{r}_{2})\rho(\mathbf{r}_{3}) + (1 / 2)\rho^{3}(\mathbf{r}_{1}, \mathbf{r}_{2}, \mathbf{r}_{3})\\& - (1 / 2)\left[ \rho(\mathbf{r}_{1})\rho^{2}(\mathbf{r}_{2}, \mathbf{r}_{3}) + \rho(\mathbf{r}_{2})\rho^{2}(\mathbf{r}_{1}, \mathbf{r}_{3}) + \rho(\mathbf{r}_{3})\rho^{2}(\mathbf{r}_{1}, \mathbf{r}_{2}) \right]\end{aligned}
+$$</div></p>
+<p>  其中 ${\rho}^{2}({\mathbf{r}}_{1}, {\mathbf{r}}_{2})$ 对应第 <a href="sec-2-6-real-space-functions.html">2.6</a> 节介绍的对密度 <em>π</em>。</p>
+<p>  ${\rho}_{\mathrm{C}}^{n}$ 有一个重要特征</p>
+<p><div class="mathdisp" data-mi="42" title="点击复制 TeX">$$
+\rho_\mathrm{C}^{n-1}(\mathbf{r}_{1} \cdots \mathbf{r}_{n-1}) = \int \rho_\mathrm{C}^{n}(\mathbf{r}_{1} \cdots \mathbf{r}_{n}) \mathrm{d}\mathbf{r}_{n}
+$$</div></p>
+<p>  于是，</p>
+<p><div class="mathdisp" data-mi="43" title="点击复制 TeX">$$
+\int \cdots \int \rho_\mathrm{C}^{n}(\mathbf{r}_{1} \cdots \mathbf{r}_{n}) \mathrm{d}\mathbf{r}_{1} \cdots \mathrm{d}\mathbf{r}_{n} = N
+$$</div></p>
+<p>  其中 <em>N</em> 是总电子数。</p>
+<ul>
+<li><p><em>n</em> 中心布居和 DI</p>
+<p><em>n</em> 中心布居定义为</p>
+</li>
+</ul>
+<p><div class="mathdisp" data-mi="44" title="点击复制 TeX">$$
+N(A, B \cdots n) = \int_{A} \int_{B} \cdots \int_{n} \rho_\mathrm{C}^{n}(\mathbf{r}_{1} \cdots \mathbf{r}_{n}) \mathrm{d}\mathbf{r}_{1} \, \mathrm{d}\mathbf{r}_{2} \cdots \mathrm{d}\mathbf{r}_{n}
+$$</div></p>
+<p>  积分下标表示积分区域，一般对应原子空间。适当归一化后，<em>n</em> 中心布居可称为 <em>n</em> 中心离域化指数以定量多中心离域程度。</p>
+<p>  重要的是注意 ${\rho}_{\mathrm{C}}^{2}$ 恰好对应著名交换相关密度 Γ$_{XC}$ 的负值，其积分直接定义 DI (<em>δ</em>)：</p>
+<p><div class="mathdisp" data-mi="45" title="点击复制 TeX">$$
+\delta(A, B) = -2 \int_{A} \int_{B} \Gamma_{\mathrm{XC}}(\mathbf{r}_{1}, \mathbf{r}_{2}) \mathrm{d}\mathbf{r}_{1} \, \mathrm{d}\mathbf{r}_{2} = 2 \int_{A} \int_{B} \rho_\mathrm{C}^{2}(\mathbf{r}_{1}, \mathbf{r}_{2}) \mathrm{d}\mathbf{r}_{1} \, \mathrm{d}\mathbf{r}_{2}
+$$</div></p>
+<p>  DI 的详细介绍见第 <a href="sec-3-18-fuzzy-atomic-space-analysis.html#3185-%E5%AE%9A%E5%9F%9F%E5%8C%96%E6%8C%87%E6%95%B0-li%E4%B8%8E%E7%A6%BB%E5%9F%9F%E5%8C%96%E6%8C%87%E6%95%B0-di-4-44">3.18.5</a> 节。显然，<em>δ</em>(<em>A</em>,<em>B</em>) 本质对应 <em>2</em> 中心布居（仅差 2 因子）。</p>
+<ul>
+<li><p>BOD 的定义</p>
+<p>区域 <em>A</em> 与 <em>B</em> 之间的单电子函数 <strong>BOD</strong> 定义为</p>
+</li>
+</ul>
+<p><div class="mathdisp" data-mi="46" title="点击复制 TeX">$$
+\mathrm{BOD}_{AB}(\mathbf{r}) = 2\rho_{AB}(\mathbf{r})
+$$</div></p>
+<p>  其中</p>
+<p><div class="mathdisp" data-mi="47" title="点击复制 TeX">$$
+\rho_{AB}(\mathbf{r}) = \int_{A} \int_{B} \rho_\mathrm{C}^{3}(\mathbf{r}_{1}, \mathbf{r}_{2}, \mathbf{r}_{3}) \mathrm{d}\mathbf{r}_{2} \, \mathrm{d}\mathbf{r}_{3}
+$$</div></p>
+<p>  对闭壳情形，单行列式波函数（因而波函数中没有 Coulomb 相关的显式表示）的工作方程为</p>
+<p><div class="mathdisp" data-mi="48" title="点击复制 TeX">$$
+\begin{aligned}& \rho_{AB}(\mathbf{r}) = \sum_{i}^{\mathrm{occ}} \sum_{j}^{\mathrm{occ}} \varphi_{i}^{*}(\mathbf{r}) D_{i,j}^{AB} \varphi_{j}(\mathbf{r})\\& \mathbf{D}^{AB} = \mathbf{S}(A)\mathbf{S}(B) + \mathbf{S}(B)\mathbf{S}(A)\end{aligned}
+$$</div></p>
+<p>  其中 <em>i</em> 和 <em>j</em> 是双占据空间轨道，$\varphi$ 是轨道波函数。在 Multiwfn 中，计算中可采用以下 <strong>S</strong> 的定义：</p>
+<ul>
+<li><p>原子重叠矩阵 (AOM)：见第 <a href="sec-3-18-fuzzy-atomic-space-analysis.html#3184-%E5%8E%9F%E5%AD%90%E4%BA%A4%E5%8F%A0%E7%9F%A9%E9%98%B5%E4%B8%8E%E7%89%87%E6%AE%B5%E4%BA%A4%E5%8F%A0%E7%9F%A9%E9%98%B5-3-33">3.18.4</a> 节</p>
+</li>
+<li><p>片段重叠矩阵 (FOM)，定义为所涉原子的 AOM 之和</p>
+</li>
+</ul>
+<p>BOD 与 DI 和定域化指数 (LI, <em>λ</em>) 有如下重要关系</p>
+<p><div class="mathdisp" data-mi="49" title="点击复制 TeX">$$
+\begin{aligned} \int \mathrm{BOD}_{AB}(\mathbf{r}) \mathrm{d}\mathbf{r} &= \delta(A, B)\\ (1 / 2) \int \mathrm{BOD}_{AA}(\mathbf{r}) \mathrm{d}\mathbf{r} &= \lambda(A)\end{aligned}
+$$</div></p>
+<p>显然，BOD 能揭示每个空间位置对 DI 和 LI 的贡献。</p>
+<p>对非限制性开壳单行列式波函数，<em>α</em> 和 <em>β</em> 自旋应分别考虑：</p>
+<p><div class="mathdisp" data-mi="50" title="点击复制 TeX">$$
+\mathrm{BOD}_{AB}(\mathbf{r}) = \mathrm{BOD}_{AB}^{\alpha}(\mathbf{r}) + \mathrm{BOD}_{AB}^{\beta}(\mathbf{r})
+$$</div></p>
+<p><em>σ</em> 自旋的工作方程为</p>
+<p><div class="mathdisp" data-mi="51" title="点击复制 TeX">$$
+\begin{aligned}& \mathrm{BOD}_{AB}^{\sigma}(\mathbf{r}) = 2\rho_{AB}^{\sigma}(\mathbf{r}) = \sum_{i \in \sigma}^{\mathrm{occ}} \sum_{j \in \sigma}^{\mathrm{occ}} \varphi_{i}^{*}(\mathbf{r}) D_{i,j}^{\sigma,AB} \varphi_{j}(\mathbf{r})\\& \mathbf{D}^{\sigma,AB} = \mathbf{S}^{\sigma}(A)\mathbf{S}^{\sigma}(B) + \mathbf{S}^{\sigma}(B)\mathbf{S}^{\sigma}(A)\\& S_{i,j}^{\sigma}(A) = \int_{A} \varphi_{i}^{*}(\mathbf{r})\varphi_{j}(\mathbf{r}) \mathrm{d}\mathbf{r} \quad\quad i, j \in \sigma\end{aligned}
+$$</div></p>
+<p>相关关系：</p>
+<p><div class="mathdisp" data-mi="52" title="点击复制 TeX">$$
+\begin{aligned} \int \mathrm{BOD}_{AB}^{\sigma}(\mathbf{r}) \mathrm{d}\mathbf{r} &= \delta^{\sigma}(A, B)\\ (1 / 2) \int \mathrm{BOD}_{AA}^{\sigma}(\mathbf{r}) \mathrm{d}\mathbf{r} &= \lambda^{\sigma}(A)\end{aligned}
+$$</div></p>
+<p>事实上，考虑到（轨道正交归一条件）这些关系很容易证明</p>
+<p><div class="mathdisp" data-mi="53" title="点击复制 TeX">$$
+\begin{aligned} \int \mathrm{BOD}_{AB}^{\sigma}(\mathbf{r}) \mathrm{d}\mathbf{r} &= \sum_{i \in \sigma}^{\mathrm{occ}} \sum_{j \in \sigma}^{\mathrm{occ}} D_{i,j}^{\sigma,AB} \int \varphi_{i}^{*}(\mathbf{r})\varphi_{j}(\mathbf{r}) \mathrm{d}\mathbf{r} = \sum_{i \in \sigma}^{\mathrm{occ}} D_{i,i}^{\sigma,AB}\\ D_{i,j}^{\sigma,AB} &= \sum_{k \in \sigma}^{\mathrm{occ}} \left[ S_{i,k}^{\sigma}(A)S_{k,j}^{\sigma}(B) + S_{i,k}^{\sigma}(B)S_{k,j}^{\sigma}(A) \right]\end{aligned}
+$$</div></p>
+<p>有（注意 <strong>S</strong> 是对称矩阵）</p>
+<p><div class="mathdisp" data-mi="54" title="点击复制 TeX">$$
+\begin{aligned} \int \mathrm{BOD}_{AB}^{\sigma}(\mathbf{r}) \mathrm{d}\mathbf{r} &= \sum_{i \in \sigma}^{\mathrm{occ}} \sum_{k \in \sigma}^{\mathrm{occ}} \left[ S_{i,k}^{\sigma}(A)S_{k,i}^{\sigma}(B) + S_{i,k}^{\sigma}(B)S_{k,i}^{\sigma}(A) \right]\\ &= \sum_{i \in \sigma}^{\mathrm{occ}} \sum_{k \in \sigma}^{\mathrm{occ}} \left[ S_{i,k}^{\sigma}(A)S_{i,k}^{\sigma}(B) + S_{i,k}^{\sigma}(A)S_{i,k}^{\sigma}(B) \right]\\ &= 2 \sum_{i \in \sigma}^{\mathrm{occ}} \sum_{k \in \sigma}^{\mathrm{occ}} S_{i,k}^{\sigma}(A)S_{i,k}^{\sigma}(B)\end{aligned}
+$$</div></p>
+<p>这对应第 <a href="sec-3-18-fuzzy-atomic-space-analysis.html#3185-%E5%AE%9A%E5%9F%9F%E5%8C%96%E6%8C%87%E6%95%B0-li%E4%B8%8E%E7%A6%BB%E5%9F%9F%E5%8C%96%E6%8C%87%E6%95%B0-di-4-44">3.18.5</a> 节给出的 $δ^{σ}$ 表达式。</p>
+<p>原则上 BOD 可用于多组态波函数，但目前 Multiwfn 只支持单行列式波函数的 BOD 分析。</p>
+<h3 id="3-自然自适应轨道-nado"><strong>3 自然自适应轨道 (NAdO)</strong></h3>
+<p><em>σ</em> 自旋的 BOD 也可用 <em>σ</em> 自旋的自然自适应轨道 (NAdOs, $\varphi$ ) 表示：</p>
+<p><div class="mathdisp" data-mi="55" title="点击复制 TeX">$$
+\rho_{AB}^{\sigma}(\mathbf{r}) = \sum_{i \in \sigma} \varphi_{i}^{*}(\mathbf{r}) n_{AB}^{\sigma,i} \varphi_{i}(\mathbf{r})
+$$</div></p>
+<p>${n}_{AB}^{\sigma,i}$ 是 <em>σ</em> 自旋 NAdO <em>i</em> 的本征值。显然，若把本征值视为占据数，BOD 等价于基于 NAdO 算出的电子密度。</p>
+<p>区域 <em>A</em> 与 <em>B</em> 之间的 NAdO 很容易构建。首先对角化 <strong>D</strong><em>$^{AB}$</em> 得本征值矩阵 <strong>n</strong> 和本征矢矩阵 <strong>U</strong></p>
+<p><div class="mathdisp" data-mi="56" title="点击复制 TeX">$$
+\mathbf{U}^{-1}\mathbf{D}^{AB}\mathbf{U} = \mathbf{n}
+$$</div></p>
+<p>MO 可通过幺正变换矩阵 <strong>U</strong> 变换为 NAdO</p>
+<p><div class="mathdisp" data-mi="57" title="点击复制 TeX">$$
+\mathbf{C}_{\mathrm{occ}}^{\mathrm{NAdO}} = \mathbf{C}_{\mathrm{occ}}^{\mathrm{MO}}\mathbf{U}
+$$</div></p>
+<p>其中 ${\mathbf{C}}_{\mathrm{occ}}^{\mathrm{MO}}$ 和 ${\mathbf{C}}_{\mathrm{occ}}^{\mathrm{NAdO}}$ 分别是基函数下占据 MO 和 NAdO 的系数矩阵，不同列对应不同轨道。假设有 <em>m</em> 个占据 MO，则二者都有 <em>m</em> 列。</p>
+<p>注意对非限制性波函数，α 和 β NAdO 分别基于 α 和 β 占据 MO 用上述方式生成。</p>
+<p>尽管 NAdO 不是 Fock/KS 算符的本征函数，其能量仍可有意义地作为 Fock/KS 算符的期望值计算。</p>
+<h3 id="4-bodnado-分析模块的用法"><strong>4 BOD/NAdO 分析模块的用法</strong></h3>
+<p>该模块对应主功能 200 的子功能 20，也可通过键级分析模块（主功能 9）的子功能 20 进入。如界面所示，它可做三种分析：</p>
+<ul>
+<li><p>(1) 基于原子重叠矩阵 (AOM) 的原子间相互作用分析：AOM 从文件载入，可由模糊原子空间分析模块或 basin 分析模块（AIM 划分情形）生成。然后会被要求输入两个原子编号。</p>
+</li>
+<li><p>(2) 基于 basin 重叠矩阵 (BOM) 的 basin 间相互作用分析：BOM 从文件载入，可由 basin 分析模块生成（任何 basin 都可用）。然后会被要求输入两个 basin 编号。</p>
+</li>
+<li><p>(3) 基于片段重叠矩阵 (FOM) 的片段间相互作用分析，FOM 有两种提供方式，分别对应选项 3 和 4</p>
+<ul>
+<li><p>方式 1：提供含 AOM 的文件（与情形 (1) 完全相同），再输入两片段中原子的编号。然后基于 AOM 生成 FOM。</p>
+</li>
+<li><p>方式 2：直接提供含两片段 FOM 的文件。该文件可直接由主功能 15 的子功能 33 生成，详见第 <a href="sec-3-18-fuzzy-atomic-space-analysis.html#3184-%E5%8E%9F%E5%AD%90%E4%BA%A4%E5%8F%A0%E7%9F%A9%E9%98%B5%E4%B8%8E%E7%89%87%E6%AE%B5%E4%BA%A4%E5%8F%A0%E7%9F%A9%E9%98%B5-3-33">3.18.4</a> 节。若两片段只涉及小部分原子，且发现用主功能 15 的子功能 3 生成 AOM 的计算代价太高，则建议用该方式提供 FOM，因为此时用主功能 15 的子功能 33 生成两个 FOM 的计算代价显著更低。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>然后 NAdO 生成并导出到当前文件夹下的 <em>NAdOs.mwfn</em>，其中输入波函数文件中原来占据的轨道现已被 NAdO 取代，其占据数对应 NAdO 本征值，因而占据数之和恰等于 DI。<em>NAdOs.mwfn</em> 中的非占据轨道仍是原来的。</p>
+<p>接下来，若想直接查看 BOD 和 NAdO，应选 &quot;y&quot; 载入 <em>NAdOs.mwfn</em>，然后例如通过主功能 0 可视化 NAdO 或通过主功能 8 做轨道组成分析。注意如上所述电子密度当前对应 BOD，因此例如若想绘制 BOD 的等值面，可用主功能 5 计算并绘制电子密度，所得图即对应 BOD 等值面。</p>
+<p>默认不计算 NAdO 能量而简单设为零。若想得到能量，应在进入 BOD/NAdO 功能后选选项“-1 Toggle if calculating energies for NAdOs”，再选两种提供 Fock 矩阵 <strong>F</strong> 的方式之一：(1) 基于 MO 的能量和系数矩阵通过 <strong>F</strong>=<strong>SCEC</strong>⁻¹ 关系生成 (2) 输入含 <strong>F</strong> 的文件的路径，然后载入该矩阵，详见本手册<a href="sec-6-7-about-providing-fock-ks-matrix-to-multiwfn.html">附录 7</a>。之后，生成 NAdO 时会计算 NAdO 能量并记录到 <em>NAdOs.mwfn</em>。</p>
+<p>用 BOD 和 NAdO 分析实际化学体系的例子见第 <a href="sec-4-200-other-functions-part-2.html#420020-%E7%94%A8%E9%94%AE%E7%BA%A7%E5%AF%86%E5%BA%A6%E4%B8%8E%E8%87%AA%E7%84%B6%E9%80%82%E5%BA%94%E6%80%A7%E8%BD%A8%E9%81%93%E7%A0%94%E7%A9%B6%E5%8C%96%E5%AD%A6%E9%94%AE">4.200.20</a> 节。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>原子坐标、基函数。</p>
+</blockquote>
+<h2 id="320021-在占据轨道之间做-löwdin-正交化"><strong>3.200.21 在占据轨道之间做 Löwdin 正交化</strong></h2>
+<p>有时占据轨道彼此不正交归一。例如通过第 <a href="sec-3-100-other-functions-part-1.html#310019-%E9%80%9A%E8%BF%87%E7%BB%84%E5%90%88%E7%A2%8E%E7%89%87%E6%B3%A2%E5%87%BD%E6%95%B0%E7%94%9F%E6%88%90%E6%96%B0%E6%B3%A2%E5%87%BD%E6%95%B0generate-new-wavefunction-by-combining-fragment-wavefunctions">3.100.19</a> 节描述的功能组合多个单体波函数得到的波函数就是一例。本功能在占据轨道之间做 Löwdin 正交化，使它们形成正交归一集。内存中的系数矩阵和密度矩阵在该功能中更新。</p>
+<p>该功能只支持单行列式波函数的限制性闭壳和非限制性开壳形式。对后者，分别在 alpha 占据轨道之间和 beta 占据轨道之间做 Löwdin 正交化。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>原子坐标、基函数。</p>
+</blockquote>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-3-200-other-functions-part-2";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script><script>const MATHS=["\\boldsymbol{\\mu} = \\boldsymbol{\\mu}^{\\mathrm{nuc}} + \\boldsymbol{\\mu}^{\\mathrm{ele}} = \\sum_{A} Z_{A}\\mathbf{R}_{A} - \\sum_{i}\\sum_{j} P_{i,j}\\left\\langle \\chi_{i} \\left| \\mathbf{r} \\right| \\chi_{j} \\right\\rangle","\\boldsymbol{\\mu} = \\sum_{A} \\boldsymbol{\\mu}_{A}^{\\mathrm{tot}} + \\sum_{A}\\sum_{B>A} \\boldsymbol{\\mu}_{AB}^{\\mathrm{tot}} = \\sum_{A} \\left( \\boldsymbol{\\mu}_{A}^{\\mathrm{nuc}} + \\boldsymbol{\\mu}_{A}^{\\mathrm{pop}} + \\boldsymbol{\\mu}_{A}^{\\mathrm{dip}} \\right) + \\sum_{A}\\sum_{B>A} \\left( \\boldsymbol{\\mu}_{AB}^{\\mathrm{pop}} + \\boldsymbol{\\mu}_{AB}^{\\mathrm{dip}} \\right)","\\boldsymbol{\\mu}_{A}^{\\mathrm{nuc}} = Z_{A}\\mathbf{R}_{A}","\\boldsymbol{\\mu}_{A}^{\\mathrm{pop}} = -p_{A}^{\\mathrm{loc}}\\mathbf{R}_{A}\\quad\\quad p_{A}^{\\mathrm{loc}} = \\sum_{i \\in A}\\sum_{j \\in A} P_{i,j}\\left\\langle \\chi_{i} \\left| \\chi_{j} \\right. \\right\\rangle","\\begin{aligned}\\boldsymbol{\\mu}_{A}^{\\mathrm{dip}} &= -\\sum_{i \\in A}\\sum_{j \\in A} P_{i,j}\\left\\langle \\chi_{i} \\left| \\mathbf{r}_{A} \\right| \\chi_{j} \\right\\rangle\\quad\\quad \\mathrm{where}\\ \\ \\mathbf{r}_{A} = \\mathbf{r} - \\mathbf{R}_{A}\\\\ &= -\\sum_{i \\in A}\\sum_{j \\in A} P_{i,j}\\left\\langle \\chi_{i} \\left| \\mathbf{r} \\right| \\chi_{j} \\right\\rangle - \\boldsymbol{\\mu}_{A}^{\\mathrm{pop}}\\end{aligned}","\\boldsymbol{\\mu}_{AB}^{\\mathrm{pop}} = -p_{AB}\\mathbf{R}_{AB}\\quad\\quad p_{AB} = 2\\sum_{i \\in A}\\sum_{j \\in B} P_{i,j}\\left\\langle \\chi_{i} \\left| \\chi_{j} \\right. \\right\\rangle\\quad\\quad \\mathbf{R}_{AB} = \\left( \\mathbf{R}_{A} + \\mathbf{R}_{B} \\right)/2","\\begin{aligned}\\boldsymbol{\\mu}_{AB}^{\\mathrm{dip}} &= -2\\sum_{i \\in A}\\sum_{j \\in B} P_{i,j}\\left\\langle \\chi_{i} \\left| \\mathbf{r}_{AB} \\right| \\chi_{j} \\right\\rangle\\quad\\quad \\mathrm{where}\\ \\ \\mathbf{r}_{AB} = \\mathbf{r} - \\mathbf{R}_{AB}\\\\ &= -2\\sum_{i \\in A}\\sum_{j \\in B} P_{i,j}\\left\\langle \\chi_{i} \\left| \\mathbf{r} \\right| \\chi_{j} \\right\\rangle - \\boldsymbol{\\mu}_{AB}^{\\mathrm{pop}}\\end{aligned}","\\boldsymbol{\\mu} = \\sum_{A} \\left( \\boldsymbol{\\mu}_{A}^{\\mathrm{nuc}} + \\boldsymbol{\\mu}_{A}^{,\\mathrm{pop}} + \\boldsymbol{\\mu}_{A}^{,\\mathrm{dip}} \\right)","\\boldsymbol{\\mu}_{A}^{,\\mathrm{pop}} = -p_{A}^{\\mathrm{Mul}}\\mathbf{R}_{A}\\quad\\quad p_{A}^{\\mathrm{Mul}} = \\sum_{B}\\sum_{i \\in B}\\sum_{j \\in B} P_{i,j}\\left\\langle \\chi_{i} \\left| \\chi_{j} \\right. \\right\\rangle","\\boldsymbol{\\mu}_{A}^{,\\mathrm{dip}} = -\\sum_{B}\\sum_{i \\in B}\\sum_{j \\in B} P_{i,j}\\left\\langle \\chi_{i} \\left| \\mathbf{r}_{A} \\right| \\chi_{j} \\right\\rangle = -\\sum_{B}\\sum_{i \\in B}\\sum_{j \\in B} P_{i,j}\\left\\langle \\chi_{i} \\left| \\mathbf{r} \\right| \\chi_{j} \\right\\rangle - \\boldsymbol{\\mu}_{A}^{\\mathrm{Mul}}","-\\sum_{i}\\sum_{j} P_{i,j}\\left\\langle \\chi_{i} \\left| z \\right| \\chi_{j} \\right\\rangle","RDF(r) = \\int f(r,\\Omega) r^{2} \\mathrm{d}\\Omega","I(r^{\\prime}) = \\int_{r_{\\mathrm{low}}}^{r^{\\prime}} RDF(r) \\mathrm{d}r = \\int_{r_{\\mathrm{low}}}^{r^{\\prime}} \\int f(r,\\Omega) r^{2} \\mathrm{d}\\Omega\\, \\mathrm{d}r","f^{\\mathrm{sph}}(r) = \\frac{RDF(r)}{4\\pi r^{2}}","\\sum_{j=\\mathrm{istart2}}^{\\mathrm{iend2}} \\left\\langle i \\middle| j \\right\\rangle^{2} \\times 100\\% = 100\\%","\\left\\langle R \\right\\rangle = \\frac{1}{n_{\\mathrm{b}}} \\sum_{i>j} R_{ij}","CN = \\frac{1}{n} \\sum_{i} N_{i}","\\mathbf{\\boldsymbol{\\mu}}_{ij} = \\mathbf{\\boldsymbol{\\mu}}_{ji} = \\left\\langle \\varphi_{i} \\middle| -\\mathbf{r} \\middle| \\varphi_{j} \\right\\rangle","\\mathbf{M}_{ij} = i \\left\\langle \\varphi_{i} \\middle| \\mathbf{r} \\times \\nabla \\middle| \\varphi_{j} \\right\\rangle","\\mathbf{v}_{ij} = i \\left\\langle \\varphi_{i} \\middle| \\nabla \\middle| \\varphi_{j} \\right\\rangle","\\begin{gathered}\\mathbf{M}_{ii} = 0 \\quad\\quad \\mathbf{M}_{ij} = {\\mathbf{M}_{ji}}^{*} = -\\mathbf{M}_{ji} \\\\\\mathbf{v}_{ii} = 0 \\quad\\quad \\mathbf{v}_{ij} = {\\mathbf{v}_{ji}}^{*} = -\\mathbf{v}_{ji}\\end{gathered}","K_{ij} = -\\frac{1}{2} \\left\\langle \\varphi_{i} \\middle| \\nabla^{2} \\middle| \\varphi_{j} \\right\\rangle \\quad\\quad S_{ij} = \\left\\langle \\varphi_{i} \\middle| \\varphi_{j} \\right\\rangle","\\mathbf{r}_\\mathrm{c} = \\frac{\\int \\mathbf{r} \\times f(\\mathbf{r}) \\mathrm{d}\\mathbf{r}}{\\int f(\\mathbf{r}) \\mathrm{d}\\mathbf{r}}","\\mathbf{\\boldsymbol{\\mu}} = \\begin{bmatrix} \\mu_{x} \\\\ \\mu_{y} \\\\ \\mu_{z} \\end{bmatrix} = \\int \\begin{bmatrix} x \\\\ y \\\\ z \\end{bmatrix} f(\\mathbf{r}) \\mathrm{d}\\mathbf{r}","\\mathbf{\\Theta} = \\begin{bmatrix} \\Theta_{xx} & \\Theta_{xy} & \\Theta_{xz} \\\\ \\Theta_{yx} & \\Theta_{yy} & \\Theta_{yz} \\\\ \\Theta_{zx} & \\Theta_{zy} & \\Theta_{zz} \\end{bmatrix} = \\int \\begin{bmatrix} x^{2} & xy & xz \\\\ yx & y^{2} & yz \\\\ zx & zy & z^{2} \\end{bmatrix} f(\\mathbf{r}) \\mathrm{d}\\mathbf{r}","\\mathrm{EI}_{A} = \\frac{\\sum_{i}^{\\mathrm{val}} \\varepsilon_{i} \\eta_{i} \\Theta_{i,A}}{\\sum_{i}^{\\mathrm{val}} \\eta_{i} \\Theta_{i,A}}","\\mathrm{BPI}_{AB} = \\left( \\mathrm{EI}_{A} - \\mathrm{EI}_{A}^{\\mathrm{ref}} \\right) - \\left( \\mathrm{EI}_{B} - \\mathrm{EI}_{B}^{\\mathrm{ref}} \\right)","\\Delta\\rho(\\mathbf{r}) \\approx \\sum_{i} p_{i} \\left| \\varphi_{i}(\\mathbf{r}) \\right|^{2}","F = \\int \\left[ \\Delta\\rho(\\mathbf{r}) - \\sum_{i} p_{i} \\left| \\varphi_{i}(\\mathbf{r}) \\right|^{2} \\right]^{2} \\mathrm{d}\\mathbf{r} + \\lambda \\left[ \\sum_{i} p_{i} - P \\right]","F = \\Delta_{V} \\sum_{\\mu} \\left[ \\Delta\\rho(\\mathbf{r}) - \\sum_{i} p_{i} \\left| \\varphi_{i}(\\mathbf{r}) \\right|^{2} \\right]^{2} + \\lambda \\left[ \\sum_{i} p_{i} - P \\right]","\\begin{gathered} \\frac{\\partial F}{\\partial p_{i}} = 0 \\quad\\quad i = \\{1,2,3...\\} \\\\ \\sum_{i} p_{i} = P \\end{gathered}","\\frac{\\partial F}{\\partial p_{i}} = 0 \\Rightarrow \\sum_{j} p_{j} \\sum_{\\mu} \\left| \\varphi_{i}(\\mathbf{r}_{\\mu}) \\right|^{2} \\left| \\varphi_{j}(\\mathbf{r}_{\\mu}) \\right|^{2} + \\lambda = \\sum_{\\mu} \\left| \\varphi_{i}(\\mathbf{r}_{\\mu}) \\right|^{2} \\Delta\\rho(\\mathbf{r}_{\\mu})","\\begin{gathered} \\begin{bmatrix} A_{1,1} & \\cdots & A_{1,N} & 1 \\\\ \\vdots & \\ddots & \\vdots & \\vdots \\\\ A_{N,1} & \\cdots & A_{N,N} & 1 \\\\ 1 & 1 & 1 & 0 \\end{bmatrix} \\begin{bmatrix} p_{1} \\\\ \\vdots \\\\ p_{N} \\\\ \\lambda \\end{bmatrix} = \\begin{bmatrix} B_{1} \\\\ \\vdots \\\\ B_{N} \\\\ P \\end{bmatrix} \\\\ A_{i,j} = A_{j,i} = \\sum_{\\mu} \\left| \\varphi_{i}(\\mathbf{r}_{\\mu}) \\right|^{2} \\left| \\varphi_{j}(\\mathbf{r}_{\\mu}) \\right|^{2} \\\\ B_{i} = \\sum_{\\mu} \\left| \\varphi_{i}(\\mathbf{r}_{\\mu}) \\right|^{2} \\Delta\\rho(\\mathbf{r}_{\\mu}) \\end{gathered}","\\begin{gathered} \\mathrm{definition\\ 1}: \\int \\left| \\Delta\\rho(\\mathbf{r}) - \\sum_{i} p_{i} \\left| \\varphi_{i}(\\mathbf{r}) \\right|^{2} \\right| \\mathrm{d}\\mathbf{r} \\\\ \\mathrm{definition\\ 2}: \\int \\left( \\Delta\\rho(\\mathbf{r}) - \\sum_{i} p_{i} \\left| \\varphi_{i}(\\mathbf{r}) \\right|^{2} \\right)^{2} \\mathrm{d}\\mathbf{r} \\end{gathered}","\\begin{gathered} q_{\\mathrm{att}} = \\int_{\\lambda_{2}(\\mathbf{r}) < 0} \\rho^{n}(\\mathbf{r}) \\mathrm{d}\\mathbf{r} \\quad\\quad \\mathrm{attractive\\ effect} \\\\ q_{\\mathrm{rep}} = \\int_{\\lambda_{2}(\\mathbf{r}) > 0} \\rho^{n}(\\mathbf{r}) \\mathrm{d}\\mathbf{r} \\quad\\quad \\mathrm{repulsive\\ effect} \\\\ q_{\\mathrm{bind}} = -\\left( q_{\\mathrm{att}} - q_{\\mathrm{rep}} \\right) \\end{gathered}","\\begin{aligned} I_{\\mathrm{D}} &= \\frac{1}{4} \\sum_{i} \\left\\{ \\left[ \\eta_{i}(1-\\eta_{i}) \\right]^{1/2} - 2\\eta_{i}(1-\\eta_{i}) \\right\\} \\\\ I_{\\mathrm{ND}} &= \\frac{1}{2} \\sum_{i} \\eta_{i}(1-\\eta_{i}) \\end{aligned}","I_{\\mathrm{T}} = I_{\\mathrm{D}} + I_{\\mathrm{ND}} = \\frac{1}{4} \\sum_{i} \\sqrt{\\eta_{i}(1-\\eta_{i})}","\\begin{gathered} \\left( ii \\middle| jj \\right) = \\int\\!\\!\\int \\frac{\\varphi_{i}^{*}(\\mathbf{r}_{1})\\varphi_{i}(\\mathbf{r}_{1})\\varphi_{j}^{*}(\\mathbf{r}_{2})\\varphi_{j}(\\mathbf{r}_{2})}{r_{12}} \\mathrm{d}\\mathbf{r}_{1} \\mathrm{d}\\mathbf{r}_{2} \\\\ \\left( ij \\middle| ji \\right) = \\int\\!\\!\\int \\frac{\\varphi_{i}^{*}(\\mathbf{r}_{1})\\varphi_{j}(\\mathbf{r}_{1})\\varphi_{j}^{*}(\\mathbf{r}_{2})\\varphi_{i}(\\mathbf{r}_{2})}{r_{12}} \\mathrm{d}\\mathbf{r}_{1} \\mathrm{d}\\mathbf{r}_{2} \\end{gathered}","\\begin{gathered} \\left( ii \\middle| jj \\right) = (d_{\\mathrm{x}} d_{\\mathrm{y}} d_{\\mathrm{z}})^{2} \\sum_{k} \\varphi_{i}^{2}(\\mathbf{r}_{k}) \\sum_{l \\neq k} \\frac{\\varphi_{j}^{2}(\\mathbf{r}_{l})}{\\left| \\mathbf{r}_{l} - \\mathbf{r}_{k} \\right|} \\\\ \\left( ij \\middle| ji \\right) = (d_{\\mathrm{x}} d_{\\mathrm{y}} d_{\\mathrm{z}})^{2} \\sum_{k} \\varphi_{i}(\\mathbf{r}_{k})\\varphi_{j}(\\mathbf{r}_{k}) \\sum_{l \\neq k} \\frac{\\varphi_{i}(\\mathbf{r}_{l})\\varphi_{j}(\\mathbf{r}_{l})}{\\left| \\mathbf{r}_{l} - \\mathbf{r}_{k} \\right|} \\end{gathered}","\\begin{gathered}\\mathrm{SDI} = \\frac{1}{\\sqrt{\\int \\left| f_{\\mathrm{norm}}(\\mathbf{r}) \\right|^{n} \\mathrm{d}\\mathbf{r}}}\\quad\\quad f_{\\mathrm{norm}}(\\mathbf{r}) = \\frac{f(\\mathbf{r})}{\\int \\left| f(\\mathbf{r}) \\right| \\mathrm{d}\\mathbf{r}}\\end{gathered}","\\begin{gathered}\\mathrm{SDI}_{i} = \\frac{1}{\\sqrt{\\int \\left| \\rho_{i}(\\mathbf{r}) \\right|^{n} \\mathrm{d}\\mathbf{r}}}\\quad\\quad \\rho_{i}(\\mathbf{r}) = \\left| \\varphi_{i}(\\mathbf{r}) \\right|^{2}\\end{gathered}","\\begin{aligned}& \\rho_\\mathrm{C}^{1}(\\mathbf{r}) = \\rho(\\mathbf{r})\\\\& \\rho_\\mathrm{C}^{2}(\\mathbf{r}_{1}, \\mathbf{r}_{2}) = \\rho(\\mathbf{r}_{1})\\rho(\\mathbf{r}_{2}) - \\rho^{2}(\\mathbf{r}_{1}, \\mathbf{r}_{2})\\\\& \\rho_\\mathrm{C}^{3}(\\mathbf{r}_{1}, \\mathbf{r}_{2}, \\mathbf{r}_{3}) = \\rho(\\mathbf{r}_{1})\\rho(\\mathbf{r}_{2})\\rho(\\mathbf{r}_{3}) + (1 / 2)\\rho^{3}(\\mathbf{r}_{1}, \\mathbf{r}_{2}, \\mathbf{r}_{3})\\\\& - (1 / 2)\\left[ \\rho(\\mathbf{r}_{1})\\rho^{2}(\\mathbf{r}_{2}, \\mathbf{r}_{3}) + \\rho(\\mathbf{r}_{2})\\rho^{2}(\\mathbf{r}_{1}, \\mathbf{r}_{3}) + \\rho(\\mathbf{r}_{3})\\rho^{2}(\\mathbf{r}_{1}, \\mathbf{r}_{2}) \\right]\\end{aligned}","\\rho_\\mathrm{C}^{n-1}(\\mathbf{r}_{1} \\cdots \\mathbf{r}_{n-1}) = \\int \\rho_\\mathrm{C}^{n}(\\mathbf{r}_{1} \\cdots \\mathbf{r}_{n}) \\mathrm{d}\\mathbf{r}_{n}","\\int \\cdots \\int \\rho_\\mathrm{C}^{n}(\\mathbf{r}_{1} \\cdots \\mathbf{r}_{n}) \\mathrm{d}\\mathbf{r}_{1} \\cdots \\mathrm{d}\\mathbf{r}_{n} = N","N(A, B \\cdots n) = \\int_{A} \\int_{B} \\cdots \\int_{n} \\rho_\\mathrm{C}^{n}(\\mathbf{r}_{1} \\cdots \\mathbf{r}_{n}) \\mathrm{d}\\mathbf{r}_{1} \\, \\mathrm{d}\\mathbf{r}_{2} \\cdots \\mathrm{d}\\mathbf{r}_{n}","\\delta(A, B) = -2 \\int_{A} \\int_{B} \\Gamma_{\\mathrm{XC}}(\\mathbf{r}_{1}, \\mathbf{r}_{2}) \\mathrm{d}\\mathbf{r}_{1} \\, \\mathrm{d}\\mathbf{r}_{2} = 2 \\int_{A} \\int_{B} \\rho_\\mathrm{C}^{2}(\\mathbf{r}_{1}, \\mathbf{r}_{2}) \\mathrm{d}\\mathbf{r}_{1} \\, \\mathrm{d}\\mathbf{r}_{2}","\\mathrm{BOD}_{AB}(\\mathbf{r}) = 2\\rho_{AB}(\\mathbf{r})","\\rho_{AB}(\\mathbf{r}) = \\int_{A} \\int_{B} \\rho_\\mathrm{C}^{3}(\\mathbf{r}_{1}, \\mathbf{r}_{2}, \\mathbf{r}_{3}) \\mathrm{d}\\mathbf{r}_{2} \\, \\mathrm{d}\\mathbf{r}_{3}","\\begin{aligned}& \\rho_{AB}(\\mathbf{r}) = \\sum_{i}^{\\mathrm{occ}} \\sum_{j}^{\\mathrm{occ}} \\varphi_{i}^{*}(\\mathbf{r}) D_{i,j}^{AB} \\varphi_{j}(\\mathbf{r})\\\\& \\mathbf{D}^{AB} = \\mathbf{S}(A)\\mathbf{S}(B) + \\mathbf{S}(B)\\mathbf{S}(A)\\end{aligned}","\\begin{aligned} \\int \\mathrm{BOD}_{AB}(\\mathbf{r}) \\mathrm{d}\\mathbf{r} &= \\delta(A, B)\\\\ (1 / 2) \\int \\mathrm{BOD}_{AA}(\\mathbf{r}) \\mathrm{d}\\mathbf{r} &= \\lambda(A)\\end{aligned}","\\mathrm{BOD}_{AB}(\\mathbf{r}) = \\mathrm{BOD}_{AB}^{\\alpha}(\\mathbf{r}) + \\mathrm{BOD}_{AB}^{\\beta}(\\mathbf{r})","\\begin{aligned}& \\mathrm{BOD}_{AB}^{\\sigma}(\\mathbf{r}) = 2\\rho_{AB}^{\\sigma}(\\mathbf{r}) = \\sum_{i \\in \\sigma}^{\\mathrm{occ}} \\sum_{j \\in \\sigma}^{\\mathrm{occ}} \\varphi_{i}^{*}(\\mathbf{r}) D_{i,j}^{\\sigma,AB} \\varphi_{j}(\\mathbf{r})\\\\& \\mathbf{D}^{\\sigma,AB} = \\mathbf{S}^{\\sigma}(A)\\mathbf{S}^{\\sigma}(B) + \\mathbf{S}^{\\sigma}(B)\\mathbf{S}^{\\sigma}(A)\\\\& S_{i,j}^{\\sigma}(A) = \\int_{A} \\varphi_{i}^{*}(\\mathbf{r})\\varphi_{j}(\\mathbf{r}) \\mathrm{d}\\mathbf{r} \\quad\\quad i, j \\in \\sigma\\end{aligned}","\\begin{aligned} \\int \\mathrm{BOD}_{AB}^{\\sigma}(\\mathbf{r}) \\mathrm{d}\\mathbf{r} &= \\delta^{\\sigma}(A, B)\\\\ (1 / 2) \\int \\mathrm{BOD}_{AA}^{\\sigma}(\\mathbf{r}) \\mathrm{d}\\mathbf{r} &= \\lambda^{\\sigma}(A)\\end{aligned}","\\begin{aligned} \\int \\mathrm{BOD}_{AB}^{\\sigma}(\\mathbf{r}) \\mathrm{d}\\mathbf{r} &= \\sum_{i \\in \\sigma}^{\\mathrm{occ}} \\sum_{j \\in \\sigma}^{\\mathrm{occ}} D_{i,j}^{\\sigma,AB} \\int \\varphi_{i}^{*}(\\mathbf{r})\\varphi_{j}(\\mathbf{r}) \\mathrm{d}\\mathbf{r} = \\sum_{i \\in \\sigma}^{\\mathrm{occ}} D_{i,i}^{\\sigma,AB}\\\\ D_{i,j}^{\\sigma,AB} &= \\sum_{k \\in \\sigma}^{\\mathrm{occ}} \\left[ S_{i,k}^{\\sigma}(A)S_{k,j}^{\\sigma}(B) + S_{i,k}^{\\sigma}(B)S_{k,j}^{\\sigma}(A) \\right]\\end{aligned}","\\begin{aligned} \\int \\mathrm{BOD}_{AB}^{\\sigma}(\\mathbf{r}) \\mathrm{d}\\mathbf{r} &= \\sum_{i \\in \\sigma}^{\\mathrm{occ}} \\sum_{k \\in \\sigma}^{\\mathrm{occ}} \\left[ S_{i,k}^{\\sigma}(A)S_{k,i}^{\\sigma}(B) + S_{i,k}^{\\sigma}(B)S_{k,i}^{\\sigma}(A) \\right]\\\\ &= \\sum_{i \\in \\sigma}^{\\mathrm{occ}} \\sum_{k \\in \\sigma}^{\\mathrm{occ}} \\left[ S_{i,k}^{\\sigma}(A)S_{i,k}^{\\sigma}(B) + S_{i,k}^{\\sigma}(A)S_{i,k}^{\\sigma}(B) \\right]\\\\ &= 2 \\sum_{i \\in \\sigma}^{\\mathrm{occ}} \\sum_{k \\in \\sigma}^{\\mathrm{occ}} S_{i,k}^{\\sigma}(A)S_{i,k}^{\\sigma}(B)\\end{aligned}","\\rho_{AB}^{\\sigma}(\\mathbf{r}) = \\sum_{i \\in \\sigma} \\varphi_{i}^{*}(\\mathbf{r}) n_{AB}^{\\sigma,i} \\varphi_{i}(\\mathbf{r})","\\mathbf{U}^{-1}\\mathbf{D}^{AB}\\mathbf{U} = \\mathbf{n}","\\mathbf{C}_{\\mathrm{occ}}^{\\mathrm{NAdO}} = \\mathbf{C}_{\\mathrm{occ}}^{\\mathrm{MO}}\\mathbf{U}"];</script>
+<script src="app.js"></script></body></html>

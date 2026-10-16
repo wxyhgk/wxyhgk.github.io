@@ -1,0 +1,182 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>1. 概述 (Overview) · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="1-概述-overview"><strong>1. 概述 (Overview)</strong></h1>
+<p>Multiwfn 是一个强大的波函数分析 (wavefunction analysis) 程序，支持几乎所有最重要的波函数分析方法。Multiwfn 免费、开源、高效、非常用户友好且灵活。Multiwfn 可在 Multiwfn 官方网站 <a href="http://sobereva.com/multiwfn">http://sobereva.com/multiwfn</a> 下载。本程序由北京 Kein 自然科学研究中心 (Beijing Kein Research Center for Natural Sciences) (<a href="http://www.keinsci.com">http://www.keinsci.com</a>) 的 <a href="http://sobereva.com/Tian_Lu.html">Tian Lu</a> 开发。</p>
+<h2 id="multiwfn-支持的输入文件-input-files-supported-by-multiwfn"><strong>Multiwfn 支持的输入文件 (Input files supported by Multiwfn)</strong></h2>
+<p>Multiwfn 接受多种文件来载入波函数信息：<a href="https://doi.org/10.26434/chemrxiv.11872524">.mwfn</a>（Multiwfn 波函数文件）、.wfn/.wfx（传统/扩展 PROAIM 波函数文件）、.fch（Gaussian 格式化检查文件）、.molden（Molden 输入文件）、.31~.40（NBO 绘图文件）和 .gms（GAMESS-US 与 Firefly 输出文件）。其它类型如 Gaussian 输入与输出文件、.cub、.grd、.pdb、.xyz 和 .mol 文件可用于特定功能。</p>
+<p>简而言之，Multiwfn 可以基于几乎所有著名量子化学程序的输出文件做波函数分析，如 Gaussian、ORCA、GAMESS-US、Molpro、NWChem、Dalton、xtb、PSI4、Molcas、Q-Chem、MRCC、deMon2k、Firefly、CFOUR、Turbomole……由于也支持 CP2K 导出的 .molden 文件，Multiwfn 不仅能处理分子体系，也能分析周期性体系（尽管可用功能有限，细节见手册第 <a href="sec-2-9-analysis-of-periodic-systems.html">2.9</a> 节）。</p>
+<h2 id="multiwfn-的特点-special-points-of-multiwfn"><strong>Multiwfn 的特点 (Special points of Multiwfn)</strong></h2>
+<ul>
+<li><p>(1) 功能非常全面。几乎所有最重要的波函数分析方法都已被 Multiwfn 很好地支持。</p>
+</li>
+<li><p>(2) 极其用户友好。Multiwfn 被设计为交互式程序（但也可以静默运行并嵌入 shell 脚本），每一步屏幕上显示的提示都清楚地告诉用户接下来该输入什么。Multiwfn 也从不打印晦涩难懂的信息，因此即使初学者也没有任何障碍。此外，所有波函数分析理论都有非常详细的文档，手册中有上百个写得很好的例子；还有一份&quot;快速入门 (quick start)&quot;文档指导新用户立刻掌握常用分析。另外，开发者总是在 Multiwfn 官方论坛上非常及时、耐心地回复用户的所有问题。</p>
+</li>
+<li><p>(3) 高度灵活。Multiwfn 的整体框架、功能与用户界面的设计相当灵活，但这并不牺牲易用性。Multiwfn 的不同模块有机地整合在一起，使得单个模块无法实现的大量分析成为可能</p>
+</li>
+<li><p>(4) 高效。Multiwfn 的代码经过了实质性优化，大部分使用 OpenMP 技术并行化。对于计算密集型任务，Multiwfn 的效率显著超过同类程序。</p>
+</li>
+<li><p>(5) 结果可以直接可视化。高级图形库 DISLIN 被 Multiwfn 在内部自动调用以可视化结果，大多数绘图参数都可以在交互界面中控制。这极大地简化了波函数分析，特别是研究实空间函数分布时。</p>
+</li>
+</ul>
+<h2 id="multiwfn-的主要功能-major-functions-of-multiwfn"><strong>Multiwfn 的主要功能 (Major functions of Multiwfn)</strong></h2>
+<p>注：尽管 Multiwfn 有如此多的功能且手册很厚，你只需查看 Multiwfn 二进制包中的 &quot;Multiwfn quick start&quot; 文档，就能轻松学会如何实现下面列出的功能。</p>
+<ul>
+<li><p>显示分子结构并查看轨道（MO、NBO、自然轨道、NTO、LMO 等）。生成轨道图的速度极快，使用非常方便。</p>
+</li>
+<li><p>输出某一点处所有支持的实空间函数以及梯度和 Hessian。数值可以分解为轨道贡献。</p>
+</li>
+<li><p>计算沿一条线的实空间函数并绘制曲线图。</p>
+</li>
+<li><p>计算一个平面内的实空间函数并绘制平面图。支持的图形类型包括填充色图、等值线图、浮雕图（带/不带投影）、梯度图和矢量场图。</p>
+</li>
+<li><p>计算空间范围内的实空间函数，数据可以导出为 Gaussian 型立方格点文件 (.cub)，并可视化为等值面。</p>
+</li>
+<li><p>对于一维、二维和三维实空间函数的计算，用户可以定义多个波函数文件产生的数据之间的运算。因此可以非常容易地计算并绘制如 Fukui 函数、dual descriptor 和密度差等。同时所有实空间函数的前分子 (promolecule) 与变形 (deformation) 性质都可以直接计算。</p>
+</li>
+<li><p>对任意实空间函数做拓扑分析 (topology analysis)，如电子密度（AIM 分析）、Laplacian、ELF、LOL、静电势等。可以定位临界点 (critical point, CP)，生成拓扑路径和盆间表面，然后在三维图形界面窗口中直接可视化，或绘制在平面图上。可以在临界点处或沿拓扑路径计算各种实空间函数的值。临界点性质可以分解为轨道贡献。</p>
+</li>
+<li><p>检查并修改波函数。例如打印轨道与基函数信息，手动设置轨道占据数与类型，平移并复制体系，丢弃指定原子的波函数信息。</p>
+</li>
+<li><p>布居分析 (population analysis)。支持的方法：ADCH（原子偶极矩校正的 Hirshfeld）、Hirshfeld、Hirshfeld-I、MBIS、cMBIS、EMBIS、AEMBIS、VDD、Mulliken、Löwdin、修正 Mulliken（包括三种方法：SCPA、Stout &amp; Politzer、Bickelhaupt）、Becke、CM5、1.2*CM5、CHELPG、Merz-Kollmann、RESP、RESP2、AIM（分子中的原子）与 EEM（电负性均衡方法）。可以基于原子电荷计算两个给定片段之间的静电相互作用能。</p>
+</li>
+<li><p>轨道组成分析。支持 Mulliken、Stout &amp; Politzer、SCPA、Hirshfeld、Hirshfeld-I、Becke、自然原子轨道 (natural atomic orbital, NAO) 与 AIM 方法来获得轨道组成。可以计算轨道离域指数 (orbital delocalization index, ODI) 或空间离域指数 (spatial delocalization index, SDI) 以定量表征轨道的空间离域程度。</p>
+</li>
+<li><p>键级/键强分析。Mayer 键级；AO 或自然原子轨道 (NAO) 基下的多中心键级 (multi-center bond order, MCBO) 与多中心指数 (multi-center index, MCI)（任意中心数）；Löwdin 正交化基下的 Wiberg 键级；Mulliken 键级；AV1245 指数；内禀键强指数 (intrinsic bond strength index, IBSI)。Mayer 与 Mulliken 键级可以分解为轨道贡献。Wiberg 键级可以分解为各种 NAO 对相互作用的贡献。</p>
+</li>
+<li><p>绘制总、部分、重叠布居态密度（TDOS、PDOS、OPDOS）与 MO-PDOS。可以非常灵活方便地定义多达 10 个片段。还可以绘制某一点处的局域态密度 (local DOS, LDOS) 曲线图，或一条线上的色填图。此外，完全支持基于（广义）Koopmans 定理绘制光电子能谱 (photoelectron spectrum, PES)，可以计算 <em>d</em> 带与 <em>p</em> 带中心。还可以绘制晶体重叠 Hamilton 布居 (crystal overlap Hamilton population, COHP)。</p>
+</li>
+<li><p>绘制各种光谱：红外 (IR)、常规/预共振拉曼、紫外-可见 (UV-Vis)、方向紫外-可见、电子圆二色 (ECD)、振动圆二色 (VCD)、拉曼光学活性 (ROA) 与核磁 (NMR)。对于振动光谱，不仅可以绘制谐性光谱，还可以绘制非谐基频、泛频与合频谱带。电子光谱可以纳入自旋-轨道耦合效应。丰富的参数（展宽函数、半峰宽、校正因子等）可由用户自定义。光谱的极大与极小可以打印并直接标注在图上。可以在图底部加上钉状线以清楚指示跃迁能级的位置与简并度。总光谱可以分解为每个跃迁各自的贡献。多个体系的光谱可以方便地画在一起。构象加权光谱可以轻松绘制。此外，对于振动类光谱，可以绘制部分振动光谱 (partial vibrational spectrum, PVS) 以直观理解不同原子或内坐标如何参与光谱，还可以绘制重叠部分振动光谱 (overlap partial vibration spectrum, OPVS) 以可视化各项的耦合。还可以绘制部分振动仍密度 (partial vibrational density-of-states, PVDOS)。化学物质显示的颜色可以根据其理论模拟与实验测定的紫外-可见光谱被精确预测。</p>
+</li>
+<li><p>分子表面的定量分析。整体分子表面或局域表面的表面性质如（总/正/负/极性/非极性）表面积、包围体积、映射函数的平均值与标准差等可以计算；可以评估各种 GIPF 描述符与分子极性指数 (molecular polarity index, MPI)；可以定位表面上映射函数的极小与极大；可以基于静电势 (ESP) 计算如 σ/π 空穴与孤对电子对应的特征区域面积；可以对任意映射函数实现分子表面上的类盆分析。</p>
+</li>
+<li><p>处理格点数据（可从 .cub/.grd/.vti/.dx/CHGCAR……载入，或由 Multiwfn 直接生成）。用户可以对格点数据做非常丰富的数学运算、设定特定范围内的值、提取指定平面内的数据、绘制（局域）积分与平面平均曲线、做平移等。</p>
+</li>
+<li><p>自适应自然密度划分 (adaptive natural density partitioning, AdNDP) 分析。界面是交互式的，AdNDP 轨道可以直接可视化。可以获得 AdNDP 轨道的能量与轨道组成。</p>
+</li>
+<li><p>模糊原子空间分析。支持 Becke、Hirshfeld、Hirshfeld-I 与 MBIS 原子空间划分方法，可以计算以下量：原子空间内或原子空间重叠区域内实空间函数的积分、原子/片段/分子的偶极与多极矩、原子多极矩、原子重叠矩阵 (atomic overlap matrix, AOM)、片段重叠矩阵 (fragment overlap matrix, FOM)、定域与离域指数 (localization and delocalization indices, LI, DI)、片段间离域指数 (interfragment DI, IFDI) 与片段定域指数 (fragment LI, FLI)、凝聚线性响应核、多中心离域指数，以及五个芳香性指数，即 FLU、FLU-π、PDI、PLR 与信息论芳香性指数。还可以根据 Tkatchenko-Scheffler 方法计算原子有效体积、自由体积、极化率与 C6 色散系数。</p>
+</li>
+<li><p>电荷分解分析 (charge decomposition analysis, CDA) 与扩展 CDA 分析。可以绘制轨道相互作用图。可以定义无限多个片段。</p>
+</li>
+<li><p>盆分析。可以对任意实空间函数定位吸引子，同时生成并可视化相应的盆。所有实空间函数都可以在生成的盆内积分。可以计算盆的电多极矩、盆/原子重叠矩阵 (BOM/AOM)、定域指数 (LI) 与离域指数 (DI)。可以获得原子对盆布居的贡献。ELF 盆的标记可以自动指定。可以评估高 ELF 定域域布居与体积 (HELP 与 HELV)。</p>
+</li>
+<li><p>电子激发分析：可视化并分析空穴-电子分布、跃迁密度、跃迁电/磁偶极矩与电荷密度差；计算空穴与电子之间的库仑吸引能（激子结合能）；计算 Mulliken 原子跃迁电荷与 TrEsp（源于静电势拟合的跃迁电荷）；把跃迁电/磁偶极矩分解为分子轨道对贡献或基函数/原子贡献；用 <em>JCTC</em> <strong>7</strong>, 2498 提出的方法分析电荷转移；把原子/片段跃迁密度矩阵、跃迁偶极矩矩阵与电荷转移矩阵绘制为热图；计算 Δ<em>r</em> 指数 (<em>JCTC</em>, <strong>9</strong>, 3118) 与 Λ 指数 (<em>JCP</em>, <strong>128</strong>, 044118) 以揭示电子激发特征；计算激发态之间的跃迁电/磁偶极矩；生成自然跃迁轨道 (natural transition orbital, NTO)；计算 ghost-hunter 指数 (<em>JCC</em>, <strong>38</strong>, 2151)；用片段间电荷转移 (IFCT) 方法计算片段间电荷转移量；为一批激发态生成自然轨道；快速查看所有激发态中的主要分子轨道跃迁；绘制电荷转移光谱 (<em>Carbon</em>, <strong>187</strong>, 78)；基于电子激发的电子密度极化分析 (<em>JPCA</em>, <strong>124</strong>, 633)；计算手性体系的 ECD/CPL 不对称因子 (<em>g</em>)。</p>
+</li>
+<li><p>轨道定域化分析：支持 Pipek-Mezey（基于 Mulliken、Löwdin 或 Becke 布居）与 Foster-Boys 定域化方法。可以得到所得定域分子轨道 (LMO) 的组成、能量与偶极矩，定域轨道的形状与中心可以轻松可视化。此外，基于定域轨道可以用 LOBA 方法 (<em>PCCP</em>, <strong>11</strong>, 11297) 或修正 LOBA 方法评估氧化态。</p>
+</li>
+<li><p>弱相互作用的可视化研究：相互作用区域指示符（IRI 与 IRI-π，<em>Chem.-Methods</em>, <strong>1</strong>, 231）；RDG/NCI 方法 (<em>JACS</em>, <strong>132</strong>, 6498)；aNCI 方法（涨落环境中的非共价相互作用分析，<em>JCTC</em>, <strong>9</strong>, 2226）；DORI 方法 (<em>JCTC</em>, <strong>10</strong>, 3745)；独立梯度模型 (independent gradient model, IGM) 方法 (<em>PCCP</em>, <strong>19</strong>, 17928)；基于分子密度的 Hirshfeld 划分的 IGM (IGMH) (<em>JCC</em>, <strong>43</strong>, 539)；修正 IGM (mIGM, <em>Struct. Bond.</em>, <strong>190</strong>, 297)；平均 IGM 与平均 mIGM (mIGM 与 amIGM, <em>Struct. Bond.</em>, <strong>190</strong>, 297)。这些实空间函数的等值面包围的各个区域可以积分以做定量分析。还支持 Becke 与 Hirshfeld 表面分析以及指纹分析。范德华势 (<em>J. Mol. Model.</em>, <strong>26</strong>, 315) 可以可视化并定位极值点。</p>
+</li>
+<li><p>概念密度泛函理论 (conceptual density functional theory, CDFT) 分析：Fukui 函数与 dual descriptor 及其凝聚形式与轨道加权变体；Fukui 势与 dual descriptor 势；Mulliken 电负性；硬度；亲电性与亲核性指数；亲电描述符；软度；凝聚局域软度；相对亲电性与亲核性；亲电与亲核超离域性；键 dual descriptor；dual 离域描述符，等等。支持特定模型以恰当处理 HOMO 与 LUMO（准）简并的情形。</p>
+</li>
+<li><p>扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Valence, ETS-NOCV)：可以定义任意多个片段，闭壳层与开壳层情形都支持。可以获得 NOCV 本征值、能量与组成，许多相关函数可以轻松可视化为等值面，包括 NOCV 轨道波函数、NOCV 对密度、冻结态轨道、Pauli 变形密度、轨道变形密度与总密度差。</p>
+</li>
+<li><p>能量分解分析：sobEDA 与 sobEDAw (<em>J. Phys. Chem. A</em>, <strong>127</strong>, 7023 (2023))、基于 UFF/AMBER/GAFF 分子力场的能量分解 (EDA-FF)；Shubin Liu 的能量分解 (EDA-SBL)；原子对色散能贡献的分析与色散密度的评估。</p>
+</li>
+<li><p>电子离域与芳香性分析：多中心键级 (MCBO)、AV1245 与 AVmin；等化学屏蔽表面 (iso-chemical shielding surface, ICSS)；用于非平面或倾斜体系的 NICS_ZZ；ELF-π 与 ELF-σ；芳香性谐振子度量 (harmonic oscillator measure of aromaticity, HOMA) 与 Bird 指数；重参数化 HOMA (HOMAc 与 HOMER 指数)；Shannon 芳香性指数；对位离域指数 (para-delocalization index, PDI)；芳香涨落指数 (aromatic fluctuation index, FLU) 与 FLU-π；对位线性响应指数 (para linear response index, PLR)；信息论 (ITA) 芳香性指数；环临界点的性质；NICS-1D 扫描曲线图；积分 NICS (INICS) 与 FiPC-NICS 指数；NICS-2D 扫描平面图，等等。</p>
+</li>
+<li><p>(超)极化率研究：解析 Gaussian &quot;polar&quot; 任务的输出文件并计算许多与(超)极化率相关的数据；计算与超 Rayleigh 散射 (Hyper-Rayleigh scattering, HRS) 相关的量；绘制(超)极化率密度；获得(超)极化率的原子贡献；用态求和 (sum-over-states, SOS) 方法计算(超)极化率；二能级与三能级模型分析；(超)极化率张量的单位球与矢量表示；计算分子中原子的极化率</p>
+</li>
+<li><p>结构与几何相关分析：分子范德华 (vdW) 体积；整个体系或各个片段的范德华表面积；分子长度/高度/重量、范德华直径与动力学直径；空腔体积与直径；原子间连接性与原子配位数；原子团簇的平均键长；键长交替 (bond length alternation, BLA)、键级交替 (bond order alternation, BOA) 以及键角与二面角交替；分子平面性参数 (molecular planarity parameter, MPP) 与偏离平面的跨度 (span of deviation from plane, SDP)；可视化晶胞中的自由区域（孔）并评估其体积；非常丰富的几何操作；绘制表面距离投影图；两个片段之间的最小/最大以及几何/质量中心距离；特定环的面积与周长</p>
+</li>
+<li><p>其它功能（不完全列表）：用 Becke 多中心方法在全空间积分实空间函数；计算 alpha 与 beta 轨道之间的重叠积分；计算两个轨道之间的重叠与质心距离；通过组合片段波函数生成新波函数；计算 LOLIPOP 指数；计算分子间轨道重叠；Yoshizawa 电子传输路径分析；计算 Hilbert 空间中的原子与键偶极矩；为实空间函数绘制径向分布函数；计算两个不同波函数中轨道之间的重叠积分；输出轨道之间各种积分；计算实空间函数的一阶与二阶矩以及回转半径；把载入的结构/波函数导出为许多流行格式如 .wfn、.wfx、.molden、.fch、NBO .47、.pdb、.xyz，并为许多已知量子化学程序生成输入文件；计算键极性指数 (bond polarity index, BPI)；域分析（获得实空间函数定义的等值面内的性质）；计算电子相关指数；识别 π 轨道并评估轨道 π 组成；在 alpha 与 beta 轨道之间做双正交化以最大配对；评估核-价分岔 (core-valence bifurcation, CVB) 指数；评估轨道对密度差（如 Fukui 函数）或其它格点数据的贡献；键级密度 (bond order density, BOD) 与自然自适应轨道 (natural adaptive orbital, NAdO) 分析；把原子径向密度拟合为 STO 或 GTF；模拟扫描隧道显微镜 (STM) 图像；计算电偶极/四极/八极/十六极矩与电子空间范围，等等。</p>
+</li>
+</ul>
+<h2 id="multiwfn-支持的实空间函数-real-space-functions-supported-by-multiwfn"><strong>Multiwfn 支持的实空间函数 (Real space functions supported by Multiwfn)</strong></h2>
+<p>实空间函数分析是 Multiwfn 最强大的功能之一，支持 100 多种实空间函数，下面列出，详细描述见手册第 <a href="sec-2-6-real-space-functions.html">2.6</a> 和 <a href="sec-2-7-user-defined-real-space-function.html">2.7</a> 节：</p>
+<ul>
+<li><p>电子密度</p>
+</li>
+<li><p>电子密度的梯度模</p>
+</li>
+<li><p>电子密度的 Laplacian</p>
+</li>
+<li><p>轨道的波函数值与概率密度</p>
+</li>
+<li><p>电子自旋密度</p>
+</li>
+<li><p>Hamilton 动能密度 <em>K</em>(<strong>r</strong>)</p>
+</li>
+<li><p>Lagrange 动能密度 <em>G</em>(<strong>r</strong>)</p>
+</li>
+<li><p>Becke 定义的电子定域化函数 (electron localization function, ELF) 与 Tsirelson 定义的版本</p>
+</li>
+<li><p>Becke 定义的定域轨道指示符 (localized orbital locator, LOL) 与 Tsirelson 定义的版本</p>
+</li>
+<li><p>相互作用区域指示符 (interaction region indicator, IRI) 与 IRI-π</p>
+</li>
+<li><p>独立梯度模型 (IGM) 中定义的 <em>δg</em> 函数与基于 Hirshfeld 划分的 IGM (IGMH) 中定义的版本</p>
+</li>
+<li><p>局域信息熵</p>
+</li>
+<li><p>静电势 (electrostatic potential, ESP)，以及源于核/电子/原子电荷的版本</p>
+</li>
+<li><p>范德华势</p>
+</li>
+<li><p>约化密度梯度 (reduced density gradient, RDG)，带/不带前分子近似</p>
+</li>
+<li><p><em>sign</em>(<em>λ</em>₂)<em>ρ</em>（电子密度 Hessian 矩阵第二大本征值的符号与电子密度的乘积），带/不带前分子近似</p>
+</li>
+<li><p>交换相关密度、相关穴与相关因子</p>
+</li>
+<li><p>平均局域电离能 (average local ionization energy, ALIE) 与局域电子亲和能 (local electron attachment energy, LEAE)</p>
+</li>
+<li><p>源函数</p>
+</li>
+<li><p>电子离域范围函数 EDR(<strong>r</strong>;d) 与轨道重叠距离函数 <em>D</em>(<strong>r</strong>)</p>
+</li>
+<li><p>其它（不完全列表）：势能密度、电子能量密度、轨道加权 Fukui 函数与 dual descriptor、强共价相互作用指数 (SCI)、超强相互作用 (USI)、成键与非共价相互作用 (BNI)、局域电子亲和/电负性/硬度、电子密度的椭率与刚度、eta 指数、on-top 对密度、多种形式的 DFT 交换相关势、多种形式的 DFT 动能密度、Weizsäcker 势、Fisher 信息熵、Ghosh/Shannon 熵密度、Rényi 熵的被积函数、形状函数、局域温度、键金属性、线性响应核、空间位阻能/势/电荷、Pauli 势/力/电荷、量子势/力/电荷、PAEM、密度重叠区域指示符 (DORI)、慢电子区域 (RoSE)、PS-FID、单指数衰减探测器 (SEDD)、电子线动量密度、电/磁偶极矩密度、局域电子相关函数、电场强度、应力张量刚度、应力张量极化率、分数占据数加权电子密度 (FOD)，等等。</p>
+</li>
+</ul>
+<p>在 Multiwfn 中实现新的实空间函数极其容易，如手册第 <a href="sec-2-7-user-defined-real-space-function.html">2.7</a> 节所示。</p>
+<h2 id="multiwfn-能做的事-things-that-multiwfn-can-do"><strong>Multiwfn 能做的事 (Things that Multiwfn can do)</strong></h2>
+<p>下面简要列出 Multiwfn 针对不同主题支持的分析，你可以通过搜索 &quot;Multiwfn quick start.pdf&quot; 文档轻松找到相关的手册章节。当你困惑时别忘了在 Multiwfn 官方论坛提问！</p>
+<ul>
+<li><p>可视化各种程序产生的各种轨道，形式多样</p>
+</li>
+<li><p>表征化学键：各种形式的 AIM 分析；研究实空间函数（ELF、LOL、∇²<em>ρ</em>、动能/势能密度、IRI 与 IRI-π、价电子密度、片段密度差、变形密度、源函数、键椭率、键度、eta 指数、<em>V</em><strong>(r</strong>)/<em>G</em>(<strong>r</strong>)、SCI、PAEM、IGM……）；各种键级分析（Mayer、Laplacian、Mulliken、Wiberg、Fuzzy 与多中心键级，以及 Mayer、Mulliken 与 Wiberg 键级的分解分析）；内禀键强指数 (IBSI)；定域/离域指数；轨道定域化分析；键级密度 (BOD) 与自然自适应轨道 (NAdO) 分析；测量键极性与键偶极矩的各种方法；电荷分解分析 (CDA)；扩展过渡态-化学价自然轨道 (ETS-NOCV)；重叠布居态密度 (OPDOS)；能量分解分析，等等。概述见手册第 <a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a11-%E7%A0%94%E7%A9%B6%E5%8C%96%E5%AD%A6%E9%94%AE%E7%9A%84%E6%96%B9%E6%B3%95%E6%A6%82%E8%BF%B0">4.A.11</a> 节。用 shell 脚本也可以轻松研究扫描与 IRC 过程中化学键各种性质的变化，见手册第 <a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a1-%E6%B2%BFirc%E8%B7%AF%E5%BE%84%E7%A0%94%E7%A9%B6%E7%94%B5%E5%AD%90%E7%BB%93%E6%9E%84%E7%9A%84%E5%8F%98%E5%8C%96">4.A.1</a> 节。</p>
+</li>
+<li><p>表征电子分布与变化：原子电荷（AIM、Mulliken、SCPA、Hirshfeld、Hirshfeld-I、Voronoi、Löwdin、ADCH、CM5、MBIS、EEM、CHELPG、MK、RESP、RESP2……）；基函数/壳层/原子/片段的总与自旋布居分析；原子电偶极与多极矩分析（也可以通过 Multiwfn 提供的绘图脚本在 VMD 程序中可视化）；密度差的绘制/盆分析/域分析；电荷位移曲线</p>
+</li>
+<li><p>芳香性与电子离域分析：概述见手册第 <a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a3-%E8%8A%B3%E9%A6%99%E6%80%A7%E7%A0%94%E7%A9%B6%E6%96%B9%E6%B3%95%E6%A6%82%E8%BF%B0">4.A.3</a> 节</p>
+</li>
+<li><p>表征分子内与分子间弱相互作用：AIM 分析（键路径可视化与键临界点处各种性质的分析）；弱相互作用的可视化分析（NCI、IGM、IGMH、aIGM、IRI、DORI）；基于 IGM 或 IGMH 的原子与原子对 <em>δg</em> 指数；静电势 (ESP) 的定量分子表面分析；各种形式的 ESP 绘制；范德华势的绘制；基于力场的能量分解分析 (EDA-FF)；Hirshfeld/Becke 表面分析；LOLIPOP；相互穿透距离与穿透体积分析；原子电荷与多极矩分析；电荷转移分析（密度差图、CDA、布居变化……）；ELF 与核-价分岔 (CVB) 指数，等等。概述见手册第 <a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a5-%E5%BC%B1%E7%9B%B8%E4%BA%92%E4%BD%9C%E7%94%A8%E7%A0%94%E7%A9%B6%E6%96%B9%E6%B3%95%E6%A6%82%E8%BF%B0">4.A.5</a> 节</p>
+</li>
+<li><p>电子激发分析：空穴与电子的分析（分布、原子/片段/轨道贡献、质心位置、位移与重叠、激子结合能）；电荷转移分析（IFCT、密度差……）；NTO；关键分子轨道之间的重叠与质心距离；原子/片段跃迁密度矩阵与电荷转移矩阵的绘制；∆<em>r</em> 指数；跃迁偶极矩向基函数/原子/片段/分子轨道对贡献的分解；不同激发态之间的跃迁偶极矩；跃迁原子电荷；ghost-hunter 指数；揭示激发过程中电子结构（成键与布居）的变化；打印所有激发态中的主要分子轨道跃迁；绘制电荷转移光谱以图形化揭示紫外-可见光谱的本质，等等。概述见手册第 <a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a12-%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95%E6%A6%82%E8%BF%B0">4.A.12</a> 节</p>
+</li>
+<li><p>反应位点预测与反应性分析：分子表面上的 ESP 与 ALIE 分析；原子电荷；前线分子轨道的轨道组成分析；π 电子布居；轨道重叠距离函数分析；自动计算概念密度泛函理论框架下定义的所有量；评估轨道（MO、NBO、NAO 等）对 Fukui 函数的贡献。概述见手册第 <a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a4-%E5%8F%8D%E5%BA%94%E4%BD%8D%E7%82%B9%E9%A2%84%E6%B5%8B%E6%96%B9%E6%B3%95%E6%A6%82%E8%BF%B0">4.A.4</a> 节</p>
+</li>
+<li><p>分子凝聚相性质的预测：利用范德华表面上的静电势分布经验性预测汽化热、升华热、分子晶体密度、沸点、熔化热、表面张力、p $K_{b}$ 等。分子极性可以定量化。见手册第 <a href="sec-3-15-quantitative-analysis-of-molecular-surface.html#3151-%E7%90%86%E8%AE%BA">3.15.1</a> 节</p>
+</li>
+<li><p>绘制光谱：红外、拉曼、紫外-可见、ECD、VCD、ROA、核磁与光电子能谱。对于紫外-可见情形，显示的颜色可以被精确预测</p>
+</li>
+<li><p>表征几何结构</p>
+</li>
+<li><p>(超)极化率研究</p>
+</li>
+<li><p>导电分析：TDOS 与 PDOS；相邻单体之间的轨道重叠分析；Yoshizawa 传输路径分析；键长/键级交替 (BLA/BOA)</p>
+</li>
+<li><p>许多其它：讲授结构化学；模拟扫描隧道显微镜 (STM) 图像；转换含几何或波函数信息的文件格式；研究电子相关效应；对 DFT 泛函实现 ELF 调节与 LOL 调节；用 LOBA 或修正 LOBA 方法评估氧化态；研究实空间函数的分布（径向分布函数、质心、一阶与二阶矩、全空间与局域积分……）；评估分子轨道中的 σ 或 π 成分、几何变换，等等</p>
+</li>
+</ul>
+<h2 id="引用-multiwfn-citing-multiwfn"><strong>引用 Multiwfn (Citing Multiwfn)</strong></h2>
+<p>如果你的研究中使用了 Multiwfn，正文中<strong>至少</strong>必须引用以下 Multiwfn 程序的原始论文：</p>
+<p>Tian Lu, Feiwu Chen, Multiwfn: A Multifunctional Wavefunction Analyzer, <em>J. Comput. Chem.</em> <strong>33</strong>, 580-592 (2012) DOI: <a href="https://doi.org/10.1002/jcc.22885">10.1002/jcc.22885</a></p>
+<p>Tian Lu, A comprehensive electron wavefunction analysis toolbox for chemists, Multiwfn, <em>J. Chem. Phys.</em>, <strong>161</strong>, 082503 (2024) DOI: <a href="https://doi.org/10.1063/5.0216272">10.1063/5.0216272</a></p>
+<p>根据工作中使用的方法与功能，还应引用我的其它论文。请认真查看 Multiwfn 二进制包中的 <em>How to cite Multiwfn.pdf</em> 文档。</p>
+<p>请尽可能在正文而不是补充信息中提及并引用 Multiwfn，否则不仅读者难以注意到 Multiwfn，论文也不会被纳入引用统计。</p>
+<h2 id="讨论区-discussion-zones"><strong>讨论区 (Discussion zones)</strong></h2>
+<p>有两个 Multiwfn 官方论坛，使用不同语言。你可以在其中任何一个讨论关于 Multiwfn 与波函数分析的一切。如果使用 Multiwfn 时遇到问题，请毫不犹豫地在这些论坛上发帖！</p>
+<ul>
+<li><p>Multiwfn 英文论坛：<a href="http://sobereva.com/wfnbbs">http://sobereva.com/wfnbbs</a></p>
+</li>
+<li><p>Multiwfn 中文论坛：<a href="http://bbs.keinsci.com/wfn">http://bbs.keinsci.com/wfn</a></p>
+</li>
+</ul>
+<p>顺便说一句：<a href="https://www.youtube.com/playlist?list=PLGZRmytlfpyPMknda9_tdJh8HPHjSECsW">Multiwfn Youtube 频道</a>中有一些很有价值的 Multiwfn 演示视频，强烈建议观看并订阅该频道。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-1-overview";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script>
+<script src="app.js"></script></body></html>

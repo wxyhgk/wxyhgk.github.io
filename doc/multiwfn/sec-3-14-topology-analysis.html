@@ -1,0 +1,164 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.14 拓扑分析(topology analysis) (2) · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="314-拓扑分析topology-analysis-2"><strong>3.14 拓扑分析(topology analysis) (2)</strong></h1>
+<h2 id="3141-理论theory"><strong>3.14.1 理论(Theory)</strong></h2>
+<p>Multiwfn的拓扑分析模块相当灵活、强大且通用，只要函数的变化是光滑的、因而其梯度是连续的，它就可应用于Multiwfn支持的任何实空间函数(real space function)。所有常被研究的函数，如电子密度(electron density)、其拉普拉斯(Laplacian)、轨道波函数(orbital wavefunction)、自旋密度(spin density)、ELF、LOL、ESP……都可由该功能分析。待研究的默认实空间函数是电子密度，它可通过选项-11改变。注意，一旦选择了选项-11，所有先前的拓扑分析结果将被清除。</p>
+<p>由Bader提出的拓扑分析技术首先用于“分子中的原子(atoms in molecules)”(AIM)理论中的电子密度分析，该理论也被称为“分子中的原子的量子理论(the quantum theory of atoms in molecules)”(QTAIM)，该技术也已被推广到其它实空间函数，<em>e.g.</em> Silvi和Savin给出了小分子ELF的首个拓扑分析研究，见<em>Nature</em>，<strong>371</strong>，683 (1994)。在拓扑分析语言中，函数值的梯度范为零的点(无穷远处除外)被称为临界点(critical points, CPs)，CPs可根据实空间函数Hessian矩阵(Hessian matrix)为负的本征值(eigenvalues)的数目分为四类。</p>
+<ul>
+<li><p><strong>(3,-3)</strong>：函数Hessian矩阵的三个本征值均为负，即局域极大值(local maximum)。对于电子密度分析和重原子，(3,-3)的位置与核位置几乎相同，因此(3,-3)也被称为核临界点(nuclear critical point, NCP)。一般地，(3,-3)的数目等于原子数，仅在罕见情况下前者可多于(<em>e.g.</em> Li₂)或少于(<em>e.g.</em> KrH⁺)后者。</p>
+</li>
+<li><p><strong>(3,-1)</strong>：函数Hessian矩阵的两个本征值为负，即二阶鞍点(second-order saddle point)。对于电子密度分析，(3,-1)一般出现在有吸引作用的原子对之间，因此常被称为键临界点(bond critical point, BCP)。BCP处实空间函数的值具有重要意义，例如对于类似的键，BCP处$\rho$的值和$\nabla^2\rho$的符号分别与键强度(bonding strength)和键类型(bonding type)密切相关(<em>The Quantum Theory of Atoms in Molecules-From Solid State to DNA and Drug Design</em>，p11)；我已证明BCP处的$\rho$可被可靠地用于预测氢键结合能(hydrogen bond binding energies)(<em>J. Comput. Chem</em>，<strong>40</strong>，2868 (2019))；BCP处的局域信息熵(local information entropy)是芳香性(aromaticity)的良好指标(<em>Phys. Chem. Chem. Phys.</em>，<strong>12</strong>，4742 (2020))。</p>
+</li>
+<li><p><strong>(3,+1)</strong>：函数Hessian矩阵仅有一个本征值为负，即一阶鞍点(first-order saddle point)(如势能面(potential energy surface)中的过渡态(transition state))。对于电子密度分析，(3,+1)一般出现在环体系(ring system)中心并表现空间位阻效应(steric effect)，因此(3,+1)常被称为环临界点(ring critical point, RCP)。</p>
+</li>
+<li><p><strong>(3,+3)</strong>：函数Hessian矩阵没有本征值为负，即局域极小值(local minimum)。对于电子密度分析，(3,+3)一般出现在笼体系(cage system)中心(<em>e.g.</em> 棱锥形P₄分子)，因此常被称为笼临界点(cage critical point, CCP)。</p>
+</li>
+</ul>
+<p>CPs的位置默认通过Newton法(Newton method)搜索。若选择一个起始点，则Newton迭代将收敛到离它最近的CP。通过指定合适的猜测位置并从其中每一个出发执行Newton迭代，最终可找到所有CPs。一旦CPs搜索完成，可根据Poincaré-Hopf关系(Poincaré-Hopf relationship)验证是否可能已找到所有CPs，该关系表述为
+<div class="mathdisp" data-mi="0" title="点击复制 TeX">$$
+\begin{aligned}
+& n_{(3,-3)} - n_{(3,-1)} + n_{(3,+1)} - n_{(3,+3)} = 1 \quad \text{(for isolated systems)} \\
+& n_{(3,-3)} - n_{(3,-1)} + n_{(3,+1)} - n_{(3,+3)} = 0 \quad \text{(for periodic systems)}
+\end{aligned}
+$$</div>
+如果该关系不满足，则必定缺失了一些临界点(CP)；如果你对它们感兴趣，你需要使用与之前不同的起始点(starting point)进一步进行临界点搜索。然而，即使Poincaré-Hopf关系(Poincaré-Hopf relationship)满足，也不一定意味着已找到所有临界点。注意，许多实空间函数(real space function)的行为，如ELF、LOL、密度差(density difference)、$\rho$ 的拉普拉斯量(Laplacian)，比$\rho$ 复杂得多，很难定位这些函数的所有临界点，特别是对于中型和大型体系。因此，一旦你找到了所有感兴趣的临界点，就可以终止搜索临界点的尝试。</p>
+<p>连接键临界点(BCP)和相连的两个密度局域极大值的最大梯度路径(maximal gradient path)被称为“键径(bond path)”，它揭示了各类成键的原子间相互作用路径。键径的集合被称为分子图(molecular graph)，它提供了分子结构的明确定义。键径可以是直线或曲线，显然对于后一种情况，键径的长度长于键临界点与相连的两个(3,-3)临界点之间距离之和。</p>
+<p>让我们看一个例子。在下图所示的配合物中，咪唑平面垂直于镁卟啉平面，咪唑中的氮与镁配位。品红色、橙色和黄色小球分别对应于(3,-3)、(3,-1)和(3,+1)临界点，棕色线表示键径。</p>
+<p><img src="assets/figures/sec3-14/fig1-imidazole-Mg-porphyrin-CPs.png" alt="咪唑-镁卟啉配合物的临界点和键径"></p>
+<p>其它实空间函数的拓扑路径(topology path)在Multiwfn中也能生成，它们对于阐明临界点之间的内在关系非常有帮助。</p>
+<h3 id="关于简并临界点degenerate-cp">关于简并临界点(degenerate CP)</h3>
+<p>简并临界点在一般体系中的出现非常罕见，因此我在本节最后提及它。所谓简并临界点是指具有一个或两个零Hessian矩阵(Hessian matrix)本征值(eigenvalue)的临界点。这些临界点非常不稳定，分子几何的轻微扰动就可使其分裂为其它类型的临界点。然而，简并临界点通常出现在轴对称体系中。例如，在基态氟原子中，一个$p$轨道单占据而另两个双占据，对LOL的拓扑分析给出下图：</p>
+<p><img src="assets/figures/sec3-14/fig2-F-LOL-degenerate-CPs.png" alt="LOL拓扑分析揭示的氟原子的简并临界点"></p>
+<p>两个(3,-3)对应于单占据$p$轨道的两个瓣，而源于另两个$p$轨道的电子局域极大值由一圈临界点表示。表面上，圆圈上的临界点为(3,-1)或(3,+1)型，但实际上它们是同一类型的简并临界点，其中一个本征值为零。仅由于本征值数值收敛的原因，它们在Multiwfn中形式上被记录为不同的临界点类型。</p>
+<h2 id="3142-搜索临界点search-critical-points"><strong>3.14.2 搜索临界点(Search critical points)</strong></h2>
+<h3 id="搜索模式searching-modes">搜索模式(Searching modes)</h3>
+<p>在Multiwfn中，提供了几种模式来指定用于搜索临界点的起始点：</p>
+<ul>
+<li><p>(1) 从给定起始点搜索临界点(Search CPs from given starting points)：如果你已知道临界点的大致位置，或能合理猜测临界点可能出现的位置，那么该模式非常适合你，迭代将从所提供的坐标开始。在该模式下，你可直接输入一个起始点的坐标，或输入两个原子序号，则它们的中点将被作为起始点。你还可提供一个.pdb或.pqr文件，其中原子坐标将依次被视为起始点。此外，还可提供一个包含所有起始点的.txt文件，格式应如下所示，每行对应一个起始点以Bohr为单位的X、Y、Z坐标，格式自由</p>
+<pre><code class="language-text">1.2 3.10 -0.4
+0.477 5.2 5.92
+-3.26 3.3 0.5
+...
+</code></pre>
+</li>
+<li><p>(2) 从核位置(nuclear position)搜索临界点(CP)：该模式依次使用所有核位置作为起始点(starting point)，该模式非常适合搜索$\rho$ 的所有(3,-3)，以及ELF/LOL和$\rho$ 的拉普拉斯(Laplacian)在原子最内层区域的那些(3,-3)临界点。对于电子密度(electron density)分析，如果使用该模式后你定位到$n$ 个临界点，而你的体系中原子数多于$n$，这通常意味着在搜索过程中遗漏了一些(3,-3)临界点。</p>
+</li>
+<li><p>(3) 从原子对中点(midpoint of atomic pair)搜索临界点：该模式依次使用所有原子对的中点作为起始点。该模式非常适合搜索$\rho$ 的所有(3,-1)临界点。</p>
+</li>
+<li><p>(4) 从三个原子的三角形中心(triangle center)搜索临界点：与模式3类似，但使用你的体系中三个原子的所有组合的三角形中心。适合搜索所有(3,+1)。</p>
+</li>
+<li><p>(5) 从四个原子的锥体中心(pyramid center)搜索临界点：与模式3类似，但使用你的体系中四个原子的所有组合的锥体中心。对于电子密度分析，如果你已尝试模式2和模式3但仍无法找到某些(3,+3)，该模式值得尝试。由于将考虑更多组合，该模式比模式3更耗时。</p>
+<p>注意，对于周期性体系(periodic case)，模式3同时循环实际原子(real atom)和镜像原子(image atom)，而模式4和模式5仅循环实际原子。</p>
+</li>
+<li><p>(6) 从球(sphere)内一批点搜索临界点：你需要首先设置球心(sphere center)、半径(radius)和点数(number of points)，然后选择选项0，指定数量（但不是你设置的精确数量）的点将随机分布在球内作为搜索的起始点。球心可以通过选项2~6以非常灵活的方式定义。如果你选择选项-1，则搜索开始，每个原子中心(atom center)将依次被作为球心，假设有$n$ 个原子且你设置的球内点数为$m$，则约$n$ * $m$ 个点将用作初始猜测(initial guess)。如果你选择选项-2，则将提示你输入原子的序号，这些原子的原子核(nucleus)将依次用作球心。</p>
+<p>该模式非常适合搜索难以用其他模式定位的临界点。**对于ELF、LOL和拉普拉斯，强烈建议在该模式下使用选项-1以尝试定位所有可能的临界点。**注意，每次执行搜索时起始点的位置都不同，如果在之前的搜索中未找到某些感兴趣的临界点，尝试一次又一次地启动搜索以定位缺失的临界点。</p>
+<p>注意，每次执行时通过搜索模式6定位到的临界点的序号可能不同！</p>
+</li>
+</ul>
+<h3 id="临界点搜索参数">临界点搜索参数</h3>
+<p>默认搜索参数适合大多数体系，然而在某些情况下你必须手动调整参数以确保能够找到预期的临界点。这些参数可以在选项“-1 设置临界点搜索参数”中设置。</p>
+<ul>
+<li><p>(1) 设置最大迭代次数(maximal iteration)：如果在收敛到临界点之前或在Hessian矩阵(Hessian matrix)变为奇异（即迭代无法继续）之前迭代次数超过该值，则迭代将被终止。</p>
+</li>
+<li><p>(2) 设置步长缩放因子(scale factor of stepsize)：默认值为1.0，这意味着由标准算法(standard algorithm)确定的步长保持不变。有时减小步长有利于定位临界点。例如，在<em>examples\uracil.wfn</em>的拓扑分析(topology analysis)中，使用模式2以默认参数无法找到连接N6和H12的键临界点(Bond Critical Point, BCP)。如果你将步长减小到0.5，则该问题将得到解决。</p>
+</li>
+<li><p>(3)/(4) 设置梯度范数(gradient norm)/位移(displacement)收敛标准(convergence criterion)：如果当前位置的梯度范数和上一步的位移都小于这两个值，则迭代将停止，当前位置将被视为临界点。</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>注意</strong></p>
+<p>注意，对于通常用于定位核临界点(NCPs)的搜索模式(searching mode) 2，梯度模(gradient norm)的收敛判据(convergence criterion)被暂时移除，因为对于很重的原子，在原子核位置处电子密度(electron density)峰非常尖锐，如果考虑梯度模判据，迭代(iteration)很难收敛。</p>
+</blockquote>
+<ul>
+<li><p>(5) 临界点(CPs)之间的最小距离：如果一次迭代收敛到了一个临界点，但该临界点与任何已找到的临界点之间的距离小于此值，则刚找到的临界点将不被视为新的临界点，因此被丢弃。</p>
+</li>
+<li><p>(6) 如果原子间距离长于其范德华半径(vdW radius)之和乘以该值则跳过搜索：在临界点搜索模式3、4和5中，如果组合中涉及的任意两个原子的距离长于其范德华半径之和乘以该值，则将跳过当前搜索。此选项的目的是减少搜索次数，从而降低大体系的计算成本。例如，前文提到的咪唑-镁卟啉配合物，有49*48/2=1176个原子对，因此当你选择搜索模式2时如果不采用此截断策略，Multiwfn将尝试多达1176次搜索。而如果使用此策略，由于只考虑密切相关的原子对，只需进行274次搜索，可以发现它们的结果是相同的。</p>
+</li>
+<li><p>(7) 是否打印临界点搜索过程的细节：此选项仅存在于串行模式(serial mode)中。用户可以选择临界点搜索过程细节的输出级别。此选项主要用于调试(debugging)。</p>
+</li>
+<li><p>(8) 设置判断Hessian矩阵(Hessian matrix)是否奇异(singular)的判据：如果Hessian矩阵行列式(determinant)的绝对值低于此值，则Hessian矩阵将被视为奇异并终止搜索。过大的值可能导致某些临界点被遗漏，而过小的值可能导致数值不稳定以及在远离体系的区域出现临界点。默认值适用于大多数情况。</p>
+</li>
+<li><p>(9) 设置保留临界点的数值范围：利用此选项，在临界点搜索过程中，只有数值在用户定义范围内的临界点会被保留，因此可以忽略不必要的临界点。默认情况下，保留所有临界点。通过此选项你可以例如只搜索弱相互作用区域中的临界点(对应于低电子密度区域)。</p>
+</li>
+<li><p>(10) 设置在搜索模式2、3、4、5中要考虑的原子：此选项用于设置搜索模式2、3、4、5的原子范围。默认情况下，搜索中将考虑所有原子。然而，在此选项中可以选择两种特殊方式：</p>
+<p>方式1(Way 1)：仅在局域区域内搜索临界点。系统将要求你定义一个片段(fragment)，然后在搜索过程中只考虑该片段中的原子。如果你只对局域区域内的临界点感兴趣，此方式很有用。</p>
+<p>方式2(Way 2)：在两个区域之间搜索临界点。系统将要求你定义两个片段(不应有重叠)，然后在临界点搜索过程中，组合中涉及的所有原子不会同时出现在同一个片段中；换句话说，至少有一个原子必须出现在另一个片段中。此方式对于搜索两个分子之间的临界点特别有用(其成本可能显著低于搜索整个配合物的临界点)</p>
+<p>对于搜索模式2，两种方式之间没有区别，其中每次搜索只涉及一个原子。</p>
+</li>
+<li><p>(11) 设置搜索的信赖半径(trust radius)：如果位移(displacement)的模(norm)大于此值，位移矢量(displacement vector)将被缩放，使其模与该半径相同。将信赖半径设置为比默认值更小的值(<em>例如</em> 0.1 Bohr)可以提高收敛的稳定性。</p>
+</li>
+<li><p>(12) 选择搜索算法(searching algorithm)：该选项很少使用，因为默认牛顿法(Newton method)在大多数情况下都能合理地工作。然而，Multiwfn提供了可能在特殊情况下有用的替代方法：</p>
+<p>Barzilai-Borwein (BB)方法是最速下降算法(steepest descent algorithm)的一种特殊形式，在每一步中，沿梯度向量(gradient vector)的位移方向和距离通过特定方式确定，以模拟牛顿法的收敛行为。BB能够定位任何种类的临界点(CPs)，并且像牛顿法一样趋向于收敛到距起始点(starting point)最近的临界点，而它不依赖于Hessian矩阵(Hessian matrix)。尽管在大多数情况下牛顿法更稳健且收敛更快，但当你发现它未能成功定位到预期的临界点时，你可以改用BB。</p>
+<p>Multiwfn也支持最速上升法(steepest ascent, SA)和最速下降法(steepest descent, SD)，它们分别仅用于定位(3,-3)和(3,+3)临界点。换句话说，如果你选择这些方法，其他种类的临界点将永远不会被定位到。因此，如果你只关注定位极大值(maxima)(<em>e.g.</em> ELF和LOL的极大值)或极小值(minima)(<em>e.g.</em> 静电势(electrostatic potential)的极小值)，它们是有用的。此外，对于行为不佳的函数，即其在极小值和极大值周围的局域特征远离二次函数(quadratic function)，牛顿法和BB方法完全不收敛，SA和SD是仅有的选择。此外，一些函数具有非常拥挤的临界点或在非常狭窄的二次区域内的极小值/极大值，我经常发现牛顿法和BB很难收敛到极小值/极大值，在这种情况下，如果极小值/极大值是你真正感兴趣的，也应使用SA/SD。Multiwfn中的SA (SD)利用微迭代(microiteration)来确定沿梯度向量正(负)方向的合适位移幅度；在每次微迭代中，如果位移不能导致函数值增加(减少)，位移幅度将减小到40%并重试，直到函数值确实增加(减少)。</p>
+</li>
+</ul>
+<h2 id="3143-生成拓扑路径topology-paths"><strong>3.14.3 生成拓扑路径(topology paths)</strong></h2>
+<h3 id="路径生成方法path-generating-methods">路径生成方法(path generating methods)</h3>
+<p>一旦找到临界点，你可以选择生成拓扑路径，它连接各个临界点。在Multiwfn中，路径本质上表示为均匀分布在一条曲线上的一组点。使用选项8和9，可以生成两种路径：</p>
+<ul>
+<li><p>(1) 生成连接(3,-3)和(3,-1)临界点的路径：从算术上讲，首先将每个(3,-1)的坐标分别沿对应于Hessian正本征值(eigenvalue)的本征向量(eigenvector)向前和向后位移，然后沿梯度向量上坡行进，直到遇到一个(3,-3)，所得轨迹构成键径(bond paths)。</p>
+</li>
+<li><p>(2) 生成连接(3,+1)和(3,+3)临界点的路径：与上述类似，区别在于起始点是(3,+1)，并且它们的坐标首先沿对应于Hessian负本征值的本征向量向前和向后移动，然后沿梯度向量下坡行进。</p>
+</li>
+</ul>
+<h3 id="路径生成参数">路径生成参数</h3>
+<p>在选项“-2 设置路径生成参数(Set path generating parameters)”中，有一些子选项用于调整生成路径的参数：</p>
+<ul>
+<li><p>(1) 路径的最大点数(maximum number of points of a path)：在每条路径的生成过程中，如果在遇到临界点之前步数达到了该值，则该轨迹将被丢弃。对于生成非常长的路径，可能需要增大默认值。</p>
+</li>
+<li><p>(2) 步长(stepsize)：构成路径的相邻点之间的间隔。对于具有大曲率(curvature)的路径，有时在默认步长下无法生成，你需要适当减小步长并尝试重新生成路径。如果你将路径的最大点数和步长分别设为$m$和$n$，则路径的最大长度将不超过$m\times n$。</p>
+</li>
+<li><p>(3) 若与任意临界点(CP)的距离小于则停止生成：在路径(path)的生成过程中，若发现当前点与一个已定位临界点之间的距离小于该值，则该路径将被视为与该临界点相连。</p>
+</li>
+</ul>
+<h2 id="3144-生成盆间表面interbasin-surfaces"><strong>3.14.4 生成盆间表面(interbasin surfaces)</strong></h2>
+<p>由Multiwfn生成的盆间表面(interbasin surfaces, IBS)实际上由一束源自(3,-1)临界点的路径组成，这些表面将整个空间划分为每个(3,-3)临界点各自的区域。通过选项&quot;10 添加或删除盆间表面&quot;，您可以生成、删除和查看盆间表面。注意，在生成盆间表面之前，应首先完成临界点的生成，且必须至少找到一个(3,-1)临界点。</p>
+<p>如果您想从索引为15的(3,-1)临界点生成盆间表面，只需输入<em>15</em>(您会发现首先通过功能0可视化临界点以获取临界点索引很有用)。要删除该表面，输入*-15*(负号表示&quot;删除&quot;)。如果没有显示盆间表面而您希望生成所有盆间表面，输入<em>0</em>。要删除所有已生成的盆间表面，同样输入<em>0</em>。通过输入字母<em>l</em>可打印已生成盆间表面的列表。如果您需要将特定盆间表面(<em>e.g.<em>对应于索引为4的(3,-1)临界点)的路径导出到外部文件，输入</em>o 4</em>，则源自临界点4的所有路径的坐标将被保存到当前文件夹中的<em>surpath.txt</em>。输入字母<em>q</em>可返回上一级菜单。</p>
+<p>用于生成盆间表面的参数可通过选项&quot;-3 设置盆间表面生成参数&quot;调整。增大每个盆间表面中的路径数量或减小步长(stepsize)将使盆间表面看起来更平滑。盆间表面中路径的长度，或者说盆间表面的面积，与步长和每个盆间表面路径中点数的乘积成正比。注意，一旦更改参数，所有已生成的盆间表面都将丢失。</p>
+<p>在Multiwfn中有三种描绘盆间表面的方式，可通过<em>settings.ini</em>中的&quot;isurfstyle&quot;控制。方式1通过源自相应(3,-1)临界点的路径直接表示盆间表面；方式2通过实心表面显示盆间表面，这是默认样式；方式3不常用，您可以自行尝试。</p>
+<p><img src="assets/figures/sec3-14/fig3-IBS-way1.png" alt="方式1：由源自(3,-1)临界点的路径表示的盆间表面"></p>
+<p><img src="assets/figures/sec3-14/fig4-IBS-way2.png" alt="方式2：以实心表面显示的盆间表面"></p>
+<h2 id="3145-可视化分析修改和导出结果"><strong>3.14.5 可视化、分析、修改和导出结果</strong></h2>
+<h3 id="可视化结果选项0"><strong>可视化结果(选项0)</strong></h3>
+<p>如果您选择选项&quot;0 打印并可视化所有已生成的临界点、路径和盆间表面&quot;，将弹出一个图形用户界面(GUI)，您可以直观检查临界点、拓扑路径(topology paths)和盆间表面，您可以控制是否显示每种类型的临界点、路径、盆间表面、分子结构(molecular structure)、标签(labels)等。同时，在命令行窗口(command-line window)中打印已找到临界点和路径的摘要。还将检查庞加莱-霍普夫关系(Poincaré-Hopf relationship)的满足情况。</p>
+<p>如果要分析的实空间函数(real space function)是电子密度(electron density)，核临界点与原子之间的对应关系将显示在命令行窗口中。如果已生成键路径(bond paths)，则通过键路径与每个键临界点(BCP)相连的两个原子也将在命令行窗口中给出。</p>
+<h3 id="评估临界点性质选项7"><strong>评估临界点性质(选项7)</strong></h3>
+<p>您可以通过功能&quot;7 显示特定临界点或所有临界点处的实空间函数值&quot;获得Multiwfn支持的所有实空间函数的值(以及所选实空间函数的梯度(gradient)和Hessian矩阵(Hessian matrix))在给定临界点或所有临界点处的值。注意，静电势(electrostatic potential)是所有实空间函数中计算开销最大的，如果您对其不感兴趣，可以将<em>settings.ini</em>中的&quot;ishowptESP&quot;参数设为0以跳过静电势的计算。</p>
+<p>在此功能中，你还可以将给定临界点(CP)处选定的实空间函数(real space function)分解为一系列轨道(orbital)的贡献。参见<a href="sec-4-2-topology-analysis.html#424-%E6%8A%8A%E4%B8%B4%E7%95%8C%E7%82%B9%E5%A4%84%E7%9A%84%E6%80%A7%E8%B4%A8%E5%88%86%E8%A7%A3%E4%B8%BA%E8%BD%A8%E9%81%93%E8%B4%A1%E7%8C%AE">4.2.4</a>节中的相应例子。</p>
+<h3 id="测量几何选项--9"><strong>测量几何(选项 -9)</strong></h3>
+<p>通过使用选项&quot;-9 Measure distances, angles and dihedral angles between CPs or atoms&quot;，可以方便地测量原子与临界点之间的距离、角度和二面角。</p>
+<h3 id="操作临界点选项--4"><strong>操作临界点(选项 -4)</strong></h3>
+<p>在选项&quot;-4 Modify or export CPs&quot;中，你可以打印、添加、删除和导出临界点。在子选项2中，可以根据多种条件删除临界点，包括：(1)临界点类型 (2)临界点序号范围 (3)到特定分子片段(molecular fragment)的距离(因此你可以删除不相关区域中的临界点) (4)电子密度(electron density)范围(利用此功能，你可以仅删除具有低密度的临界点，从而删除弱相互作用区域中的临界点，或删除具有高密度的临界点，从而删除化学键区域中的临界点)。</p>
+<p>通过子选项4，可将所有找到的临界点的位置和类型保存到当前文件夹中的格式化文本文件<em>CPs.txt</em>。通过子选项5，还可以从外部格式化文本文件加载临界点信息(当前任务中已找到的临界点将被清除)，注意文件格式必须与子选项4输出的文件格式完全相同。</p>
+<p>通过子选项6，可将所有临界点导出为.pdb文件，以便用外部可视化软件(如VMD)方便地可视化临界点。在此文件中，元素C/N/O/F分别对应于(3,-3)/(3,-1)/(3,+1)/(3,+3)。</p>
+<h3 id="操作拓扑路径topology-paths选项--5"><strong>操作拓扑路径(topology paths)(选项 -5)</strong></h3>
+<p>在选项&quot;-5 Modify or print detail or export paths, or plot property along a path&quot;中，你可以通过子选项1和2分别打印已生成路径的摘要和打印特定路径中所有点的坐标。</p>
+<p>通过子选项4，你可以将所有路径的详细信息导出到当前文件夹中的<em>paths.txt</em>。通过子选项5，可以从外部文件导入路径，文件格式必须与子选项4输出的文件格式完全相同。</p>
+<p>通过子选项6，可以将所有路径中的所有点导出到当前文件夹中的pdb文件，以便用外部可视化软件方便地可视化路径。</p>
+<p>通过子选项7，可以将沿选定拓扑路径的实空间函数值绘制为曲线图或导出为纯文本文件。你还可以分别以&quot;Dist.&quot;和&quot;Value&quot;列对应的数据作为X和Y轴，用第三方绘图软件绘制曲线图。</p>
+<p>可以通过子选项3直接输入路径序号手动删除路径。子选项8也用于删除路径，它旨在仅保留连接两个片段的键路径(bond path)(及相应的键临界点(BCP))而删除所有其它键路径，以便能更容易地通过AIM方法研究片段间相互作用。此选项的用处将在<a href="sec-4-2-topology-analysis.html#426-%E7%89%B9%E6%AE%8A%E6%96%B9%E5%BC%8F%E7%9A%84%E6%8B%93%E6%89%91%E5%88%86%E6%9E%90%E4%BB%A5-g-cg-c-%E7%A2%B1%E5%9F%BA%E5%AF%B9%E4%B8%BA%E4%BE%8B">4.2.6</a>节的例子中说明。</p>
+<h2 id="3146-基于电子密度拓扑性质计算芳香性指数aromaticity-indices"><strong>3.14.6 基于电子密度拓扑性质计算芳香性指数(aromaticity indices)</strong></h2>
+<p>如果你选择的实空间函数是电子密度，选项20和21将可见，它们是用于分析芳香性的工具。</p>
+<h3 id="shannon芳香性指数shannon-aromaticity-index"><strong>Shannon芳香性指数(Shannon aromaticity index)</strong></h3>
+<p>选项20用于计算Shannon芳香性(SA)指数，详情见<em>Phys. Chem. Chem. Phys.</em>, <strong>12</strong>, 4742 (2010)。公式可简写为
+<div class="mathdisp" data-mi="1" title="点击复制 TeX">$$
+\begin{aligned}
+& SA = \ln(N) - \sum_i^N \left( -p_i \ln p_i \right) \qquad p_i = \frac{\rho(r_{\text{BCP}_i})}{\sum_i^N \rho(r_{\text{BCP}_i})}
+\end{aligned}
+$$</div>
+在上述公式中，$N$是你想研究其芳香性(aromaticity)的环中键临界点(BCPs)的总数，$r_{\text{BCP}}$是键临界点的位置。在选项20中，你需要依次输入$N$和这些临界点(CPs)的序号，然后将立即打印Shannon芳香性指数(Shannon aromaticity index)。SA指数越小，分子的芳香性越强。在原文中，选择0.003 $<$ SA $<$ 0.005的范围作为芳香性/反芳香性(antiaromaticity)的分界。</p>
+<h3 id="环临界点rcp处垂直于环平面ring-plane的电子密度electron-density曲率curvature"><strong>环临界点(RCP)处垂直于环平面(ring plane)的电子密度(electron density)曲率(curvature)</strong></h3>
+<p>在<em>Can. J. Chem.</em>，<strong>75</strong>，1174 (1997)中，作者表明环临界点处的电子密度与相应环的芳香性密切相关。密度越大，芳香性越强。他们还指出，环临界点处垂直于环平面的电子密度曲率与环芳香性具有更显著的相关性。曲率越负，芳香性越强。假设环严格垂直于某个笛卡尔轴(Cartesian axis)，例如，垂直于Z轴的环(*viz.*环位于XY平面内)，则该曲率就是环临界点处电子密度的Hessian矩阵(Hessian matrix)的ZZ分量，该分量可通过使用选项7直接打印给定环临界点的性质来获得。然而，如果环并不严格垂直于任何笛卡尔平面(Cartesian plane)，你应使用选项21计算该曲率。在选项21中，你应输入环临界点的序号(或直接输入一个点的坐标)，然后选择2，再输入构成该平面的三个原子的序号(它们用于拟合环平面)。</p>
+<p>各种拓扑分析(topology analysis)的例子可在第<a href="sec-4-2-topology-analysis.html">4.2</a>节中找到。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>GTFs、原子坐标(atom coordinates)</p>
+</blockquote>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-3-14-topology-analysis";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script><script>const MATHS=["\\begin{aligned}\n& n_{(3,-3)} - n_{(3,-1)} + n_{(3,+1)} - n_{(3,+3)} = 1 \\quad \\text{(for isolated systems)} \\\\\n& n_{(3,-3)} - n_{(3,-1)} + n_{(3,+1)} - n_{(3,+3)} = 0 \\quad \\text{(for periodic systems)}\n\\end{aligned}","\\begin{aligned}\n& SA = \\ln(N) - \\sum_i^N \\left( -p_i \\ln p_i \\right) \\qquad p_i = \\frac{\\rho(r_{\\text{BCP}_i})}{\\sum_i^N \\rho(r_{\\text{BCP}_i})}\n\\end{aligned}"];</script>
+<script src="app.js"></script></body></html>

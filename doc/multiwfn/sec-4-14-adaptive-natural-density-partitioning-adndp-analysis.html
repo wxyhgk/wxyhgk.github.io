@@ -1,0 +1,207 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="414-自适应自然密度划分-adaptive-natural-density-partitioning-adndp-分析"><strong>4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析</strong></h1>
+<p>AdNDP 分析的理论基础已在<a href="sec-3-17-adaptive-natural-density-partitioning-analysis.html#3171-%E7%90%86%E8%AE%BA">3.17.1 节</a>介绍，请先阅读。下面展示如何用 AdNDP 方法研究几个实际分子的多中心轨道。关于 AdNDP 分析的更详细讨论见我的博文“通过 AdNDP 方法研究多中心键以及 ELF/LOL 和多中心键级”（中文，<a href="http://sobereva.com/138">http://sobereva.com/138</a>）。</p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>注意：在 AdNDP 分析中强烈不建议使用弥散函数，因为它们常引起数值问题（有时导致 Multiwfn 载入输入文件时崩溃），而对 AdNDP 结果从无改善！</p>
+</blockquote>
+<h2 id="4141-分析-li₅-团簇"><strong>4.14.1 分析 Li₅⁺ 团簇</strong></h2>
+<p>在 <em>Chem. Eur. J.</em>, <strong>6</strong>, 2982 (2000) 中，作者通过考察 ELF 等值面指出 Li₅⁺ 团簇有两个 4 中心 2 电子 (4c-2e) 键。本例用 AdNDP 方法研究该团簇以验证其说法。首先在 B3LYP/6-311G* 水平优化 Li₅⁺ 团簇，再编写 Gaussian 单点任务输入文件。路线部分必须指定 <em>pop=nboread</em> 关键词，文件末尾必须加 <em>\$NBO AONAO DMNAO \$END</em>。用 Gaussian 运行此文件，再把 checkpoint 文件转为 .fch 格式。输入文件、输出文件和 .fch 文件已放在 &quot;examples\AdNDP&quot; 文件夹中。</p>
+<p>启动 Multiwfn 并输入 <em>examples\AdNDP\Li5+.out</em>，再选主功能 14。Multiwfn 载入必要信息后出现菜单。由于该团簇很小，可直接用穷举方式依次搜索所有可能的 1c-2e、2c-2e、3c-2e、4c-2e 和 5c-2e 轨道。先选选项 2 搜索 1c-2e 轨道（即孤对），但因所有尝试的 1c 轨道的占据数都低于默认阈值（该值接近 2.0，可用选项 4 调整），菜单前的候选轨道列表仍为空。再选两次选项 2，依次搜索 2c-2e 和 3c-2e 轨道，仍找不到占据数高的轨道。再选选项 2 搜索 4c-2e 轨道，此时候选轨道列表不再为空，其中有两个轨道：</p>
+<p><pre><code class="language-text">#   2 Occ:  1.9966  Atom:   1Li   2Li   3Li   4Li
+#   1 Occ:  1.9966  Atom:   1Li   2Li   3Li   5Li</code></pre></p>
+<p>因其占据数很高，显然是理想的 4c-2e 轨道，因此选选项 0 并输入 <em>2</em>，把它们从候选列表中取出存为 AdNDP 轨道。之后可用选项 5 打印 AdNDP 轨道列表。</p>
+<p>可注意到菜单顶部显示的剩余价电子数已更新为 0.020，已非常接近零，表明继续搜索 5c-2e 轨道没有意义，因为不可能再找到。</p>
+<p>现在可选选项 7 查看这两个 4c-2e AdNDP 轨道。为计算轨道波函数，Multiwfn 需先从相应的 .fch 文件载入基组信息。由于 <em>Li5+.fch</em> 与 <em>Li5+.out</em> 在同一文件夹且同名，.fch 文件会被直接载入。载入完成后弹出与主功能 0 完全相同的图形界面，在右下列表中选相应编号即可绘制 AdNDP 轨道。两轨道的 0.05 等值面如下所示。</p>
+<p><img src="assets/figures/ch4/image1124.png" alt="Li5+ 团簇的两个四中心二电子 AdNDP 轨道"></p>
+<p>AdNDP 轨道的格点数据可用选项 9 导出为 Gaussian cube 文件，以便用 VMD、Molekel 等第三方可视化程序绘制。需输入轨道序号范围，假设要输出刚找到的两个 4c-2e AdNDP 轨道，应输入 <em>1,2</em> 并选合适的格点设置，它们将作为当前文件夹下的 <em>AdNDPorb0001.cub</em> 和 <em>AdNDPorb0002.cub</em> 导出。</p>
+<p>用选项 3 可设置下一次穷举搜索的多中心轨道的中心数。所以，若已知体系中有两个 4c-2e 轨道，可直接选选项 3，输入 4，再选选项 2 开始 4c-2e 轨道的穷举搜索，从而跳过 1c-2e、2c-2e 和 3c-2e 轨道的穷举搜索。</p>
+<h3 id="计算-adndp-轨道能量"><strong>计算 AdNDP 轨道能量</strong></h3>
+<p>也可以得到已取出的 AdNDP 轨道的能量。为此，需额外提供一个纯文本文件，其中按下三角序列记录当前体系的 Fock 矩阵，以便经变换后得到轨道能量。Fock 矩阵也可从 .47 文件载入。最直接的做法是：把 <em>examples\AdNDP\Li5+.gjf</em> 复制为 <em>examples\AdNDP\Li5+_47.gjf</em>，将其最后一行改为 <em>\$NBO archive file=C:\Li5+ \$END</em>。用 Gaussian 运行此文件后得到 <em>C:\Li5+.47</em>，它是 GENNBO 程序的输入文件，包含我们需要的 Fock 矩阵。然后在 AdNDP 分析界面选选项“16 Output energy of picked AdNDP orbital”，输入 <em>Li5+.47</em> 的路径（&quot;examples\AdNDP\&quot; 文件夹中已提供），Multiwfn 即载入并立刻打印 AdNDP 轨道能量，如下所示：</p>
+<p><pre><code class="language-text">Energy of picked AdNDP orbitals:
+Orbital:     1  Energy (a.u./eV):   -0.325776     -8.8648
+Orbital:     2  Energy (a.u./eV):   -0.325776     -8.8648</code></pre></p>
+<p>如预期，两轨道能量简并，因为形状完全等价。</p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>当然，若在 .gjf 文件最后一行写 <em>\$NBO DMNAO AONAO archive file=C:\Li5+ \$END</em>，运行后不仅输出文件可用作 AdNDP 分析的输入文件，同时还会得到用于求 AdNDP 轨道能量的 .47 文件。</p>
+</blockquote>
+<h2 id="4142-分析-b₁₁-团簇"><strong>4.14.2 分析 B₁₁⁻ 团簇</strong></h2>
+<p>这次重现 AdNDP 原始论文（<em>Phys. Chem. Chem. Phys.</em>, <strong>10</strong>, 5207 (2008)）中 B₁₁⁻ 团簇的 AdNDP 分析结果。</p>
+<p>本例所需文件 <em>B11-.out</em> 和 <em>B11-.fch</em> 在 &quot;examples\AdNDP&quot; 文件夹中。几何在 B3LYP/6-311+G* 下优化，波函数在 HF/STO-3G 水平产生。你可能会怀疑这么低的基组水平下结果是否有意义；实际上 AdNDP 分析对基组质量相当不敏感，即使 STO-3G 也能给出至少定性合理的结果。此外，用大基组会在 AdNDP 分析阶段带来额外开销。</p>
+<p>启动 Multiwfn 并输入 <em>examples\AdNDP\B11-.out</em>，再选 14 进入 AdNDP 模块。照例先选 2 搜索 1c-2e 轨道，但一无所获（这是常见情形）。再选 2 从 11 个原子穷举搜索 2c-2e 轨道，Multiwfn 共尝试 11!/(11-2)!/2!=55 种组合，最终候选列表中有九个 2c 轨道（按占据数从大到小排序）：</p>
+<p><pre><code class="language-text">#   9 Occ:  1.9727  Atom:   6B   10B
+#   8 Occ:  1.9727  Atom:   5B   11B
+#   7 Occ:  1.9742  Atom:   7B    9B
+#   6 Occ:  1.9742  Atom:   7B    8B
+#   5 Occ:  1.9869  Atom:   2B    6B
+#   4 Occ:  1.9869  Atom:   3B    5B
+#   3 Occ:  1.9871  Atom:   9B   11B
+#   2 Occ:  1.9871  Atom:   8B   10B
+#   1 Occ:  1.9942  Atom:   2B    3B</code></pre></p>
+<p>它们的占据数都接近 2.0，看似可直接全部取出作为 AdNDP 轨道，但不建议这么做，因为相邻轨道可能共享部分密度。例如第 1 和第 4 个候选轨道共享部分密度，因为都与原子 3 有关。为避免电子重复计数，应先选选项 0 并输入 3 取出前三个轨道，此时这三个轨道的密度将从密度矩阵中扣除，其余候选轨道的波函数和占据数会自动更新。之后候选列表变为：</p>
+<p><pre><code class="language-text">#   6 Occ:  1.9538  Atom:   6B   10B
+#   5 Occ:  1.9538  Atom:   5B   11B
+#   4 Occ:  1.9556  Atom:   7B    8B
+#   3 Occ:  1.9556  Atom:   7B    9B
+#   2 Occ:  1.9750  Atom:   2B    6B
+#   1 Occ:  1.9750  Atom:   3B    5B</code></pre></p>
+<p>由于部分密度已被扣除，剩下六个候选轨道的占据数略有下降。现在选选项 0 并输入 <em>4</em> 取出前四个候选轨道。虽然第 3 和第 4 个轨道都与原子 7 有关，这里不得不忽略轻微的电子重复计数，否则二者的简并会被破坏，最终 AdNDP 图像将不再符合分子对称性（决定取出前可用选项 8 仔细检查候选轨道）。最后取出剩下两个轨道（即 6B-10B 和 5B-11B）。此时剩余价电子数为 16.307，表明很可能找到几个占据近 2 个电子的更高中心数的轨道。</p>
+<p>现在选选项 2 开始搜索 3c-2e 轨道，当前候选轨道列表为：</p>
+<p><pre><code class="language-text">#   9 Occ:  1.7399  Atom:   1B    6B   10B
+#   8 Occ:  1.7399  Atom:   4B    5B   11B
+#   7 Occ:  1.7502  Atom:   1B    3B    4B
+#   6 Occ:  1.7502  Atom:   1B    2B    4B
+#   5 Occ:  1.8504  Atom:   1B    2B    6B
+#   4 Occ:  1.8504  Atom:   3B    4B    5B
+#   3 Occ:  1.8603  Atom:   1B    4B    7B
+#   2 Occ:  1.8673  Atom:   4B    9B   11B
+#   1 Occ:  1.8673  Atom:   1B    8B   10B</code></pre></p>
+<p>依次取出两个轨道（1B-8B-10B 和 4B-9B-11B）、一个轨道（1B-4B-7B）和两个轨道（3B-4B-5B 和 1B-2B-6B）后，剩余候选轨道的最高占据数只有 1.41，明显太低，不能视为 3c-2e 轨道，不再考虑。此时剩余价电子数为 7.03。</p>
+<p>然后可开始搜索更高中心数的轨道，注意这绝非易事，如何合理取出候选轨道也没有绝对规则，不同的取法得到不同的 AdNDP 图像。可能需要尝试多次才能得到最优的 AdNDP 图像。建议用选项 11 把当前密度矩阵和 AdNDP 轨道列表存入内存，这样就不必担心取错候选轨道，因为随时可选选项 12 恢复保存的状态。</p>
+<p>现在选选项 2 开始搜索 4c-2e 轨道，最高占据数只有 1.71，都不能取出。</p>
+<p>再选选项 2 搜索 5c-2e 轨道，会找到很多 5c 候选轨道，前两个占据数为 1.89，把它们都取出。</p>
+<p>再选选项 2 搜索 6c-2e 轨道，找不到好的候选，最高占据数只有 1.84。再选选项 2 搜索 7c-2e 轨道，取出占据最高的那个 (1.90)。此时剩余价电子只有 1.34，远小于 2.0，表明不可能再找到新的 2 电子 AdNDP 轨道，至此可结束 AdNDP 搜索。剩余电子量反映了当前 AdNDP 图像无法完全描述的电子（类似于 NBO 框架中的非 Lewis 电子）。</p>
+<p>选选项 5 可打印所有 AdNDP 轨道的信息：</p>
+<p><pre><code class="language-text">#    1 Occ:  1.9942 Atom:   2B    3B
+#    2 Occ:  1.9871 Atom:   8B   10B
+#    3 Occ:  1.9871 Atom:   9B   11B
+#    4 Occ:  1.9750 Atom:   2B    6B
+#    5 Occ:  1.9750 Atom:   3B    5B
+#    6 Occ:  1.9556 Atom:   7B    9B
+#    7 Occ:  1.9556 Atom:   7B    8B
+#    8 Occ:  1.9337 Atom:   6B   10B
+#    9 Occ:  1.9337 Atom:   5B   11B
+#   10 Occ:  1.8673 Atom:   4B    9B   11B
+#   11 Occ:  1.8673 Atom:   1B    8B   10B
+#   12 Occ:  1.8533 Atom:   1B    4B    7B
+#   13 Occ:  1.8451 Atom:   3B    4B    5B
+#   14 Occ:  1.8451 Atom:   1B    2B    6B
+#   15 Occ:  1.8908 Atom:   1B    2B    6B    8B   10B
+#   16 Occ:  1.8908 Atom:   3B    4B    5B    9B   11B
+#   17 Occ:  1.9036 Atom:   2B    3B    5B    6B    7B    8B    9B
+Total occupation number in above orbitals:   32.6607</code></pre></p>
+<h3 id="用-vmd-脚本同时绘制一批-adndp-轨道"><strong>用 VMD 脚本同时绘制一批 AdNDP 轨道</strong></h3>
+<p>现在可用选项 7 查看所有取出的 AdNDP 轨道。但这次展示如何经由 VMD 绘制 AdNDP 轨道，这样可同时绘制一批轨道，且图形质量好。VMD 可在 <a href="http://www.ks.uiuc.edu/Research/vmd/">http://www.ks.uiuc.edu/Research/vmd/</a> 免费获取。</p>
+<p>选选项 9，选 &quot;Medium-quality grid&quot;，再输入 <em>1-17</em> 把全部 17 个 AdNDP 轨道导出为当前文件夹下的 cube 文件，文件名格式为 <em>AdNDPorb[index].cub</em>。假设已把它们都移到 C: 盘，应编辑 <em>examples\AdNDP\plotAdNDP.vmd</em>，把这一行：</p>
+<p><pre><code class="language-tcl">set name "D:\\CM\\my_program\\Multiwfn\\AdNDPorb$idx.cub"</code></pre></p>
+<p>改为：</p>
+<p><pre><code class="language-tcl">set name "C:\\AdNDPorb$idx.cub"</code></pre></p>
+<p>还要确保脚本中 &quot;set istart&quot; 和 &quot;set iend&quot; 后的值已分别设为 1 和 17，这样 <em>AdNDPorb0001.cub</em> 到 <em>AdNDPorb0017.cub</em> 都会被载入。轨道等值面正负相的颜色由 &quot;set posclr&quot; 和 &quot;set negclr 0&quot; 后的值决定，轨道等值由 &quot;set isoval&quot; 决定。</p>
+<p>现在启动 VMD，把 <em>plotAdNDP.vmd</em> 的全部内容复制到 VMD 命令窗口，所有 AdNDP 轨道的 cube 文件都会载入 VMD。此时 VMD 主窗口如下所示：</p>
+<p><img src="assets/figures/ch4/image1125.png" alt="载入 VMD 主窗口的所有 AdNDP 轨道"></p>
+<p>每个条目对应一个 AdNDP 轨道。当前 17 个轨道全部显示。若双击 &quot;D&quot; 标签，相应轨道即在图形窗口中隐藏。为显示分子结构，把 <em>examples\AdNDP\B11-.xyz</em> 拖入 VMD 主窗口载入，再进入 &quot;Graphics&quot; - &quot;Representation&quot;，把绘制方式改为 CPK。</p>
+<p>若让 VMD 只显示全部九个 2c-2e 和全部五个 3c-2e 轨道，可看到下图左右两部分：</p>
+<p><img src="assets/figures/ch4/image1126.png" alt="B11 团簇的二中心二电子和三中心二电子 AdNDP 轨道"></p>
+<p>两个 5c-2e 和一个 7c-2e 轨道如下所示（图中 7c-2e 轨道看起来像 5c 轨道，主要原因是绘图脚本中的等值较高，即 0.06）。</p>
+<p><img src="assets/figures/ch4/image1127.png" alt="B11 的两个五中心二电子和七中心二电子 AdNDP 轨道"></p>
+<h2 id="4143-分析菲"><strong>4.14.3 分析菲</strong></h2>
+<p><img src="assets/figures/ch4/image996.png" alt="菲的原子编号"></p>
+<p>菲 (C₁₄H₁₀，见上图) 的 AdNDP 分析已在 <em>J. Org. Chem.</em>, <strong>73</strong>, 9251 (2008) 中给出，本节重复其结果，你将学会如何使用用户导向搜索。本例所用文件在 <em>examples\AdNDP</em> 文件夹中，以 &quot;phenanthrene&quot; 开头。</p>
+<p>首先载入 <em>examples\AdNDP\phenanthrene.out</em> 并进入主功能 14。与前例一致，先选两次选项 2，搜索 1c 轨道再搜索 2c 轨道。找不到 1c-2e 轨道，而候选 2c 轨道有 31 个。其中十个对应 C-H σ 键且彼此无交叠，可先取出，即选选项 0 输入 <em>8-15</em>，再选选项 0 输入 <em>9,10</em>。接着依次取出对应 C-C σ 键的十六个 2c 候选轨道。最稳妥的取法是输入 <em>0 2 0 1 0 2 0 1 0 2 0 2 0 2 0 2 0 2</em>，其中空格表示按一次回车。</p>
+<p>此时只剩五个轨道：</p>
+<p><pre><code class="language-text"> #   5 Occ: 1.7182 Atom:   5C    6C
+ #   4 Occ: 1.7182 Atom:  14C   15C
+ #   3 Occ: 1.7192 Atom:   11C   13C
+ #   2 Occ: 1.7192 Atom:   1C    2C
+ #   1 Occ: 1.8033 Atom:   7C   10C</code></pre></p>
+<p>占据数为 1.80 的第一个轨道对应 C7 和 C10 之间的 π 键，现在取出。剩下四个轨道占据数约 1.72，不是理想的 2c-2e 键，暂不考虑。</p>
+<p>虽然可用选项 2 像往常一样穷举搜索 3c、4c、5c……轨道，但对当前体系这未必是好办法，用户导向搜索往往更有效。先选选项 13 查看每个原子上的剩余电子布居，见下，此信息通常有助于指导用户合理设置穷举搜索列表。（注意：选项 2 触发的穷举搜索只针对穷举搜索列表中的原子，默认包含当前体系所有原子。）</p>
+<p><pre><code class="language-text"> 1C :  1.0250       2C :  1.0370       3C :  1.0280       4C :  1.0414
+ 5C :  1.0339       6C :  1.0262       7C :  0.1322       8C :  1.0414
+ 9C :  1.0280      10C :  0.1322      11C :  1.0370      12H :  0.0117
+13C :  1.0250      14C :  1.0262      15C :  1.0339      16H :  0.0121
+17H :  0.0113      18H :  0.0117      19H :  0.0111      20H :  0.0111
+21H :  0.0121      22H :  0.0113      23H :  0.0111      24H :  0.0126</code></pre></p>
+<p>从上数据清楚看到，氢上几乎没有剩余布居，搜索时可忽略。C7 和 C10 同理也可忽略。其余原子占据数约 1.03，是分子两侧两个六元环上的碳。可预期这两个环可能类似苯环，在菲中呈现局域芳香性。</p>
+<p>基于此考虑，选选项 1 并输入 <em>1-6</em>，在由原子 1、2、3、4、5、6 组成的片段上搜索 AdNDP 轨道，得到：</p>
+<p><pre><code class="language-text">...ignored
+ #   5 Occ: 0.2157 Atom:   1C    2C    3C    4C    5C    6C
+ #   4 Occ: 0.2998 Atom:   1C    2C    3C    4C    5C    6C
+ #   3 Occ: 1.8214 Atom:   1C    2C    3C    4C    5C    6C
+ #   2 Occ: 1.9850 Atom:   1C    2C    3C    4C    5C    6C
+ #   1 Occ: 2.0000 Atom:   1C    2C    3C    4C    5C    6C</code></pre></p>
+<p>显然前三个轨道适合作为 6c-2e AdNDP 轨道取出，现在取出。它们的 0.03 等值面如下所示，很像苯的 π 分子轨道，表明边缘六元环具有与苯相当的强芳香性。</p>
+<p><img src="assets/figures/ch4/image1128.jpeg" alt="菲的三个六中心二电子 AdNDP 轨道的 0.03 等值面"></p>
+<p>接着用同样方法在另一边缘环上搜索 6c-2e 轨道，即再选选项 1 并输入 <em>8,9,11,13-15</em>，再取出占据最高的三个轨道。</p>
+<p>此时剩余价电子只有 1.15，已经很小，显然 AdNDP 搜索应到此结束。最终共找到 33 个轨道（27 个 2c-2e，6 个 6c-2e）。</p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>在由原子 1~6 组成的环上搜索 6c-2e 轨道时，其实还有另一种做法（虽更麻烦），即选选项 -1 进入定义穷举搜索列表的界面，输入 <em>clean</em> 清空默认内容，再输入 <em>a 1-6</em> 把环原子 1、2、3、4、5、6 加入列表，然后输入 <em>x</em> 保存退出。之后选选项 3 并输入 <em>6</em>，把下一次穷举搜索的原子数设为 6，再选选项 2 在该环上搜索 6 中心轨道。</p>
+</blockquote>
+<h3 id="计算-adndp-轨道能量"><strong>计算 AdNDP 轨道能量</strong></h3>
+<p>用与<a href="#4141-%E5%88%86%E6%9E%90-li%E2%82%85-%E5%9B%A2%E7%B0%87">4.14.1 节</a>类似的步骤计算 AdNDP 轨道能量。含当前分子 Fock 矩阵的 NBO .47 文件已作为 <em>examples\AdNDP\phenanthrene.47</em> 提供，由 <em>examples\AdNDP\phenanthrene_47.gjf</em> 产生。选选项 16 并输入此文件路径，Multiwfn 即从中载入 Fock 矩阵并输出轨道能量：</p>
+<p><pre><code class="language-text">...(ignored)
+ Orbital:    25  Energy (a.u./eV):   -0.685803    -18.6616
+ Orbital:    26  Energy (a.u./eV):   -0.685803    -18.6616
+ Orbital:    27  Energy (a.u./eV):   -0.260794     -7.0966
+ Orbital:    28  Energy (a.u./eV):   -0.348201     -9.4750
+ Orbital:    29  Energy (a.u./eV):   -0.255535     -6.9535
+ Orbital:    30  Energy (a.u./eV):   -0.264372     -7.1939
+ Orbital:    31  Energy (a.u./eV):   -0.348201     -9.4750
+ Orbital:    32  Energy (a.u./eV):   -0.255535     -6.9535
+ Orbital:    33  Energy (a.u./eV):   -0.264372     -7.1939</code></pre></p>
+<p>可见，对应 π 轨道的 28-33 号轨道能量远高于 σ 轨道。左侧六元环的三个 π 轨道 (28-30) 与右侧六元环的对应轨道 (31-33) 对称。每侧能量最高的两个轨道（如 32 和 33）近乎简并且明显高于最低的那个（如 31），与孤立苯的占据 π 轨道情形非常相似。</p>
+<h3 id="计算-adndp-轨道组成"><strong>计算 AdNDP 轨道组成</strong></h3>
+<p>有时 AdNDP 轨道的组成也很有意思。在 AdNDP 模块中可直接选选项 15 用 NAO 方法分析轨道组成，NAO 方法已在<a href="sec-3-10-orbital-composition-analysis.html#3104-%E7%94%A8%E8%87%AA%E7%84%B6%E5%8E%9F%E5%AD%90%E8%BD%A8%E9%81%93%E6%96%B9%E6%B3%95%E5%81%9A%E8%BD%A8%E9%81%93%E6%88%90%E5%88%86%E5%88%86%E6%9E%90-7">3.10.4 节</a>介绍，特别适合分析 AdNDP 轨道。</p>
+<p>选选项 15，再输入一个已取出的 AdNDP 轨道序号，如 <em>31</em>，可看到（默认只显示绝对贡献大于 0.5% 的项）：</p>
+<p><pre><code class="language-text">    NAO#   Center   Label      Type    Composition
+      67    8(C )    px       Val( 2p)     2.247%
+      76    9(C )    px       Val( 2p)     1.929%
+      94   11(C )    px       Val( 2p)    13.276%
+     105   13(C )    px       Val( 2p)    32.846%
+     114   14(C )    px       Val( 2p)    34.484%
+     123   15(C )    px       Val( 2p)    15.204%
+
+ Condensed NAO terms to shells:
+   Atom:     8(C )  Shell:    39( 2p Val)     2.247%
+   Atom:     9(C )  Shell:    44( 2p Val)     1.929%
+   Atom:    11(C )  Shell:    54( 2p Val)    13.276%
+   Atom:    13(C )  Shell:    61( 2p Val)    32.846%
+   Atom:    14(C )  Shell:    66( 2p Val)    34.484%
+   Atom:    15(C )  Shell:    71( 2p Val)    15.204%
+
+ Condensed NAO terms to atoms:
+   Center   Composition
+     8(C )     2.251%
+     9(C )     1.932%
+    11(C )    13.276%
+    13(C )    32.849%
+    14(C )    34.487%
+    15(C )    15.204%</code></pre></p>
+<p>如预期，这个 π 型的 6c-2e 轨道纯粹由 $p_{\mathrm{x}}$ 自然原子轨道组成，其轴垂直于菲平面。该轨道离域于整个环，但主要分布在原子 13 和 14 上。</p>
+<p>注意还有另一种计算 AdNDP 轨道组成的方法，即用选项 14 把 AdNDP 轨道导出为当前文件夹下的 <em>AdNDP.mwfn</em>，再以此文件为 Multiwfn 输入文件，像往常一样做轨道组成分析（如 Mulliken 分析、Hirshfeld 分析等，见<a href="sec-4-8-molecular-orbital-composition-analysis.html">4.8 节</a>的例子）。对本例，此 .mwfn 文件含 146 个轨道，因为原本有 146 个自然原子轨道，但只有前 33 个轨道对应 AdNDP 轨道因而有意义。</p>
+<h2 id="4144-分析-au₂₀-团簇"><strong>4.14.4 分析 Au₂₀ 团簇</strong></h2>
+<p>本节对 Au₂₀ 团簇做 AdNDP 分析，所需文件可从 <a href="http://sobereva.com/multiwfn/extrafiles/Au20.rar">http://sobereva.com/multiwfn/extrafiles/Au20.rar</a> 下载。</p>
+<p>启动 Multiwfn 并输入：</p>
+<p><pre><code class="language-text">Au20.out  // Generated at B3PW91/Lanl2DZ level based on optimized geometry
+14  // AdNDP analysis
+2  // Search 1-center AdNDP orbitals. 100 candidates are found, whose occupation numbers are very close to 2.0 and thus can be picked out
+0  // Pick out orbitals
+100  // Pick out all 100 candidate orbitals
+2  // Perform exhaustive search of 2-centers orbitals. Nothing can be found
+2  // Perform exhaustive search of 3-centers orbitals. Again nothing can be found
+2  // Perform exhaustive search of 4-centers orbitals. Now you can see four candidates with 1.84 e and six candidates with 1.7589 e
+0  // Pick out orbitals
+4  // Pick out first four orbitals. The remaining orbitals now have occupancy of 1.6913, which, although is not quite high, it is still worth to be picked out in current circumstance
+0  // Pick out orbitals
+6  // Pick out remaining six orbitals.</code></pre></p>
+<h3 id="绘制-adndp-轨道"><strong>绘制 AdNDP 轨道</strong></h3>
+<p>下面用绘图脚本经 VMD 绘制全部十个取出的 4c 轨道。先导出它们的 cube 文件，输入以下命令：</p>
+<p><pre><code class="language-text">9  // Export cube file of picked AdNDP orbitals
+2  // Medium-quality grid, which is adequate for producing smooth orbital isosurface for present system
+101-110  // The index range of the picked 4c-orbitals</code></pre></p>
+<p>稍候，当前文件夹下得到十个 cube 文件，第一个是 <em>AdNDPorb0101.cub</em>，最后一个是 <em>AdNDPorb0110.cub</em>。我们打算把轨道 101-104 (occ=1.84) 用红色绘制、105-110 (occ=1.69) 用橙色绘制，以便清楚区分。</p>
+<p>编辑 <em>examples\AdNDP\plotAdNDP.vmd</em>，把 &quot;istart&quot; 和 &quot;iend&quot; 设为 101 和 104。再修改 &quot;set name&quot; 后的路径，使其对应 cube 文件实际所在路径。另外，在两个 &quot;mol modmaterial...&quot; 行前加 # 符号注释掉，使等值面画成不透明。之后启动 VMD，把 VMD 脚本全部内容复制到 VMD 命令窗口运行，可见前四个 4c 轨道已在 VMD 图形窗口中显示为等值面。</p>
+<p>还需在图上绘制 105-110 号轨道。把脚本中的 &quot;istart&quot; 和 &quot;iend&quot; 设为 105 和 110；把 &quot;posclr&quot; 设为 3，使正相的等值面颜色为橙色（注意这些 4c 轨道只有正相）；把 &quot;idinit&quot; 设为 4，因为显示轨道 101、102、103 和 104 的体系在 VMD 中已被分配为 ID=0、ID=1、ID=2 和 ID=3，故下一个载入的轨道对应的 ID 必须为 4。再把脚本内容复制到 VMD 命令窗口运行，可见其余六个 4c 轨道也已显示。</p>
+<p>最后，选 &quot;Graphics&quot; - &quot;Representations&quot;，点 &quot;Create Rep&quot;，把 &quot;Drawing method&quot; 改为 &quot;CPK&quot;。此时应看到下图，每个红色和橙色等值面分别代表团簇每个顶点和每条棱处的 4c-2e 轨道。</p>
+<p><img src="assets/figures/ch4/image1129.png" alt="Au20 团簇的一个 AdNDP 轨道"></p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-4-14-adaptive-natural-density-partitioning-adndp-analysis";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script>
+<script src="app.js"></script></body></html>

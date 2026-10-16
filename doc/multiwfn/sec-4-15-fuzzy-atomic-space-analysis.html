@@ -1,0 +1,283 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4.15 模糊原子空间 (Fuzzy atomic space) 分析 · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="415-模糊原子空间-fuzzy-atomic-space-分析"><strong>4.15 模糊原子空间 (Fuzzy atomic space) 分析</strong></h1>
+<p>模糊原子空间的基本概念已在<a href="sec-3-18-fuzzy-atomic-space-analysis.html#3180-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5">3.18.0 节</a>介绍。本节给出几个例子，展示模糊原子空间分析模块的一些功能。多数情况下采用默认的 Becke 定义的模糊原子空间，因为它计算简便，且对多数情形合理。但 Hirshfeld-I 和 MBIS 原子空间更稳健，在某些情形明显更好，只是需要迭代优化原子空间，对大体系开销较大。可用选项 -1 选择模糊分析模块所用的原子空间定义。</p>
+<h2 id="4151-研究苯的离域指数"><strong>4.15.1 研究苯的离域指数</strong></h2>
+<p>离域指数 (delocalization index, DI) 的定义已在<a href="sec-3-18-fuzzy-atomic-space-analysis.html#3185-%E5%AE%9A%E5%9F%9F%E5%8C%96%E6%8C%87%E6%95%B0-li%E4%B8%8E%E7%A6%BB%E5%9F%9F%E5%8C%96%E6%8C%87%E6%95%B0-di-4-44">3.18.5 节</a>详细介绍。DI 最初是针对 AIM 原子空间提出的，而研究表明，若在模糊原子空间中计算 DI，计算成本显著降低，结果仍有意义。本例在 Becke 模糊原子空间中计算 DI，研究苯中不同原子对之间电子离域的程度。</p>
+<p>启动 Multiwfn 并输入以下命令：</p>
+<p><pre><code class="language-text">examples\benzene.wfn  // Generated under B3LYP/6-311G*
+15  // Fuzzy atomic space analysis
+4  // Calculate localization index (LI) and DI. Multiwfn first makes use of DFT numerical quadrature scheme to calculate atomic overlap matrix (AOM) in each fuzzy atomic space, and then convert AOM to DI and LI.
+n  // Do not output LI and DI to plain text file</code></pre></p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>Multiwfn 会自动检查并输出 AOM 的误差，本次计算的误差小于 0.001，完全可忽略。若误差大到不可接受，可把 <em>settings.ini</em> 中的 &quot;iautointgrid&quot; 设为 0，并把 &quot;radpot&quot; 和 &quot;sphpot&quot; 设为较大值。当 &quot;iautointgrid&quot; 为 1 时，Multiwfn 用 (40,230) 格点计算 AOM，其精度直接影响 LI、DI 以及 PDI 和 FLU 的精度。</p>
+</blockquote>
+<p>从屏幕输出的 DI 矩阵可见，相邻两碳原子（如 1-2）与相邻 C-H 原子（如 1-7）之间的 DI 较大（分别为 1.467 和 0.877），即成键原子间电子离域很强，主要源于 σ 键的共享电子。相比之下，非键连碳原子之间的 DI 很小，约 0.1，但明显不为零，反映了 π 电子高度离域的特征。</p>
+<p>模糊原子空间中计算的 DI 实质就是 Mayer 提出的模糊键级。根据 DI 数据，可说苯中 C-C 键和 C-H 键的键级分别为 1.467 和 0.877，前者对应单 σ 键加“半个”π 键，后者对应典型的单 σ 键。</p>
+<p>由于苯是严格平面分子，可把 DI 分解为 DI-σ 和 DI-π。下面计算后者。输入 <em>0</em> 回到主菜单，再输入以下命令：</p>
+<p><pre><code class="language-text">6  //Modify wavefunction
+26  //Modify occupation number
+0  // Select all orbitals
+0  // Make occupation number of all orbitals to zero
+17,20,21  // MO 17,20,21 correspond to π orbitals.
+2  // Set their occupation numbers to 2 (closed-shell orbitals)
+q  // Return to upper level of menu
+-1  //Return to main menu</code></pre></p>
+<p>再像之前一样计算 DI，由于除 π 轨道外所有轨道的占据数都已置零，结果即 DI-π。</p>
+<p><img src="assets/figures/ch4/image1130.png" alt="苯的原子编号"></p>
+<p>C1-C6、C1-C5 和 C1-C4 之间的 DI-π 分别为 0.438、0.055 和 0.093，显然对位碳之间的 π 电子离域大于间位碳。</p>
+<h2 id="4152-用-pdifluflu-π-和-plr-研究菲的芳香性"><strong>4.15.2 用 PDI、FLU、FLU-π 和 PLR 研究菲的芳香性</strong></h2>
+<p>PDI、FLU、FLU-π 和 PLR 是有用的芳香性指标，定义已在<a href="sec-3-18-fuzzy-atomic-space-analysis.html#3186-%E5%AF%B9%E4%BD%8D%E7%A6%BB%E5%9F%9F%E5%8C%96%E6%8C%87%E6%95%B0-pdi-5">3.18.6 节</a>、<a href="sec-3-18-fuzzy-atomic-space-analysis.html#3187-%E8%8A%B3%E9%A6%99%E6%B6%A8%E8%90%BD%E6%8C%87%E6%95%B0-flu%E4%B8%8E-flu-%CF%80-67">3.18.7 节</a>和<a href="sec-3-18-fuzzy-atomic-space-analysis.html#3189-%E5%AF%B9%E4%BD%8D%E7%BA%BF%E6%80%A7%E5%93%8D%E5%BA%94%E6%8C%87%E6%95%B0-plr-10">3.18.9 节</a>介绍。本例在 Becke 模糊原子空间中计算它们，研究菲不同环的芳香性。</p>
+<p><img src="assets/figures/ch4/image996.png" alt="菲的原子编号"></p>
+<h3 id="计算-pdi"><strong>计算 PDI</strong></h3>
+<p>先计算 PDI。启动 Multiwfn 并输入以下命令：</p>
+<p><pre><code class="language-text">examples\phenanthrene.wfn  // Optimized at B3LYP/6-31G* level
+15  // Fuzzy atomic space analysis
+5  // Calculate PDI</code></pre></p>
+<p>然后 Multiwfn 开始计算原子交叠矩阵 (atomic overlap matrix, AOM)，这是计算密集的工作。之后 AOM 被转换为离域指数 (DI)，DI 矩阵输出到屏幕。最后会提示输入所关心的环的原子序号，输入顺序应与原子连接顺序一致。先算中间环的 PDI，即输入 <em>4,8,9,10,7,3</em>，结果为：</p>
+<p><pre><code class="language-text">Delocalization index of     4(C )   --   10(C ):    0.052992
+Delocalization index of     8(C )   --    7(C ):    0.052992
+Delocalization index of     9(C )   --    3(C ):    0.036334
+PDI value is    0.047439</code></pre></p>
+<p>PDI 值即 C4-C10、C8-C7 和 C9-C3 之间 DI 的平均。再输入 <em>8,9,11,13,14,15</em> 计算边缘环的 PDI，结果为 0.0817。可见边缘环的电子离域强于中间环，故边缘环芳香性更大。下面用 FLU 和 FLU-π 研究芳香性，看能否得到同样结论。</p>
+<h3 id="计算-flu"><strong>计算 FLU</strong></h3>
+<p>输入 <em>q</em> 回到上一级菜单，再输入 <em>6</em> 计算 FLU，然后依次输入 <em>4,8,9,10,7,3</em> 和 <em>8,9,11,13,14,15</em>。中间环和边缘环的 FLU 分别为 0.025289 和 0.007499，此结果表明边缘环更像典型的芳香体系（苯），因而芳香性大于中间环。注意 AOM 在算 PDI 时已算过，所以这次自动跳过 AOM 的计算过程。</p>
+<h3 id="计算-flu-π"><strong>计算 FLU-π</strong></h3>
+<p>再输入 <em>q</em> 回到上一级菜单，输入 <em>7</em> 计算 FLU-π。首先需输入 π 轨道的序号。通过查看所有轨道的等值面（或利用主功能 100 的选项 22）可知 36、40、43、44、45、46 和 47 是 π 轨道，此处输入 <em>36,40,43,44,45,46,47</em>，然后输出 π 电子的 DI。之后提示输入环中的原子序号，依次输入 <em>4,8,9,10,7,3</em> 和 <em>8,9,11,13,14,15</em>。中间环和边缘环的 FLU-π 分别为 0.149238 和 0.034904。显然 FLU-π 分析也证实边缘环芳香性更强。</p>
+<h3 id="计算-plr"><strong>计算 PLR</strong></h3>
+<p>最后计算对位线性响应指数 (para linear response index, PLR)。PLR 基于线性响应核，依赖虚轨道信息；但 .wfn 文件只含占据轨道，故必须用 .mwfn/.fch/.molden/.gms 文件做输入。重启 Multiwfn 并输入以下命令：</p>
+<p><pre><code class="language-text">examples\phenanthrene.fch  // Obtained at the same level as phenanthrene.wfn
+15  // Fuzzy space analysis
+10  // Calculate PLR</code></pre></p>
+<p>Multiwfn 会计算凝聚线性响应核 (condensed linear response kernel, CLRK) 矩阵，之后依次输入 <em>4,8,9,10,7,3</em> 和 <em>8,9,11,13,14,15</em>，结果分别为 0.248030 和 0.489560。前者远小于后者，PLR 同样验证了边缘环芳香性大于中间环的结论。</p>
+<p>注意 PDI 和 PLR 都可分为 α 和 π 部分，分别考察 α 和 π 芳香性，细节见<a href="sec-3-18-fuzzy-atomic-space-analysis.html#3186-%E5%AF%B9%E4%BD%8D%E7%A6%BB%E5%9F%9F%E5%8C%96%E6%8C%87%E6%95%B0-pdi-5">3.18.6 节</a>和<a href="sec-3-18-fuzzy-atomic-space-analysis.html#3189-%E5%AF%B9%E4%BD%8D%E7%BA%BF%E6%80%A7%E5%93%8D%E5%BA%94%E6%8C%87%E6%95%B0-plr-10">3.18.9 节</a>。</p>
+<h2 id="4153-计算片段偶极矩以展示局域极性"><strong>4.15.3 计算片段偶极矩以展示局域极性</strong></h2>
+<blockquote>
+<p><strong>注</strong></p>
+<p>本主题的中文版是我的博文“使用 Multiwfn 计算分子片段的偶极矩以及复合物中单体的偶极矩”（<a href="http://sobereva.com/558">http://sobereva.com/558</a>，中文），其中有额外例子和扩展讨论。</p>
+</blockquote>
+<p>片段的偶极矩可定义为：</p>
+<p><div class="mathdisp" data-mi="0" title="点击复制 TeX">$$
+\mathbf{D}_{F}=\sum_{A\in F}\left[Z_{A}\mathbf{R}_{A}-\int w_{A}(\mathbf{r})\rho(\mathbf{r})\mathbf{r}\,\mathrm{d}\mathbf{r}\right]
+$$</div></p>
+<p>其中 <em>A</em> 为片段 <em>F</em> 中的原子序号，$Z_{A}$ 和 $\mathbf{R}_{A}$ 分别为原子 <em>A</em> 的核电荷和位置，$w_{A}$(<strong>r</strong>) 为原子 <em>A</em> 的原子权重函数。</p>
+<p>如<a href="sec-3-18-fuzzy-atomic-space-analysis.html#3183-%E5%8E%9F%E5%AD%90%E4%B8%8E%E5%88%86%E5%AD%90%E5%A4%9A%E6%9E%81%E7%9F%A9%E5%8F%8A--2">3.18.3 节</a>所述，Multiwfn 能计算原子和分子的偶极/多极矩；若定义一个原子列表，则输出的分子的偶极和多极矩即对应片段的矩。本计算利用此功能计算苯酚二聚体中两个单体各自的偶极矩，采用 Hirshfeld 权重函数，因其计算简便且物理意义较清楚。</p>
+<p>启动 Multiwfn 并输入以下命令：</p>
+<p><pre><code class="language-text">examples\phenoldimer.wfn  // Wavefunction file of optimized phenol dimer
+15  // Fuzzy atomic space analysis
+-1  // Select method for defining atomic space
+3  // Hirshfeld based on built-in spherically averaged atomic densities
+2  // Calculate atomic and molecular multipole moments
+1  // Output result on screen</code></pre></p>
+<p>然后 Multiwfn 开始计算每个原子的布居数、偶极和多极矩，最后打印全体系（此处的“分子”即当前整个体系）的数据：</p>
+<p><pre><code class="language-text">              *****  Molecular dipole and multipole moments  *****
+ Total number of electrons:    100.000331   Net charge: -0.000331
+ Molecular dipole moment (a.u.):       1.227306     -0.128087      0.650833
+ Molecular dipole moment (Debye):      3.119501     -0.325563      1.654252
+ Magnitude of molecular dipole moment (a.u.&amp;Debye):      1.395088      3.545959
+ Molecular quadrupole moments (Standard Cartesian form):
+ XX=  -56.973177  XY=    3.413050  XZ=    4.769915
+ YX=    3.413050  YY=  -58.109370  YZ=    4.188508
+ ZX=    4.769915  ZY=    4.188508  ZZ=  -57.714457
+ Molecular quadrupole moments (Traceless Cartesian form):
+ XX=    0.938737  XY=    5.119575  XZ=    7.154872
+ YX=    5.119575  YY=   -0.765553  YZ=    6.282762
+ ZX=    7.154872  ZY=    6.282762  ZZ=   -0.173184
+ Magnitude of the traceless quadrupole moment tensor:    0.999096
+ Molecular quadrupole moments (Spherical harmonic form):
+ Q_2,0 =  -0.173184   Q_2,-1=   7.254708   Q_2,1=   8.261735
+ Q_2,-2=   5.911576   Q_2,2 =   0.983972
+ Magnitude: |Q_2|=   12.523257
+ Molecular electronic spatial extent &lt;r^2&gt;:     3515.944316
+ Components of &lt;r^2&gt;:  X=    2590.720451  Y=     631.865745  Z=     293.358120
+ Molecular octopole moments (Cartesian form):
+ XXX=   27.1548  YYY=  -34.6763  ZZZ=   12.9803  XYY=   31.5970  XXY=  -32.1231
+ XXZ=   11.3712  XZZ=   18.8632  YZZ=   -6.4625  YYZ=   25.0005  XYZ=   21.8843
+ Molecular octopole moments (Spherical harmonic form):
+ Q_3,0 =   -41.5772  Q_3,-1=    25.0762  Q_3,1 =    10.2272
+ Q_3,-2=    84.7574  Q_3,2 =   -26.3932  Q_3,-3=   -48.7725  Q_3,3 =   -53.4710
+ Magnitude: |Q_3|=    124.8215</code></pre></p>
+<p>可见二聚体的偶极矩为 (1.227306,-0.128087,0.650833) a.u.。</p>
+<p>下面计算第一个苯酚的偶极矩，输入：</p>
+<p><pre><code class="language-text">-5  // Define the atoms to be calculated
+1-13  // Atom indices of the first phenol
+2  // Calculate atomic and molecular multipole moments
+1  // Output result on screen</code></pre></p>
+<p>可看到：</p>
+<p><pre><code class="language-text">Total number of electrons:     50.095624   Net charge: -0.095624
+Molecular dipole moment (a.u.):       0.570356     -0.356257      0.284025
+Molecular dipole moment (Debye):      1.449701     -0.905516      0.721919
+Magnitude of molecular dipole moment (a.u.&amp;Debye):      0.729997      1.855468
+...[ignored]</code></pre></p>
+<p>表明第一个苯酚的偶极矩为 (0.570356,-0.356257,0.284025) a.u.，该苯酚带 -0.096 的净电荷。</p>
+<p>再输入：</p>
+<p><pre><code class="language-text">-5  // Define the atoms to be calculated
+14-26  // Atom indices of the second phenol
+2  // Calculate atomic and molecular multipole moments
+1  // Output result on screen</code></pre></p>
+<p>可得第二个苯酚的偶极矩为 (0.656950 0.228171 0.366808) a.u.。</p>
+<p>汇总，现在有三个偶极矩：</p>
+<ul>
+<li><p>二聚体：(1.227306,-0.128087,0.650833) a.u.</p>
+</li>
+<li><p>第一个苯酚：(0.570356,-0.356257,0.284025) a.u.</p>
+</li>
+<li><p>第二个苯酚：(0.656950,0.228171,0.366808) a.u.</p>
+</li>
+</ul>
+<p>为便于直观查看，在 VMD 可视化程序中把偶极矩画成箭头，VMD 可在 <a href="http://www.ks.uiuc.edu/Research/vmd/">http://www.ks.uiuc.edu/Research/vmd/</a> 免费获取。我用的版本是 VMD 1.9.3。由于 VMD 无法载入 .wfn 文件，需把当前体系转为 .xyz 文件。为此回到主菜单，进入主功能 100 并选子功能 2，可找到导出 .xyz 文件的相应选项。把当前体系导出为 <em>phenoldimer.xyz</em>。</p>
+<p>启动 VMD 并载入 <em>phenoldimer.xyz</em>。把 <em>examples\scripts\drawarrow.tcl</em> 脚本文件的所有内容复制到 VMD 命令窗口运行，即定义了一个新命令 &quot;drawarrow&quot;，用于画箭头。然后在 VMD 命令窗口输入以下命令：</p>
+<p><pre><code class="language-tcl">draw color green
+drawarrow all 1.227306 -0.128087 0.650833 2
+draw color red
+drawarrow "serial 1 to 13" 0.570356 -0.356257 0.284025 2
+draw color yellow
+drawarrow "serial 14 to 26" 0.656950 0.228171 0.366808 2</code></pre></p>
+<p>即全体系（用 &quot;all&quot; 选择）的偶极矩用绿色箭头绘制，第 1 个和第 2 个苯酚分子的偶极矩分别用红色和黄色箭头绘制。&quot;serial 1 to 13&quot; 和 &quot;serial 14 to 26&quot; 是 VMD 中的选择语法。命令末尾的参数 &quot;2&quot; 使箭头长度加倍，以便清楚显示偶极矩。</p>
+<p>适当调整图形效果后（如在 &quot;Graphics&quot; - &quot;Representation&quot; 界面把绘制方式设为 &quot;licorice&quot;），可看到下图。红、黄、绿箭头的中心分别位于两个苯酚和二聚体的几何中心，箭头长度对应偶极矩的模（乘以 2）。</p>
+<p><img src="assets/figures/ch4/image1132.png" alt="两个单体和整个二聚体的偶极矩矢量"></p>
+<p>由于两个单体的偶极矩矢量近乎平行，其矢量和即二聚体的偶极矩明显大于单体偶极矩。</p>
+<p>注意，若片段净电荷不为零，片段偶极矩依赖于原点选取。本例中，由于两苯酚分子间有轻微电荷转移，单体偶极矩必然略依赖于原点。但这不是大问题，因为单体净电荷很小，且当前原点合适（位于二聚体的核电荷中心）。</p>
+<h2 id="4154-计算原子有效体积自由体积原子极化率和原子-c₆-系数以环氧乙烷和-sih₄-为例">*<em>4.15.4 计算原子有效体积、自由体积、原子极化率和原子 <em>C</em>₆ 系数：以环氧乙烷和 SiH₄ 为例</em>*</h2>
+<blockquote>
+<p><strong>注</strong></p>
+<p>更多讨论和例子见我的博文“使用 Multiwfn 计算分子中的原子极化率”（<a href="http://sobereva.com/600">http://sobereva.com/600</a>，中文）和“使用 Multiwfn 计算原子 C6 色散系数”(<a href="http://sobereva.com/600">http://sobereva.com/709</a>，中文）。</p>
+</blockquote>
+<p>若不知原子有效体积 ($V^{\mathrm{eff}}$)、原子自由体积 ($V^{\mathrm{free}}$)、原子静态极化率 ($\alpha^{\mathrm{eff}}(0)$) 和原子 $C_6$ 系数 ( $C_{6,AA}$) 是什么，请先读<a href="sec-3-18-fuzzy-atomic-space-analysis.html#31812-%E5%8E%9F%E5%AD%90%E6%9C%89%E6%95%88%E4%BD%93%E7%A7%AF%E8%87%AA%E7%94%B1%E4%BD%93%E7%A7%AF%E6%9E%81%E5%8C%96%E7%8E%87%E4%B8%8E-c%E2%82%86-%E7%B3%BB%E6%95%B0-13">3.18.12 节</a>。本节为两个常见分子计算它们。</p>
+<h3 id="第一部分环氧乙烷的原子有效体积自由体积极化率"><strong>第一部分：环氧乙烷的原子有效体积/自由体积/极化率</strong></h3>
+<p>本例着重计算环氧乙烷 (C₂OH₄) 中原子的 $V^{\mathrm{free}}$ 和 $\alpha^{\mathrm{eff}}(0)$。其波函数文件 <em>examples\oxirane.fchk</em> 由 Gaussian 16 在 B3LYP/6-31G* 水平产生。</p>
+<p>用 Multiwfn 计算上述量之前，需按与分子计算相同的水平手动产生体系中所有元素 (C、O、H) 的波函数文件。可用你喜欢的量子化学程序完成这步。Gaussian 16 在 B3LYP/6-31G* 水平产生的 .wfn 格式原子波函数文件（<em>H.wfn</em>、<em>C.wfn</em> 和 <em>O.wfn</em>）可直接在此下载：<a href="http://sobereva.com/multiwfn/extrafiles/oxirane_atmvol.zip">http://sobereva.com/multiwfn/extrafiles/oxirane_atmvol.zip</a>，Gaussian 输入文件也一并提供。原子波函数文件不一定是 .wfn 格式，可以是 Multiwfn 支持的任何格式，如 .mwfn、.fch 和 .molden。</p>
+<p>启动 Multiwfn 并输入：</p>
+<p><pre><code class="language-text">examples\oxirane.fchk
+15  // Fuzzy analysis
+13  // Calculate atomic effective volume, free volume, polarizability and C_6 coefficient
+H.wfn  // Path of wavefunction file of hydrogen atom in isolated state
+C.wfn  // Path of wavefunction file of carbon atom in isolated state
+O.wfn  // Path of wavefunction file of oxygen atom in isolated state</code></pre></p>
+<p>输出为：</p>
+<p><pre><code class="language-text">Atom    1(C )  Effective V:    21.536  Free V:    30.181 a.u.  Ratio: 0.714
+Atom    2(C )  Effective V:    21.536  Free V:    30.181 a.u.  Ratio: 0.714
+Atom    3(O )  Effective V:    21.858  Free V:    19.915 a.u.  Ratio: 1.098
+Atom    4(H )  Effective V:     2.170  Free V:     6.680 a.u.  Ratio: 0.325
+Atom    5(H )  Effective V:     2.170  Free V:     6.680 a.u.  Ratio: 0.325
+Atom    6(H )  Effective V:     2.170  Free V:     6.680 a.u.  Ratio: 0.325
+Atom    7(H )  Effective V:     2.170  Free V:     6.680 a.u.  Ratio: 0.325
+Calculation took up       0 seconds wall clock time
+
+Atomic polarizabilities estimated using Tkatchenko-Scheffler method:
+   1(C ):   8.063 a.u.  Contribution: 29.01 %  (Ref. data:  11.300 a.u.)
+   2(C ):   8.063 a.u.  Contribution: 29.01 %  (Ref. data:  11.300 a.u.)
+   3(O ):   5.817 a.u.  Contribution: 20.92 %  (Ref. data:   5.300 a.u.)
+   4(H ):   1.464 a.u.  Contribution:  5.27 %  (Ref. data:   4.507 a.u.)
+   5(H ):   1.464 a.u.  Contribution:  5.27 %  (Ref. data:   4.507 a.u.)
+   6(H ):   1.464 a.u.  Contribution:  5.27 %  (Ref. data:   4.507 a.u.)
+   7(H ):   1.464 a.u.  Contribution:  5.27 %  (Ref. data:   4.507 a.u.)
+Sum of atomic polarizabilities:    27.800 a.u.
+...[ignored]</code></pre></p>
+<p>可见多数原子的 $V^{\mathrm{eff}}$ 相对 $V^{\mathrm{free}}$ 明显减小，意味着在分子环境中这些原子的极化率相对自由态下降，因为体积与极化率之间众所周知近似正相关。</p>
+<p>原子自由态的极化率 ($\alpha^{\mathrm{free}}(0)$) 是 Multiwfn 内置数据，在上面输出中作为“Ref. data”打印。用 Tkatchenko-Scheffler 方法估计的环氧乙烷中原子极化率 $\alpha^{\mathrm{eff}}(0)$ 即 $V^{\mathrm{eff}}$ / $V^{\mathrm{free}}$ 与 $\alpha^{\mathrm{free}}(0)$ 的乘积。如所示，所有 $\alpha^{\mathrm{eff}}(0)$ 之和为 27.8 a.u.，与基于当前几何在 MP2/aug-cc-pVTZ 水平估计的环氧乙烷分子极化率 (28.8 a.u.) 符合很好。</p>
+<p>所有 $\alpha^{\mathrm{eff}}(0)$ 之和不一定总是接近分子极化率，偏差对原子权重函数的选择很敏感。例如，若在模糊分析界面选选项 -1，改用 Hirshfeld 划分而非默认的 Becke 划分，所有 $\alpha^{\mathrm{eff}}(0)$ 之和会高达 37.9 a.u.。此时 Multiwfn 打印的“Contribution”（$\alpha^{\%}$，即某原子的 $\alpha^{\mathrm{eff}}(0)$ 占所有 $\alpha^{\mathrm{eff}}(0)$ 之和的比例）更有用，因其敏感性较低，可直观分析分子极化率的主要来源。例如，根据 Multiwfn 打印的原子百分比贡献，可发现碳原子贡献很大（每个贡献分子极化率的 29%）。</p>
+<p>值得一提的是，若原子间相互作用极弱，$V^{\mathrm{eff}}$ 应非常接近 $V^{\mathrm{free}}$。例如，Ar₂ 二聚体中 Ar 原子的 $V^{\mathrm{eff}}$ 与 Ar 的 $V^{\mathrm{free}}$ 几乎相同。</p>
+<p>在实际化学环境中计算原子体积还有另一种方法，即对电子密度做盆分析。该思想来自分子中的原子 (atoms-in-molecules, AIM) 理论。例子见<a href="sec-4-17-basin-analysis.html#4171-hcn-%E5%92%8C-li%E2%82%86-%E7%9A%84-aim-%E6%B5%81%E5%9F%9F%E5%88%86%E6%9E%90">4.17.1 节</a>。</p>
+<h3 id="第二部分sih₄-的-c₆-系数">*<em>第二部分：SiH₄ 的 <em>C</em>₆ 系数</em>*</h3>
+<p>本例着重计算 SiH₄ 的原子 $C_6$ 系数和同分子 $C_6$ 系数。根据 MBIS 原始论文（<em>J. Chem. Theory Comput.</em>, <strong>12</strong>, 3894 (2016)）第 5 节的 benchmark，MBIS 原子空间与 B3LYP/6-311+G(2df,p) 水平联用，用 Tkatchenko-Scheffler 方法计算分子 $C_6$ 系数效果最好。所以本例也采用此方案。SiH₄ 的 .fch 文件以及在 B3LYP/6-311+G(2df,p) 水平计算的 Si 和 H 原子的 .wfn 文件已在“examples\SiH4_C6\”文件夹中提供。</p>
+<p>启动 Multiwfn 并输入：</p>
+<p><pre><code class="language-text">examples\SiH4_C6\SiH4.fch
+15  // Fuzzy analysis
+-1  // Select the method for partitioning atomic spaces
+5  // MBIS
+1  // Start calculation. Then MBIS atomic spaces will be constructed
+13  // Calculate atomic effective volume, free volume, polarizability and C_6 coefficient
+examples\SiH4_C6\H.wfn  // Wavefunction file of H atom in isolated state
+examples\SiH4_C6\Si.wfn  // Wavefunction file of Si atom in isolated state</code></pre></p>
+<p>可看到以下输出以及：</p>
+<p><pre><code class="language-text">Atomic C6 coefficients estimated using Tkatchenko-Scheffler method:
+   1(Si):  118.31 a.u. (Ref. data:   305.0 a.u.)
+   2(H ):    3.83 a.u. (Ref. data:     6.5 a.u.)
+   3(H ):    3.83 a.u. (Ref. data:     6.5 a.u.)
+   4(H ):    3.83 a.u. (Ref. data:     6.5 a.u.)
+   5(H ):    3.83 a.u. (Ref. data:     6.5 a.u.)
+
+Note: Reference data denotes the built-in value of free-state atom
+Homomolecular C6 coefficient:    347.07 a.u.</code></pre></p>
+<p>可见 SiH₄ 中每个原子的 $C_6$ 系数。从大小看，显然 Si 原子对比色散效应的贡献远大于 H 原子。“Ref. data”指孤立态原子的 $C_6$ 系数，取自文献。可见 Multiwfn 还计算并打印了 SiH₄ 的同分子 $C_6$ 系数，即计算两个 SiH₄ 分子间色散相互作用所用的 $C_6$ 系数。当前值 347.07 a.u. 与 <em>J. Chem. Phys.</em>, <strong>123</strong>, 024101 (2005) 表 I 给出的 343.9 a.u. 符合非常好！但应注意，这样算出的分子 $C_6$ 系数不总是很准，有时相对误差可能接近 10% 甚至更大。另外应认识到，MBIS 并非在所有情形都最好；对某些分子，用 Hirshfeld 划分可能得到更好结果。</p>
+<h2 id="4155-可视化原子电偶极矩和四极矩"><strong>4.15.5 可视化原子电偶极矩和四极矩</strong></h2>
+<p>请先看<a href="sec-3-18-fuzzy-atomic-space-analysis.html#3183-%E5%8E%9F%E5%AD%90%E4%B8%8E%E5%88%86%E5%AD%90%E5%A4%9A%E6%9E%81%E7%9F%A9%E5%8F%8A--2">3.18.3 节</a>，了解原子电偶极矩 ($\boldsymbol{\mu}^{A}$) 和原子电四极矩 ($\boldsymbol{\Theta}^{A}$) 的定义。这两个量在给定原子空间划分方案下传达了原子核周围电子密度分布的重要信息。下面两节的例子中，我们将在 VMD 程序中计算并经由专门脚本可视化它们，你会发现它们对理解实际化学环境中原子的状态非常直观、重要。</p>
+<h3 id="41551-绘制原子偶极矩"><strong>4.15.5.1 绘制原子偶极矩</strong></h3>
+<p>这里以 H₂O₂ 分子为例，展示如何在 VMD 程序中计算并绘制原子偶极矩。VMD 可在 <a href="http://www.ks.uiuc.edu/Research/vmd/">http://www.ks.uiuc.edu/Research/vmd/</a> 免费获取，本例用的版本是 1.9.3。</p>
+<p>启动 Multiwfn 并输入：</p>
+<p><pre><code class="language-text">examples\H2O2.fch
+15  // Fuzzy atomic space analysis module
+2  // Calculate atomic and molecular multipole moments and &lt;r^2&gt;
+2  // Output result to a plain text file</code></pre></p>
+<p>此时当前文件夹下有 <em>multiple.txt</em> 和 <em>atom_moment.txt</em>。前者含原子多极矩（从单极到八极）的详细信息，后者含原子偶极矩以及原子四极矩张量的本征值和本征矢量。</p>
+<p>为在 VMD 中把原子偶极矩矢量与分子结构一起绘制，需把从 <em>H2O2.fch</em> 载入的几何导出为 <em>H2O2.xyz</em>，输入以下命令：</p>
+<p><pre><code class="language-text">0  // Return to main menu
+100  // Other functions (Part 1)
+2  // Export file
+2  // Output current structure to .xyz file
+[Press ENTER button]  // Use default file name</code></pre></p>
+<p>此时当前文件夹下有 <em>H2O2.xyz</em>。</p>
+<p>启动 VMD，载入 <em>H2O2.xyz</em>。再把 <em>atom_moment.txt</em> 和“examples\scripts\”文件夹中的 VMD 绘图脚本 <em>atomdip.tcl</em> 都移到 VMD 文件夹。接着在 VMD 命令窗口输入以下命令，第一条执行脚本（定义绘图函数），第二条以默认参数运行绘图函数：</p>
+<p><pre><code class="language-text">source atomdip.tcl
+atomdip</code></pre></p>
+<p>此时在 VMD 命令窗口可看到原子偶极矩信息（a.u.）：</p>
+<p><pre><code class="language-text">Information of atom 1
+Atomic dipole moment:  -0.198   -0.245    0.080  Norm:   0.325
+
+ Information of atom 2
+Atomic dipole moment:   0.066   -0.045   -0.043  Norm:   0.090
+...[ignored]</code></pre></p>
+<p>在 VMD 图形窗口可看到：</p>
+<p><img src="assets/figures/ch4/image1133.png" alt="在 VMD 中绘制的各原子偶极矩矢量"></p>
+<p>黄色箭头对应每个原子的 $\boldsymbol{\mu}^{A}$ 矢量，从相应原子空间的负电荷中心指向正电荷中心，长度正比于 $\boldsymbol{\mu}^{A}$ 的大小。图中氧原子上箭头的方向容易理解。众所周知，H₂O₂ 中的氧有明显的孤对电子，孤对区带密集负电荷，而原子空间中的正电荷只来自核电荷，所以箭头必然大致从孤对区指向原子核。</p>
+<h4 id="调整图形效果"><strong>调整图形效果</strong></h4>
+<p>图形效果可调。例如，在 &quot;Graphics&quot; - &quot;Representation&quot; 面板把绘制方式设为 CPK 并适当定义键粗和原子球半径。然后在 VMD 命令窗口输入以下命令，改变背景色和所绘物体的材质：</p>
+<p><pre><code class="language-text">color Display Background white
+draw material GlassBubble</code></pre></p>
+<p>此时可看到下图：</p>
+<p><img src="assets/figures/ch4/image1134.png" alt="调整图形参数后绘制的原子偶极矩矢量"></p>
+<p>注意 &quot;atomdip&quot; 命令有一些可选参数，控制箭头的颜色、长度、粗细以及考虑的原子范围，请看 <em>atomdip.tcl</em> 文件开头。作为例子，若输入 <em>atomdip “serial 1 to 2 4” orange 5 0.05</em>，则只为原子 1、2、4 以橙色绘制箭头，箭头长度比默认长、粗细比默认小。</p>
+<h4 id="使用不同的原子空间划分方案"><strong>使用不同的原子空间划分方案</strong></h4>
+<p>某些化学环境中一些原子的偶极矩对原子空间划分的选择高度敏感。也可用默认 Becke 定义之外的原子空间定义。在模糊原子空间分析模块中，可用选项 -1 改变划分定义。</p>
+<p>如<a href="sec-4-17-basin-analysis.html#4171-hcn-%E5%92%8C-li%E2%82%86-%E7%9A%84-aim-%E6%B5%81%E5%9F%9F%E5%88%86%E6%9E%90">4.17.1 节</a>所述，若对电子密度产生盆（即 AIM 划分），则盆分析模块的子功能 8 能计算原子多极矩，若计算后输入 <em>y</em>，即导出 <em>atom_moment.txt</em>，基于它可用上述步骤绘制 AIM 划分下的原子偶极矩。你会发现 H₂O₂ 中氧上箭头的方向变化很大（在我看来，不如 Becke 划分理想）。</p>
+<h3 id="41552-绘制原子四极矩"><strong>4.15.5.2 绘制原子四极矩</strong></h3>
+<p>本例在 VMD 中可视化 C₆H₅Br 的原子四极矩，数据像上一节一样在 Becke 划分下计算。相应的波函数文件 <em>examples\C6H5Br.mwfn</em> 在 B3LYP/def-TZVP 水平产生。</p>
+<p>启动 Multiwfn 并载入 <em>examples\C6H5Br.mwfn</em>，再用与上一节完全相同的步骤产生 <em>atom_moment.txt</em> 和 <em>C6H5Br.xyz</em>。把 <em>atom_moment.txt</em> 以及“examples\scripts\”文件夹中的 <em>atomquad.tcl</em> 移到 VMD 文件夹。启动 VMD，载入 <em>C6H5Br.xyz</em>，再在 VMD 命令窗口运行以下两条命令，激活绘图脚本并运行绘图命令：</p>
+<p><pre><code class="language-text">source atomquad.tcl
+atomquad</code></pre></p>
+<p>适当调整图形效果后，可看到：</p>
+<p><img src="assets/figures/ch4/image1135.png" alt="可视化为黄色椭球的原子电四极矩张量"></p>
+<p>每个原子上的黄色椭球直观刻画了无迹笛卡尔原子电四极矩张量 $\boldsymbol{\Theta}^{A}$。椭球形状由三个主轴方向（$\boldsymbol{\Theta}^{A}$ 的本征矢量）和半轴长决定，运行 &quot;atomquad&quot; 命令后打印在 VMD 命令窗口中：</p>
+<p><pre><code class="language-text">Information of atom 1
+Principal axis 1:   1.000    0.000    0.000  Semi-axis length:    0.162
+Principal axis 2:   0.000   -0.880    0.475  Semi-axis length:    0.405
+Principal axis 3:   0.000    0.475    0.880  Semi-axis length:    0.432
+...[ignored]</code></pre></p>
+<p>椭球半轴长 {<em>l</em>} 按我提出的方法确定。已知 $\boldsymbol{\Theta}^{A}$ 的本征值 {<em>v</em>} 可能为负，为使可视化可行，先经下式把它们变换为等于或大于 1 的值：</p>
+<p><div class="mathdisp" data-mi="1" title="点击复制 TeX">$$
+t_{i}=1+v_{i}-v_{\mathrm{min}}\qquad i=1,2,3
+$$</div></p>
+<p>其中 $v_{\mathrm{min}}$ 是最负的本征值。再按下式计算 {<em>l</em>}：</p>
+<p><div class="mathdisp" data-mi="2" title="点击复制 TeX">$$
+l_{i}=s\frac{t_{i}}{t_{1}+t_{2}+t_{3}}\qquad i=1,2,3
+$$</div></p>
+<p>显然三个半轴长之和等于 <em>s</em>，它是控制椭球大小的缩放因子，可用 &quot;atomquad&quot; 命令的可选参数设置，默认值 <em>s</em>=1 适合多数情形。</p>
+<p>根据 $\boldsymbol{\Theta}^{A}$ 的物理意义（见<a href="sec-3-18-fuzzy-atomic-space-analysis.html#3183-%E5%8E%9F%E5%AD%90%E4%B8%8E%E5%88%86%E5%AD%90%E5%A4%9A%E6%9E%81%E7%9F%A9%E5%8F%8A--2">3.18.3 节</a>），容易理解：椭球在某方向越短，该方向电子密度分布越伸展，反之亦然。因此，从上图椭球形状可容易得出结论：碳原子的电子分布在垂直于六元环的方向高度拉长，可能源于丰富的 π 电子。对 Br 原子，电子密度沿 C-Br 键明显收缩，此现象对应著名的 σ-hole 特征。</p>
+<p>&quot;atomquad&quot; 命令有很多控制绘图效果的可选参数，请看 <em>atomquad.tcl</em> 文件开头的注释。</p>
+<p>上例用的是 &quot;atomquad&quot; 命令的模式 1，而用模式 2 时，所绘椭球的形状可直观表现原子空间内电子密度的伸展趋势。例如，在 VMD 命令窗口运行 <em>atomquad noh green 1 2 50</em>，即以模式 2 在所有非氢原子上绘制绿色椭球，缩放因子为 1、分辨率为 50，可看到下图：</p>
+<p><img src="assets/figures/ch4/image1138.png" alt="用 atomquad 命令模式 2 绘制的四极椭球"></p>
+<p>上图中椭球半轴长与原子空间内相应方向电子分布的伸展程度正相关。具体地，半轴长按与前面相同的方法计算，只是 {<em>t</em>} 的定义不同，即：</p>
+<p><div class="mathdisp" data-mi="3" title="点击复制 TeX">$$
+t_{i}=\frac{1}{1+v_{i}-v_{\mathrm{min}}}\qquad i=1,2,3
+$$</div></p>
+<p>上图实质传达的信息与前图完全相同，但显然此图更便于电子分布的可视化分析。例如，可清楚看到 Br 原子的空间中，电子密度在垂直于 C-Br 键轴的平面内更伸展。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-4-15-fuzzy-atomic-space-analysis";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script><script>const MATHS=["\\mathbf{D}_{F}=\\sum_{A\\in F}\\left[Z_{A}\\mathbf{R}_{A}-\\int w_{A}(\\mathbf{r})\\rho(\\mathbf{r})\\mathbf{r}\\,\\mathrm{d}\\mathbf{r}\\right]","t_{i}=1+v_{i}-v_{\\mathrm{min}}\\qquad i=1,2,3","l_{i}=s\\frac{t_{i}}{t_{1}+t_{2}+t_{3}}\\qquad i=1,2,3","t_{i}=\\frac{1}{1+v_{i}-v_{\\mathrm{min}}}\\qquad i=1,2,3"];</script>
+<script src="app.js"></script></body></html>

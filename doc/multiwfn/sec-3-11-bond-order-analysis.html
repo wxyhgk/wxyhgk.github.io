@@ -1,0 +1,374 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.11 键级分析(Bond order analysis) (9) · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="311-键级分析bond-order-analysis-9"><strong>3.11 键级分析(Bond order analysis) (9)</strong></h1>
+<p>在键级分析模块中，你可以直接选择一个选项以用相应的方法分析键级。</p>
+<p>如果你想获得两个分子片段(molecular fragments)中原子之间的总键级(total bond order)，你可以在键级分析之前使用选项 -1来定义片段1和2。然后如果你选择一个选项计算键级，两个片段之间的总键级 $I_{\mathrm{RS}}$ 将通过对原子间键级(interatomic bond orders)求和如下计算，同时与双中心键级(two-center bond orders)一起输出
+<div class="mathdisp" data-mi="0" title="点击复制 TeX">$$
+I_{RS}=\sum_{A\in R}\sum_{B\in S} I_{AB}
+$$</div></p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>显然，片段间键级计算(interfragment bond order calculation)对多中心键级分析(multi-center bond order analysis)、轨道占据微扰Mayer键级(orbital occupancy-perturbed Mayer bond order)和Wiberg键级分解分析(Wiberg bond order decomposition analysis)不可用。</p>
+</blockquote>
+<h2 id="3111-mayer键级分析mayer-bond-order-analysis-1"><strong>3.11.1 Mayer键级分析(Mayer bond order analysis) (1)</strong></h2>
+<p>原子<em>A</em>和<em>B</em>之间的Mayer键级定义为(<em>Chem. Phys. Lett</em>, <strong>97</strong>, 270 (1983))
+<div class="mathdisp" data-mi="1" title="点击复制 TeX">$$
+I_{AB}=I_{AB}^{\alpha}+I_{AB}^{\beta}=2\sum_{a\in A}\sum_{b\in B}[(\mathbf{P}^{\alpha}\mathbf{S})_{ba}(\mathbf{P}^{\alpha}\mathbf{S})_{ab}+(\mathbf{P}^{\beta}\mathbf{S})_{ba}(\mathbf{P}^{\beta}\mathbf{S})_{ab}]
+$$</div>
+其中 $P^{α}$ 和 $P^{β}$ 分别为α和β密度矩阵(density matrix)，<em>S</em> 为重叠矩阵(overlap matrix)。上式可使用总密度矩阵(total density matrix) <strong>P</strong>= $P^{α}$ + $P^{β}$ 和自旋密度矩阵(spin density matrix) $P^{s}$ = $P^{α}$ − $P^{β}$ 等价改写
+<div class="mathdisp" data-mi="2" title="点击复制 TeX">$$
+I_{AB}=\sum_{a\in A}\sum_{b\in B}[(\mathbf{PS})_{ba}(\mathbf{PS})_{ab}+(\mathbf{P}^{\mathrm{s}}\mathbf{S})_{ba}(\mathbf{P}^{\mathrm{s}}\mathbf{S})_{ab}]
+$$</div>
+对于限制性闭壳层(restricted closed-shell)情形，由于自旋密度矩阵(spin density matrix)为零，公式可简化为
+<div class="mathdisp" data-mi="3" title="点击复制 TeX">$$
+I_{AB}=\sum_{a\in A}\sum_{b\in B}(\mathbf{PS})_{ab}(\mathbf{PS})_{ba}
+$$</div>
+一般来说，Mayer键级(Mayer bond order)的值与经验键级(empirical bond order)一致；对于单键、双键和三键，其值分别接近1.0、2.0和3.0。对于非限制(unrestricted)或限制性开壳层(restricted open-shell)波函数(wavefunction)，α(alpha)、β(beta)和总(total)Mayer键级将分别输出。默认情况下，只有键级超过0.05的键才会被打印到屏幕上，该阈值(threshold)可通过<em>settings.ini</em>中的“bndordthres”参数(parameter)调整，你还可以选择导出完整的键级矩阵(bond order matrix)。</p>
+<p>此外，Multiwfn输出总价(total valence)和自由价(free valence)，前者定义为
+<div class="mathdisp" data-mi="4" title="点击复制 TeX">$$
+V_A=2\sum_{a\in A}(\mathbf{PS})_{aa}-\sum_{a\in A}\sum_{b\in A}(\mathbf{PS})_{ab}(\mathbf{PS})_{ba}
+$$</div>
+后者定义为
+<div class="mathdisp" data-mi="5" title="点击复制 TeX">$$
+F_A=V_A-\sum_{B\neq A}I_{AB}=\sum_{a\in A}\sum_{b\in A}(\mathbf{P}^{\mathrm{s}}\mathbf{S})_{ab}(\mathbf{P}^{\mathrm{s}}\mathbf{S})_{ba}
+$$</div>
+对于限制性闭壳层波函数(restricted closed-shell wavefunctions)，自由价(free valences)为零，因为$P^{s}$ =0，因此原子(atom)的总价(total valence)就是相关键级(bond orders)之和
+<div class="mathdisp" data-mi="6" title="点击复制 TeX">$$
+V_A=\sum_{B\neq A}I_{AB}
+$$</div>
+总价(Total valence)(也称为原子价(atomic valence))衡量原子成键能力(bonding capacity)，而自由价(free valence)表征通过共享电子对(electron pairs)形成新键的剩余能力。</p>
+<p>对于非限制(unrestricted)或限制性开壳(restricted open-shell)体系，存在另一种计算总键级(total bond order)的方法，而不是对alpha和beta键级求和，即首先将alpha和beta密度矩阵(density matrices)加和以形成总密度矩阵(total density matrix)，然后使用限制性闭壳(restricted closed-shell)公式计算Mayer键级(Mayer bond order)，该处理有时被称为“广义Wiberg键级(generalized Wiberg bond order)”，这些总键级打印在标题“Mayer bond order from mixed alpha&amp;beta density matrix”之后。</p>
+<p>与Mulliken布居(Mulliken population)类似，Mayer键级和下述多中心键级(multi-center bond order)对基组(basis set)敏感，因此不要使用带有弥散函数(diffuse functions)的基组，否则键级结果将不可靠。</p>
+<p>尽管Mayer键级最初是为单行列式波函数(single-determinant wavefunctions)定义的，对于post-HF波函数(post-HF wavefunctions)，Multiwfn基于相应的post-HF密度矩阵通过与上文完全相同的公式计算Mayer键级。该处理的合理性已在<em>Chem. Phys. Lett.</em>, <strong>544</strong>, 83 (2012)中得到验证。</p>
+<p>Mayer键级的一些应用可见于<em>J. Chem. Soc., Dalton Trans.</em>, <strong>2001</strong>, 2095。</p>
+<blockquote>
+<p><strong>所需信息(Information needed)</strong></p>
+<p>基函数(Basis functions)</p>
+</blockquote>
+<h2 id="3112-多中心键级分析multi-center-bond-order-analysis-2--2--3"><strong>3.11.2 多中心键级分析(Multi-center bond order analysis) (2, -2, -3)</strong></h2>
+<p>在主功能9(main function 9)中有三个选项(2, -2, -3)用于计算多中心键级，它们非常相似，将在下文依次介绍。最后，将提及关于原子序号(atomic indices)输入顺序(input order)的一个值得注意的要点。</p>
+<h3 id="选项2option-2标准多中心键级standard-multi-center-bond-order"><strong>选项2(Option 2)：标准多中心键级(Standard multi-center bond order)</strong></h3>
+<p>多中心键指数(Multi-center bond index)最初在<em>Struct. Chem.</em>, <strong>1</strong>, 423 (1990)中提出，我更倾向于称其为多中心键级(MCBO)，因为其形式与Mayer键级非常相似。在某种意义上，MCBO可被视为Mayer键级向多中心情形(multi-center cases)的推广。三/四/五/六中心键级分别定义为
+<div class="mathdisp" data-mi="7" title="点击复制 TeX">$$
+\begin{gathered}I_{ABC}=\sum_{a\in A}\sum_{b\in B}\sum_{c\in C}(\mathbf{PS})_{ab}(\mathbf{PS})_{bc}(\mathbf{PS})_{ca}\\ I_{ABCD}=\sum_{a\in A}\sum_{b\in B}\sum_{c\in C}\sum_{d\in D}(\mathbf{PS})_{ab}(\mathbf{PS})_{bc}(\mathbf{PS})_{cd}(\mathbf{PS})_{da}\\ I_{ABCDE}=\sum_{a\in A}\sum_{b\in B}\sum_{c\in C}\sum_{d\in D}\sum_{e\in E}(\mathbf{PS})_{ab}(\mathbf{PS})_{bc}(\mathbf{PS})_{cd}(\mathbf{PS})_{de}(\mathbf{PS})_{ea}\\ I_{ABCDEF}=\sum_{a\in A}\sum_{b\in B}\sum_{c\in C}\sum_{d\in D}\sum_{e\in E}\sum_{f\in F}(\mathbf{PS})_{ab}(\mathbf{PS})_{bc}(\mathbf{PS})_{cd}(\mathbf{PS})_{de}(\mathbf{PS})_{ef}(\mathbf{PS})_{fa}\end{gathered}
+$$</div>
+类似地，无限中心键级(infinite-center bond order)可写为
+<div class="mathdisp" data-mi="8" title="点击复制 TeX">$$
+I_{ABCDEF\cdots K}=\sum_{a\in A}\sum_{b\in B}\sum_{c\in C}\cdots\sum_{k\in K}(\mathbf{PS})_{ab}(\mathbf{PS})_{bc}(\mathbf{PS})_{cd}\cdots(\mathbf{PS})_{ka}
+$$</div>
+对于开壳层(open-shell)情况，多中心键级(MCBO)有两种定义，第一种是α部分和β部分之和：
+<div class="mathdisp" data-mi="9" title="点击复制 TeX">$$
+\begin{aligned}&I_{ABCDEF\cdots K}=I_{ABCDEF\cdots K}^{\alpha}+I_{ABCDEF\cdots K}^{\beta}\\& =2^{n-1}\left[\sum_{a\in A}\sum_{b\in B}\sum_{c\in C}\cdots\sum_{k\in K}(\mathbf{P}^{\alpha}\mathbf{S})_{ab}(\mathbf{P}^{\alpha}\mathbf{S})_{bc}(\mathbf{P}^{\alpha}\mathbf{S})_{cd}\cdots(\mathbf{P}^{\alpha}\mathbf{S})_{ka}\right]\\& +2^{n-1}\left[\sum_{a\in A}\sum_{b\in B}\sum_{c\in C}\cdots\sum_{k\in K}(\mathbf{P}^{\beta}\mathbf{S})_{ab}(\mathbf{P}^{\beta}\mathbf{S})_{bc}(\mathbf{P}^{\beta}\mathbf{S})_{cd}\cdots(\mathbf{P}^{\beta}\mathbf{S})_{ka}\right]\end{aligned}
+$$</div>
+另一种定义是使用混合密度矩阵(mixed density matrix)，这不如上述严格：
+<div class="mathdisp" data-mi="10" title="点击复制 TeX">$$
+\begin{gathered}I_{ABCDEF\cdots K}=\sum_{a\in A}\sum_{b\in B}\sum_{c\in C}\cdots\sum_{k\in K}(\mathbf{P}^{\mathrm{mixed}}\mathbf{S})_{ab}(\mathbf{P}^{\mathrm{mixed}}\mathbf{S})_{bc}(\mathbf{P}^{\mathrm{mixed}}\mathbf{S})_{cd}\cdots(\mathbf{P}^{\mathrm{mixed}}\mathbf{S})_{ka}\\ \mathbf{P}^{\mathrm{mixed}}=\mathbf{P}^{\alpha}+\mathbf{P}^{\beta}\end{gathered}
+$$</div>
+对于非限制或限制性开壳层波函数(unrestricted or restricted open-shell wavefunction)，多中心键级(MCBO)分析的输出由四项组成，如上所述：(1) 来自α密度矩阵(alpha density matrix)的结果(2) 来自β密度矩阵(beta density matrix)的结果(3) α和β部分结果之和(4) 来自混合α&amp;β密度矩阵(mixed alpha&amp;beta density matrix)的结果。通常，如果您仅对总多中心键级(total MCBO)感兴趣，<strong>您应使用(3)</strong>。</p>
+<p>注意，不同中心数的多中心键级不能直接比较，因为结果不在同一量级。然而，在<em>Phys. Chem. Chem. Phys.</em>，<strong>18</strong>，11839 (2016)中表明，归一化多中心键级(normalized MCBO)对于不同环大小(ring size)是可比的，并且可以简单地计算为$\mathrm{MCBO}^{1/n}$，其中<em>n</em>是中心数(number of centers)。例如，在B3LYP/6-31G*水平(level)下，$H_{3}^{+}$、苯(benzene，6个中心)和萘(naphthalene，10个中心)的多中心键级分别为0.2963、0.0863和0.0080，而归一化结果分别为0.667、0.665和0.617。当多中心键级为负时，归一化值将计算为$-|\mathrm{MCBO}|^{1/n}$。通常，如果您需要在不同中心数之间比较多中心键级，您应采用Multiwfn打印的信息中的归一化多中心键级，否则建议使用原始多中心键级(raw MCBO)值。</p>
+<p>Multiwfn能够自动搜索多中心键(multi-center bonds)。如果当Multiwfn要求您输入原子组合(atom combination)时您输入-<em>3</em>，则将计算所有三中心键级(three-center bond orders)，仅打印大于您输入的阈值(threshold)的那些。类似地，通过分别输入*-4*、<em>-5</em>和*-6*可以搜索四、五和六中心键。出于效率考虑，搜索可能不是穷举的(exhaustive)。还请注意，对于开壳层情形，搜索基于混合α&amp;β密度矩阵。</p>
+<p>在主功能(main function) 9中有一个隐藏选项(hidden option) -3，它用于计算Löwdin正交化基(Löwdin orthogonalized basis)下的多中心键级。该选项与上述选项2的唯一区别在于，该选项在计算多中心键级之前对基函数(basis functions)进行Löwdin正交化(Löwdin orthogonalization)。由于该方法相对于标准多中心键级定义(standard MCBO definition)没有明显优势，因此该选项很少使用，在界面(interface)中不可见。然而，如果您有兴趣，可以试一下。</p>
+<h3 id="选项-2在自然原子轨道natural-atomic-orbital-nao基basis中的多中心键级"><strong>选项-2：在自然原子轨道(natural atomic orbital, NAO)基(basis)中的多中心键级</strong></h3>
+<p>多中心键级最严重的缺点是其高度的基组依赖性(basis set dependency)。特别地，<strong>如果存在弥散函数(diffuse functions)，则多中心键级结果可能是误导性的或完全没有意义</strong>。为了解决该问题，我提出了一种计算多中心键级的替代方法(待发表)，该想法已作为选项-2实现。</p>
+<p>选项-2与选项2(如上所述)非常相似，唯一区别在于多中心键级基于自然原子轨道基而非基于基组最初定义的基函数进行计算。由于自然原子轨道是正交归一集(orthonormal set)，因此重叠矩阵(overlap matrix) <em>S</em>是单位矩阵(identity matrix)，公式可简化为(以闭壳层形式(closed-shell form)为例)
+<div class="mathdisp" data-mi="11" title="点击复制 TeX">$$
+I_{ABCDEF\cdots K}=\sum_{a\in A}\sum_{b\in B}\sum_{c\in C}\cdots\sum_{k\in K} P_{ab}P_{bc}P_{cd}\cdots P_{ka}
+$$</div>
+以这种方式计算的多中心键级(MCBO)对于基组(basis set)变化具有非常好的稳定性。即使存在弥散函数(diffuse functions)，结果仍然完全可靠。根据我的经验，如果没有基函数(basis function)表现出弥散特征，选项2和-2给出的结果将非常相似，尽管并非完全相同。</p>
+<p>为了使用选项-2，应使用嵌入在Gaussian中的自然键轨道(NBO)模块或独立的自然键轨道程序（即GENNBO）的输出文件作为输入文件，并且必须使用<em>DMNAO</em>关键词使自然键轨道打印在自然原子轨道(NAO)基下的密度矩阵(density matrix)。如果你是Gaussian用户，例如，你可以使用下面实例的输出文件作为Multiwfn的输入文件（不要为此分析使用.fch文件！）。</p>
+<p><pre><code class="language-text">#p PBE1PBE/6-311G** pop=nboread
+
+opted
+
+0 1
+ C                  0.00000000    1.38886900    0.00000000
+... [ignored]
+ H                 -2.14060700    1.23588000    0.00000000
+
+$NBO DMNAO $END</code></pre>
+在该功能中，如果你只输入两个原子的序号(indices)，那么结果就只是NAO基(NAO basis)下的Wiberg键级(Wiberg bond order)，这与NBO程序(NBO program)的<em>bndidx</em>关键词(keyword)打印的结果完全一致。</p>
+<h3 id="原子序号输入顺序input-order对结果的影响"><strong>原子序号输入顺序(input order)对结果的影响</strong></h3>
+<p>输入的原子序号的方向(direction)(<em>e.g.</em> A,B,C,D vs. D,C,B,A)和排列(permutation)(<em>e.g.</em> A,B,C,D vs. B,D,C,A ...)都会影响计算得到的多中心键级(MCBO)，下面我详细描述这一点。</p>
+<ul>
+<li><p><strong>输入方向</strong></p>
+<p>由于原始多中心键级的数学形式(mathematical form)(<em>i.e.<em>由选项2计算的那一种)，多中心键级的结果可能依赖于输入方向。例如，输入A,B,C,D得到的结果可能与输入D,C,B,A得到的结果不同。原因很清楚：对应于A,B,C,D的一项是$(\mathbf{PS})_{ab}(\mathbf{PS})_{bc}(\mathbf{PS})_{cd}(\mathbf{PS})_{da}$，而如果反转输入顺序，该项将变为$(\mathbf{PS})_{dc}(\mathbf{PS})_{cb}(\mathbf{PS})_{ba}(\mathbf{PS})_{ad}$。虽然<strong>P</strong>和<strong>S</strong>都是对称矩阵(symmetry matrices)，但它们的乘积<strong>PS</strong>不一定对称，因此这两项并不等价。在我看来，为了获得更合理的结果，如果在一个环中原子连接关系为A-B-C-D-E-F(A还与F相连)，应分别计算A,B,C,D,E,F和F,E,D,C,B,A，然后取其平均值。如果你想让Multiwfn直接打印平均值，可以将</em>settings.ini</em>中的&quot;iMCBOtype&quot;设为1，在这种情况下你不需要手动进行两次计算，当然，与正常情况相比计算耗费会加倍。</p>
+<p>使用选项-2在NAO基中计算多中心键级和使用选项-3在Löwdin正交化基(Löwdin orthogonalized basis)中计算它的一个优点是，结果与输入方向无关，这是因为在这些情况下重叠矩阵(overlap matrix)<strong>S</strong>不显式参与，且密度矩阵(density matrix)<strong>P</strong>是对称矩阵。</p>
+</li>
+<li><p><strong>序号排列</strong></p>
+<p>在多中心键级计算中，对输入的原子序号作排列会显著改变结果。例如，输入1,2,3,4,5,6的结果可能与输入2,4,3,5,6,1的结果非常不同，无论使用哪种形式的多中心键级。如果你的目的是研究芳香性(aromaticity)并表征环上电子的环离域(cyclic delocalization)，你应按顺时针或逆时针顺序输入原子序号，或如上所述取其平均值。</p>
+<p>有人主张需要考虑所有可能的排列才能得到确定性的结果，见<em>J. Phys. Org. Chem.</em>，<strong>18</strong>，706 (2005)；这意味着对于由六个原子组成的区域，(B,C,A,D,E,F)、(C,A,B,D,E,F)、(D,B,C,A,F,E)等等(共6!=720种)的键级都需要被考虑在内。这一定义在<em>Phys. Chem. Chem. Phys.</em>，<strong>18</strong>，11839 (2016)中被称为多中心指数(multi-center index, MCI)。明确定义如下，见<em>Phys. Chem. Chem. Phys.</em>，<strong>18</strong>，11839 (2016)的Eq. 9：</p>
+</li>
+</ul>
+<p><div class="mathdisp" data-mi="12" title="点击复制 TeX">$$
+\mathrm{MCI}=\frac{1}{2n}\sum_{\hat{P}(A,B,C\cdots)} I_{A,B,C\cdots}
+$$</div>
+其中 <em>n</em> 是参与计算的原子数量，$\hat{P}$ 是生成所有可能置换序列的置换算符(permutation operator)。多中心指数(MCI)的计算开销明显大于多中心键级(MCBO)，且它不适合衡量芳香性(aromaticity)或环离域(cyclic delocalization)。然而，它可能有助于衡量簇状区域中原子间的&quot;全局&quot;电子离域(electron delocalization)。</p>
+<p>  如果你想让Multiwfn直接打印多中心指数，可将<em>settings.ini</em>中的&quot;iMCBOtype&quot;设为2，然后像通常一样计算多中心键级(经由选项2、-2和-3中的任一个)，打印的结果将对应于多中心指数。</p>
+<p>最后，值得注意的是，在某些情况下多中心键级可能略为负值。如果你未使用弥散函数(diffuse functions)，或多中心键级是基于自然原子轨道(NAOs)计算的，那么可将非常小的负多中心键级简单视作零。对于三中心情形，若多中心键级为明显的负值，则意味着存在三中心四电子(three-center four-electron, 3c-4e)相互作用(interaction)(<em>例如</em> CO₂)。</p>
+<blockquote>
+<p><strong>所需信息(Information needed)</strong></p>
+<p>基函数(basis functions)(选项2、-3)，带有DMNAO关键词(keyword)的NBO输出文件(NBO output file)(选项-2)</p>
+</blockquote>
+<h3 id="附录appendixmultiwfn中多中心键级的极高效实现implementation"><strong>附录(Appendix)：Multiwfn中多中心键级的极高效实现(implementation)</strong></h3>
+<p>根据表达式，多中心键级的计算开销(computational cost)似乎随环(ring)中原子数的增加呈指数增长，使得其对大环的评估不可行。得益于我提出的多中心键级的特殊实现，Multiwfn中多中心键级的开销仅随环成员数量(ring members)线性增长，即使对于由数十个原子构成的环，计算时间(computational time)也可忽略不计！该算法(algorithm)描述如下。</p>
+<p>此处以五中心(five-center)多中心键级为例，其原始定义(original definition)为
+<div class="mathdisp" data-mi="13" title="点击复制 TeX">$$
+I_{ABCDE}=\sum_{a\in A}\sum_{b\in B}\sum_{c\in C}\sum_{d\in D}\sum_{e\in E}(PS)_{ab}(PS)_{bc}(PS)_{cd}(PS)_{de}(PS)_{ea}
+$$</div>
+其可重新表述为
+<div class="mathdisp" data-mi="14" title="点击复制 TeX">$$
+I_{ABCDE}=\sum_{a\in A}\sum_{b\in B}(PS)_{ab}\sum_{c\in C}(PS)_{bc}\sum_{d\in D}(PS)_{cd}\sum_{e\in E}(PS)_{de}(PS)_{ea}
+$$</div>
+如果中间矩阵(intermediate matrix)<strong>A</strong>已被完整计算并存储在内存中，其元素表示为</p>
+<p>$A_{d,a}=\sum_{e\in E}(PS)_{de}(PS)_{ea}$ ，</p>
+<p>则多中心键级(MCBO)可简化为
+<div class="mathdisp" data-mi="15" title="点击复制 TeX">$$
+I_{ABCDE}=\sum_{a\in A}\sum_{b\in B}(PS)_{ab}\sum_{c\in C}(PS)_{bc}\sum_{d\in D}(PS)_{cd}A_{d,a}
+$$</div>
+接下来，如果中间矩阵(intermediate matrix) <strong>B</strong>被完整计算并存储在内存中，其元素表示为</p>
+<p>$B_{c,a}=\sum_{d\in D}(PS)_{cd}A_{d,a}$ ,</p>
+<p>则多中心键级(MCBO)可简化为
+<div class="mathdisp" data-mi="16" title="点击复制 TeX">$$
+I_{ABCDE}=\sum_{a\in A}\sum_{b\in B}(PS)_{ab}\sum_{c\in C}(PS)_{bc}B_{c,a}
+$$</div>
+此外，如果中间矩阵(intermediate matrix) <strong>C</strong> 被完整计算并存储在内存中，其元素表示为</p>
+<p>$C_{b,a}=\sum_{c\in C}(PS)_{bc}B_{c,a}$ ,</p>
+<p>则多中心键级(MCBO)最终可简化为
+<div class="mathdisp" data-mi="17" title="点击复制 TeX">$$
+I_{ABCDE}=\sum_{a\in A}\sum_{b\in B}(PS)_{ab}C_{b,a}
+$$</div>
+显然，使用中间矩阵(intermediate matrices)<strong>A</strong>、<strong>B</strong>、<strong>C</strong>，多中心键级(MCBO)可以以相当简单的方式求值，而<strong>A</strong>、<strong>B</strong>、<strong>C</strong>的构建也非常廉价。这种多中心键级重构形式的计算量仅随原子数线性增加，因此即使对于由100多个原子组成的环也可以轻松应用。</p>
+<p>为了证明Multiwfn中多中心键级特殊实现(special implementation)的正确性和重要价值，下面给出了在ωB97XD/def2-TZVP水平下计算cyclo[<em>n</em>]carbon体系的$\mathrm{MCBO}^{1/n}$的结果和耗时比较。表中，“old”表示基于多中心键级原始方程的直接编程，其使用Multiwfn 3.6完成（其中尚无当前算法），“current”表示上文所述的算法。测试使用Intel i9-13980HX CPU。可以看到，两种算法给出完全相同的结果，然而对于cyclo[8]carbon，“old”算法的开销已经很高（即使使用像6-31G*这样的小基组(basis set)，多中心键级通常至多只能用于包含十几个原子的环）。相比之下，当前算法仅在1秒内即可精确计算cyclo[48]carbon的多中心键级！</p>
+<table style="width: auto; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th rowspan="2"><em>n</em></th>
+<th colspan="2" style="text-align: center;">墙钟时间(Wall time) (s)</th>
+<th colspan="2" style="text-align: center;">$\mathrm{MCBO}^{1/n}$</th>
+</tr>
+<tr>
+<th style="text-align: center;">old</th>
+<th style="text-align: center;">current</th>
+<th style="text-align: center;">old</th>
+<th style="text-align: center;">current</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6</td>
+<td>&lt;1s</td>
+<td>&lt;1s</td>
+<td>0.639945</td>
+<td>0.639945</td>
+</tr>
+<tr>
+<td>8</td>
+<td>358s</td>
+<td>&lt;1s</td>
+<td>0.578652</td>
+<td>0.578652</td>
+</tr>
+<tr>
+<td>10</td>
+<td></td>
+<td>&lt;1s</td>
+<td></td>
+<td>0.649397</td>
+</tr>
+<tr>
+<td>12</td>
+<td></td>
+<td>&lt;1s</td>
+<td></td>
+<td>0.611403</td>
+</tr>
+<tr>
+<td>14</td>
+<td></td>
+<td>&lt;1s</td>
+<td></td>
+<td>0.637272</td>
+</tr>
+<tr>
+<td>24</td>
+<td></td>
+<td>&lt;1s</td>
+<td></td>
+<td>0.561782</td>
+</tr>
+<tr>
+<td>48</td>
+<td></td>
+<td>&lt;1s</td>
+<td></td>
+<td>0.549418</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="3113-在löwdin正交化基löwdin-orthogonalized-basis下的wiberg键级wiberg-bond-order分析-3"><strong>3.11.3 在Löwdin正交化基(Löwdin orthogonalized basis)下的Wiberg键级(Wiberg bond order)分析 (3)</strong></h2>
+<p>Wiberg键级定义如下，见<em>Tetrahedron</em>，<strong>24</strong>，1083 (1968)中的脚注
+<div class="mathdisp" data-mi="18" title="点击复制 TeX">$$
+I_{AB}=\sum_{a\in A}\sum_{b\in B} P_{ab}^2
+$$</div>
+Wiberg键级(Wiberg bond order)的原始定义仅适用于由正交基函数表示的波函数，例如大多数半经验波函数，且仅针对限制性闭壳层体系定义。实际上，Mayer键级(Mayer bond order)可视为Wiberg键级的推广，对于限制性闭壳层体系且基函数正交归一（即<em>S</em>矩阵为单位矩阵）的情形，二者的结果完全相同。</p>
+<p>在此功能中，Multiwfn首先通过Löwdin方法对基函数进行正交化，然后进行常规的Mayer键级分析。打印阈值也由<em>settings.ini</em>中的“bndordthres”控制。</p>
+<p>如<em>J. Mol. Struct. (THEOCHEM)</em>, <strong>870</strong>, 1 (2008)所示，以此方式计算的Wiberg键级，即$W_{L}$，对基组的敏感性远小于Mayer键级（而对于小基组，二者的结果彼此接近）。应注意，与Mayer键级相比，$W_{L}$倾向于高估极性键的键级。</p>
+<p>通常，若无特殊原因，优选使用Mayer键级。</p>
+<p>注意，许多论文使用NBO程序计算Wiberg键级，其结果必定与本功能产生的结果有所不同，因为在NBO程序中，Wiberg键级是在自然原子轨道(natural atomic orbitals, NAO)基下计算的，该轨道由OWSO正交化方法生成。Multiwfn也能够在NAO基下计算Wiberg键级，此外，结果可分解为原子轨道对贡献，详见<a href="#3118-%E5%B0%86nao%E5%9F%BAnao-basis%E4%B8%AD%E7%9A%84wiberg%E9%94%AE%E7%BA%A7%E5%88%86%E8%A7%A3%E4%B8%BA%E5%8E%9F%E5%AD%90%E8%BD%A8%E9%81%93%E5%AF%B9%E8%B4%A1%E7%8C%AEatomic-orbital-pair-contributions-9">3.11.8</a>节。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>基函数</p>
+</blockquote>
+<h2 id="3114-mulliken键级mulliken-bond-order分析4与分解5"><strong>3.11.4 Mulliken键级(Mulliken bond order)分析(4)与分解(5)</strong></h2>
+<p>Mulliken键级是最早的键级定义，其定义为
+<div class="mathdisp" data-mi="19" title="点击复制 TeX">$$
+I_{AB}=\sum_i\eta_i\sum_{a\in A}\sum_{b\in B}2C_{a,i}C_{b,i}S_{a,b}=2\sum_{a\in A}\sum_{b\in B} P_{a,b}S_{a,b}
+$$</div>
+Mulliken键级(Mulliken bond order)与经验键级(empirical bond order)的一致性较低，不建议用于定量描述成键强度(bonding strength)，Mayer键级(Mayer bond order)在该方面总是表现更好。然而，Mulliken键级是成键(bonding)（正值）和反键(antibonding)（负值）的良好定性指标(qualitative indicator)。打印结果的阈值(threshold)由<em>settings.ini</em>中的“bndordthres”参数(parameter)控制。</p>
+<p>Mulliken键级易于分解为轨道贡献(orbital contributions)，轨道<em>i</em>对键级<em>AB</em>的贡献为
+<div class="mathdisp" data-mi="20" title="点击复制 TeX">$$
+I_{AB}^i=\eta_i\sum_{a\in A}\sum_{b\in B}2C_{a,i}C_{b,i}S_{a,b}
+$$</div>
+从该分解(decomposition)可以知道哪些轨道(orbitals)对特定成键(bonding)是有利的和不利的。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>基函数(Basis functions)</p>
+</blockquote>
+<h2 id="3115-轨道占据微扰mayer键级orbital-occupancy-perturbed-mayer-bond-order-6"><strong>3.11.5 轨道占据微扰Mayer键级(Orbital occupancy-perturbed Mayer bond order) (6)</strong></h2>
+<p>轨道占据微扰Mayer键级首次提出于<em>J. Chem. Theory Comput.</em>，<strong>8</strong>，908 (2012)。简单来说，通过使用该方法可以获得特定轨道对Mayer键级的贡献有多大。</p>
+<p>轨道占据微扰Mayer键级可以写为
+<div class="mathdisp" data-mi="21" title="点击复制 TeX">$$
+I_{A,B}^*=I_{AB}^{*,\alpha}+I_{AB}^{*,\beta}=2\sum_{a\in A}\sum_{b\in B}[(\mathbf{P}_X^{\alpha}\mathbf{S})_{ba}(\mathbf{P}_X^{\alpha}\mathbf{S})_{ab}+(\mathbf{P}_X^{\beta}\mathbf{S})_{ba}(\mathbf{P}_X^{\beta}\mathbf{S})_{ab}]
+$$</div>
+该定义与第<a href="#3111-mayer%E9%94%AE%E7%BA%A7%E5%88%86%E6%9E%90mayer-bond-order-analysis-1">3.11.1</a>节所示的Mayer键级(Mayer bond order)之间的唯一区别在于，$P^{α}$和$P^{β}$已分别被${\mathbf{P}}_{X}^{\alpha}$和${\mathbf{P}}_{X}^{\beta}$取代。$P_{X}$代表当特定轨道(orbital)的占据数(occupation number)设为零时生成的密度矩阵(density matrix)。${I}_{A,B}^{*}$与Mayer键级之差可被视为该轨道对Mayer键级贡献的量度。请注意，由于Mayer键级不是密度矩阵的线性函数(linear function)，一般而言，所有轨道的${I}_{A,B}^{*}$之和不等于Mayer键级。</p>
+<p>在Multiwfn中，你只需输入两个原子的序号，随后将输出所有占据轨道的${I}_{A,B}^{*}$以及${I}_{A,B}^{*}$与Mayer键级之差。该差值越负(正)，由于该轨道的存在，对成键(bonding)越有利(有害)。</p>
+<p>你也可以用另一种方式计算${I}_{A,B}^{*}$，即使用波函数修正模块(wavefunction modification module)(主功能6)手动将特定轨道的占据数设为零，然后像往常一样计算Mayer键级，但如果你想计算许多轨道的${I}_{A,B}^{*}$，这种方式可能会很繁琐。</p>
+<p>这类分析在第<a href="sec-4-9-bond-order-analysis.html#491-%E4%B9%99%E9%85%B0%E8%83%BA%E7%9A%84mayer%E9%94%AE%E7%BA%A7%E4%B8%8E%E6%A8%A1%E7%B3%8A%E9%94%AE%E7%BA%A7%E5%88%86%E6%9E%90">4.9.1</a>节和第<a href="sec-4-19-orbital-localization-analysis.html#4193-%E8%A1%A8%E5%BE%81-re%E2%82%82cl%E2%82%88%C2%B2-%E9%98%B4%E7%A6%BB%E5%AD%90%E7%9A%84-re-re-%E9%94%AE">4.19.3</a>节中进行了说明。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>基函数(Basis functions)</p>
+</blockquote>
+<h2 id="3116-模糊键级fuzzy-bond-order-7"><strong>3.11.6 模糊键级(Fuzzy bond order) (7)</strong></h2>
+<p>模糊键级(FBO)由Mayer在<em>Chem. Phys. Lett.</em>，<strong>383</strong>，368 (2004)中首次提出：
+<div class="mathdisp" data-mi="22" title="点击复制 TeX">$$
+\begin{gathered}B_{AB}=B_{AB}^{\alpha}+B_{AB}^{\beta}=2\sum_{\mu}\sum_{\nu}[(\mathbf{P}^{\alpha}\mathbf{S}^A)_{\mu\nu}(\mathbf{P}^{\alpha}\mathbf{S}^B)_{\nu\mu}+(\mathbf{P}^{\beta}\mathbf{S}^A)_{\mu\nu}(\mathbf{P}^{\beta}\mathbf{S}^B)_{\nu\mu}]\\ S_{\mu\nu}^A=\int w_A(\mathbf{r})\chi_\mu^*(\mathbf{r})\chi_\nu(\mathbf{r})\mathrm{d}\mathbf{r}\end{gathered}
+$$</div>
+其中<strong>S</strong>为模糊原子空间(fuzzy atomic spaces)中基函数(basis functions)之间的重叠矩阵(overlap matrix)。在Multiwfn中，用于计算模糊键级(FBO)的是带有陡峭参数(sharpness parameter)<em>k</em>=3并结合修正的CSD半径(modified CSD radii)的Becke模糊原子空间(Becke&#39;s fuzzy atomic space)。(模糊原子空间的介绍见<a href="sec-3-18-fuzzy-atomic-space-analysis.html#3180-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5">3.18.0</a>节)。</p>
+<p>通常模糊键级的数值接近Mayer键级(Mayer bond order)，特别是对于低极性键(low-polar bonds)，但相对于基组(basis set)变化要稳定得多。根据<em>J. Phys. Chem. A</em>, <strong>109</strong>, 9904 (2005)中给出的模糊键级与离域指数(delocalization index, DI)之间的比较，模糊键级本质上是在模糊原子空间中计算的离域指数。关于离域指数的细节见<a href="sec-3-18-fuzzy-atomic-space-analysis.html#3185-%E5%AE%9A%E5%9F%9F%E5%8C%96%E6%8C%87%E6%95%B0-li%E4%B8%8E%E7%A6%BB%E5%9F%9F%E5%8C%96%E6%8C%87%E6%95%B0-di-4-44">3.18.5</a>节。</p>
+<p>模糊键级的计算需要执行Becke的DFT数值积分(Becke&#39;s DFT numerical integration)，因此其计算代价(computational cost)大于Mayer键级的评估。默认情况下，数值积分使用40个径向点(radial points)和230个角向点(angular points)。该设置一般能够给出足够准确的结果。如果你想进一步精细化结果，可以在<em>settings.ini</em>中手动通过&quot;radpot&quot;和&quot;sphpot&quot;设置径向点和角向点的数目，并确保&quot;iautointgrid&quot;已设为0。</p>
+<p>打印结果的阈值(threshold)由<em>settings.ini</em>中的“bndordthres”参数(parameter)控制。</p>
+<blockquote>
+<p><strong>所需信息(Information needed)</strong></p>
+<p>高斯型函数(GTFs)、原子坐标(atom coordinates)</p>
+</blockquote>
+<h2 id="3117-拉普拉斯键级laplacian-bond-order-8"><strong>3.11.7 拉普拉斯键级(Laplacian bond order) (8)</strong></h2>
+<p>在<em>J. Phys. Chem. A</em>, <strong>117</strong>, 3100 (2013) (<a href="http://pubs.acs.org/doi/abs/10.1021/jp4010345">http://pubs.acs.org/doi/abs/10.1021/jp4010345</a>)中，我提出了一种基于模糊重叠空间(fuzzy overlap space)中电子密度的拉普拉斯(Laplacian of electron density)${\mathrm{\nabla }}^{2}\rho$的共价键级(covalent bond order)的新定义，称为拉普拉斯键级(Laplacian bond order, LBO)。原子A和B之间的拉普拉斯键级可简单写为
+<div class="mathdisp" data-mi="23" title="点击复制 TeX">$$
+L_{A,B}=-10\times\int_{\nabla^2\rho<0} w_A(\mathbf{r})w_B(\mathbf{r})\nabla^2\rho(\mathbf{r})\mathrm{d}\mathbf{r}
+$$</div>
+其中<em>w</em>是由Becke提出的平滑变化的加权函数(weighting function)，代表模糊原子空间(fuzzy atomic space)，因此$w_{A}$ $w_{B}$对应于<em>A</em>与<em>B</em>之间的模糊重叠空间(fuzzy overlap space)。注意积分(integration)仅限于${\mathrm{\nabla }}^{2}\rho$的负值部分。LBO的物理基础是，在模糊重叠空间中负${\mathrm{\nabla }}^{2}\rho$的积分的量值越大，电子密度(electron density)在成键区域(bonding region)集中得越强烈，因此共价成键(covalent bonding)越强。</p>
+<p>在LBO的原始论文中，通过将其应用于多种多样的分子并与许多已有的键级(bond order)定义进行比较，证明了LBO的合理性和实用性。结果表明，LBO与键极性(bond polarity)、键解离能(bond dissociation energy)和键振动频率(bond vibrational frequency)直接相关。LBO的计算开销(computational cost)低，而且LBO对用于生成电子密度的计算级别(computational level)不敏感。此外，由于LBO本质上与波函数(wavefunction)无关，原则上可以利用源自X射线衍射(X-ray diffraction)数据的精确电子密度获得LBO。</p>
+<p>在Multiwfn中，用于计算LBO的是结合了修正的CSD半径(modified CSD radii)的、锐度参数(sharpness parameter)<em>k</em>=3的Becke模糊原子空间。(关于模糊原子空间的细节，见<a href="sec-3-18-fuzzy-atomic-space-analysis.html#3180-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5">3.18.0</a>节)。打印结果的阈值由<em>settings.ini</em>中的“bndordthres”参数控制。</p>
+<p>注意，在当前实现中，LBO特别适合于有机体系(organic systems)，但不适合离子键(ionic bonds)，因为在这些情况下应使用更好的原子空间(atomic space)定义以忠实地展现实际原子空间。LBO也不太适合研究两个重原子(heavy atoms，重于Ar)之间的成键，因为这些键在模糊重叠空间中往往伴随着不显著的电荷集中(charge concentration)，尽管其成键无疑是共价的。</p>
+<p>LBO的一个很好的应用实例是<em>Carbon</em>，<strong>165</strong>，468 (2020)，其中LBO被用于表征cyclo[18]carbon中两种不同类型的C-C键之间的成键。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>GTFs, 原子坐标(atom coordinates)</p>
+</blockquote>
+<h2 id="3118-将nao基nao-basis中的wiberg键级分解为原子轨道对贡献atomic-orbital-pair-contributions-9"><strong>3.11.8 将NAO基(NAO basis)中的Wiberg键级分解为原子轨道对贡献(atomic orbital pair contributions) (9)</strong></h2>
+<h3 id="理论theory"><strong>理论(Theory)</strong></h3>
+<p>正如<a href="#3113-%E5%9C%A8l%C3%B6wdin%E6%AD%A3%E4%BA%A4%E5%8C%96%E5%9F%BAl%C3%B6wdin-orthogonalized-basis%E4%B8%8B%E7%9A%84wiberg%E9%94%AE%E7%BA%A7wiberg-bond-order%E5%88%86%E6%9E%90-3">3.11.3</a>节所述，Wiberg键级表示为
+<div class="mathdisp" data-mi="24" title="点击复制 TeX">$$
+I_{AB}=\sum_{a\in A}\sum_{b\in B} P_{ab}^2
+$$</div>
+该数据是针对原子对(atomic pairs)计算的。由于该表达式仅仅是密度矩阵元(density matrix element)平方的线性组合(linear combination)，将Wiberg键级(Wiberg bond order)分解为基函数对贡献(basis function pair contribution)是很直接的(该想法即将发表)。例如，$P_{\mathrm{ab}}$ ² 仅仅是基函数<em>a</em>和<em>b</em>之间相互作用的贡献。由于在使用扩展基组(extended basis set)时缺乏基函数与原子轨道(atomic orbital)之间的一一对应(one-to-one correspondence)，为了使分解方法具有充分的物理意义，最好在自然原子轨道(natural atomic orbitals)(NAOs)下进行分解。每个非Rydberg型(non-Rydberg type)的自然原子轨道唯一对应于一个原子轨道，因此，通过上述分解方法，可以得到<em>原子轨道尺度(atomic orbital scale)上的</em>Wiberg键级。</p>
+<p>此外，原子轨道壳层(atomic orbital shells) <em>i</em>和<em>j</em>之间相互作用的贡献可表示为 $\sum_{a\in\mathrm{shell}\ i}\sum_{b\in\mathrm{shell}\ j} P_{ab}^2$ 。</p>
+<p>顺便提一下，将多中心键级(multi-center bond order)分解为原子轨道贡献(atomic orbital contribution)也是可能的。例如，三中心键级(three-center bond order)表示为
+<div class="mathdisp" data-mi="25" title="点击复制 TeX">$$
+I_{ABC}=\sum_{a\in A}\sum_{b\in B}\sum_{c\in C} P_{ab}P_{bc}P_{ca}
+$$</div>
+显然，$P_{\mathrm{ab}}$ $P_{\mathrm{bc}}$ $P_{\mathrm{ca}}$可视为来自自然原子轨道(NAO) <em>a</em>、<em>b</em>和<em>c</em>之间相互作用的贡献。然而，基于自然原子轨道基的多中心键级(multi-center bond order)的分解(decomposition)尚未实现。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>进入此函数后，只需输入两个原子的序号，来自自然原子轨道对和自然原子轨道壳对的不可忽略的贡献以及总Wiberg键将一并被打印。</p>
+<p>您也可以输入-1以输入原子序号来定义两个片段(fragment)，然后将给出两个片段之间的自然原子轨道壳贡献对片段间Wiberg键级(interfragment Wiberg bond order)的贡献。</p>
+<p>该函数的输入文件与第<a href="#3112-%E5%A4%9A%E4%B8%AD%E5%BF%83%E9%94%AE%E7%BA%A7%E5%88%86%E6%9E%90multi-center-bond-order-analysis-2--2--3">3.11.2</a>节中描述的选项-2完全相同，即含有密度矩阵(density matrix)信息的NBO程序的输出文件(<em>即</em>需要&quot;DMNAO&quot;关键词)。</p>
+<p>此分解分析的说明性例子见第<a href="sec-4-9-bond-order-analysis.html#494-%E7%94%B2%E9%86%9B%E5%9C%A8nao%E5%9F%BA%E7%BB%84%E4%B8%8B%E7%9A%84wiberg%E9%94%AE%E7%BA%A7%E7%9A%84%E5%88%86%E8%A7%A3%E5%88%86%E6%9E%90">4.9.4</a>节。</p>
+<h2 id="3119-本征键强度指数intrinsic-bond-strength-index-ibsi-10"><strong>3.11.9 本征键强度指数(intrinsic bond strength index, IBSI) (10)</strong></h2>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>本征键强度指数(IBSI)在<em>J. Phys. Chem. A</em>，<strong>124</strong>，1850 (2020)中被提出，用于量化化学键(chemical bond)的强度，它也可用于比较弱相互作用(weak interaction)的强度。本征键强度指数最初是在独立梯度模型(independent gradient model, IGM)框架下定义的，该模型在第<a href="sec-3-23-visual-study-of-weak-interaction.html#3235-%E5%9F%BA%E4%BA%8E%E5%89%8D%E5%88%86%E5%AD%90-promolecular%E5%AF%86%E5%BA%A6%E7%9A%84%E7%8B%AC%E7%AB%8B%E6%A2%AF%E5%BA%A6%E6%A8%A1%E5%9E%8B-independent-gradient-model-igm%E5%88%86%E6%9E%90-10">3.23.5</a>节中有非常详细的描述。本征键强度指数表示为
+<div class="mathdisp" data-mi="26" title="点击复制 TeX">$$
+\mathrm{IBSI}=\frac{(1/d^2)\int\delta g^{\mathrm{pair}}\mathrm{d}\mathbf{r}}{(1/d_{\mathrm{H}_2}^2)\int\delta g^{\mathrm{H}_2}\mathrm{d}\mathbf{r}}
+$$</div>
+其中<em>d</em>是待研究相互作用(interaction)的两个原子之间的距离。分子中的积分相当于我定义的这两个原子之间的原子对δ<em>g</em>指数(atomic pair δ<em>g</em> index)，详情见<a href="sec-3-23-visual-study-of-weak-interaction.html#3236-%E5%9F%BA%E4%BA%8E%E7%94%B5%E5%AD%90%E5%AF%86%E5%BA%A6-hirshfeld-%E5%88%86%E5%8C%BA%E7%9A%84-igm-igmh%E5%88%86%E6%9E%90-11">3.23.6</a>节。分母是参考体系(reference system)的数据，其中${d}_{{\mathrm{H}}_{2}}$和该积分分别是H₂在其平衡结构下的键长(bond length)和原子对δ<em>g</em>指数。在IBSI的原始论文中已表明，IBSI值与共价键(covalent bond)的强度呈适度的正相关。此外，还发现过渡金属配位键(transition metal coordinate bond)的IBSI量级明显小于共价键，而弱相互作用(weak interaction)的IBSI量级还要低得多，IBSI的这一特征可用于区分相互作用类型。</p>
+<h3 id="实现implementation"><strong>实现(Implementation)</strong></h3>
+<p>需要注意的是，在IBSI论文中作者使用基于梯度划分(gradient-based partition)的IGM（IG $M^{\mathrm{GBP}}$ ）计算IBSI，然而Multiwfn不支持这种形式的IGM。目前Multiwfn支持IGM的原始形式，即基于预分子近似(promolecular approximation)的IGM（IG $M^{\mathrm{pro}}$ ），也支持基于分子密度Hirshfeld划分(Hirshfeld partition of molecular density)的IGM（IGMH），以及mIGM。不同形式的IGM对应于计算原子密度梯度(gradient of atomic density)的不同方式，因此IBSI表达式中积分的值也相应不同。在Multiwfn中，IBSI可基于IG $M^{\mathrm{pro}}$ 、IGMH和mIGM计算，它们的结果差异很大，我发现基于IG $M^{\mathrm{pro}}$ 的结果明显更接近IBSI原始论文。</p>
+<h3 id="用法usage"><strong>用法(Usage)</strong></h3>
+<p>要计算IBSI，只需进入主功能(main function) 9并选择子功能(subfunction) 10，然后选择选项(option) 0开始计算。</p>
+<p>计算前，Multiwfn会要求你选择积分格点(integration grid)的质量，显然格点越好，开销越高，而结果越准确。根据我的经验，对于IG $M^{\mathrm{pro}}$ ，“medium quality”已能给出定量准确的结果；而对于IGMH和mIGM，若对精度(accuracy)有要求，至少应使用“high-quality”。</p>
+<p>你可通过选项2选择IBSI计算中使用哪种形式的IGM。若输入文件包含波函数信息(wavefunction information)，默认使用IGMH，而若输入文件仅包含几何信息(geometry information)（<em>e.g.</em> .pdb, .mol, .xyz...），则可使用IG $M^{\mathrm{pro}}$ 或mIGM。注意，IGMH比IG $M^{\mathrm{pro}}$ 昂贵得多，因其计算原子密度梯度的公式要复杂得多。</p>
+<p>若你仅对局域区域内的相互作用感兴趣，可选择选项3定义待研究的区域，仅会计算并输出所定义片段(fragment)中原子之间的IBSI，其开销相应低于对整个体系的IBSI计算，尤其当体系巨大时。</p>
+<p>可通过选项4设置参考值(reference value)，它对应于IBSI公式的分母。当然，该值对于IG $M^{\mathrm{pro}}$ 、IGMH和mIGM必然不同。默认参考值是针对具有实验键长(0.74144 Å)的H₂计算得到的，在IGMH情形下采用了B3LYP/6-311G**波函数。通常，参考值无需更改。然而，对于以IGMH计算IBSI，若你想获得当前计算水平下的参考值以追求更严格的结果，可载入H₂的波函数文件(wavefunction file)，然后进入当前功能，将参考值设为1.0，再使用选项0开始计算IBSI，所得结果可用作研究实际分子的参考值。</p>
+<p>为了避免过多的输出，默认仅打印间距小于3.5 Å的原子对的数据，因为如果间距更大，内在键强度指数(IBSI)应该可以忽略不计。如果需要调整距离打印阈值，请使用选项5。</p>
+<p>计算内在键强度指数的示例见第<a href="sec-4-9-bond-order-analysis.html#496-%E7%94%A8%E6%9C%AC%E5%BE%81%E9%94%AE%E5%BC%BA%E5%BA%A6%E6%8C%87%E6%95%B0ibsi%E8%A1%A1%E9%87%8F%E5%8C%96%E5%AD%A6%E9%94%AE%E5%BC%BA%E5%BA%A6">4.9.6</a>节。</p>
+<blockquote>
+<p><strong>需要的信息(Information needed)</strong></p>
+<p>原子坐标(Atom coordinates)（用于基于IG $M^{\mathrm{pro}}$和mIGM的内在键强度指数），GTF信息(GTF information)（用于基于IGMH的内在键强度指数）</p>
+</blockquote>
+<h2 id="31110-av1245指数av1245-index大环的近似多中心键级approximate-multi-center-bond-order-for-large-rings和avmin"><strong>3.11.10 AV1245指数(AV1245 index)（大环的近似多中心键级(approximate multi-center bond order for large rings)）和AVmin</strong></h2>
+<h3 id="理论theory"><strong>理论(Theory)</strong></h3>
+<p>多中心键级(multi-center bond order, MCBO)如第<a href="#3112-%E5%A4%9A%E4%B8%AD%E5%BF%83%E9%94%AE%E7%BA%A7%E5%88%86%E6%9E%90multi-center-bond-order-analysis-2--2--3">3.11.2</a>节所介绍，是表征芳香性(aromaticity)的一种非常严谨且流行的方法。在<em>Phys. Chem. Chem. Phys.</em>，<strong>18</strong>，11839 (2016)中，作者提出了AV1245指数以量化大环的芳香性，它可被视为多中心键级的近似。</p>
+<blockquote>
+<p><strong>注(Note)</strong></p>
+<p>AV1245相对于多中心键级的最初关键优势在于AV1245的计算成本仅随原子数线性增加，而对于由超过11~12个原子组成的环，多中心键级的成本通常高得令人望而却步。然而，自Multiwfn 3.8起，多中心键级的计算时间也与环成员成线性比例，因此多中心键级可以很容易地用于非常大的环，AV1245的价值变得不那么明显。</p>
+</blockquote>
+<p>原始论文中AV1245的定义是&quot;对环上保持位置关系为1, 2, 4, 5的所有4c-ESI值求平均&quot;。在此我澄清其定义。作为一个实例，对于下面的环，</p>
+<p><img src="assets/figures/sec3-11/fig1-benzene-ring-atom-numbering.png" alt="用于AV1245指数的苯环原子编号(Benzene ring with the atom numbering used for the AV1245 index)"></p>
+<p>其AV1245按如下计算
+<div class="mathdisp" data-mi="27" title="点击复制 TeX">$$
+\mathrm{AV1245}=\left[\mathrm{ESI}(1,2,4,5)+\mathrm{ESI}(2,3,5,6)+\mathrm{ESI}(3,4,6,1)+\mathrm{ESI}(4,5,1,2)+\mathrm{ESI}(5,6,2,3)+\mathrm{ESI}(6,1,3,4)\right] / 6
+$$</div>
+其中<em>n</em>c-ESI（<em>n</em>中心电子共享指数(<em>n</em>-center electron sharing index)）可经由带有所有可能排列的多中心键级(multi-center bond order)（即<em>I</em> $^{perm}$，详见第<a href="#3112-%E5%A4%9A%E4%B8%AD%E5%BF%83%E9%94%AE%E7%BA%A7%E5%88%86%E6%9E%90multi-center-bond-order-analysis-2--2--3">3.11.2</a>节）通过以下关系式直接获得
+<div class="mathdisp" data-mi="28" title="点击复制 TeX">$$
+\mathrm{ESI}=\frac{2}{(n-1)!}I^{\mathrm{perm}}
+$$</div>
+其中 <em>n</em> 是原子(atoms)的数量。显然，4c-ESI = (4c- $I^{\mathrm{perm}}$ ) / 3。</p>
+<p>AV1245的核心思想基于以下事实：在芳香环(aromatic ring)中，1-2键与4-5键之间的共振(resonance)很强，如下图所示。该特征可由ESI(1,2,4,5)捕捉。</p>
+<p><img src="assets/figures/sec3-11/fig2-resonance-structures.png" alt="五元环的1-2键与4-5键之间的共振"></p>
+<p>循环路径(cyclic path)的AV1245值越大意味着离域(delocalization)越强，从而环的芳香性(aromaticity)越大。由于AV1245的量级很小，在呈现数据时常将其乘以1000。</p>
+<p>值得注意的是，在AV1245的原始论文中，多中心键级(MCBO)是基于AIM划分(AIM partition)下的原子重叠矩阵(atomic overlap matrix)计算的，这种计算方式不仅昂贵而且复杂。在Multiwfn中，AV1245中涉及的MCBO按常规方式计算，即基于密度矩阵(density matrix)和重叠矩阵(overlap matrix)。由于在这种情况下4中心 <em>I</em> $^{perm}$ 的计算相当廉价，即使对于大体系和大环也能快速获得AV1245。然而，由于MCBO计算上的差异，Multiwfn产生的AV1245结果小于原始论文中的结果。此外，当用Multiwfn直接计算AV1245时（换句话说，在原始基函数(original basis functions)中计算AV1245），所用的基组不应包含弥散函数(diffuse functions)，否则AV1245将毫无意义。</p>
+<p>Multiwfn还支持在自然原子轨道(natural atomic orbital, NAO)基下计算AV1245，在这种情况下即使存在弥散函数也能获得合理的结果。如果没有弥散函数，在原始基函数中计算的结果与在NAO基下计算的结果几乎相同。</p>
+<p>AVmin指标在 <em>J. Phys. Chem. C</em>, <strong>121</strong>, 27118 (2017)中提出，并在 <em>Phys. Chem. Chem. Phys.</em>, <strong>20</strong>, 2787 (2018)中进一步讨论。它对应于AV1245计算中所涉及的所有4c-ESI的最小绝对值。与AV1245不同，AVmin定量了整个路径中的最低共轭(conjugation)程度，因此在区分不同离域路径(delocalization pathways)的芳香性方面具有独特价值，因为根据通常的直觉，一条路径的芳香性应主要由在整个路径上最阻断离域的局域区域决定。换句话说，AVmin能够确定给定路径芳香性的瓶颈(bottleneck)。</p>
+<h3 id="用法usage"><strong>用法(Usage)</strong></h3>
+<ul>
+<li><p>在原始基函数中计算AV1245和AVmin</p>
+<p>你应进入主功能(main function)200的子功能(subfunction)19，然后按连接顺序（沿环顺时针或逆时针）输入环中原子的原子序号(atomic indices)。此后，将输出AV1245及其组成的4c-ESI值以及AVmin</p>
+<blockquote>
+<p><strong>注(Note)</strong></p>
+<p>Multiwfn为输入大环的原子序号提供了便利。如果你先输入 <em>d</em> 并按ENTER键，然后你能以任意顺序输入原子序号，因为在这种情况下实际顺序将根据原子间连接性(interatomic connectivity)自动推测。然而，当环中任一原子与环中两个以上的其它原子相连时，不能使用此输入模式。</p>
+</blockquote>
+</li>
+<li><p>在NAO基下计算AV1245和AVmin</p>
+<p>操作过程与“在原始基函数中计算AV1245和AVmin”相同，然而，你应使用独立NBO程序的输出文件或量子化学程序(quantum chemistry codes)中内嵌的NBO模块的输出文件作为Multiwfn的输入文件，同时在NBO分析中必须使用&quot;DMNAO&quot;关键词。请注意在这种情况下上述的&quot;d&quot;序号输入模式不可用。</p>
+</li>
+</ul>
+<p>在<a href="sec-4-9-bond-order-analysis.html#4911-%E7%94%A8av1245%E5%92%8Cavmin%E6%8C%87%E6%95%B0%E7%A0%94%E7%A9%B6%E8%8A%B3%E9%A6%99%E6%80%A7%E7%9A%84%E4%BE%8B%E5%AD%90">4.9.11</a>节中给出了运用AV1245和AVmin研究小环和大环芳香性的例子。</p>
+<blockquote>
+<p><strong>所需信息(Information needed)</strong></p>
+<p>原子坐标(Atom coordinates)，基函数</p>
+</blockquote>
+<h2 id="31112-aim盆aim-basins之间的离域指数delocalization-index-di"><strong>3.11.12 AIM盆(AIM basins)之间的离域指数(delocalization index, DI)</strong></h2>
+<p>离域指数的概念在第<a href="sec-3-18-fuzzy-atomic-space-analysis.html#3185-%E5%AE%9A%E5%9F%9F%E5%8C%96%E6%8C%87%E6%95%B0-li%E4%B8%8E%E7%A6%BB%E5%9F%9F%E5%8C%96%E6%8C%87%E6%95%B0-di-4-44">3.18.5</a>节中给出。在分子中的原子盆，即对电子密度(electron density)划分的盆之间计算的离域指数是对不同原子共享的电子对(electron pairs)数目的定量，也可被视为键级(bond order)的一种度量。然而，这种离域指数对于具有更高键极性(bond polarity)的键往往偏低。由于这一原因，对于非极性键(nonpolar bonds)，离域指数通常与Mayer键级(Mayer bond order)和模糊键级(fuzzy bond order)非常接近，而对于极性键(polar bonds)，差异可能相当大。</p>
+<p>盆分析模块(basin analysis module)可计算离域指数，如第<a href="sec-3-20-basin-analysis.html">3.20</a>节所述。然而，获得原子间离域指数的最直接方法是直接使用专用功能，即主功能9的子功能12。您将被要求选择网格质量(grid quality)，质量越好，开销越高，而结果越准确。在此功能中，采用均匀网格与原子中心积分网格(atomic centered integration grids)来计算离域指数。</p>
+<blockquote>
+<p><strong>所需信息(Information needed)</strong></p>
+<p>原子坐标(Atom coordinates)，基函数(basis functions)</p>
+</blockquote>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-3-11-bond-order-analysis";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script><script>const MATHS=["I_{RS}=\\sum_{A\\in R}\\sum_{B\\in S} I_{AB}","I_{AB}=I_{AB}^{\\alpha}+I_{AB}^{\\beta}=2\\sum_{a\\in A}\\sum_{b\\in B}[(\\mathbf{P}^{\\alpha}\\mathbf{S})_{ba}(\\mathbf{P}^{\\alpha}\\mathbf{S})_{ab}+(\\mathbf{P}^{\\beta}\\mathbf{S})_{ba}(\\mathbf{P}^{\\beta}\\mathbf{S})_{ab}]","I_{AB}=\\sum_{a\\in A}\\sum_{b\\in B}[(\\mathbf{PS})_{ba}(\\mathbf{PS})_{ab}+(\\mathbf{P}^{\\mathrm{s}}\\mathbf{S})_{ba}(\\mathbf{P}^{\\mathrm{s}}\\mathbf{S})_{ab}]","I_{AB}=\\sum_{a\\in A}\\sum_{b\\in B}(\\mathbf{PS})_{ab}(\\mathbf{PS})_{ba}","V_A=2\\sum_{a\\in A}(\\mathbf{PS})_{aa}-\\sum_{a\\in A}\\sum_{b\\in A}(\\mathbf{PS})_{ab}(\\mathbf{PS})_{ba}","F_A=V_A-\\sum_{B\\neq A}I_{AB}=\\sum_{a\\in A}\\sum_{b\\in A}(\\mathbf{P}^{\\mathrm{s}}\\mathbf{S})_{ab}(\\mathbf{P}^{\\mathrm{s}}\\mathbf{S})_{ba}","V_A=\\sum_{B\\neq A}I_{AB}","\\begin{gathered}I_{ABC}=\\sum_{a\\in A}\\sum_{b\\in B}\\sum_{c\\in C}(\\mathbf{PS})_{ab}(\\mathbf{PS})_{bc}(\\mathbf{PS})_{ca}\\\\ I_{ABCD}=\\sum_{a\\in A}\\sum_{b\\in B}\\sum_{c\\in C}\\sum_{d\\in D}(\\mathbf{PS})_{ab}(\\mathbf{PS})_{bc}(\\mathbf{PS})_{cd}(\\mathbf{PS})_{da}\\\\ I_{ABCDE}=\\sum_{a\\in A}\\sum_{b\\in B}\\sum_{c\\in C}\\sum_{d\\in D}\\sum_{e\\in E}(\\mathbf{PS})_{ab}(\\mathbf{PS})_{bc}(\\mathbf{PS})_{cd}(\\mathbf{PS})_{de}(\\mathbf{PS})_{ea}\\\\ I_{ABCDEF}=\\sum_{a\\in A}\\sum_{b\\in B}\\sum_{c\\in C}\\sum_{d\\in D}\\sum_{e\\in E}\\sum_{f\\in F}(\\mathbf{PS})_{ab}(\\mathbf{PS})_{bc}(\\mathbf{PS})_{cd}(\\mathbf{PS})_{de}(\\mathbf{PS})_{ef}(\\mathbf{PS})_{fa}\\end{gathered}","I_{ABCDEF\\cdots K}=\\sum_{a\\in A}\\sum_{b\\in B}\\sum_{c\\in C}\\cdots\\sum_{k\\in K}(\\mathbf{PS})_{ab}(\\mathbf{PS})_{bc}(\\mathbf{PS})_{cd}\\cdots(\\mathbf{PS})_{ka}","\\begin{aligned}&I_{ABCDEF\\cdots K}=I_{ABCDEF\\cdots K}^{\\alpha}+I_{ABCDEF\\cdots K}^{\\beta}\\\\& =2^{n-1}\\left[\\sum_{a\\in A}\\sum_{b\\in B}\\sum_{c\\in C}\\cdots\\sum_{k\\in K}(\\mathbf{P}^{\\alpha}\\mathbf{S})_{ab}(\\mathbf{P}^{\\alpha}\\mathbf{S})_{bc}(\\mathbf{P}^{\\alpha}\\mathbf{S})_{cd}\\cdots(\\mathbf{P}^{\\alpha}\\mathbf{S})_{ka}\\right]\\\\& +2^{n-1}\\left[\\sum_{a\\in A}\\sum_{b\\in B}\\sum_{c\\in C}\\cdots\\sum_{k\\in K}(\\mathbf{P}^{\\beta}\\mathbf{S})_{ab}(\\mathbf{P}^{\\beta}\\mathbf{S})_{bc}(\\mathbf{P}^{\\beta}\\mathbf{S})_{cd}\\cdots(\\mathbf{P}^{\\beta}\\mathbf{S})_{ka}\\right]\\end{aligned}","\\begin{gathered}I_{ABCDEF\\cdots K}=\\sum_{a\\in A}\\sum_{b\\in B}\\sum_{c\\in C}\\cdots\\sum_{k\\in K}(\\mathbf{P}^{\\mathrm{mixed}}\\mathbf{S})_{ab}(\\mathbf{P}^{\\mathrm{mixed}}\\mathbf{S})_{bc}(\\mathbf{P}^{\\mathrm{mixed}}\\mathbf{S})_{cd}\\cdots(\\mathbf{P}^{\\mathrm{mixed}}\\mathbf{S})_{ka}\\\\ \\mathbf{P}^{\\mathrm{mixed}}=\\mathbf{P}^{\\alpha}+\\mathbf{P}^{\\beta}\\end{gathered}","I_{ABCDEF\\cdots K}=\\sum_{a\\in A}\\sum_{b\\in B}\\sum_{c\\in C}\\cdots\\sum_{k\\in K} P_{ab}P_{bc}P_{cd}\\cdots P_{ka}","\\mathrm{MCI}=\\frac{1}{2n}\\sum_{\\hat{P}(A,B,C\\cdots)} I_{A,B,C\\cdots}","I_{ABCDE}=\\sum_{a\\in A}\\sum_{b\\in B}\\sum_{c\\in C}\\sum_{d\\in D}\\sum_{e\\in E}(PS)_{ab}(PS)_{bc}(PS)_{cd}(PS)_{de}(PS)_{ea}","I_{ABCDE}=\\sum_{a\\in A}\\sum_{b\\in B}(PS)_{ab}\\sum_{c\\in C}(PS)_{bc}\\sum_{d\\in D}(PS)_{cd}\\sum_{e\\in E}(PS)_{de}(PS)_{ea}","I_{ABCDE}=\\sum_{a\\in A}\\sum_{b\\in B}(PS)_{ab}\\sum_{c\\in C}(PS)_{bc}\\sum_{d\\in D}(PS)_{cd}A_{d,a}","I_{ABCDE}=\\sum_{a\\in A}\\sum_{b\\in B}(PS)_{ab}\\sum_{c\\in C}(PS)_{bc}B_{c,a}","I_{ABCDE}=\\sum_{a\\in A}\\sum_{b\\in B}(PS)_{ab}C_{b,a}","I_{AB}=\\sum_{a\\in A}\\sum_{b\\in B} P_{ab}^2","I_{AB}=\\sum_i\\eta_i\\sum_{a\\in A}\\sum_{b\\in B}2C_{a,i}C_{b,i}S_{a,b}=2\\sum_{a\\in A}\\sum_{b\\in B} P_{a,b}S_{a,b}","I_{AB}^i=\\eta_i\\sum_{a\\in A}\\sum_{b\\in B}2C_{a,i}C_{b,i}S_{a,b}","I_{A,B}^*=I_{AB}^{*,\\alpha}+I_{AB}^{*,\\beta}=2\\sum_{a\\in A}\\sum_{b\\in B}[(\\mathbf{P}_X^{\\alpha}\\mathbf{S})_{ba}(\\mathbf{P}_X^{\\alpha}\\mathbf{S})_{ab}+(\\mathbf{P}_X^{\\beta}\\mathbf{S})_{ba}(\\mathbf{P}_X^{\\beta}\\mathbf{S})_{ab}]","\\begin{gathered}B_{AB}=B_{AB}^{\\alpha}+B_{AB}^{\\beta}=2\\sum_{\\mu}\\sum_{\\nu}[(\\mathbf{P}^{\\alpha}\\mathbf{S}^A)_{\\mu\\nu}(\\mathbf{P}^{\\alpha}\\mathbf{S}^B)_{\\nu\\mu}+(\\mathbf{P}^{\\beta}\\mathbf{S}^A)_{\\mu\\nu}(\\mathbf{P}^{\\beta}\\mathbf{S}^B)_{\\nu\\mu}]\\\\ S_{\\mu\\nu}^A=\\int w_A(\\mathbf{r})\\chi_\\mu^*(\\mathbf{r})\\chi_\\nu(\\mathbf{r})\\mathrm{d}\\mathbf{r}\\end{gathered}","L_{A,B}=-10\\times\\int_{\\nabla^2\\rho<0} w_A(\\mathbf{r})w_B(\\mathbf{r})\\nabla^2\\rho(\\mathbf{r})\\mathrm{d}\\mathbf{r}","I_{AB}=\\sum_{a\\in A}\\sum_{b\\in B} P_{ab}^2","I_{ABC}=\\sum_{a\\in A}\\sum_{b\\in B}\\sum_{c\\in C} P_{ab}P_{bc}P_{ca}","\\mathrm{IBSI}=\\frac{(1/d^2)\\int\\delta g^{\\mathrm{pair}}\\mathrm{d}\\mathbf{r}}{(1/d_{\\mathrm{H}_2}^2)\\int\\delta g^{\\mathrm{H}_2}\\mathrm{d}\\mathbf{r}}","\\mathrm{AV1245}=\\left[\\mathrm{ESI}(1,2,4,5)+\\mathrm{ESI}(2,3,5,6)+\\mathrm{ESI}(3,4,6,1)+\\mathrm{ESI}(4,5,1,2)+\\mathrm{ESI}(5,6,2,3)+\\mathrm{ESI}(6,1,3,4)\\right] / 6","\\mathrm{ESI}=\\frac{2}{(n-1)!}I^{\\mathrm{perm}}"];</script>
+<script src="app.js"></script></body></html>

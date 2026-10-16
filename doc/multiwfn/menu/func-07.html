@@ -1,0 +1,368 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>主功能7：布居分析与原子电荷计算 · Multiwfn中文手册</title><link rel="stylesheet" href="../style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="主功能7布居分析与原子电荷计算">主功能7：布居分析与原子电荷计算</h1>
+<p>功能概述：主功能7计算基函数、壳层、原子、碎片的布居数或原子电荷，涵盖 Hirshfeld、VDD、Mulliken 系、ESP 拟合（CHELPG/MK/RESP）、ADCH、CM5、Hirshfeld-I、EEM、PEOE、MBIS 等近二十种模型。通用规则有三：想得碎片电荷先选 <code>-1 Define fragment</code> 定义片段；算完可选存 <code>[载入文件名].chg</code>（格式见 2.5 节），该 <code>.chg</code> 可作输入研究原子电荷 ESP 或用 <code>-2</code> 算碎片间库仑作用能。不熟悉原子电荷者强烈建议先读综述：Tian Lu, Qinxue Chen, Partial Charges, WILEY-VCH (2024), DOI: <a href="https://doi.org/10.1002/9783527843435.ch6">10.1002/9783527843435.ch6</a>。</p>
+<h2 id="通用操作碎片定义chg-输出碎片间静电作用能">通用操作：碎片定义、chg 输出、碎片间静电作用能</h2>
+<p>说明：片段电荷＝片段内原子电荷之和；<code>.chg</code>/<code>.pqr</code> 作输入时 <code>-1</code> 直接加和其中电荷。</p>
+<p>菜单路径：主功能7 → <code>-1</code> 定义片段；算完后按提示存 <code>.chg</code>；<code>.chg</code> 作输入时 → <code>-2</code></p>
+<p>输入要求：波函数文件（<code>-2</code> 需 <code>.chg</code>/<code>.pqr</code>）。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">-1 Define fragment：输入原子序号定义碎片；之后原子电荷打印时一并打印碎片电荷。
+算完后选 y：原子坐标＋电荷输出到 [载入文件名].chg（格式见 2.5 节）。
+-2 Calculate interaction energy between fragments based on atomic charges
+（仅 .chg/.pqr 作输入时）：用经典库仑公式算两给定碎片间静电相互作用能：
+E = sum_{A in frag1} sum_{B in frag2} qA*qB / |RA-RB|。
+可用于分子相互作用能中的静电分量，或基于原子跃迁电荷算分子间激子耦合能
+（跃迁电荷得法见 4.A.9 节）。</code></pre></p>
+<p>产出：片段电荷、<code>.chg</code> 文件、碎片间库仑能。</p>
+<p>来源：<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html">3.9</a> 开头；实例 <a href="../sec-4-7-population-analysis-and-atomic-charge-calculation.html#471-%E8%AE%A1%E7%AE%97%E4%B8%89%E6%B0%9F%E5%8C%96%E6%B0%AF%E7%9A%84hirshfeld%E5%92%8Cchelpg%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7%E4%BB%A5%E5%8F%8A%E7%89%87%E6%AE%B5%E7%94%B5%E8%8D%B7">4.7.1 片段电荷</a>。</p>
+<h2 id="hirshfeld-原子电荷1">Hirshfeld 原子电荷（1）</h2>
+<p>说明：基于变形密度划分：$q_A=-\int w_A^{\mathrm{Hirsh}}(\mathbf{r})\rho_{\mathrm{def}}(\mathbf{r})\mathrm{d}\mathbf{r}$，$\rho^{\mathrm{def}}=\rho-\rho^{\mathrm{pro}}$，亦可写成 $q_A=-p_A+Z_A$。优点：合电负性直觉、权重有明确物理意义、只计转移密度、对波函数质量不敏感、可用 DFT 格点高效积分、适用固体与实验变形密度。缺点：电荷总偏小、偶极矩/ESP 复现差（完全忽略原子偶极矩）。</p>
+<p>菜单路径：主功能7 → <code>1</code></p>
+<p>输入要求：GTF ＋原子坐标。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">7  // Population analysis and atomic charges
+1  // Hirshfeld population
+1  // 使用内建（球化）自由原子密度（最方便；或选 2 基于原子 .wfn 文件，见 3.7.3 节）</code></pre></p>
+<p>判据：打印电荷总和应接近整数，否则数值积分不可靠，把 <code>settings.ini</code> 的 <code>radpot</code>/<code>sphpot</code> 调大（默认 75/434，可改为 100/590）重算。请用&quot;归一化到实际电子数之后&quot;（Final atomic charges）的电荷发表。</p>
+<p>产出：Hirshfeld 电荷、由电荷算的偶极矩、可选 <code>.chg</code>（供主功能3/4/5选&quot;原子电荷 ESP&quot;研究）。</p>
+<p>来源：<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#391-hirshfeld-%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7-1">3.9.1</a>；实例 <a href="../sec-4-7-population-analysis-and-atomic-charge-calculation.html#471-%E8%AE%A1%E7%AE%97%E4%B8%89%E6%B0%9F%E5%8C%96%E6%B0%AF%E7%9A%84hirshfeld%E5%92%8Cchelpg%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7%E4%BB%A5%E5%8F%8A%E7%89%87%E6%AE%B5%E7%94%B5%E8%8D%B7">4.7.1</a>。</p>
+<h2 id="vdd-原子布居2">VDD 原子布居（2）</h2>
+<p>说明：与 Hirshfeld 唯一区别是权重函数换成类 Voronoi 胞划分（见 <em>J. Comput. Chem.</em> <strong>25</strong>, 189 (2004)）；变形密度量级小，换权重电荷变化不大，输出项与 Hirshfeld 完全相同；作者建议直接用 Hirshfeld。</p>
+<p>菜单路径：主功能7 → <code>2</code></p>
+<p>输入要求：GTF ＋原子坐标。</p>
+<p>操作步骤（原始格式）：与 Hirshfeld 相同。若 VDD 电荷之和明显偏离净电荷，增大 <code>settings.ini</code> 的 <code>sphpot</code>（<code>radpot</code> 也有影响但不如 <code>sphpot</code> 显著）。</p>
+<p>产出：VDD 电荷。</p>
+<p>来源：<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#392-voronoi-%E5%8F%98%E5%BD%A2%E5%AF%86%E5%BA%A6-vdd%E5%8E%9F%E5%AD%90%E5%B8%83%E5%B1%85-2">3.9.2</a>。</p>
+<h2 id="mulliken-布居分析5">Mulliken 布居分析（5）</h2>
+<p>说明：最老的轨道波函数布居法：$\Theta_{i,a}=C_{a,i}^2+\sum_{b\ne a}C_{a,i}C_{b,i}S_{a,b}$（交叉项 $2C_{a,i}C_{b,i}S_{a,b}$ 平均分配），$q_A=Z_A-\sum_i\eta_i\sum_{a\in A}\Theta_{i,a}$。缺点：偶极矩复现差、平均分配无严格物理意义、基组依赖极强（<strong>禁带弥散函数</strong>）、偶发负布居。</p>
+<p>菜单路径：主功能7 → <code>5</code> → 子功能 <code>1</code>–<code>4</code>（大体系先用 <code>-1</code> 把输出重定向到文本文件）</p>
+<p>输入要求：含基函数信息的文件（<code>.fch</code>/<code>.molden</code>/<code>.mwfn</code>/<code>.wfn</code> 等）。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">7  // Population analysis and atomic charges
+5  // Mulliken population analysis
+1  // 输出 Mulliken 布居与原子电荷：基函数布居、壳层布居、角动量布居、原子电荷
+   //（开壳层另给 α/β/自旋布居；-1 可改输出到文件）
+2  // 输出总原子布居矩阵并分解：对角元为局域项，非对角元×2 为原子对交叉项
+   // 矩阵元 Ω(A,B) = sum_i ηi sum_{a in A} sum_{b in B} C(a,i)C(b,i)S(a,b)；
+   // 最后一行为列和（原子总布居）；可选分解到各占据轨道（groatmdcp.txt）。
+   // 顺带：2Ω(A,B)^i 即轨道 i 对 A-B 间 Mulliken 键级的贡献（见 3.11.4 节）。
+3  // 输出总基函数布居矩阵并分解：Γ(a,b) = sum_i ηi*C(a,i)C(b,i)S(a,b)；
+   // 可选各占据轨道贡献到 grobasdcp.txt（即使中等体系也极其庞大，慎用）。
+4  // 各占据轨道对原子布居贡献输出到 atmpopdcp.txt。</code></pre></p>
+<p>产出：四级布居表与原子电荷（实例输出见 <a href="../sec-4-7-population-analysis-and-atomic-charge-calculation.html#470-%E4%B8%89%E9%87%8D%E6%80%81%E4%B9%99%E9%86%87%E7%9A%84mulliken%E5%B8%83%E5%B1%85%E5%88%86%E6%9E%90">4.7.0</a>，输入 <code>examples\ethanol_triplet.fch</code> → <code>7</code> → <code>5</code> → <code>1</code>）。</p>
+<p>来源：<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#393-mulliken-%E5%8E%9F%E5%AD%90%E4%B8%8E%E5%9F%BA%E5%87%BD%E6%95%B0%E5%B8%83%E5%B1%85%E5%88%86%E6%9E%90-5">3.9.3</a>。</p>
+<h2 id="löwdin-布居6-scpa7-stout-politzer8-bickelhaupt9">Löwdin 布居（6）/ SCPA（7）/ Stout-Politzer（8）/ Bickelhaupt（9）</h2>
+<p>说明：三种修正 Mulliken 都是换交叉项划分方式；Löwdin 是先做 Löwdin 正交化（变换 $\mathbf{X}=\mathbf{U}\mathbf{s}^{1/2}\mathbf{U}^{\mathrm{T}}$，新系数 $X^{-1}\mathbf{C}$）再做 Mulliken 型划分——划分只是藏进了正交化，没有更优的物理意义，实际也不优于 Mulliken（Cartesian 基还有轻微转动依赖性）。</p>
+<p>菜单路径：主功能7 → <code>6</code> / <code>7</code> / <code>8</code> / <code>9</code></p>
+<p>输入要求：含基函数信息的文件。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">6  // Löwdin：先 Löwdin 正交化再 Mulliken 型划分；输出同 Mulliken。
+7  // SCPA（Ros &amp; Schuit, Theo. Chim. Acta 4, 1 (1966)）：
+   // Θ(i,a) = C(a,i)^2 / sum_b C(b,i)^2；输出同 Mulliken。
+8  // Stout &amp; Politzer 修正 Mulliken：用其交叉项划分；输出同 Mulliken。
+9  // Bickelhaupt 修正 Mulliken：用其基函数布居定义；输出同 Mulliken。</code></pre></p>
+<p>产出：各修正模型的布居与电荷。</p>
+<p>来源：<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#394-l%C3%B6wdin-%E5%8E%9F%E5%AD%90%E4%B8%8E%E5%9F%BA%E5%87%BD%E6%95%B0%E5%B8%83%E5%B1%85-6">3.9.4</a>–<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#397-bickelhaupt-%E5%AE%9A%E4%B9%89%E7%9A%84%E4%BF%AE%E6%AD%A3-mulliken-%E5%8E%9F%E5%AD%90%E5%B8%83%E5%B1%85-9">3.9.7</a>。</p>
+<h2 id="becke-原子电荷10含原子偶极矩校正">Becke 原子电荷（10，含原子偶极矩校正）</h2>
+<p>说明：借 Becke 权重（<em>J. Chem. Phys.</em> <strong>88</strong>, 2547 (1988)）做原子空间划分：$q_A=Z_A-\int w_A(\mathbf{r})\rho(\mathbf{r})\mathrm{d}\mathbf{r}$，半径用户可控（默认 modified CSD 半径对典型有机体系合理，离子体系不太合适）。算完自动做原子偶极矩校正（与 ADCH 同过程），校正后精确复现偶极矩。</p>
+<p>菜单路径：主功能7 → <code>10</code></p>
+<p>输入要求：GTF ＋原子坐标（无需原子波函数文件）。</p>
+<p>产出：Becke 电荷（校正后）。</p>
+<p>来源：<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#398-%E5%90%AB%E5%8E%9F%E5%AD%90%E5%81%B6%E6%9E%81%E7%9F%A9%E6%A0%A1%E6%AD%A3%E7%9A%84-becke-%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7-10">3.9.8</a>。</p>
+<h2 id="adch-原子电荷11高度推荐">ADCH 原子电荷（11，高度推荐）</h2>
+<p>说明：Hirshfeld＋原子偶极矩展开为邻近原子校正电荷（<em>J. Theor. Comput. Chem.</em> <strong>11</strong>, 163 (2012)）；化学合理、精确复现当前水平偶极矩、ESP 复现接近 ESP 拟合电荷；代价可忽略。汇总栏 corrected＝ADCH、before＝Hirshfeld，末尾 Error≈0。<code>settings.ini</code> 的 <code>ishowchgtrans=1</code> 可看原子间电荷转移细节。</p>
+<p>菜单路径：主功能7 → <code>11</code></p>
+<p>输入要求：GTF ＋原子坐标。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\CH3CONH2.fch
+7  // Population analysis and atomic charges
+11  // Calculate ADCH charges
+1  // Use built-in atomic densities in free-state</code></pre></p>
+<p>产出示例：C1 −0.265840（校正前 −0.090370）、N −0.677574（校正前 −0.159120）；ADCH 偶极 1.4368 a.u. 与实际一致，Hirshfeld 只给出 1.0738 a.u.。请用 Final atomic charges 归一化电荷。</p>
+<p>来源：<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#399-%E5%8E%9F%E5%AD%90%E5%81%B6%E6%9E%81%E7%9F%A9%E6%A0%A1%E6%AD%A3%E7%9A%84-hirshfeld-%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7-adch-11">3.9.9</a>；实例 <a href="../sec-4-7-population-analysis-and-atomic-charge-calculation.html#472-%E8%AE%A1%E7%AE%97%E5%B9%B6%E6%AF%94%E8%BE%83%E4%B9%99%E9%85%B0%E8%83%BA%E7%9A%84adch%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7%E4%B8%8Ehirshfeld%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7">4.7.2</a>。</p>
+<h2 id="chelpg-esp-拟合电荷12">CHELPG ESP 拟合电荷（12）</h2>
+<p>说明：立方格点分布拟合点（盒子每侧扩展 2.8 Å，默认间距 0.3 Å；舍去离核太近或离全部分子太远的点），最小化 $F=\sum_i[V_q-V]^2$ 即解 $\mathbf{A}\mathbf{q}=\mathbf{B}$（含总电荷约束行）；转动不变性好。</p>
+<p>菜单路径：主功能7 → <code>12</code></p>
+<p>输入要求：GTF ＋原子坐标。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">选项 1：开始计算各拟合点 ESP 并输出拟合电荷，同时输出 RMSE/RRMSE（越小复现越好）。
+选项 2~4：设拟合点分布参数（默认合理，无特殊理由勿改）；选项 4 可只在某片段周围布点。
+选项 5：ESP 类型（默认 Nuclear+Electronic；算 TrEsp 跃迁电荷选 Transition electronic，见 4.A.9）。
+选项 6：Yes 则导出 ESPfitpt.txt/ESPfitpt.pqr（后者 VMD 按 charge 列着色可视化拟合点）
+   与 ESPerr.pqr（精确与电荷 ESP 差大的点，见 4.7.8）。
+选项 8：Yes 则加约束精确复现波函数偶极矩（通常不必要，ESP 拟合电荷本来复现偶极就很好）。
+选项 10：选原子半径模式：(1)默认 CHELPG 原文半径（只到第三行，缺的回车用 UFF×1/1.2）；
+   (2)全用 UFF×1/1.2；(3)外部文件载入，格式如 "H 1.2 / O 1.8 / Cu 2.2"（Å，全元素须定义）。
+选项 -1：外部文件读拟合点代替 CHELPG 点：首行 numdata，后每行 "X Y Z [ESPval]"；
+   numdata 为负则第四列直接作 ESP 用。
+选项 -2：外部文件读额外拟合中心（孤对/σ-hole 区增强描述）：首行 numdata，后每行 XYZ（Å）。
+选项 -3：从 .chg 载入给定电荷只检验复现性（选 1 时不产生新拟合电荷，只输出 RMSE/RRMSE）；
+   配合选项 4 可只检验某片段周围。</code></pre></p>
+<p>产出：CHELPG 电荷＋RMSE/RRMSE（ClF₃ 例：Cl 0.5772，轴向 F −0.2496，平伏 F −0.0779，与 Hirshfeld 结论一致）。</p>
+<p>来源：<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#3910-chelpg-charges-from-electrostatic-potentials-using-a-grid-based-method-esp-%E6%8B%9F%E5%90%88%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7-12">3.9.10</a>；实例 <a href="../sec-4-7-population-analysis-and-atomic-charge-calculation.html#471-%E8%AE%A1%E7%AE%97%E4%B8%89%E6%B0%9F%E5%8C%96%E6%B0%AF%E7%9A%84hirshfeld%E5%92%8Cchelpg%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7%E4%BB%A5%E5%8F%8A%E7%89%87%E6%AE%B5%E7%94%B5%E8%8D%B7">4.7.1</a>。</p>
+<h2 id="mk-esp-拟合电荷13">MK ESP 拟合电荷（13）</h2>
+<p>说明：与 CHELPG 唯一区别是拟合点布在各原子 vdW 半径 1.4/1.6/1.8/2.0 倍层上（离核 &lt;1.4 倍舍去）。其余选项与输出同 CHELPG。</p>
+<p>菜单路径：主功能7 → <code>13</code></p>
+<p>输入要求：GTF ＋原子坐标。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">选项 2 设每 Å² 点密度；选项 3 设层数与半径缩放因子；选项 4 设参与建点的原子。
+选项 10 选半径模式（默认 automatic 用 MK 半径：一二行与 P、S、Cl 同 Gaussian MK，
+Na-Si 为 1.57、1.65、1.65、1.80 Å；CHELPG 点则用 CHELPG 半径）。
+其余选项（1/-1/-2/-3/6/8）见 CHELPG 一节。</code></pre></p>
+<p>产出：MK 电荷（CH₃CONH₂ 的 MK RRMSE≈0.05，远好于 Hirshfeld 的 0.31；用法见 4.7.8 检验节）。</p>
+<p>来源：<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#3911-merz-kollmann-mk-esp-%E6%8B%9F%E5%90%88%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7-13">3.9.11</a>。</p>
+<h2 id="aim-原子电荷14">AIM 原子电荷（14）</h2>
+<p>说明：核电荷减 AIM 盆电子数（常被误称 Bader 电荷）。最方便做法就是本子功能：选格点质量后自动用原子中心＋均匀混合格点＋盆边界精修，直接打印 AIM 电荷。</p>
+<p>菜单路径：主功能7 → <code>14</code></p>
+<p>输入要求：GTF ＋原子坐标。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\CH3NH2.wfn
+7  // Population analysis and atomic charge calculations
+14  // AIM charge
+2  // Medium-quality grid (cost/accuracy compromise; 质量越高越准但越贵)</code></pre></p>
+<p>产出：AIM 电荷（CH₃NH₂ 例 C +0.388、N −0.989，但甲基 H2/H3 带轻微负电，化学合理性不佳是 AIM 众所周知的缺陷）。</p>
+<p>来源：<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#3912-aim-%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7-14">3.9.12</a>；实例 <a href="../sec-4-7-population-analysis-and-atomic-charge-calculation.html#4711-%E8%AE%A1%E7%AE%97-aim-%E7%94%B5%E8%8D%B7">4.7.11</a>。</p>
+<h2 id="hirshfeld-i-原子电荷15">Hirshfeld-I 原子电荷（15）</h2>
+<p>说明：迭代优化原子空间（<em>J. Chem. Phys.</em> <strong>126</strong>, 144111 (2007)），权重 $w_A^{(n)}=\rho_A^{(n-1)}/\rho_{\mathrm{pro}}^{(n-1)}$，原子密度由相邻整数电荷态球平均密度线性插值；迭代至最大变化 &lt;0.0002。需各元素各带电态 <code>.rad</code> 文件：最简是把 <code>examples\atmrad</code> 复制到当前目录直接用内置（PBE0 大基组＋DKH2 精心生成，前三行 PBE0/def2-QZVPP，主族 PBE0/ANO-RCC，过渡金属 PBE0/Sapporo-DK3-QZP-2012）；缺失时 Multiwfn 自动调 Gaussian 现算（<code>settings.ini</code> 的 <code>gaupath</code> 须设好；镧系锕系只能手算 <code>.wfn</code> 经主功能1000子功能14 转 <code>.rad</code>）。选项 <code>-3</code> 为距离截断加速（默认开、截断 2.0；出问题先关一次，不行再选两次改大截断值）。</p>
+<p>菜单路径：主功能7 → <code>15</code> → 选项 <code>0</code> 开始迭代</p>
+<p>输入要求：GTF ＋原子坐标 ＋ <code>.rad</code> 文件。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\CH3COCl.wfn  // Generated at B3LYP/6-31G* level
+7  // Population analysis and atomic charges
+15  // Hirshfeld-I method
+1  // Start calculation with default settings</code></pre></p>
+<p>迭代显示 <code>Maximum change</code> 逐轮下降；收敛打印归一化 HI 电荷（CH₃COCl 例 C1 −0.646、羰基 C +0.727、O −0.420、Cl −0.203），绝对值远大于 Hirshfeld。可存 <code>.chg</code>。自动调 Gaussian 版多一步输入原子计算关键词：</p>
+<p><pre><code class="language-text">examples\CH3COCl.wfn
+7
+15
+1  // Start calculation with default settings
+B3LYP/6-31G*  // Gaussian keyword for atomic .wfn files</code></pre></p>
+<p>（先删已有 atmrad；<code>.gjf</code>/<code>.out</code>/<code>.rad</code> 均在 <code>atmrad</code> 文件夹；水例子需 O-2..O+2、H-1..H+1 的 <code>.rad</code>。）</p>
+<p>产出：HI 电荷（另有快/慢两种数值算法，默认快但内存 $7n_{\mathrm{atm}}^2n_{\mathrm{rad}}n_{\mathrm{ang}}$，大体系切慢算法；格点经 <code>iautointgrid=0</code>＋<code>radpot</code>/<code>sphpot</code> 手调）。</p>
+<p>来源：<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#3913-hirshfeld-i-%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7-15">3.9.13</a>；实例 <a href="../sec-4-7-population-analysis-and-atomic-charge-calculation.html#474-hirshfeld-i%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7%E8%AE%A1%E7%AE%97%E7%A4%BA%E4%BE%8B">4.7.4</a>。</p>
+<h2 id="cm5--12cm516---16">CM5 / 1.2×CM5（16 / -16）</h2>
+<p>说明：Hirshfeld＋经验键级校正（<em>J. Chem. Theory Comput.</em> <strong>8</strong>, 527 (2012)）：$q_i^{\mathrm{CM5}}=q_i^{\mathrm{Hirsh}}+\sum_{j\ne i}T_{ij}B_{ij}$，$B_{ij}=\exp[-\alpha(r_{ij}-R_i-R_j)]$，$\alpha=2.474$ Å⁻¹。与 ADCH 不同，CM5 复现的是真实偶极矩而非当前水平偶极矩，故 B3LYP/6-31G* 这种低水平仍可用。1.2×CM5 供 OPLS-AA 力场 MD（<em>J. Phys. Chem. B</em> <strong>121</strong>, 3864 (2017)）。<code>settings.ini</code> 设 <code>uESEinp=1</code> 可生成 uESE 溶剂化模型输入（CM5 应在气相 B3LYP/def2-TZVP 下算）。</p>
+<p>菜单路径：主功能7 → <code>16</code> / <code>-16</code></p>
+<p>输入要求：GTF ＋原子坐标（建议真空下小基组 DFT，如 B3LYP/def2-SVP）。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\oxirane.fchk
+7  // Population analysis and atomic charges
+16  // CM5
+1  // Use built-in sphericalized atomic densities in free-states</code></pre></p>
+<p>产出：CM5 电荷（环氧乙烷例 O −0.273、C −0.074、H +0.105；偶极 0.811 a.u. 即气相偶极估计）。1.2×CM5 全自动脚本 <code>examples\scripts\1.2CM5.sh</code>（ORCA 版 <code>1.2CM5_ORCA.sh</code>）：<code>./1.2CM5.sh phenol.xyz</code> 自动优化＋算电荷得 <code>phenol.chg</code>。</p>
+<p>来源：<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#3914-cm5-%E4%B8%8E-12cm5-%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7-16--16">3.9.14</a>；实例 <a href="../sec-4-7-population-analysis-and-atomic-charge-calculation.html#4710-%E8%AE%A1%E7%AE%97-cm5-%E5%92%8C-12cm5-%E7%94%B5%E8%8D%B7">4.7.10</a>。</p>
+<h2 id="eem-原子电荷17">EEM 原子电荷（17）</h2>
+<p>说明：电负性均衡解线性方程（<em>J. Am. Chem. Soc.</em> <strong>107</strong>, 829 (1985)），秒算数百原子，适合大体系粗估。必须用含连接信息的 <code>.mol</code>/<code>.mol2</code> 作输入（超 999 原子用 <code>.mol2</code>）；π 共轭须写成 Lewis 单双交替（GaussView 存的芳香键会变成 4 号键导致 <code>Multiplicity ... exceeded upper limit</code>，用 <code>obabel old.mol -O new.mol</code> 转一道）；离子体系先用选项 <code>2</code> 设净电荷。</p>
+<p>菜单路径：主功能7 → <code>17</code> → 选项 <code>0</code> 计算；选项 <code>1</code> 选参数集</p>
+<p>输入要求：<code>.mol</code>/<code>.mol2</code>（离子先设净电荷）。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\ethanol_water.mol  // 492-atom MD snapshot
+7  // Population analysis and atomic charges
+17  // EEM charge
+0  // Start calculation</code></pre></p>
+<p>输出各原子 EEM 电荷＋分子电负性。内置三套参数：(1)拟合 HF/STO-3G Mulliken（H、C、N、O、S）；(2)拟合 B3LYP/6-31G* 与 HF/6-31G* MK（H、C、N、O、F、S、Cl、Br、Zn，默认）；(3)拟合 B3LYP/6-311G* NPA。外部参数文件格式：</p>
+<p><pre><code class="language-text">    0.302000
+ H   1  2.38500  0.73700
+ C   1  2.48200  0.46400
+ C   2  2.46400  0.39200
+ N   1  2.59500  0.46800
+ N   2  2.55600  0.37700
+ O   1  2.82500  0.84400
+ O   2  2.78900  0.83400</code></pre></p>
+<p>（首行 κ，后为多重度/A/B；选项 <code>1</code> 子选项 <code>0</code> 载入，另可导出当前参数到 <code>EEMparm.txt</code>。）</p>
+<p>产出：EEM 电荷（乙醇–水团簇例 O≈−0.62<del>−0.66、H≈+0.27</del>+0.32）。</p>
+<p>来源：<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#3915-%E7%94%B5%E8%B4%9F%E6%80%A7%E5%9D%87%E8%A1%A1%E6%96%B9%E6%B3%95-eem-%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7-17">3.9.15</a>；实例 <a href="../sec-4-7-population-analysis-and-atomic-charge-calculation.html#475-%E8%AE%A1%E7%AE%97%E4%B9%99%E9%86%87-%E6%B0%B4%E5%9B%A2%E7%B0%87%E7%9A%84eem%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7">4.7.5</a>。</p>
+<h2 id="resp--带约束-esp-拟合18">RESP / 带约束 ESP 拟合（18）</h2>
+<p>说明：既算 Kollman 标准两步 RESP（<em>J. Phys. Chem.</em> <strong>97</strong>, 10269 (1993)），也算带等价/电荷约束的一步 ESP 拟合；支持多构象加权、TrEsp、RESP2（RESP 扩展，更适合凝聚相 MD，见 4.7.7.9）。任何带 GTF 的文件均可。理论细节与博客 <a href="http://sobereva.com/441">http://sobereva.com/441</a> 不赘述，这里只列选项原文。</p>
+<p>菜单路径：主功能7 → <code>18</code></p>
+<p>输入要求：带 GTF 的波函数文件（多构象时用选项 <code>-1</code> 的列表文件，启动时载入文件可为任意几何文件）。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">选项 1：标准 RESP（两步拟合），直接算并打印。
+选项 2：普通 ESP 拟合（一步），带/不带约束。
+选项 -1：多构象拟合。输入"文件路径+权重"列表文件，如：
+  D:\a\conf1.fch  0.2
+  D:\a\conf2.fch  0.75
+  D:\b\conf.fch  0.05
+  权重和须恰为或接近 1.0；之后依次载入计算。
+选项 3：拟合点类型与密度（默认 MK 型已足够密；可换 CHELPG）。
+选项 4：双曲惩罚函数参数 a（一步默认 0.0005；两步各自 a 与 b 可改）＋最大迭代数与收敛阈值。
+选项 5：等价约束。提供文本文件，如：
+  4,6,9-11
+  5,7
+  表原子 4,6,9,10,11 等价、5,7 等价；对一步拟合与两步第一步生效。
+  一步拟合默认 CH3/CH2 氢等价（可改可删）；子选项 10 生成 eqvcons_H.txt；
+  子功能 11 按点群自动生成 eqvcons_PG.txt。
+选项 6：电荷约束（仅一步拟合与两步第一步）。文件如：
+  4,6,9-11 0.8
+  5,7  -0.32
+  表前组电荷和约束 0.8、后组 -0.32。
+选项 7：连通性。默认两原子距小于 CSD 共价半径和×1.15 判成键；不符可用 .mol
+  读入连通性（或主功能 0 调成键阈值，阈值保留给 RESP 用）。
+选项 8：从 Gaussian 输出直接载入拟合点+ESP（pop=MK/CHELPG + IOp(6/33=2) 任务；
+  IOp(6/42=x) 设 MK 密度，建议 x=6 对应 Multiwfn 默认）。
+选项 9：额外拟合中心（孤对/σ-hole 增强）。文件格式：首行 numdata（每构象同数），
+  后 XYZ（Å），不同构象间空行隔开；拟合中视为极性非氢原子但半径为零。
+选项 10：原子半径（默认 automatic：MK 点用 MK 半径，CHELPG 点用 CHELPG 半径）。
+选项 11：ESP 类型（默认通常 ESP；算跃迁电荷选 3 Transition electronic，见 4.A.9）。
+约束规则：等价约束条目间原子不可共享；电荷约束条目间可相交；电荷约束与等价约束
+  条目间不可相交。空间等价原子电荷 helft 差异源于拟合点不对称，办法是选项 5
+  加等价约束（子功能 11 自动按点群生成），而非一味加密 CHELPG 格点。</code></pre></p>
+<p>产出：RESP/约束 ESP 电荷；多构象、等价/电荷约束、额外拟合中心、RESP2（<code>calcRESP2.sh</code>/<code>RESP.sh</code> 一键流程）实例见 <a href="../sec-4-7-population-analysis-and-atomic-charge-calculation.html#477-%E6%8E%A8%E5%AF%BC-resp-%E7%94%B5%E8%8D%B7%E5%92%8C%E5%B8%A6%E9%A2%9D%E5%A4%96%E7%BA%A6%E6%9D%9F%E7%9A%84%E5%B8%B8%E8%A7%84-esp-%E6%8B%9F%E5%90%88%E7%94%B5%E8%8D%B7%E7%9A%84%E7%A4%BA%E4%BE%8B%E8%AF%B4%E6%98%8E">4.7.7</a>（例1 多巴胺标准 RESP、例2 多构象、例3 磷酸二甲酯等价约束、例4 天冬氨酸等价＋电荷约束、例5 点群对称、例6 额外拟合中心、技巧1 两次单阶段等价两阶段、技巧2 一条命令出 RESP、专题 RESP2）。</p>
+<p>来源：<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#39162-%E7%94%A8%E6%B3%95%E4%B8%8E%E4%B8%80%E4%BA%9B%E7%BB%86%E8%8A%82">3.9.16.2</a>。</p>
+<h2 id="peoegasteiger电荷19">PEOE（Gasteiger）电荷（19）</h2>
+<p>说明：纯经验迭代（<em>Tetrahedron Lett.</em> <strong>19</strong>, 3181 (1978)；<em>Tetrahedron</em> <strong>36</strong>, 3219 (1980)），秒出结果，适合大有机体系快速电荷。仅支持 H/C/N/P/O/S/F/Cl/Br/I，不支持带电体系；连通性按键长＋共价半径猜（<code>.mol</code>/<code>.mol2</code> 直接读），几何须优化过（尤其含 N 时三配位 N 杂化由位置判定）。</p>
+<p>菜单路径：主功能7 → <code>19</code></p>
+<p>输入要求：仅原子坐标（<code>.xyz</code>/<code>.pdb</code>/<code>.mol</code> 等）。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\dopamine.xyz
+7  // Population analysis
+19  // PEOE (Gasteiger) charge</code></pre></p>
+<p>先打印各原子参数（<code>numbond/a/b/c</code>），再迭代（<code>Max cycles: 50, 收敛 0.00010, damping 0.5</code>，约 10 轮收敛），最后打印电荷（多巴胺例 O −0.358、N −0.330）。<code>settings.ini</code> 的 <code>outmedinfo=1</code> 可监视每轮电荷/电负性。</p>
+<p>产出：PEOE 电荷。</p>
+<p>来源：<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#3917-peoe-partial-equalization-of-orbital-electronegativity-%E6%88%96-gasteiger-%E7%94%B5%E8%8D%B7-19">3.9.17</a>；实例 <a href="../sec-4-7-population-analysis-and-atomic-charge-calculation.html#479-%E8%AE%A1%E7%AE%97-peoe-gasteiger-%E7%94%B5%E8%8D%B7">4.7.9</a>。</p>
+<h2 id="mbis20-cmbis21-embis22-aembis23">MBIS（20）/ cMBIS（21）/ EMBIS（22）/ AEMBIS（23）</h2>
+<p>说明：MBIS（<em>J. Chem. Theory Comput.</em> <strong>12</strong>, 3894 (2016)）迭代优化类 Slater 壳层布居 $N_{Ai}$ 与宽度 $\sigma_{Ai}$，无需预先算带电态原子密度，多数情形值与 HI 相当，支持到 Rn。cMBIS/EMBIS/AEMBIS 为 Jensen 组带多极矩约束/椭球原子变体（cMBIS <em>JCTC</em> <strong>21</strong>, 1179 (2025)；EMBIS <em>JCTC</em> <strong>21</strong>, 8753 (2025)；AEMBIS 未发表），额外输出原子体积与键级矩阵；进功能先选积分格点（高阶多极建议 fine/ultrafine 到 1e-4 精度）。</p>
+<p>菜单路径：主功能7 → <code>20</code> / <code>21</code> / <code>22</code> / <code>23</code></p>
+<p>输入要求：GTF ＋原子坐标。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">20 MBIS：选项 1 开始迭代并打印电荷；选项 -2 切 Yes 则一并打印收敛的壳层布居 N
+   与宽度 σ；最大迭代数与收敛阈值可自定义。
+21/22/23：进入先选积分格点，再按提示计算；cMBIS 可选数值/双重数值算 Vne/Vee
+   原子贡献（Vee 很耗时，但可做 IQA 原子对能量分解）；还有沿方向绘密度选项。</code></pre></p>
+<p>产出：MBIS 系电荷（＋壳层布居/宽度、原子体积、键级矩阵）。</p>
+<p>来源：<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#3918-%E6%9C%80%E5%B0%8F%E5%9F%BA%E8%BF%AD%E4%BB%A3-stockholder-mbis-%E7%94%B5%E8%8D%B7-20">3.9.18</a>、<a href="../sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#3919-%E7%BA%A6%E6%9D%9F-mbis-cmbis%E6%A4%AD%E7%90%83-mbis-embis%E9%9D%9E%E5%AF%B9%E7%A7%B0%E6%A4%AD%E7%90%83-mbis-aembis-21-22-23">3.9.19</a>。</p>
+<h2 id="实例三重态乙醇-mulliken-分析">实例：三重态乙醇 Mulliken 分析</h2>
+<p>说明：Mulliken 与弥散函数不兼容；开壳层输出 α/β/总/自旋四套布居。</p>
+<p>菜单路径：主功能7 → <code>5</code> → <code>1</code></p>
+<p>输入要求：<code>examples\ethanol_triplet.fch</code>（UB3LYP/6-31G**）。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\ethanol_triplet.fch
+7  // Population analysis and atomic charges
+5  // Mulliken population analysis
+1  // Output Mulliken analysis result (default screen; -1 可改到文本文件)</code></pre></p>
+<p>产出：基函数/壳层/角动量/原子四级布居与电荷（例 O8 P 壳自旋 0.648、大部分未成对电子在羟基；三重态 O 竟带微弱正电，反映不同电子态电子结构差异大）。基函数–原子轨道对应关系判定法见 4.7.6（硫 cc-pVTZ：看壳层总/自旋布居定 1s/2s/3s 与 2p/3p 归属；Au def2-TZVP 赝势例同理）。</p>
+<p>来源：<a href="../sec-4-7-population-analysis-and-atomic-charge-calculation.html#470-%E4%B8%89%E9%87%8D%E6%80%81%E4%B9%99%E9%86%87%E7%9A%84mulliken%E5%B8%83%E5%B1%85%E5%88%86%E6%9E%90">4.7.0</a>、<a href="../sec-4-7-population-analysis-and-atomic-charge-calculation.html#476-%E9%80%9A%E8%BF%87%E5%B8%83%E5%B1%85%E5%88%86%E6%9E%90%E7%A1%AE%E5%AE%9A%E5%9F%BA%E5%87%BD%E6%95%B0%E4%B8%8E%E5%8E%9F%E5%AD%90%E8%BD%A8%E9%81%93%E7%9A%84%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB">4.7.6</a>。</p>
+<h2 id="实例clf₃-hirshfeldchelpg片段电荷">实例：ClF₃ Hirshfeld＋CHELPG＋片段电荷</h2>
+<p>说明：一站式演示 Hirshfeld 计算、CHELPG 计算与片段电荷（两轴向 F）。</p>
+<p>菜单路径：主功能7 → <code>-1</code> → <code>1</code> / <code>12</code> → <code>1</code></p>
+<p>输入要求：<code>examples\ClF3.wfn</code>。</p>
+<p>操作步骤（Hirshfeld，原始格式）：</p>
+<p><pre><code class="language-text">examples\ClF3.wfn
+7  // Population analysis and atomic charges
+1  // Hirshfeld population
+1  // 使用内建原子密度（或选 2 基于原子 .wfn）</code></pre></p>
+<p>输出 Cl +0.523、轴向 F −0.224、平伏 F −0.076；选 <code>y</code> 导出 <code>.chg</code>。CHELPG：在布居模块选 <code>12</code>，直接选项 <code>1</code> 开始（Cl 0.5772、轴向 F −0.2496、平伏 F −0.0779）。</p>
+<p>操作步骤（片段电荷，原始格式）：</p>
+<p><pre><code class="language-text">examples\ClF3.wfn
+7  // Population analysis
+-1  // Define fragment
+2,4  // Index of the two axial F atoms
+12  // CHELPG charge
+1  // Start calculation</code></pre></p>
+<p>末尾输出 <code>Fragment charge: -0.499331</code>。</p>
+<p>来源：<a href="../sec-4-7-population-analysis-and-atomic-charge-calculation.html#471-%E8%AE%A1%E7%AE%97%E4%B8%89%E6%B0%9F%E5%8C%96%E6%B0%AF%E7%9A%84hirshfeld%E5%92%8Cchelpg%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7%E4%BB%A5%E5%8F%8A%E7%89%87%E6%AE%B5%E7%94%B5%E8%8D%B7">4.7.1</a>。</p>
+<h2 id="实例凝聚-fukui-函数与凝聚对偶描述符苯酚">实例：凝聚 Fukui 函数与凝聚对偶描述符（苯酚）</h2>
+<p>说明：$f^+=q_N-q_{N+1}$、$f^-=q_{N-1}-q_N$、$\Delta f=2q_N-q_{N+1}-q_{N-1}$；Hirshfeld 电荷被证明是非常合适的选择（<em>Theor. Chem. Acc.</em> <strong>138</strong>, 124 (2019) 全面比较）。日常建议直接用主功能22自动算（见 3.25/4.22.1）。</p>
+<p>菜单路径：理论无直接菜单——主功能7 → <code>1</code> 分算 N/N+1/N−1 三态 Hirshfeld 电荷再代公式</p>
+<p>输入要求：<code>phenol.wfn</code>、<code>phenol_N+1.wfn</code>、<code>phenol_N-1.wfn</code>（同几何，B3LYP/6-31G*）。</p>
+<p>操作步骤：三态分别按 4.7.1 算 Hirshfeld 电荷（内置球化原子密度），结果（C1 对位 / C2 间位 / C3 邻位 / C4 / C5 邻位 / C6 间位）：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>N</th>
+<th>N−1</th>
+<th>N+1</th>
+<th>f⁻</th>
+<th>f⁺</th>
+<th>Δf</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C1 (p)</td>
+<td>−0.059</td>
+<td>0.085</td>
+<td>−0.119</td>
+<td>0.144</td>
+<td>0.060</td>
+<td>−0.084</td>
+</tr>
+<tr>
+<td>C2 (m)</td>
+<td>−0.039</td>
+<td>0.027</td>
+<td>−0.167</td>
+<td>0.066</td>
+<td>0.128</td>
+<td>0.063</td>
+</tr>
+<tr>
+<td>C3 (o)</td>
+<td>−0.060</td>
+<td>0.032</td>
+<td>−0.187</td>
+<td>0.092</td>
+<td>0.128</td>
+<td>0.036</td>
+</tr>
+<tr>
+<td>C4</td>
+<td>0.074</td>
+<td>0.174</td>
+<td>0.022</td>
+<td>0.100</td>
+<td>0.052</td>
+<td>−0.048</td>
+</tr>
+<tr>
+<td>C5 (o)</td>
+<td>−0.073</td>
+<td>0.009</td>
+<td>−0.196</td>
+<td>0.082</td>
+<td>0.123</td>
+<td>0.040</td>
+</tr>
+<tr>
+<td>C6 (m)</td>
+<td>−0.041</td>
+<td>0.034</td>
+<td>−0.173</td>
+<td>0.075</td>
+<td>0.131</td>
+<td>0.056</td>
+</tr>
+</tbody></table>
+<p>产出：f⁻ 最小在间位 C2/C6（不利亲电）；Δf 最正在间位（最不利亲电），C1 大负值最受亲电青睐，邻位次之——与 4.5.4 等值面结论一致。</p>
+<p>来源：<a href="../sec-4-7-population-analysis-and-atomic-charge-calculation.html#473-%E8%AE%A1%E7%AE%97%E5%87%9D%E8%81%9Afukui%E5%87%BD%E6%95%B0%E5%92%8C%E5%87%9D%E8%81%9A%E5%AF%B9%E5%81%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6">4.7.3</a>。</p>
+<h2 id="实例原子电荷-esp-再现性检验与可视化">实例：原子电荷 ESP 再现性检验与可视化</h2>
+<p>说明：用 MK/CHELPG 模块的选项 <code>-3</code> 载入待检 <code>.chg</code> 再选 <code>1</code>，不产生新拟合电荷只输出 RMSE/RRMSE；选项 <code>6</code> 导出 <code>ESPfitpt.pqr</code>/<code>ESPerr.pqr</code> 用 VMD 可视化；选项 <code>4</code>/<code>3</code> 限定特定原子/片段的拟合点。</p>
+<p>菜单路径：主功能7 → <code>13</code> MK（或 <code>12</code> CHELPG）→ <code>-3</code> → <code>1</code></p>
+<p>输入要求：<code>examples\CH3CONH2.fch</code> ＋ 待检 <code>.chg</code>（先按 4.7.1 常规算 Hirshfeld 存 <code>CH3CONH2.chg</code>）。</p>
+<p>操作步骤（整体检验，原始格式）：</p>
+<p><pre><code class="language-text">-3  // Using atomic charges from a .chg file instead of fitting new charges
+CH3CONH2.chg  // Hirshfeld charges loaded from this file
+1  // Start calculation (no MK charges yielded)</code></pre></p>
+<p>输出 Hirshfeld RMSE 0.006214 / RRMSE 0.310394（MK 电荷 RRMSE≈0.05；ADCH 的 RRMSE 为 0.21，好于 Hirshfeld）。</p>
+<p>操作步骤（氨基 7–9 周围两层点检验，原始格式）：</p>
+<p><pre><code class="language-text">-3
+CH3CONH2.chg
+3  // Set number and scale factors of layers
+1.4
+1.6
+q  // Setting finished, quit
+4  // Choose atoms for fitting points
+7-9  // Amino group
+1  // Start calculation</code></pre></p>
+<p>Hirshfeld RRMSE 0.374 vs ADCH 0.163。拟合点可视化：选项 <code>6</code> 切 Yes 后选项 <code>1</code> 计算，选 <code>2</code> 导出 <code>ESPfitpt.pqr</code>（VMD：VDW 画法、Sphere Scale 0.8、Coloring Charge、BWR）；误差可视化：常规算 MK 后选 <code>3</code> 导出 <code>ESPerr.pqr</code>（Charge 列为 |精确−电荷| ESP，kcal/mol，VMD Red-White-Blue，范围 −1.5~1.5，正交视角）。</p>
+<p>产出：RMSE/RRMSE 对比表与 VMD 可视化图。</p>
+<p>来源：<a href="../sec-4-7-population-analysis-and-atomic-charge-calculation.html#478-%E6%A3%80%E9%AA%8C%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7%E7%9A%84%E9%9D%99%E7%94%B5%E5%8A%BF%E5%86%8D%E7%8E%B0%E6%80%A7">4.7.8</a>。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="menu/func-07";const ROOT="../";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script>
+<script src="../app.js"></script></body></html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22) · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="325-概念密度泛函理论-conceptual-density-functional-theory-cdft-分析-22"><strong>3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)</strong></h1>
+<p>概念密度泛函理论 (CDFT) 最初由 Robert Parr 提出，并经众多研究者发展，是一个旨在揭示化学体系反应活性的理论框架。CDFT 包含众多概念和物理量，其中一些可用于预测有利的反应位点和反应特征，另一些可用于比较不同化学物种之间的反应活性。由于 CDFT 在量子化学中非常流行且具有重要地位，加之相关的有意义的物理量众多，我相信开发一个能以最少步骤计算 CDFT 中所有常用物理量的模块是非常有用的。</p>
+<p>在本节的第一部分，我将简要描述可通过本模块研究的所有物理量的定义；然后在第二部分，我将展示如何使用本模块。本模块还能计算所谓的轨道加权物理量，将在第三部分专门介绍。</p>
+<p>注意，除 CDFT 外，Multiwfn 还支持许多其他揭示反应位点的方法，概述见<a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a4-%E5%8F%8D%E5%BA%94%E4%BD%8D%E7%82%B9%E9%A2%84%E6%B5%8B%E6%96%B9%E6%B3%95%E6%A6%82%E8%BF%B0">4.A.4 节</a>。</p>
+<p>如果您在研究中使用了本节所述的功能，请不仅引用 Multiwfn 的原始文献，还请引用下面这篇全面介绍本模块功能与实现的书章节：</p>
+<p>Tian Lu, Qinxue Chen, Realization of Conceptual Density Functional Theory and Information-Theoretic Approach in Multiwfn Program. In <em>Conceptual Density Functional Theory</em>, WILEY-VCH GmbH: Weinheim (2022); pp 631-647. DOI: <a href="https://doi.org/10.1002/9783527829941.ch31">10.1002/9783527829941.ch31</a></p>
+<h2 id="3251-理论"><strong>3.25.1 理论</strong></h2>
+<p>要得到下面所有物理量，必须能获得 $N$、$N+1$ 和 $N-1$ 电子态的电子能量 ($E$) 和电子密度。通常 $N$ 指化学体系处于最稳定状态时所带的电子数。所有计算均采用针对 <em>N</em> 电子态优化过的几何结构。</p>
+<ul>
+<li><p><strong>整体指数</strong></p>
+<ul>
+<li><p>第一垂直电离势 ($I_1$)：$E(N-1)$ − $E(N)$</p>
+</li>
+<li><p>第一垂直电子亲和势 ($A$)：$E(N)-E(N+1)$</p>
+</li>
+<li><p>Mulliken 电负性 (<em>χ</em>)：($I_1+A$)/2</p>
+</li>
+<li><p>化学势 (<em>µ</em>)：−<em>χ</em></p>
+</li>
+<li><p>硬度 (<em>η</em>)：$I_1-A$，也等价于基本带隙。见 <em>J. Am. Chem. Soc.</em>, <strong>105</strong>, 7512 (1983)。注意，按照许多 CDFT 文献采用的惯例，<em>η</em> 原始定义中 1/2 的前缀被略去。</p>
+</li>
+<li><p>软度 ($S$)：1/<em>η</em>。见 <em>Proc. Nati. Acad. Sci.</em>, <strong>82</strong>, 6723 (1985)</p>
+</li>
+<li><p>亲电性 (electrophilicity) 指数 (<em>ω</em>)：<em>µ</em>²/(2<em>η</em>)。见 <em>J. Am. Chem. Soc.</em>, <strong>121</strong>, 1922 (1999)</p>
+</li>
+<li><p>亲核性 (nucleophilicity) 指数 ($N_{\mathrm{Nu}}$)：$E_{\mathrm{HOMO}}$ (Nu) − $E_{\mathrm{HOMO}}$ (TCE)，其中 Nu 表示亲核试剂，TCE 表示四氰基乙烯，其 HOMO 能量几乎是所有有机分子中最低的，因此被选作参考体系。见 <em>J. Org. Chem.</em>, <strong>73</strong>, 4615 (2008)。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>实空间函数</strong></p>
+<ul>
+<li><p>Fukui 函数 (Fukui function) $f(\mathbf{r})$ 和对偶描述符 (dual descriptor) Δ $f(\mathbf{r})$：详细介绍见<a href="sec-4-5-generate-grid-data-and-view-isosurface-map.html#454-%E7%94%A8%E7%A6%8F%E4%BA%95%E5%87%BD%E6%95%B0%E5%92%8C%E5%AF%B9%E5%81%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6%E7%A0%94%E7%A9%B6%E8%8B%AF%E9%85%9A%E4%BA%B2%E7%94%B5%E8%BF%9B%E6%94%BB%E7%9A%84%E6%9C%89%E5%88%A9%E4%BD%8D%E7%82%B9">4.5.4 节</a></p>
+</li>
+<li><p>局域软度：亲核、亲电、自由基攻击分别对应 $s^+(\mathbf{r})$ = $Sf^+(\mathbf{r})$、$s^-(\mathbf{r})$ = $Sf^-(\mathbf{r})$、$s^0(\mathbf{r})$ = $Sf^0(\mathbf{r})$，其中 $f(\mathbf{r})$ 为相应类型的 Fukui 函数。见 <em>Proc. Nati. Acad. Sci.</em>, <strong>82</strong>, 6723 (1985)</p>
+</li>
+<li><p>局域超软度：$s^{(2)}$ ≈ $S^2$ Δ $f(\mathbf{r})$，见 <em>J. Math. Chem.</em>, <strong>62</strong>, 461 (2024)</p>
+</li>
+<li><p>局域亲电性指数：${\omega}_{}^{\mathrm{loc}}(\mathbf{r})=\omega{f}^{+}(\mathbf{r})$</p>
+</li>
+<li><p>局域亲核性指数：${N}_{\mathrm{Nu}}^{\mathrm{loc}}(\mathbf{r})={N}_{\mathrm{Nu}}^{}{f}^{-}(\mathbf{r})$</p>
+</li>
+</ul>
+</li>
+<li><p><strong>原子指数</strong></p>
+<ul>
+<li><p>凝聚 Fukui 函数 ($f$ <em>$_{A}$</em>) 和对偶描述符 (Δ $f$ <em>$_{A}$</em>)：详细介绍见<a href="sec-4-7-population-analysis-and-atomic-charge-calculation.html#473-%E8%AE%A1%E7%AE%97%E5%87%9D%E8%81%9Afukui%E5%87%BD%E6%95%B0%E5%92%8C%E5%87%9D%E8%81%9A%E5%AF%B9%E5%81%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6">4.7.3 节</a></p>
+</li>
+<li><p>凝聚局域软度</p>
+<ul>
+<li><p>亲核攻击：${s}_{A}^{+}=S{f}_{A}^{+}$</p>
+</li>
+<li><p>亲电攻击：${s}_{A}^{-}=S{f}_{A}^{-}$</p>
+</li>
+<li><p>自由基攻击：${s}_{A}^{0}=S{f}_{A}^{0}$</p>
+</li>
+</ul>
+</li>
+<li><p>相对亲电性指数：${s}_{A}^{+}/{s}_{A}^{-}$，见 <em>J. Phys. Chem. A</em>, <strong>102</strong>, 3746 (1998)</p>
+</li>
+<li><p>相对亲核性指数：${s}_{A}^{-}/{s}_{A}^{+}$，见 <em>J. Phys. Chem. A</em>, <strong>102</strong>, 3746 (1998)</p>
+</li>
+<li><p>凝聚局域亲电性指数：${\omega}^{A}=\omega{f}_{A}^{+}$</p>
+</li>
+<li><p>凝聚局域亲核性指数：${N}_{\mathrm{Nu}}^{A}={N}_{\mathrm{Nu}}^{}{f}_{A}^{-}$</p>
+</li>
+<li><p>凝聚局域超软度：${s}_{A}^{(2)}\approx {S}^{2}\Delta {f}_{A}$</p>
+</li>
+</ul>
+</li>
+<li><p><strong>键对偶描述符 (BDD)</strong></p>
+<p>BDD 是为每根化学键定义的指数，负（正）BDD 意味着该键是亲核性（亲电性）的，越负（越正），亲核性（亲电性）越强。</p>
+<p>BDD 本质上是键级 ($P$) 在外势恒定时对电子数的一阶导数。根据 <em>J. Math. Chem.</em>, <strong>63</strong>, 1588 (2025)，利用有限差分近似，键 $A$ - $B$ 的 BDD 可计算为 ${BDD}_{A,B}={f}_{A,B}^{+}-{f}_{A,B}^{-}$，其中 ${f}_{A,B}^{+}$ 和 ${f}_{A,B}^{-}$ 为两种类型的键 Fukui 函数，按下式计算</p>
+</li>
+</ul>
+<p><div class="mathdisp" data-mi="0" title="点击复制 TeX">$$
+{f}_{A,B}^{+}={P}_{A,B}\left( N+1 \right)-{P}_{A,B}\left( N \right)
+$$</div></p>
+<p><div class="mathdisp" data-mi="1" title="点击复制 TeX">$$
+{f}_{A,B}^{-}={P}_{A,B}\left( N \right)-{P}_{A,B}(N-1)
+$$</div></p>
+<p>  在 <em>J. Math. Chem.</em>, <strong>63</strong>, 1588 (2025) 中作者采用基于自然原子轨道的 Wiberg 键级作为 $P$，但在当前 Multiwfn 实现中，采用基于 Hirshfeld 划分的模糊 (fuzzy) 键级（详见<a href="sec-3-11-bond-order-analysis.html#3116-%E6%A8%A1%E7%B3%8A%E9%94%AE%E7%BA%A7fuzzy-bond-order-7">3.11.6 节</a>）作为 $P$ 来计算 BDD，因为该键级对基组不敏感（在这方面远好于 Mayer 键级），表现合理（根据我的测试），且相对容易实现。</p>
+<ul>
+<li><p><strong><em>ω</em>$_{cubic}$</strong> <strong>亲电性指数</strong></p>
+<p><em>J. Phys. Chem. A</em>, <strong>124</strong>, 2090 (2020) 引入的亲电性指数 <em>ω</em>$_{cubic}$ 有些特殊，它还依赖于 $N-2$ 电子态。与前述亲电性指数 <em>ω</em> 相比，它包含了更高阶的项。其定义为</p>
+</li>
+</ul>
+<p><div class="mathdisp" data-mi="2" title="点击复制 TeX">$$
+\omega_{\mathrm{cubic}}=\omega\left(1+\frac{\mu}{3\eta^2}\gamma\right)
+$$</div></p>
+<p>  实际计算为</p>
+<p><div class="mathdisp" data-mi="3" title="点击复制 TeX">$$
+\omega_{\mathrm{cubic}}=\frac{(\mu_{\mathrm{cubic}})^2}{2\eta_{\mathrm{cubic}}}\left[1+\frac{\mu_{\mathrm{cubic}}}{3(\eta_{\mathrm{cubic}})^2}\gamma_{\mathrm{cubic}}\right]
+$$</div></p>
+<p>  其中</p>
+<p><div class="mathdisp" data-mi="4" title="点击复制 TeX">$$
+\begin{gathered}\mu_{\mathrm{cubic}}=(1/6)(-2A-5I_1+I_2)\\\eta_{\mathrm{cubic}}=I_1-A\\\gamma_{\mathrm{cubic}}=2I_1-I_2-A\end{gathered}
+$$</div></p>
+<p>  其中 $I_2$ 为第二垂直电离势，定义为 $E(N-2)$ − $E(N-1)$。相应地，存在立方形式的凝聚局域亲电性指数 ${\omega}_{\mathrm{cubic}}^{A}={\omega}_{\mathrm{cubic}}{f}_{A}^{+}$。<em>J. Phys. Chem. A</em>, <strong>124</strong>, 2090 (2020) 表明，卤键二聚体 R-X···NH₃ 中卤素原子（因其 σ-hole 而表现为 Lewis 酸）的 ${\omega}_{\mathrm{cubic}}^{A}$ 值与计算的结合能具有极好的相关性（但注意，他们采用 AIM 划分原子空间，而非本模块所用的 Hirshfeld 划分）。</p>
+<ul>
+<li><p><strong>亲电描述符 (<em>ε</em>)</strong></p>
+<p>亲电描述符 (<em>ε</em>) 在 <em>Int. J. Quantum Chem.</em>, <strong>124</strong>, e27366 (2024) 中被引入，在由 35 个有机分子组成的测试集上，它与 Mayr 亲电参数 ($E$) 的相关性显著优于亲电性指数 (<em>ω</em>)。与仅基于体系能量二阶 Taylor 展开推导的 <em>ω</em> 不同，<em>ε</em> 的推导基于三阶展开，这使得 <em>ε</em> 显式地包含超硬度。与 <em>ω</em>$_{cubic}$ 一样，<em>ε</em> 的计算也依赖于 $N-2$ 电子态。</p>
+<p>计算 <em>ε</em> 的工作方程如下</p>
+</li>
+</ul>
+<p><div class="mathdisp" data-mi="5" title="点击复制 TeX">$$
+\varepsilon=\chi\left(\frac{\phi}{\gamma}\right)-\left(\frac{\phi}{\gamma}\right)^2\left(\frac{\eta}{2}+\frac{\phi}{6}\right)
+$$</div></p>
+<p>  其中</p>
+<p><div class="mathdisp" data-mi="6" title="点击复制 TeX">$$
+\phi=\sqrt{\eta^2-2\gamma\mu}-\eta
+$$</div></p>
+<p>  重要的一点是，上述方程中涉及的 <em>η</em>、<em>γ</em>、<em>χ</em>、<em>µ</em> 应采用与前面所述不同的方式计算，即</p>
+<p><div class="mathdisp" data-mi="7" title="点击复制 TeX">$$
+\begin{aligned}
+&\mu=a\\
+&\chi=-a\\
+&\eta=2(b-ac)\\
+&\gamma=-3c(b-ac)
+\end{aligned}
+$$</div></p>
+<p>  其中</p>
+<p><div class="mathdisp" data-mi="8" title="点击复制 TeX">$$
+\begin{aligned}
+&c=\frac{I_2-2I_1+A'}{2I_2-I_1-A'}\\
+&b=\frac{I_1-A'}{2}-\frac{I_1+A'}{2}c\\
+&a=-\frac{I_1+A'}{2}+\frac{I_1-A'}{2}c
+\end{aligned}
+$$</div></p>
+<p>  其中 $A$ ’ = $E(N+1)$ − $E(N)$，即电子亲和势，但符号与标准定义相反。</p>
+<ul>
+<li><p><strong>Fukui 势与对偶描述符势</strong></p>
+<p>Fukui 势的定义与物理意义在 <em>J. Phys. Chem. A</em>, <strong>115</strong>, 2325 (2011) 和 <em>Int. J. Quantum Chem.</em>, <strong>101</strong>, 520 (2005) 中被仔细讨论过。Fukui 势是对 ESP 的补充，有助于理解电子转移不可忽略时化学反应早期的能量变化。例如，当亲电体受到亲核试剂攻击时，亲电体感受到的由亲核试剂产生的外势为</p>
+</li>
+</ul>
+<p><div class="mathdisp" data-mi="9" title="点击复制 TeX">$$
+{v}_{N\mathrm{-phile}}\left( \mathbf{r} \right)\approx {V}_{N-\mathrm{phile}}^{\mathrm{ESP}}\left( \mathbf{r} \right)-\Delta N\int \frac{{f}_{N-\mathrm{phile}}^{-}(\mathbf{r'})}{|\mathbf{r}-\mathbf{r}'|}\mathrm{d}\mathbf{r'}
+$$</div></p>
+<p>  其中 Δ $N$ 为从亲电体转移到亲核试剂的电子数（此情形下为负值），${f}_{N-\mathrm{phile}}^{-}$ 为亲核试剂的 Fukui 函数 $f^-$。三类 Fukui 势定义如下</p>
+<p><div class="mathdisp" data-mi="10" title="点击复制 TeX">$$
+{V}_{{f}^{-/+/0}}(\mathbf{r})=\int \frac{{f}^{-/+/0}(\mathbf{r'})}{|\mathbf{r}-\mathbf{r}'|}\mathrm{d}\mathbf{r}'
+$$</div></p>
+<p>  ESP 只能在假设没有电子转移的前提下预测由静电效应主导的区域选择性，但显然该假设对一般化学反应而言远非成立（但对许多非共价相互作用基本成立）。显然，在研究一般反应、尤其是有显著电子转移的反应时，应更多关注 Fukui 势。</p>
+<p>  Fukui 势在预测区域选择性方面比 Fukui 函数更严格，正如 <em>J. Phys. Chem. A</em>, <strong>115</strong>, 2325 (2011) 所强调的：“决定反应位点的是 Fukui 势的值，而非 Fukui 函数本身的值”。然而，Fukui 势不如 Fukui 函数流行，因为二者的分布特征通常一致，而计算 Fukui 势需要计算两次 ESP，比计算两次电子密度昂贵得多。根据 Fukui 函数的有限差分定义，例如 ${V}_{{f}^{-}}$ 可计算为</p>
+<p><div class="mathdisp" data-mi="11" title="点击复制 TeX">$$
+{V}_{{f}^{-}}(\mathbf{r})=\int \frac{{f}^{-}(\mathbf{r'})}{|\mathbf{r}-\mathbf{r}'|}\mathrm{d}\mathbf{r'}=\int \frac{{\rho}_{N}\left( \mathbf{r'} \right)-{\rho}_{N-1}(\mathbf{r'})}{|\mathbf{r}-\mathbf{r}'|}\mathrm{d}\mathbf{r'=}{V}_{N-1}^{\mathrm{ESP}}(\mathbf{r})-{V}_{N}^{\mathrm{ESP}}(\mathbf{r})
+$$</div></p>
+<p>  此外，对偶描述符势 (DDP) 在 <em>J. Math. Chem.</em>, <strong>62</strong>, 1094 (2024) 中被引入，定义为</p>
+<p><div class="mathdisp" data-mi="12" title="点击复制 TeX">$$
+DDP\left( \mathbf{r} \right)=\int \frac{\Delta f\left( {\mathbf{r}}^{'} \right)}{\left| \mathbf{r}-{\mathbf{r}}^{'} \right|}\mathrm{d}{\mathbf{r}}^{'}=\int \frac{{f}^{+}\left( {\mathbf{r}}^{'} \right)-{f}^{-}\left( {\mathbf{r}}^{'} \right)}{\left| \mathbf{r}-{\mathbf{r}}^{'} \right|}\mathrm{d}{\mathbf{r}}^{'}={V}_{{f}^{+}}\left( \mathbf{r} \right)-{V}_{{f}^{-}}(\mathbf{r})
+$$</div></p>
+<p>  与常有许多节面妨碍讨论的对偶描述符不同，DDP 的分布平滑得多，使研究者更容易识别优先的反应位点。</p>
+<p>  与 Fukui 函数一样，${V}_{{f}^{+}}$ 在某区域越正，该区域越可能发生亲核反应；${V}_{{f}^{-}}$ 越正的区域，越可能发生亲电反应。与对偶描述符类似，DPP 在某区域越正、越负，该区域分别越易于发生亲核和亲电攻击。</p>
+<h2 id="3252-用法"><strong>3.25.2 用法</strong></h2>
+<p>使用本模块（即主功能 22）时，启动 Multiwfn 后载入的文件相对任意，唯一要求是该文件中的原子信息与所研究的体系相同。</p>
+<p>进入本模块后会看到一个菜单，其中选项 2、3 和 9 用于计算上述物理量。使用它们之前，一般应在当前目录下提供 <em>N.wfn</em>、<em>N-1.wfn</em> 和 <em>N+1.wfn</em>，它们分别包含当前体系 $N$、$N-1$ 和 $N+1$ 态的波函数和电子能量，几何结构必须相同且对应于 $N$ 态的优化几何。三个文件的计算级别也必须相同。若缺少三个 .wfn 文件中的任何一个，Multiwfn 会要求您手动输入相应态的 .wfn 文件路径（.wfx、.fch 和 .mwfn 文件也被允许，因为它们同样携带波函数和电子能量信息）。</p>
+<ul>
+<li><p><strong>选项 2</strong>：用于计算前述所有整体指数和原子指数，结果将导出到当前目录下的 <em>CDFT.txt</em>。如<a href="sec-4-7-population-analysis-and-atomic-charge-calculation.html#473-%E8%AE%A1%E7%AE%97%E5%87%9D%E8%81%9Afukui%E5%87%BD%E6%95%B0%E5%92%8C%E5%87%9D%E8%81%9A%E5%AF%B9%E5%81%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6">4.7.3 节</a>所述，Hirshfeld 方法是计算凝聚 Fukui 函数乃至其他相关原子指数的理想选择，因此会自动计算 Hirshfeld 电荷并用于所有原子指数的计算。亲核性指数及其局域版本依赖于 TCE 的 HOMO 能量，应采用与当前体系相同的级别计算，注意本模块打印的这些指数直接采用在常用 B3LYP/6-31G* 级别下计算的 $E_{\mathrm{HOMO}}$ (TCE) = -0.335198 Hartree（显然，若想得到更可靠的结果而当前计算级别不是 B3LYP/6-31G*，您应自行计算 $E_{\mathrm{HOMO}}$ (TCE) 再手动计算这些指数）。</p>
+</li>
+<li><p><strong>选项 3</strong>：用于计算 Fukui 函数、对偶描述符及相关函数的格点数据 (grid data)，然后可直接可视化它们的等值面 (isosurface) 图，格点数据可导出为当前目录下的 cube 文件。在此选项中可设置乘到所算格点数据上的缩放因子。例如，若将缩放因子设为选项 2 输出的整体软度，则缩放后的 $f^-(\mathbf{r})$ Fukui 函数即对应于 $s^-(\mathbf{r})$。</p>
+</li>
+<li><p><strong>选项 9</strong>：与选项 3 类似，但用于计算 Fukui 势和对偶描述符势的格点数据。由于每个带电态都需要计算 ESP 的格点数据，通常开销较大，应选择合适的格点设置以避免过于耗时。</p>
+</li>
+<li><p><strong>选项 10</strong>：用于计算键对偶描述符。Multiwfn 会依次载入不同电子态的 .wfn 文件并计算模糊键级，最后计算并打印 BDD 值。开销一般很低。</p>
+</li>
+</ul>
+<h3 id="wfn-文件的生成"><strong>.wfn 文件的生成</strong></h3>
+<p>您可以手动准备选项 2 和 3 所用的 .wfn 文件，或者使用本模块的选项 1 自动完成准备工作。</p>
+<p>选择选项 1 后，会提示输入单点任务的 Gaussian 关键词，然后 Multiwfn 依次要求输入 $N$、$N+1$ 和 $N-1$ 态的电荷与自旋多重度，随后在当前目录下生成 Gaussian 单点输入文件 <em>N.gjf</em>、<em>N+1.gjf</em> 和 <em>N-1.gjf</em>（这些文件中的几何结构对应于 Multiwfn 输入文件中的几何）。之后您可以手动用 Gaussian 运行它们得到 <em>N.wfn</em>、<em>N+1.wfn</em> 和 <em>N-1.wfn</em>；若您的电脑已安装 Gaussian，也可直接让 Multiwfn 调用 Gaussian 计算它们（此时 <em>settings.ini</em> 中的 &quot;gaupath&quot; 参数必须已设为 Gaussian 可执行文件的实际路径），计算完成后三个 .wfn 文件会出现在当前目录下。</p>
+<p>有时需要使用混合基组，此时应在当前目录下准备一个名为 <em>basis.txt</em> 的文件，记录基组的定义（也可附带赝势定义）。若输入的关键词包含 &quot;gen&quot; 或 &quot;genecp&quot;，则 <em>basis.txt</em> 的内容会自动追加到所生成的 .gjf 文件末尾。</p>
+<p>Multiwfn 也能生成 ORCA 输入文件以产生这三个 .wfn 文件。应选择选项 -2 并选择 ORCA，然后选项 1 将生成 <em>N.inp</em>、<em>N-1.inp</em> 和 <em>N+1.inp</em>。若已将 <em>settings.ini</em> 中的“orcapath”设为 ORCA 可执行文件的实际路径，可直接让 Multiwfn 调用 ORCA 运行它们得到 <em>N.wfn</em>、<em>N-1.wfn</em> 和 <em>N+1.wfn</em>；或者手动用 ORCA 运行，再将得到的 <em>N.wfn</em>、<em>N-1.wfn</em> 和 <em>N+1.wfn</em> 放到当前目录下。</p>
+<p>用本模块研究大有机体系时，通常我建议使用 B3LYP/6-31G* 级别，因为该级别便宜，而所得物理量的质量已令人满意。</p>
+<h3 id="关于计算-ω_cubic-和-ε-的说明">*<em>关于计算 <em>ω</em>$_{cubic}$ 和 <em>ε</em> 的说明</em>*</h3>
+<p>默认情况下 Multiwfn 不计算 <em>ω</em>$_{cubic}$ 和 <em>ε</em>，因为它们依赖于 $N-2$ 电子态。若需要，应先选择选项 -1 将状态切换为 &quot;Yes&quot;。然后可用选项 1 帮助准备 $N$、$N+1$、$N-1$、$N-2$ 电子态的 .wfn 文件，或手动提供。之后选择选项 2，所得 <em>CDFT.txt</em> 文件将包含凝聚局域 <em>ω</em>$_{cubic}$、整体 <em>ω</em>$_{cubic}$、<em>ε</em> 以及 $I_2$。</p>
+<p>使用本模块计算苯酚各种 CDFT 物理量的例子见<a href="sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis.html#4221-%E8%87%AA%E5%8A%A8%E8%AE%A1%E7%AE%97%E8%8B%AF%E9%85%9A%E7%9A%84%E6%A6%82%E5%BF%B5%E5%AF%86%E5%BA%A6%E6%B3%9B%E5%87%BD%E7%90%86%E8%AE%BA%E9%87%8F">4.22.1 节</a>。绘制马来酸酐 Fukui 势和对偶描述符势的例子见<a href="sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis.html#4224-%E7%BB%98%E5%88%B6-fukui-%E5%8A%BF%E5%92%8C%E5%AF%B9%E5%81%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6%E5%8A%BF%E7%9A%84%E4%BE%8B%E5%AD%90">4.22.4 节</a>。计算键对偶描述符的例子见<a href="sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis.html#4225-%E8%AE%A1%E7%AE%97%E9%94%AE%E5%AF%B9%E5%81%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6-bond-dual-descriptor-bdd-%E7%9A%84%E4%BE%8B%E5%AD%90">4.22.5 节</a>。</p>
+<h2 id="3253-专题-1轨道加权-fukui-函数与对偶描述符"><strong>3.25.3 专题 1：轨道加权 Fukui 函数与对偶描述符</strong></h2>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>当初级前线分子轨道（准）简并时，原本定义的 Fukui 函数和对偶描述符效果不好。例如，当 HOMO 与 HOMO-1 能量非常接近或完全相同时，Fukui 函数 $f^-$ 可能无法给出有意义的结果，或结果完全误导；此外，当体系具有点群对称性时，如 C₆₀ 富勒烯，$f^-$ 的分布常与分子对称性不一致，这显然是出乎意料的。</p>
+<p>为解决这些问题，<em>J. Comput. Chem.</em>, <strong>38</strong>, 481 (2017) 的作者提出了轨道加权 Fukui 函数，<em>J. Phys. Chem. A</em>, <strong>123</strong>, 10556 (2019) 中他们进一步提出了轨道加权对偶描述符，总结如下（${f}_{w}^{0}$ 由我定义）</p>
+<p><div class="mathdisp" data-mi="13" title="点击复制 TeX">$$
+\begin{gathered}f_w^+(\mathbf{r})=\sum_{i=\mathrm{LUMO}}^{\infty}w_i\left|\varphi_i(\mathbf{r})\right|^2\qquad w_i=\frac{\exp\left[-\left(\frac{\mu-\varepsilon_i}{\Delta}\right)^2\right]}{\sum_{i=\mathrm{LUMO}}^{\infty}\exp\left[-\left(\frac{\mu-\varepsilon_i}{\Delta}\right)^2\right]}\\f_w^-(\mathbf{r})=\sum_{i}^{\mathrm{HOMO}}w_i\left|\varphi_i(\mathbf{r})\right|^2\qquad w_i=\frac{\exp\left[-\left(\frac{\mu-\varepsilon_i}{\Delta}\right)^2\right]}{\sum_{i}^{\mathrm{HOMO}}\exp\left[-\left(\frac{\mu-\varepsilon_i}{\Delta}\right)^2\right]}\\f_w^0(\mathbf{r})=\left[f_w^+(\mathbf{r})+f_w^-(\mathbf{r})\right]/2\\\Delta f_w(\mathbf{r})=f_w^+(\mathbf{r})-f_w^-(\mathbf{r})\end{gathered}
+$$</div></p>
+<p>其中 $ε_{i}$ 和 $\varphi$ <em>$_{i}$</em> 分别为轨道 $i$ 的能量和波函数；<em>µ</em> 为化学势，在上式中近似按 ($E_{\mathrm{HOMO}}$ + $E_{\mathrm{LUMO}}$)/2 计算。Δ 为可调参数，原则上其最佳值是能使函数具有理想局域反应活性预测能力的值。显然最合适的 Δ 依赖于实际体系，通常 0.1 Hartree 是值得一试的初猜。若发现该取值下的轨道加权函数效果不好，可尝试适当改变它并重新计算。</p>
+<p>与 $f^-$ 的冻结轨道近似形式，即 $f^-(\mathbf{r})=\left|\varphi_{\mathrm{HOMO}}(\mathbf{r})\right|^2$ 相比，${f}_{w}^{-}$ 的优点在于它以不同权重考虑了所有轨道。由表达式可见，能量越接近 HOMO 能量的低占据轨道权重越大。显然简并轨道具有相同权重。公式中的 Gaussian 函数起衰减函数的作用，Δ 越大，低占据轨道对 ${f}_{w}^{-}$ 的贡献越高。当 HOMO 与 HOMO-1 能量差显著时，就没有理由用 ${f}_{w}^{-}$ 代替 $f^-$。${f}_{w}^{+}$、${f}_{w}^{0}$ 和 $\Delta {f}_{w}$ 的情况类似。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>由于轨道加权函数涉及虚轨道，应使用 .mwfn、.fch、.molden 或 .gms 文件作为输入文件。通常，输入文件中的几何结构应对应于 $N$ 电子态的优化几何；但也可研究非平衡结构，如内禀反应坐标 (IRC) 上的某一点。</p>
+<p>只接受闭壳层单行列式波函数。若打算计算 ${f}_{w}^{+}$、${f}_{w}^{0}$ 和 $\Delta {f}_{w}$，不应使用弥散函数，因为它们利用虚轨道，而使用弥散函数时虚轨道的化学意义可能严重受损。</p>
+<p>在主功能 22 中，有四个选项与轨道加权计算相关：</p>
+<ul>
+<li><p>选项 4：设置后续轨道加权计算中使用的 Δ 参数</p>
+</li>
+<li><p>选项 5：打印权重最高的前 10 个权重（即上述公式中的 {$w$}）。该选项有助于检查当前 Δ 参数是否合理，并帮助用户更好地理解轨道加权方法的工作方式</p>
+</li>
+<li><p>选项 6：计算凝聚的 ${f}_{w}^{+}$、${f}_{w}^{-}$、${f}_{w}^{0}$ 和 $\Delta{f}_{w}^{}$ 值，即计算这些函数在 Hirshfeld 原子空间中的积分。结果有助于定量考察各原子上这些函数的净贡献。默认的径向和角向积分点通常已足够精细，若发现凝聚 ${f}_{w}^{+}$ 或 ${f}_{w}^{-}$ 之和明显偏离 1.0，应将 <em>settings.ini</em> 中的 &quot;iautointgrid&quot; 参数设为 0，再适当增大 &quot;radpot&quot; 和 &quot;sphpot&quot; 参数。</p>
+</li>
+<li><p>选项 7：计算 ${f}_{w}^{+}$、${f}_{w}^{-}$、${f}_{w}^{0}$ 和 $\Delta{f}_{w}^{}$ 函数的格点数据，然后可直接可视化它们的等值面，或将其导出为 cube 文件以便用 VMD 和 ChimeraX 等第三方软件渲染。</p>
+</li>
+</ul>
+<p>使用本模块计算轨道加权 Fukui 函数和轨道加权对偶描述符的例子见<a href="sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis.html#4222-%E8%BD%A8%E9%81%93%E5%8A%A0%E6%9D%83-fukui-%E5%87%BD%E6%95%B0%E5%92%8C%E8%BD%A8%E9%81%93%E5%8A%A0%E6%9D%83%E5%AF%B9%E5%81%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6%E7%A0%94%E7%A9%B6%E7%A4%BA%E4%BE%8B">4.22.2 节</a>。</p>
+<h2 id="3254-专题-2基于电子密度的准简并-fukui-函数与对偶描述符"><strong>3.25.4 专题 2：基于电子密度的（准）简并 Fukui 函数与对偶描述符</strong></h2>
+<h3 id="32541-闭壳层情形"><strong>3.25.4.1 闭壳层情形</strong></h3>
+<h4 id="理论"><strong>理论</strong></h4>
+<p>上一节介绍了轨道加权 Fukui 函数和对偶描述符，适用于前线分子轨道（准）简并的情形。但它们基于轨道近似定义，即未考虑轨道弛豫效应，而该效应并非总能安全忽略。<em>J. Comput. Chem.</em>, <strong>37</strong>, 2279 (2016) 提出了一种适用于（准）简并 HOMO/LUMO 情形的 Fukui 函数和对偶描述符的替代形式，该形式直接基于电子密度定义，即如同原始 Fukui 函数和对偶描述符一样，完全考虑了轨道弛豫效应。这种基于电子密度的（准）简并 Fukui 函数和对偶描述符将分别记为 $f_{\mathrm{Q}}$ 和 Δ $f_{\mathrm{Q}}$。</p>
+<p>$f_{\mathrm{Q}}$ 的思想很简单。若在电子态 $N$ 下 LUMO 和 HOMO 的简并度分别为 $p$ 和 $q$，则三类 $f_{\mathrm{Q}}$ 按下式计算</p>
+<p><div class="mathdisp" data-mi="14" title="点击复制 TeX">$$
+\begin{gathered}f_{\mathrm{Q}}^+(\mathbf{r})=\frac{\rho_{N+p}(\mathbf{r})-\rho_N(\mathbf{r})}{p}\\f_{\mathrm{Q}}^-(\mathbf{r})=\frac{\rho_N(\mathbf{r})-\rho_{N-q}(\mathbf{r})}{q}\\f_{\mathrm{Q}}^0(\mathbf{r})=\left[f_{\mathrm{Q}}^+(\mathbf{r})+f_{\mathrm{Q}}^-(\mathbf{r})\right]/2\end{gathered}
+$$</div></p>
+<p>Δ $f_{\mathrm{Q}}$ 可如常基于 ${f}_{\mathrm{Q}}^{+}$ 和 ${f}_{\mathrm{Q}}^{-}$ 计算</p>
+<p><div class="mathdisp" data-mi="15" title="点击复制 TeX">$$
+\Delta f_{\mathrm{Q}}(\mathbf{r})=f_{\mathrm{Q}}^+(\mathbf{r})-f_{\mathrm{Q}}^-(\mathbf{r})
+$$</div></p>
+<p>显然，若 HOMO 和 LUMO 均非简并，则 $f_{\mathrm{Q}}$ 和 Δ $f_{\mathrm{Q}}$ 将分别等价于原始形式的 Fukui 函数和对偶描述符 $f$ 与 Δ $f$。</p>
+<p>要合理计算 $f_{\mathrm{Q}}$ 和 Δ $f_{\mathrm{Q}}$，关键是正确确定 $p$ 和 $q$。通常可通过查看几个最低未占据 MO 和几个最高占据 MO 的能量来指定。若某占据（未占据）MO 与 HOMO (LUMO) 的能量差很小，<em>例如</em>小于 0.01 eV，则可视为简并。显然，判断轨道简并没有严格的能量阈值，有时需综合多种因素判断，<em>例如</em> HOMO-LUMO 带隙、实际计算结果的合理性、轨道形状等。</p>
+<p>注意 $f_{\mathrm{Q}}$ 和 Δ $f_{\mathrm{Q}}$ 仅对闭壳层情形定义。</p>
+<p>Multiwfn 不仅能计算 $f_{\mathrm{Q}}$ 和 Δ $f_{\mathrm{Q}}$，还能基于它们计算<a href="#3251-%E7%90%86%E8%AE%BA">3.25.1 节</a>所述的局域性质（<em>ω</em>$_{cubic}$ 除外）。例如，考虑简并时的局域软度为整体软度与 $f_{\mathrm{Q}}$ 的乘积。注意，所涉及的第一垂直电子亲和势和电离势仍按常规计算，即 VEA = $E(N) - E(N+1)$，VIP = $E(N-1) - E(N)$。</p>
+<p>计算 $N+p$ 和 $N-q$ 态波函数文件时必须正确选择自旋多重度，通常应设为 $p+1$ 和 $q+1$，详见 <em>J. Comput. Chem.</em>, <strong>37</strong>, 2279 (2016) 的讨论。该设置通常能保证附加（脱离）的电子平均进入（离开）所有简并的 LUMO (HOMO)。</p>
+<h4 id="用法"><strong>用法</strong></h4>
+<p>在主功能 22 中，$p$ 和 $q$ 默认均为 1，即不考虑前线分子轨道 (FMO) 的简并。要手动设置 $p$ 和 $q$ 从而在后续计算中考虑（准）简并效应，应先选择选项“-3 设置 FMO 简并度”。此时屏幕上会列出 10 个最低未占据 MO 和 10 个最高占据 MO 的信息（若输入文件包含波函数信息），应根据列出的 MO 能量合理输入 $p$ 和 $q$。</p>
+<p>设置好 $p$ 和 $q$ 后，可用选项 1 让 Multiwfn 帮助生成 Gaussian 或 ORCA 代码单点任务的输入文件，分别对应 $N$、$N+p$ 和 $N-q$ 态，会要求输入这些态的净电荷与自旋多重度。此外，若 $p$ 或 $q$ 不等于 1，Multiwfn 还会询问是否为 $N+1$ 和/或 $N-1$ 态也生成输入文件，因为选项 2 计算第一电离势、电子亲和势及相关量时需要 $E(N+1)$ 和 $E(N-1)$。运行这些输入文件后即得到各态的 .wfn 文件。当然，也可用您喜欢的任何量子化学代码手动生成各态的波函数文件。</p>
+<p>最后，可用相应选项计算 CDFT 框架下定义的各种物理量或函数，输出内容与默认的非简并情形完全相同，只是当前情形已合理考虑了 $p$ 和 $q$。注意，若 $p$ 或 $q$ 不等于 1，同时当前目录下没有 <em>N+1.wfn</em> 或 <em>N-1.wfn</em>，则选项 2 不会计算和输出与第一电离势和电子亲和势相关的量。</p>
+<p>例子见<a href="sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis.html#4223-%E5%87%86%E7%AE%80%E5%B9%B6-homolumo-%E6%83%85%E5%BD%A2%E7%9A%84-cdft-%E5%88%86%E6%9E%90%E5%AE%9E%E4%BE%8B">4.22.3 节</a>。</p>
+<h3 id="32542-开壳层情形"><strong>3.25.4.2 开壳层情形</strong></h3>
+<h4 id="理论"><strong>理论</strong></h4>
+<p>对于开壳层情形，Martínez Araya 在 <em>Chem. Phys. Lett.</em>, <strong>506</strong>, 104 (2011) 中基于自旋极化概念 DFT 的形式提出了计算对偶描述符的工作方程。该方程随后被进一步推广（私人交流），总结如下，其中 $\Delta {N}_{S}$ 对应自旋数变化 (${N}_{S}={N}_{\alpha}-{N}_{\beta}$)，<strong>B</strong> 表示外磁场；${p}_{\alpha}$ 和 ${p}_{\beta}$ 分别为 LUMO(α) 和 LUMO(β) 的简并度；${q}_{\alpha}$ 和 ${q}_{\beta}$ 分别为 HOMO(α) 和 HOMO(β) 的简并度。</p>
+<p>计算 ${f}^{+}={\left( \frac{\partial \rho\left( \mathbf{r} \right)}{\partial N} \right)}_{v\left( \mathbf{r} \right),\mathbf{B}\left( \mathbf{r} \right)}^{+}$ 的不同形式，即自旋多重度增加、减小和近似不变：</p>
+<p><div class="mathdisp" data-mi="16" title="点击复制 TeX">$$
+\begin{gathered}
+{f}_{\Delta{N}_{S}<0}^{+}\left( \mathbf{r} \right)=\frac{{\rho}_{N+{p}_{\beta}}\left( \mathbf{r} \right)-{\rho}_{N}\left( \mathbf{r} \right)}{{p}_{\beta}}\\
+{f}_{\Delta{N}_{S}>0}^{+}\left( \mathbf{r} \right)=\frac{{\rho}_{N+{p}_{\alpha}}\left( \mathbf{r} \right)-{\rho}_{N}\left( \mathbf{r} \right)}{{p}_{\alpha}}\\
+{f}_{\Delta{N}_{S}\approx 0}^{+}\left( \mathbf{r} \right)=\frac{{f}_{\Delta{N}_{S}>0}^{+}\left( \mathbf{r} \right)+{f}_{\Delta{N}_{S}<0}^{+}\left( \mathbf{r} \right)}{2}
+\end{gathered}
+$$</div></p>
+<p>计算 ${f}^{-}={\left( \frac{\partial \rho\left( \mathbf{r} \right)}{\partial N} \right)}_{v\left( \mathbf{r} \right),\mathbf{B}\left( \mathbf{r} \right)}^{-}$ 的不同形式：</p>
+<p><div class="mathdisp" data-mi="17" title="点击复制 TeX">$$
+\begin{gathered}
+{f}_{\Delta{N}_{S}<0}^{-}\left( \mathbf{r} \right)=\frac{{\rho}_{N}\left( \mathbf{r} \right)-{\rho}_{N-{q}_{\alpha}}\left( \mathbf{r} \right)}{{q}_{\alpha}}\\
+{f}_{\Delta{N}_{S}>0}^{-}\left( \mathbf{r} \right)=\frac{{\rho}_{N}\left( \mathbf{r} \right)-{\rho}_{N-{q}_{\beta}}\left( \mathbf{r} \right)}{{q}_{\beta}}\\
+{f}_{\Delta{N}_{S}\approx 0}^{-}\left( \mathbf{r} \right)=\frac{{f}_{\Delta{N}_{S}>0}^{-}\left( \mathbf{r} \right)+{f}_{\Delta{N}_{S}<0}^{-}\left( \mathbf{r} \right)}{2}
+\end{gathered}
+$$</div></p>
+<p>计算对偶描述符的不同形式：</p>
+<p><div class="mathdisp" data-mi="18" title="点击复制 TeX">$$
+\begin{gathered}
+\Delta{f}_{\Delta{N}_{S}<0}\left( \mathbf{r} \right)={f}_{\Delta{N}_{S}<0}^{+}\left( \mathbf{r} \right)-{f}_{\Delta{N}_{S}<0}^{-}\left( \mathbf{r} \right)\\
+\Delta{f}_{\Delta{N}_{S}>0}\left( \mathbf{r} \right)={f}_{\Delta{N}_{S}>0}^{+}\left( \mathbf{r} \right)-{f}_{\Delta{N}_{S}>0}^{-}\left( \mathbf{r} \right)\\
+\Delta{f}_{\Delta{N}_{S}\approx 0}\left( \mathbf{r} \right)={f}_{\Delta{N}_{S}\approx 0}^{+}\left( \mathbf{r} \right)-{f}_{\Delta{N}_{S}\approx 0}^{-}\left( \mathbf{r} \right)
+\end{gathered}
+$$</div></p>
+<p>原则上 $\Delta{f}_{\Delta{N}_{S}\approx 0}$ 应是最理想的选择，因为它满足保持自旋数不变的限制。但还有两种同样保持自旋数不变的方式，分别只涉及 α 和 β 电子的变化，但它们在文献中尚未被检验。$\Delta{f}_{\alpha}\left( \mathbf{r} \right)={f}_{\Delta{N}_{S}>0}^{+}\left( \mathbf{r} \right)-{f}_{\Delta{N}_{S}<0}^{-}\left( \mathbf{r} \right)$ $\Delta{f}_{\beta}\left( \mathbf{r} \right)={f}_{\Delta{N}_{S}<0}^{+}\left( \mathbf{r} \right)-{f}_{\Delta{N}_{S}>0}^{-}\left( \mathbf{r} \right)$</p>
+<h4 id="用法"><strong>用法</strong></h4>
+<p>CDFT 模块的子功能 12 专门用于计算上述所有函数。启动 Multiwfn 后，通常应：</p>
+<ul>
+<li><p>(1) 载入包含基函数信息和所有轨道的波函数文件</p>
+</li>
+<li><p>(2) 进入主功能 22 的子功能 12</p>
+</li>
+<li><p>(3) 若该体系前线 MO 存在简并，选择选项 1 设置简并度</p>
+</li>
+<li><p>(4) 选择选项 2 生成所有相关电子态的 Gaussian 单点任务输入文件。然后可让 Multiwfn 调用 Gaussian 直接计算它们，或手动计算。再将所得 .wfn 文件（与 .gjf 文件同名）放到当前目录下。</p>
+</li>
+<li><p>(5) 选择选项 3 生成不同电子态电子密度的格点数据。在后处理菜单中，可直接可视化所选形式的 Fukui 函数或对偶描述符的等值面图，或将相应格点数据导出为 .cub 文件。</p>
+</li>
+</ul>
+<p>例子见<a href="sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis.html#42233-%E5%BC%80%E5%A3%B3%E5%B1%82%E5%88%86%E5%AD%90-o%E2%82%82-%E7%9A%84-fukui-%E5%87%BD%E6%95%B0%E5%92%8C%E5%AF%B9%E5%81%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6">4.22.3.3 节</a>。</p>
+<h2 id="3255-专题-3亲核与亲电超离域性"><strong>3.25.5 专题 3：亲核与亲电超离域性</strong></h2>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>亲核与亲电离域性也称为亲核与亲电超离域性，由 Schüürmann 在 <em>Environ. Toxicof. Chem.</em>, <strong>9</strong>, 417 (1990) 和 <em>Quant. Struct.-Act. Relat.</em>, <strong>9</strong>, 326 (1990) 中提出，曾被用作构建定量构效关系 (QSAR) 方程的分子描述符。在 Schüürmann 的工作中，原子 <em>A</em> 的亲核超离域性 ($D^{\mathrm{N}}$) 和亲电超离域性 ($D^{\mathrm{E}}$) 分别定义为</p>
+<p><div class="mathdisp" data-mi="19" title="点击复制 TeX">$$
+\begin{gathered}D^{\mathrm{N}}(A)=2\sum_{i}^{\mathrm{unocc}}\sum_{\mu\in A}\frac{C_{\mu,i}^2}{\alpha-\varepsilon_i}\\D^{\mathrm{E}}(A)=2\sum_{i}^{\mathrm{occ}}\sum_{\mu\in A}\frac{C_{\mu,i}^2}{\varepsilon_i-\alpha}\end{gathered}
+$$</div></p>
+<p>其中 $ε_{i}$ 为分子轨道 $i$ 的能量，<em>α</em> = ($E_{\mathrm{HOMO}}$ + $E_{\mathrm{LUMO}}$)/2，<em>µ</em>∈ $A$ 表示原子 <em>A</em> 的基函数 <em>µ</em>，<strong>C</strong> 为系数矩阵。显然 $D^{\mathrm{N}}$ 和 $D^{\mathrm{E}}$ 均为负值。</p>
+<p>然而，Schüürmann 的超离域性表达式只适用于采用正交基函数的半经验计算。<em>Sci. Rep.</em>, <strong>5</strong>, 13695 (2015) 提出了一种不同版本的亲电超离域性，与非正交基函数兼容。该工作表明，原子的亲电超离域性与其原子极化率密切相关。</p>
+<p>上述超离域性的定义基于分子轨道展开系数；相比之下，Multiwfn 中超离域性基于原子空间的 Hirshfeld 划分计算，该形式更稳健且与弥散函数完全兼容。具体地，Multiwfn 中亲核与亲电超离域性按下式计算</p>
+<p><div class="mathdisp" data-mi="20" title="点击复制 TeX">$$
+\begin{gathered}D^{\mathrm{N}}(A)=2\sum_{i}^{\mathrm{unocc}}\frac{\Theta_{A,i}}{\alpha-\varepsilon_i}\\D^{\mathrm{E}}(A)=2\sum_{i}^{\mathrm{occ}}\frac{\Theta_{A,i}}{\varepsilon_i-\alpha}\end{gathered}
+$$</div></p>
+<p>其中 Θ<em>$_{A,i}$</em> 为按 Hirshfeld 方法计算的原子 <em>A</em> 在轨道 $i$ 中的组成，详见<a href="sec-3-10-orbital-composition-analysis.html#3105-%E7%94%A8-hirshfeld-%E6%88%96-hirshfeld-i-%E6%96%B9%E6%B3%95%E8%AE%A1%E7%AE%97%E5%8E%9F%E5%AD%90%E5%92%8C%E7%89%87%E6%AE%B5%E8%B4%A1%E7%8C%AE-810">3.10.5 节</a>。Multiwfn 还计算不含 <em>α</em> 位移参数的超离域性，即</p>
+<p><div class="mathdisp" data-mi="21" title="点击复制 TeX">$$
+\begin{gathered}D^{\mathrm{N0}}(A)=2\sum_{i}^{\mathrm{unocc}}\frac{\Theta_{A,i}}{-\varepsilon_i}\\D^{\mathrm{E0}}(A)=2\sum_{i}^{\mathrm{occ}}\frac{\Theta_{A,i}}{\varepsilon_i}\end{gathered}
+$$</div></p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>由于超离域性涉及虚轨道，应使用 .mwfn、.fch、.molden 或 .gms 文件作为输入文件。只接受闭壳层单行列式波函数。若打算计算 $D^{\mathrm{N}}$ 和 $D^{\mathrm{N0}}$，不应使用弥散函数，因为它利用虚轨道，而使用弥散函数时虚轨道的化学意义可能严重受损。</p>
+<p>载入输入文件后，进入主功能 22，再选择选项 8，即可得到所有原子的 $D^{\mathrm{N}}$、$D^{\mathrm{E}}$、$D^{\mathrm{N0}}$ 和 $D^{\mathrm{E0}}$。输出示例（<em>examples\oxirane.fchk</em>）：</p>
+<p><pre><code class="language-text">    Atom             D_N                D_E              D_N_0             D_E_0
+    1(C )        -26.56182        -10.85916        -35.92863         -8.75591
+    2(C )        -26.56182        -10.85916        -35.92863         -8.75591
+    3(O )        -20.09086        -19.14131        -25.62598        -14.71454
+    4(H )        -10.19410         -2.66387        -14.52037         -2.13024
+    5(H )        -10.19410         -2.66387        -14.52037         -2.13024
+    6(H )        -10.19410         -2.66387        -14.52037         -2.13024
+    7(H )        -10.19410         -2.66387        -14.52037         -2.13024
+
+Sum of D_N:        -113.99092 /Hartree
+Sum of D_E:         -51.51513 /Hartree
+Sum of D_N_0:      -155.56471 /Hartree
+Sum of D_E_0:       -40.74734 /Hartree</code></pre></p>
+<h2 id="3256-专题-4对偶离域描述符"><strong>3.25.6 专题 4：对偶离域描述符</strong></h2>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>对偶离域描述符 (DDD) 理论由 Samir Kenouche 在 <em>Phys. Chem. Chem. Phys.</em>, <strong>28</strong>, 19133 (2026) 中提出。该方法定量描述原子间离域指数 (DI) 对总电子数变化的响应。该理论与<a href="#3251-%E7%90%86%E8%AE%BA">3.25.1 节</a>介绍的键对偶描述符 (BDD) 密切相关，本质上二者都展示了电子共享程度在得电子或失电子过程中的变化。但 BDD 基于两个电子态（$N$ 与 $N-1$，或 $N$ 与 $N+1$）之间键级的有限差分计算，而 DDD 具有解析形式，其计算只依赖于 $N$ 态的波函数，因此在计算开销上有优势。另一优点是 DDD 的各组分使人们能考察前线分子轨道对响应的作用，讨论见原始论文。注意 DDD 理论基于冻结轨道近似 (FOA) 推导，且只支持单行列式闭壳层波函数。</p>
+<p>这里介绍 DDD 的关键思想与要素。该理论在 Ángyán-Loos-Mayer (ALM) 形式的 DI (<em>δ</em>) 下推导：</p>
+<p><div class="mathdisp" data-mi="22" title="点击复制 TeX">$$
+{\delta}_{A,B}^{\mathrm{ALM}}=\sum_{i,j} {\eta}_{i}{\eta}_{j}{S}_{ij}(A){S}_{ij}(B)
+$$</div></p>
+<p>其中 <em>η</em> 为轨道占据数，<strong>S</strong> 为原子重叠矩阵 (AOM)，${S}_{ij}(A)$ 对应 MO $i$ 与 MO $j$ 乘积在原子 <em>A</em> 空间中的积分。$i$ 和 $j$ 遍历所有空间轨道。</p>
+<p>DI 的导数在整数电子数处不连续。在 FOA 下并假设电子只能从 HOMO 离开，可证明 DI 的左侧一阶导数可表示为下式，反映了 DI 对 $N$ 减少的 HOMO 主导响应</p>
+<p><div class="mathdisp" data-mi="23" title="点击复制 TeX">$$
+{\left( \frac{\partial {\delta}_{A,B}}{\partial N} \right)}^{-}=4\sum_{i<\mathrm{H}} {S}_{\mathrm{H}i}(A){S}_{\mathrm{H}i}(B)+4{S}_{\mathrm{HH}}(A){S}_{\mathrm{HH}}(B)
+$$</div></p>
+<p>其中第二项代表 HOMO 自贡献部分，第一项称为 ${f}_{AB}^{-}$，即 ${f}_{AB}^{-}=4\sum_{i<\mathrm{H}} {S}_{\mathrm{H}i}(A){S}_{\mathrm{H}i}(B)$。</p>
+<p>DI 的右侧一阶导数为（$i$ 遍历所有双占据轨道）</p>
+<p><div class="mathdisp" data-mi="24" title="点击复制 TeX">$$
+{\left( \frac{\partial {\delta}_{A,B}}{\partial N} \right)}^{+}={f}_{AB}^{+}=4\sum_{i\in \mathrm{occ}} {S}_{\mathrm{L}i}(A){S}_{\mathrm{L}i}(B)
+$$</div></p>
+<p>一阶对偶离域描述符定义为 ${f}_{AB}^{(1)}={f}_{AB}^{+}-{f}_{AB}^{-}$，表征 DI 对总电子数变化响应的不对称性，&gt;0 和 &lt;0 分别明确表示 LUMO 主导响应和 HOMO 主导响应。</p>
+<p>$g$ 项与来自 HOMO 或 LUMO 的 DI 响应的二次贡献有关：</p>
+<p><div class="mathdisp" data-mi="25" title="点击复制 TeX">$$
+{g}_{AB}^{+}={S}_{\mathrm{LL}}(A){S}_{\mathrm{LL}}(B)
+$$</div></p>
+<p><div class="mathdisp" data-mi="26" title="点击复制 TeX">$$
+{g}_{AB}^{-}={2S}_{\mathrm{HH}}(A){S}_{\mathrm{HH}}(B)
+$$</div></p>
+<p><div class="mathdisp" data-mi="27" title="点击复制 TeX">$$
+{\left( \frac{{\partial }^{2}{\delta}_{A,B}}{\partial {N}^{2}} \right)}^{+}=2{g}_{AB}^{+}
+$$</div></p>
+<p><div class="mathdisp" data-mi="28" title="点击复制 TeX">$$
+{\left( \frac{{\partial }^{2}{\delta}_{A,B}}{\partial {N}^{2}} \right)}^{-}={g}_{AB}^{-}
+$$</div></p>
+<p>当总电子数改变整数个时，DI 的变化可表示为</p>
+<p><div class="mathdisp" data-mi="29" title="点击复制 TeX">$$
+{\Delta {\delta}_{AB}^{+}=f}_{AB}^{+}+{g}_{AB}^{+}
+$$</div></p>
+<p><div class="mathdisp" data-mi="30" title="点击复制 TeX">$$
+{\Delta {\delta}_{AB}^{-}=f}_{AB}^{-}+\frac{3}{2}{g}_{AB}^{-}
+$$</div></p>
+<p>应强调 $\Delta {\delta}_{AB}^{+}$ 和 $\Delta {\delta}_{AB}^{-}$ 只是 DI 准确变化的近似，准确变化可分别用有限差分计算为 ${\delta}^{+}=\delta\left( N+1 \right)-\delta(N)$ 和 ${\delta}^{-}=\delta\left( N \right)-\delta(N-1)$。</p>
+<p>二阶对偶离域描述符定义为 ${f}_{AB}^{(2)}=\Delta {\delta}_{AB}^{+}-\Delta {\delta}_{AB}^{-}$，对应于得电子与失电子所致 DI 响应的不对称性。</p>
+<p>当 HOMO 和/或 LUMO 简并时，上述各项按下式计算以考虑简并：</p>
+<p><div class="mathdisp" data-mi="31" title="点击复制 TeX">$$
+{f}_{AB}^{+}=\frac{1}{{n}_{\mathrm{L}}}\sum_{l\in \mathrm{L}} {f}_{AB}^{+(l)} {f}_{AB}^{-}=\frac{1}{{n}_{\mathrm{H}}}\sum_{h\in \mathrm{H}} {f}_{AB}^{-(h)}
+$$</div></p>
+<p><div class="mathdisp" data-mi="32" title="点击复制 TeX">$$
+{g}_{AB}^{+}=\frac{1}{{n}_{\mathrm{L}}}\sum_{l\in \mathrm{L}} {g}_{AB}^{+(l)} {g}_{AB}^{-}=\frac{1}{{n}_{\mathrm{H}}}\sum_{h\in \mathrm{H}} {g}_{AB}^{-(h)}
+$$</div></p>
+<p>其中 $n_{\mathrm{L}}$ 和 $n_{\mathrm{H}}$ 分别为 LUMO 和 HOMO 的简并度，$l$ 和 $h$ 分别遍历所有简并的 LUMO 和 HOMO。带 ($l$) 或 ($h$) 上标的项指仅将 $l$ 视为 LUMO、将 $h$ 视为 HOMO 时计算的项。注意，计算 ${f}_{AB}^{-(h)}$ 时，轨道指标只遍历不属于简并 HOMO 的占据轨道。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>Multiwfn 能计算体系中任意化学键的 ${f}_{AB}^{+}$、${f}_{AB}^{-}$、${f}_{AB}^{(1)}$、${g}_{AB}^{+}$、${g}_{AB}^{-}$、${f}_{AB}^{(2)}$。体系应为闭壳层，启动 Multiwfn 时应使用包含基函数信息的波函数文件（<em>例如</em> .fch、.molden）作为输入。</p>
+<p>该功能对应主功能 22 的子功能 11。进入后，通常应选择选项 1 或选项 2，分别用原子空间的 AIM 划分或 Hirshfeld 划分计算 AOM，然后输入待研究的化学键，结果会立即显示在屏幕上。值得注意的是，若用 Hirshfeld 划分生成 AOM，所得 DI 也对应于模糊键级（<a href="sec-3-11-bond-order-analysis.html#3116-%E6%A8%A1%E7%B3%8A%E9%94%AE%E7%BA%A7fuzzy-bond-order-7">3.11.6 节</a>），研究的就是模糊键级对 $N$ 的响应。</p>
+<p>若已有由模糊分析模块或盆分析模块导出的、包含当前体系所有 MO 的 AOM 的 .txt 文件，在此功能中也可直接选择选项 3 载入使用，从而不在此处计算 AOM。注意，用模糊或盆分析模块生成 AOM 之前，应将 <em>settings.ini</em> 中的“ispecial”设为 3，否则 AOM 只涉及占据轨道。</p>
+<p>例子见<a href="sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis.html#4226-%E8%AE%A1%E7%AE%97%E5%AF%B9%E5%81%B6%E7%A6%BB%E5%9F%9F%E6%8F%8F%E8%BF%B0%E7%AC%A6-dual-delocalization-descriptor-ddd-%E7%9A%84%E4%BE%8B%E5%AD%90">4.22.6 节</a>。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-3-25-conceptual-density-functional-theory-analysis";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script><script>const MATHS=["{f}_{A,B}^{+}={P}_{A,B}\\left( N+1 \\right)-{P}_{A,B}\\left( N \\right)","{f}_{A,B}^{-}={P}_{A,B}\\left( N \\right)-{P}_{A,B}(N-1)","\\omega_{\\mathrm{cubic}}=\\omega\\left(1+\\frac{\\mu}{3\\eta^2}\\gamma\\right)","\\omega_{\\mathrm{cubic}}=\\frac{(\\mu_{\\mathrm{cubic}})^2}{2\\eta_{\\mathrm{cubic}}}\\left[1+\\frac{\\mu_{\\mathrm{cubic}}}{3(\\eta_{\\mathrm{cubic}})^2}\\gamma_{\\mathrm{cubic}}\\right]","\\begin{gathered}\\mu_{\\mathrm{cubic}}=(1/6)(-2A-5I_1+I_2)\\\\\\eta_{\\mathrm{cubic}}=I_1-A\\\\\\gamma_{\\mathrm{cubic}}=2I_1-I_2-A\\end{gathered}","\\varepsilon=\\chi\\left(\\frac{\\phi}{\\gamma}\\right)-\\left(\\frac{\\phi}{\\gamma}\\right)^2\\left(\\frac{\\eta}{2}+\\frac{\\phi}{6}\\right)","\\phi=\\sqrt{\\eta^2-2\\gamma\\mu}-\\eta","\\begin{aligned}\n&\\mu=a\\\\\n&\\chi=-a\\\\\n&\\eta=2(b-ac)\\\\\n&\\gamma=-3c(b-ac)\n\\end{aligned}","\\begin{aligned}\n&c=\\frac{I_2-2I_1+A'}{2I_2-I_1-A'}\\\\\n&b=\\frac{I_1-A'}{2}-\\frac{I_1+A'}{2}c\\\\\n&a=-\\frac{I_1+A'}{2}+\\frac{I_1-A'}{2}c\n\\end{aligned}","{v}_{N\\mathrm{-phile}}\\left( \\mathbf{r} \\right)\\approx {V}_{N-\\mathrm{phile}}^{\\mathrm{ESP}}\\left( \\mathbf{r} \\right)-\\Delta N\\int \\frac{{f}_{N-\\mathrm{phile}}^{-}(\\mathbf{r'})}{|\\mathbf{r}-\\mathbf{r}'|}\\mathrm{d}\\mathbf{r'}","{V}_{{f}^{-/+/0}}(\\mathbf{r})=\\int \\frac{{f}^{-/+/0}(\\mathbf{r'})}{|\\mathbf{r}-\\mathbf{r}'|}\\mathrm{d}\\mathbf{r}'","{V}_{{f}^{-}}(\\mathbf{r})=\\int \\frac{{f}^{-}(\\mathbf{r'})}{|\\mathbf{r}-\\mathbf{r}'|}\\mathrm{d}\\mathbf{r'}=\\int \\frac{{\\rho}_{N}\\left( \\mathbf{r'} \\right)-{\\rho}_{N-1}(\\mathbf{r'})}{|\\mathbf{r}-\\mathbf{r}'|}\\mathrm{d}\\mathbf{r'=}{V}_{N-1}^{\\mathrm{ESP}}(\\mathbf{r})-{V}_{N}^{\\mathrm{ESP}}(\\mathbf{r})","DDP\\left( \\mathbf{r} \\right)=\\int \\frac{\\Delta f\\left( {\\mathbf{r}}^{'} \\right)}{\\left| \\mathbf{r}-{\\mathbf{r}}^{'} \\right|}\\mathrm{d}{\\mathbf{r}}^{'}=\\int \\frac{{f}^{+}\\left( {\\mathbf{r}}^{'} \\right)-{f}^{-}\\left( {\\mathbf{r}}^{'} \\right)}{\\left| \\mathbf{r}-{\\mathbf{r}}^{'} \\right|}\\mathrm{d}{\\mathbf{r}}^{'}={V}_{{f}^{+}}\\left( \\mathbf{r} \\right)-{V}_{{f}^{-}}(\\mathbf{r})","\\begin{gathered}f_w^+(\\mathbf{r})=\\sum_{i=\\mathrm{LUMO}}^{\\infty}w_i\\left|\\varphi_i(\\mathbf{r})\\right|^2\\qquad w_i=\\frac{\\exp\\left[-\\left(\\frac{\\mu-\\varepsilon_i}{\\Delta}\\right)^2\\right]}{\\sum_{i=\\mathrm{LUMO}}^{\\infty}\\exp\\left[-\\left(\\frac{\\mu-\\varepsilon_i}{\\Delta}\\right)^2\\right]}\\\\f_w^-(\\mathbf{r})=\\sum_{i}^{\\mathrm{HOMO}}w_i\\left|\\varphi_i(\\mathbf{r})\\right|^2\\qquad w_i=\\frac{\\exp\\left[-\\left(\\frac{\\mu-\\varepsilon_i}{\\Delta}\\right)^2\\right]}{\\sum_{i}^{\\mathrm{HOMO}}\\exp\\left[-\\left(\\frac{\\mu-\\varepsilon_i}{\\Delta}\\right)^2\\right]}\\\\f_w^0(\\mathbf{r})=\\left[f_w^+(\\mathbf{r})+f_w^-(\\mathbf{r})\\right]/2\\\\\\Delta f_w(\\mathbf{r})=f_w^+(\\mathbf{r})-f_w^-(\\mathbf{r})\\end{gathered}","\\begin{gathered}f_{\\mathrm{Q}}^+(\\mathbf{r})=\\frac{\\rho_{N+p}(\\mathbf{r})-\\rho_N(\\mathbf{r})}{p}\\\\f_{\\mathrm{Q}}^-(\\mathbf{r})=\\frac{\\rho_N(\\mathbf{r})-\\rho_{N-q}(\\mathbf{r})}{q}\\\\f_{\\mathrm{Q}}^0(\\mathbf{r})=\\left[f_{\\mathrm{Q}}^+(\\mathbf{r})+f_{\\mathrm{Q}}^-(\\mathbf{r})\\right]/2\\end{gathered}","\\Delta f_{\\mathrm{Q}}(\\mathbf{r})=f_{\\mathrm{Q}}^+(\\mathbf{r})-f_{\\mathrm{Q}}^-(\\mathbf{r})","\\begin{gathered}\n{f}_{\\Delta{N}_{S}<0}^{+}\\left( \\mathbf{r} \\right)=\\frac{{\\rho}_{N+{p}_{\\beta}}\\left( \\mathbf{r} \\right)-{\\rho}_{N}\\left( \\mathbf{r} \\right)}{{p}_{\\beta}}\\\\\n{f}_{\\Delta{N}_{S}>0}^{+}\\left( \\mathbf{r} \\right)=\\frac{{\\rho}_{N+{p}_{\\alpha}}\\left( \\mathbf{r} \\right)-{\\rho}_{N}\\left( \\mathbf{r} \\right)}{{p}_{\\alpha}}\\\\\n{f}_{\\Delta{N}_{S}\\approx 0}^{+}\\left( \\mathbf{r} \\right)=\\frac{{f}_{\\Delta{N}_{S}>0}^{+}\\left( \\mathbf{r} \\right)+{f}_{\\Delta{N}_{S}<0}^{+}\\left( \\mathbf{r} \\right)}{2}\n\\end{gathered}","\\begin{gathered}\n{f}_{\\Delta{N}_{S}<0}^{-}\\left( \\mathbf{r} \\right)=\\frac{{\\rho}_{N}\\left( \\mathbf{r} \\right)-{\\rho}_{N-{q}_{\\alpha}}\\left( \\mathbf{r} \\right)}{{q}_{\\alpha}}\\\\\n{f}_{\\Delta{N}_{S}>0}^{-}\\left( \\mathbf{r} \\right)=\\frac{{\\rho}_{N}\\left( \\mathbf{r} \\right)-{\\rho}_{N-{q}_{\\beta}}\\left( \\mathbf{r} \\right)}{{q}_{\\beta}}\\\\\n{f}_{\\Delta{N}_{S}\\approx 0}^{-}\\left( \\mathbf{r} \\right)=\\frac{{f}_{\\Delta{N}_{S}>0}^{-}\\left( \\mathbf{r} \\right)+{f}_{\\Delta{N}_{S}<0}^{-}\\left( \\mathbf{r} \\right)}{2}\n\\end{gathered}","\\begin{gathered}\n\\Delta{f}_{\\Delta{N}_{S}<0}\\left( \\mathbf{r} \\right)={f}_{\\Delta{N}_{S}<0}^{+}\\left( \\mathbf{r} \\right)-{f}_{\\Delta{N}_{S}<0}^{-}\\left( \\mathbf{r} \\right)\\\\\n\\Delta{f}_{\\Delta{N}_{S}>0}\\left( \\mathbf{r} \\right)={f}_{\\Delta{N}_{S}>0}^{+}\\left( \\mathbf{r} \\right)-{f}_{\\Delta{N}_{S}>0}^{-}\\left( \\mathbf{r} \\right)\\\\\n\\Delta{f}_{\\Delta{N}_{S}\\approx 0}\\left( \\mathbf{r} \\right)={f}_{\\Delta{N}_{S}\\approx 0}^{+}\\left( \\mathbf{r} \\right)-{f}_{\\Delta{N}_{S}\\approx 0}^{-}\\left( \\mathbf{r} \\right)\n\\end{gathered}","\\begin{gathered}D^{\\mathrm{N}}(A)=2\\sum_{i}^{\\mathrm{unocc}}\\sum_{\\mu\\in A}\\frac{C_{\\mu,i}^2}{\\alpha-\\varepsilon_i}\\\\D^{\\mathrm{E}}(A)=2\\sum_{i}^{\\mathrm{occ}}\\sum_{\\mu\\in A}\\frac{C_{\\mu,i}^2}{\\varepsilon_i-\\alpha}\\end{gathered}","\\begin{gathered}D^{\\mathrm{N}}(A)=2\\sum_{i}^{\\mathrm{unocc}}\\frac{\\Theta_{A,i}}{\\alpha-\\varepsilon_i}\\\\D^{\\mathrm{E}}(A)=2\\sum_{i}^{\\mathrm{occ}}\\frac{\\Theta_{A,i}}{\\varepsilon_i-\\alpha}\\end{gathered}","\\begin{gathered}D^{\\mathrm{N0}}(A)=2\\sum_{i}^{\\mathrm{unocc}}\\frac{\\Theta_{A,i}}{-\\varepsilon_i}\\\\D^{\\mathrm{E0}}(A)=2\\sum_{i}^{\\mathrm{occ}}\\frac{\\Theta_{A,i}}{\\varepsilon_i}\\end{gathered}","{\\delta}_{A,B}^{\\mathrm{ALM}}=\\sum_{i,j} {\\eta}_{i}{\\eta}_{j}{S}_{ij}(A){S}_{ij}(B)","{\\left( \\frac{\\partial {\\delta}_{A,B}}{\\partial N} \\right)}^{-}=4\\sum_{i<\\mathrm{H}} {S}_{\\mathrm{H}i}(A){S}_{\\mathrm{H}i}(B)+4{S}_{\\mathrm{HH}}(A){S}_{\\mathrm{HH}}(B)","{\\left( \\frac{\\partial {\\delta}_{A,B}}{\\partial N} \\right)}^{+}={f}_{AB}^{+}=4\\sum_{i\\in \\mathrm{occ}} {S}_{\\mathrm{L}i}(A){S}_{\\mathrm{L}i}(B)","{g}_{AB}^{+}={S}_{\\mathrm{LL}}(A){S}_{\\mathrm{LL}}(B)","{g}_{AB}^{-}={2S}_{\\mathrm{HH}}(A){S}_{\\mathrm{HH}}(B)","{\\left( \\frac{{\\partial }^{2}{\\delta}_{A,B}}{\\partial {N}^{2}} \\right)}^{+}=2{g}_{AB}^{+}","{\\left( \\frac{{\\partial }^{2}{\\delta}_{A,B}}{\\partial {N}^{2}} \\right)}^{-}={g}_{AB}^{-}","{\\Delta {\\delta}_{AB}^{+}=f}_{AB}^{+}+{g}_{AB}^{+}","{\\Delta {\\delta}_{AB}^{-}=f}_{AB}^{-}+\\frac{3}{2}{g}_{AB}^{-}","{f}_{AB}^{+}=\\frac{1}{{n}_{\\mathrm{L}}}\\sum_{l\\in \\mathrm{L}} {f}_{AB}^{+(l)} {f}_{AB}^{-}=\\frac{1}{{n}_{\\mathrm{H}}}\\sum_{h\\in \\mathrm{H}} {f}_{AB}^{-(h)}","{g}_{AB}^{+}=\\frac{1}{{n}_{\\mathrm{L}}}\\sum_{l\\in \\mathrm{L}} {g}_{AB}^{+(l)} {g}_{AB}^{-}=\\frac{1}{{n}_{\\mathrm{H}}}\\sum_{h\\in \\mathrm{H}} {g}_{AB}^{-(h)}"];</script>
+<script src="app.js"></script></body></html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>主功能17：盆分析 · Multiwfn中文手册</title><link rel="stylesheet" href="../style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="主功能17盆分析">主功能17：盆分析</h1>
+<p>功能概述：Basin（盆）指实空间函数由零通量面分隔、每个只含一个吸引子的子空间，最典型的是 AIM 原子空间和 ELF basin。Multiwfn 用基于格点的 near-grid 方法（默认带边界精修）生成 basin 并定位吸引子，适用于电子密度、ELF、LOL、静电势等任何实空间函数，也可直接用第三方 cube/.grd 格点。生成 basin 后可做积分、电多极矩、定域化/离域化指数、重叠矩阵计算，并可导出 basin cube 与吸引子文件。AIM basin 的高精度积分与多极矩务必改用混合格点选项 7/8。</p>
+<h2 id="生成-basin-并定位吸引子选项1">生成 basin 并定位吸引子（选项1）</h2>
+<p>说明：选择实空间函数与格点设置，Multiwfn 计算格点数据后生成 basin 并定位吸引子；值相近且位置靠近的吸引子会被自动聚类（聚类参数由选项-6 控制）。内存中已有格点（输入文件自带 .cub/.grd，或之前用主功能5/13 算好）时可直接使用。</p>
+<p>菜单路径：主功能17（Basin 分析）→ 选项1（选项-1 选算法/极值，选项-6 调聚类参数）</p>
+<p>输入要求：波函数文件，或含目标实空间函数的 .cub/.grd 格点文件（或主功能5/13 预先算好的内存格点）。</p>
+<p>操作步骤（原始格式，HCN 的 AIM basin 例）：</p>
+<p><pre><code class="language-text">examples\HCN.wfn
+17  // Basin analysis
+1  // Generate basins and locate attractors
+1  // The grid data to be calculated and thus analyzed is for electron density
+2  // Medium-quality grid. This is enough for most cases, if you want to obtain a better result, you can choose "High-quality grid", but much more computational time will be spent</code></pre></p>
+<p>Multiwfn 计算电子密度格点、生成 basin 并寻找吸引子后显示吸引子信息：</p>
+<p><pre><code class="language-text">Attractor       X,Y,Z coordinate (Angstrom)                Value
+    1   -0.02645886   -0.02645886   -1.52058663          0.33959944
+    2    0.02645886    0.02645886   -0.51514986         49.48609717
+    3   -0.02645886   -0.02645886    0.64904009         76.55832377</code></pre></p>
+<p>研究整个体系的 basin，定性分析用“中等质量格点”，定量用“高质量格点”；只研究局域区域时用 &quot;Input center coordinate, grid spacing and box length&quot; 自定义范围。想定位极小值（如 RDG/IRI 极小）时，在选项-1 中切换定位对象，或把 settings.ini 中 &quot;ibasinlocmin&quot; 设为 1。</p>
+<p>产出：各 basin 与吸引子（坐标＋函数值）；未归属格点数与跑到盒子边界的格点数（一般应为零）。</p>
+<p>来源：<a href="../sec-3-20-basin-analysis.html#3203-%E7%94%A8%E6%B3%95">3.20.3</a>、<a href="../sec-4-17-basin-analysis.html#4171-hcn-%E5%92%8C-li%E2%82%86-%E7%9A%84-aim-%E6%B5%81%E5%9F%9F%E5%88%86%E6%9E%90">4.17.1</a></p>
+<h2 id="可视化吸引子与-basin选项0">可视化吸引子与 basin（选项0）</h2>
+<p>说明：在 GUI 中显示吸引子球与 basin 等值面；默认只显示 basin 边界格点，勾选 &quot;Show basin interior&quot; 显示整个 basin；&quot;Set basin drawing method&quot; - &quot;rho&gt;0.001 region only&quot; 只显示 ρ&gt;0.001 区域。浅绿色球为（正值区）吸引子，浅蓝色球为负值区的排斥子。</p>
+<p>菜单路径：主功能17 → 选项0</p>
+<p>输入要求：已生成 basin。</p>
+<p>操作步骤（原始格式）：选择选项 0 可视化 basin 和吸引子。紫色标号表示吸引子编号；电子密度吸引子非常靠近原子核，先取消勾选 &quot;Show molecule&quot; 复选框再看。在右下角 basin 列表中选择编号即显示对应 basin。命令行窗口一般应显示：</p>
+<p><pre><code class="language-text">The number of unassigned grids:           0
+The number of grids travelled to box boundary:           0</code></pre></p>
+<p>看完点击 &quot;RETURN&quot; 按钮关闭 GUI。用选项1定位吸引子后，主功能5/13 的等值面 GUI 中也能看到吸引子标签，便于对比。</p>
+<p>产出：GUI 中的 basin 等值面与吸引子球显示。</p>
+<p>来源：<a href="../sec-3-20-basin-analysis.html#3203-%E7%94%A8%E6%B3%95">3.20.3</a>、<a href="../sec-4-17-basin-analysis.html#4171-hcn-%E5%92%8C-li%E2%82%86-%E7%9A%84-aim-%E6%B5%81%E5%9F%9F%E5%88%86%E6%9E%90">4.17.1</a></p>
+<h2 id="basin-内积分实空间函数选项2aim-高精度用选项7">basin 内积分实空间函数（选项2；AIM 高精度用选项7）</h2>
+<p>说明：选项2在已生成的 basin 中积分所选实空间函数（可选内存格点或外部 .cub/.grd，但格点设置必须与生成 basin 时严格一致）。若分析的是 AIM basin，强烈推荐改用选项7（原子中心＋均匀混合格点），精度远好于选项2；选项7的子选项 (2)/(3) 还做边界精修（近似/精确），做过一次后归属被永久更新。</p>
+<p>菜单路径：主功能17 → 选项2（AIM 高精度改用选项7）</p>
+<p>输入要求：GTF 波函数，或与生成 basin 格点设置严格一致的 .cub/.grd/内存格点。</p>
+<p>操作步骤（原始格式，HCN 例）：选功能 2，再选选项 0（使用内存中已存的电子密度格点），积分立刻输出：</p>
+<p><pre><code class="language-text">  #Basin        Integral(a.u.)      Volume(a.u.^3)
+      1          0.7356142812        441.70000000
+      2          5.3511723358        566.84900000
+      3          7.9020047534        829.72600000
+Sum of above values:         13.98879137</code></pre></p>
+<p>总和 13.98879 明显偏离 14 个电子，改用功能 7：</p>
+<p><pre><code class="language-text">7  // Integrate real space functions in AIM basins with mixed type of grids
+1  // Integrate a specific function with atomic-center + uniform grids
+1  // Select electron density as the integrand</code></pre></p>
+<p>结果为：</p>
+<p><pre><code class="language-text">   #Basin        Integral(a.u.)      Vol(Bohr^3)    Vol(rho&gt;0.001)
+       1          0.7356461300         441.710          34.884
+       2          5.3552275427         566.347         102.832
+       3          7.9086499057         830.218         134.228
+ Sum of above integrals:         13.99952358
+ Sum of basin volumes (rho&gt;0.001):     271.944 Bohr^3</code></pre></p>
+<p>同时输出归一化后的 AIM 电荷与原子体积。要更准确，在功能 7 中选选项 2（精确边界精修）或 3（近似边界精修）。获得可靠 AIM 电荷的常用步骤是：</p>
+<p><pre><code class="language-text">1  // Generate basin
+1  // Electron density
+2  // Medium-quality grid. Select high-quality grid if you wish to get more accurate result
+7  // Integrate real space functions in AIM basins with mixed type of grids
+2  // Integrate and meantime refine basin boundary
+1  // Electron density</code></pre></p>
+<p>在 Multiwfn 中算 AIM 电荷最方便的方法是直接选主功能 7 的子功能 14，它自动完成上述步骤。</p>
+<p>产出：每个 basin 的积分与体积；选项7额外输出 AIM 电荷、归一化因子与 ρ&gt;0.001 体积（原子尺寸）。</p>
+<p>来源：<a href="../sec-3-20-basin-analysis.html#3203-%E7%94%A8%E6%B3%95">3.20.3</a>、<a href="../sec-4-17-basin-analysis.html#4171-hcn-%E5%92%8C-li%E2%82%86-%E7%9A%84-aim-%E6%B5%81%E5%9F%9F%E5%88%86%E6%9E%90">4.17.1</a></p>
+<h2 id="basin-电多极矩与-选项3aim-高精度用选项8">basin 电多极矩与 &lt;r²&gt;（选项3；AIM 高精度用选项8）</h2>
+<p>说明：计算各 basin 的电多极矩（以吸引子为原点，输出到四极矩）与电子空间范围 &lt;r²&gt;。AIM basin 强烈推荐改用选项8（混合格点，精度更好且无明显额外代价），可同时写入 multipole.txt（并附 atom_moment.txt，可用脚本在 VMD 中可视化）。</p>
+<p>菜单路径：主功能17 → 选项3（AIM 高精度改用选项8）</p>
+<p>输入要求：GTF 波函数。</p>
+<p>操作步骤（原始格式）：进入功能 8，用混合格点计算 AIM basin 的电多极矩（也可用功能 3 基于均匀格点做，但精度明显更差）。计算后询问是否把结果写入 <em>multipole.txt</em>，若选 y，当前文件夹下还会产生 <em>atom_moment.txt</em>。</p>
+<p>产出：各 basin 的单极（电荷）、偶极、四极矩及 &lt;r²&gt;；multipole.txt 与 atom_moment.txt（选项8 选 y 时）。</p>
+<p>来源：<a href="../sec-3-20-basin-analysis.html#3203-%E7%94%A8%E6%B3%95">3.20.3</a>、<a href="../sec-4-17-basin-analysis.html#4171-hcn-%E5%92%8C-li%E2%82%86-%E7%9A%84-aim-%E6%B5%81%E5%9F%9F%E5%88%86%E6%9E%90">4.17.1</a></p>
+<h2 id="basin-定域化离域化指数选项4">basin 定域化/离域化指数（选项4）</h2>
+<p>说明：计算 basin 的定域化指数 LI 与 basin 间的离域化指数 DI（DI 可视为共价键级），理论同模糊空间 LI/DI，积分域换为 basin。该选项涉及 basin 重叠矩阵（BOM）；若用电子密度定义 basin，一般应选混合型格点算 BOM。</p>
+<p>菜单路径：主功能17 → 选项4（BOM 积分格点一般选混合型）</p>
+<p>输入要求：GTF 波函数。</p>
+<p>操作步骤（原始格式）：进入选项 4，按提示选择计算 BOM 所用的积分格点类型（AIM basin 选混合型），再按屏幕提示完成 LI/DI 计算。</p>
+<p>产出：各 basin 的 LI 与 basin 对之间的 DI 矩阵。</p>
+<p>来源：<a href="../sec-3-20-basin-analysis.html#3203-%E7%94%A8%E6%B3%95">3.20.3</a>、<a href="../sec-4-17-basin-analysis.html#4171-hcn-%E5%92%8C-li%E2%82%86-%E7%9A%84-aim-%E6%B5%81%E5%9F%9F%E5%88%86%E6%9E%90">4.17.1</a></p>
+<h2 id="输出-basin原子重叠矩阵选项56">输出 basin/原子重叠矩阵（选项5/6）</h2>
+<p>说明：选项5计算所有 basin 的轨道重叠矩阵（BOM）并写 BOM.txt；选项6（仅电子密度定义 basin 时可见）计算原子重叠矩阵（AOM）并写 AOM.txt（跳过非核吸引子 basin）。BOM 的 (i,j) 元定义为 $S_{ij}\left(K\right)=\int_{\Omega_K}\varphi_i\left(\mathbf{r}\right)\varphi_j\left(\mathbf{r}\right)\mathrm{d}\mathbf{r}$，只考虑占据轨道。</p>
+<p>菜单路径：主功能17 → 选项5 / 选项6（6 仅电子密度定 basin 时可见）</p>
+<p>输入要求：GTF 波函数。</p>
+<p>操作步骤（原始格式）：选选项 5，BOM 输出到当前文件夹下的 <em>BOM.txt</em>；选选项 6，AOM 输出到当前文件夹下的 <em>AOM.txt</em>。</p>
+<p>产出：当前文件夹下的 <em>BOM.txt</em>（选项5）、<em>AOM.txt</em>（选项6）。</p>
+<p>来源：<a href="../sec-3-20-basin-analysis.html#3203-%E7%94%A8%E6%B3%95">3.20.3</a></p>
+<h2 id="导出-basin-与吸引子选项-5-4-45-3-2">导出 basin 与吸引子（选项-5/-4/-45/-3/-2）</h2>
+<p>说明：-5 导出 basin cube；-4 导出吸引子为 pdb/pqr/txt/gjf；-45 存档 basinana.txt＋basinana.cub 以便下次直接载入复用；-3 查看吸引子坐标数值；-2 测量吸引子/原子间距离夹角二面角。</p>
+<p>菜单路径：主功能17 → 选项-5 / -4 / -45 / -3 / -2</p>
+<p>输入要求：已生成 basin。</p>
+<p>操作步骤（原始格式）：</p>
+<ul>
+<li><strong>-5 把 basin 导出为 cube 文件</strong>：输入 basin 编号，所选 basin 输出到 <em>basinXXXX.cub</em>（XXXX 为 basin 编号），可用 VMD 以等值 0.5 渲染；输入 <code>a</code> 则所有 basin 集体导出到 <em>basin.cub</em>（格点值＝所属 basin 编号）；输入 <code>b</code> 进入特殊模式，用于在 VMD 中绘制 ELF/LOL 按 basin 类型着色的等值面图；输入 <code>c</code> 再输 basin 编号，把该 basin 区域内函数值的格点数据导出到 <em>basinsel.cub</em>。</li>
+<li><strong>-4 把吸引子导出为 pdb/pqr/txt/gjf 文件</strong>：<em>attractors.pdb</em>（原子编号＝聚类前编号，残基编号＝聚类后编号）、<em>attractors.pqr</em>（charge 列＝吸引子处函数值）、<em>attractors.txt</em>（每行 X/Y/Z 坐标 Bohr＋函数值）、<em>attractors.gjf</em>（真实原子高层＋Bq 幽灵原子中层，可载入 GaussView；在 Preference-Display Format-Molecule 中把低层设 Tube 并关闭原子标签）。</li>
+<li><strong>-45 导出吸引子信息和当前格点数据</strong>：写出 <em>basinana.txt</em>（吸引子＋basin 信息）与 <em>basinana.cub</em>（当前格点数据）；下次做相同分析选选项1时若发现这两个文件，选 y 即直接载入，避免重新生成。</li>
+<li><strong>-3 显示吸引子信息</strong>：输出所有吸引子坐标数值（简并吸引子显示平均值及各成员值），并询问是否按值从最负到最正排序打印。</li>
+<li><strong>-2 测量吸引子或原子之间的距离、夹角和二面角</strong>：按屏幕提示操作。</li>
+</ul>
+<p>产出：basinXXXX.cub / basin.cub / basinsel.cub；attractors.pdb/.pqr/.txt/.gjf；basinana.txt＋basinana.cub；屏幕上的吸引子信息与几何测量值。</p>
+<p>来源：<a href="../sec-3-20-basin-analysis.html#3203-%E7%94%A8%E6%B3%95">3.20.3</a>、<a href="../sec-4-17-basin-analysis.html#41710-%E7%BB%98%E5%88%B6%E6%8C%89%E6%B5%81%E5%9F%9F%E7%B1%BB%E5%9E%8B%E7%9D%80%E8%89%B2%E7%9A%84-elf-%E7%AD%89%E5%80%BC%E9%9D%A2%E5%9B%BE">4.17.10</a></p>
+<h2 id="elf-专项与外部-basin-分析选项1210911">ELF 专项与外部 basin 分析（选项12/10/9/11）</h2>
+<p>说明：选项12自动指定 ELF basin 标签（芯/价，如 C(C1)、V(C1,C3)、V(C1,H2)）并打印布居体积；选项10算 HELP/HELV 表征孤对；选项9基于外部 basin.cub 求 ELF 键 basin 布居的 AIM 原子贡献；选项11算各 basin 对指定轨道组成的贡献。</p>
+<p>菜单路径：主功能17 → 选项12 / 选项10 / 选项9 / 选项11（12/10 仅 ELF basin 时出现，9 需当前目录有 basin.cub）</p>
+<p>输入要求：ELF basin（12/10），或外部 basin.cub（9）；GTF 波函数。</p>
+<p>操作步骤（原始格式，乙炔 ELF 例）：对 ELF 生成 basin 后选选项 12，自动指定标签并输出布居体积，例如：</p>
+<p><pre><code class="language-text">#    1  Basin    4  Pop.:  2.0949  Vol.:    0.123  Label: C(C1)
+#    2  Basin    3  Pop.:  2.0949  Vol.:    0.123  Label: C(C3)
+#    3  Basin    5  Pop.:  2.2160  Vol.:  113.884  Label: V(C1,H2)
+#    4  Basin    2  Pop.:  5.3670  Vol.:  144.158  Label: V(C1,C3)
+#    5  Basin    1  Pop.:  2.2160  Vol.:  113.865  Label: V(C3,H4)</code></pre></p>
+<p>标签输出两次：先按 basin 编号，再按排序后的标签。选项10（HELP/HELV）、选项9（外部 basin 的 AIM 原子贡献）、选项11（basin 对轨道组成的贡献）按屏幕提示操作；选项11 的例子见轨道组成分析（AIM/ELF 盆贡献的轨道组成）。</p>
+<p>产出：ELF basin 标签＋布居＋体积；HELP/HELV；外部 basin 的原子贡献；指定轨道的各 basin 组成（选项11 可用 -9 定义原子组输出片段贡献，-4 导出全部至 orbcomp.txt）。</p>
+<p>来源：<a href="../sec-3-20-basin-analysis.html#3203-%E7%94%A8%E6%B3%95">3.20.3</a>、<a href="../sec-4-17-basin-analysis.html#4172-elf-%E6%B5%81%E5%9F%9F%E5%88%86%E6%9E%90%E4%BE%8B%E5%AD%90">4.17.2</a>、<a href="../sec-4-17-basin-analysis.html#4177-%E8%AE%A1%E7%AE%97-elf-%E6%B5%81%E5%9F%9F%E5%B8%83%E5%B1%85%E6%95%B0%E7%9A%84%E5%8E%9F%E5%AD%90%E8%B4%A1%E7%8C%AE">4.17.7</a>、<a href="../sec-4-17-basin-analysis.html#4178-%E8%AE%A1%E7%AE%97%E9%AB%98-elf-%E5%AE%9A%E5%9F%9F%E5%9F%9F%E5%B8%83%E5%B1%85%E6%95%B0%E5%92%8C%E4%BD%93%E7%A7%AF-helphelv">4.17.8</a></p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="menu/func-17";const ROOT="../";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script>
+<script src="../app.js"></script></body></html>

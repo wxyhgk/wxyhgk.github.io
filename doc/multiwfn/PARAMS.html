@@ -1,0 +1,819 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Multiwfn 参数关键词表 · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="multiwfn-参数关键词表">Multiwfn 参数关键词表</h1>
+<blockquote>
+<p>settings.ini 参数、量子化学关键词、环境变量与文件格式要点。</p>
+</blockquote>
+<h2 id="settingsini-参数">settings.ini 参数</h2>
+<table>
+<thead>
+<tr>
+<th>参数/关键词</th>
+<th>含义与取值</th>
+<th>出处</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>nthreads</code></td>
+<td>并行线程数，设为 CPU 物理核心实际数目；G16 的 cubegen 所用核心数与之相同</td>
+<td><a href="sec-2-1-install.html">sec-2-1</a></td>
+</tr>
+<tr>
+<td><code>ompstacksize</code></td>
+<td>Windows 版大体系并行崩溃时增大此栈大小（Linux/MacOS 对应环境变量 <code>OMP_STACKSIZE</code>）</td>
+<td><a href="sec-2-4-parallel-implementation.html">sec-2-4</a></td>
+</tr>
+<tr>
+<td><code>formchkpath</code></td>
+<td>Gaussian 包中 <code>formchk</code> 可执行文件的实际路径，设好后可直接加载 <code>.chk</code>（自动转 <code>.fch</code>/<code>.fchk</code> 后删除）</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5</a></td>
+</tr>
+<tr>
+<td><code>orca_2mklpath</code></td>
+<td>ORCA 文件夹中 <code>orca_2mkl</code> 可执行文件的实际路径，设好后可直接加载 <code>.gbw</code></td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5</a></td>
+</tr>
+<tr>
+<td><code>gaupath</code></td>
+<td>Gaussian 可执行文件的实际路径，供 promolecular 原子波函数、Hirshfeld-I 的 <code>.rad</code>、CM5、CDFT 等自动调用 Gaussian</td>
+<td><a href="sec-3-7-custom-operation-promolecular-and-deformation-properties.html">sec-3-7</a></td>
+</tr>
+<tr>
+<td><code>orcapath</code></td>
+<td>ORCA 可执行文件的实际路径，设好后 CDFT 模块可直接调用 ORCA 算 N/N+1/N-1 态</td>
+<td><a href="sec-3-25-conceptual-density-functional-theory-analysis.html">sec-3-25</a></td>
+</tr>
+<tr>
+<td><code>cubegenpath</code></td>
+<td>Gaussian 的 <code>cubegen</code> 可执行文件的实际路径，设好后 <code>.fch</code>/<code>.fchk</code> 输入时自动调用算 ESP</td>
+<td><a href="sec-5-7-make-use-of-cubegen-utility-in-gaussian-package.html">sec-5-7</a></td>
+</tr>
+<tr>
+<td><code>cubegendenstype</code></td>
+<td>cubegen 所用密度矩阵类型，默认 <code>SCF</code>；如 <code>.fch</code> 由 <code># MP2/cc-pVTZ density</code> 产生且想算 MP2 的 ESP 则改为 <code>MP2</code></td>
+<td><a href="sec-5-7-make-use-of-cubegen-utility-in-gaussian-package.html">sec-5-7</a></td>
+</tr>
+<tr>
+<td><code>dftd3path</code></td>
+<td>经 Tian Lu 修改的 <code>dftd3</code> 可执行文件的实际路径（Linux 下 <code>chmod +x</code>），供原子对色散能分析调用</td>
+<td><a href="sec-3-24-energy-decomposition-analysis.html">sec-3-24</a></td>
+</tr>
+<tr>
+<td><code>lastfile</code></td>
+<td>上次成功读取的输入文件路径；主菜单输 <code>o</code> 即重载该文件，<code>?</code> 可代指其所在目录</td>
+<td><a href="sec-5-6-rapidly-load-a-file-into-multiwfn.html">sec-5-6</a></td>
+</tr>
+<tr>
+<td><code>radpot</code></td>
+<td>Becke 数值积分径向点数，默认 75（Hirshfeld 电荷不准时可改为 100；模糊键级默认 40）</td>
+<td><a href="sec-3-9-population-analysis-and-calculation-of-atomic-charges.html">sec-3-9</a></td>
+</tr>
+<tr>
+<td><code>sphpot</code></td>
+<td>Becke 数值积分角向点数，默认 434（可改为 590；模糊键级默认 230）；VDD 电荷偏离时优先增大此项</td>
+<td><a href="sec-3-9-population-analysis-and-calculation-of-atomic-charges.html">sec-3-9</a></td>
+</tr>
+<tr>
+<td><code>radcut</code></td>
+<td>Becke 积分径向截断，默认 15；与上两项配合提高精度时须先设 <code>iautointgrid=0</code></td>
+<td><a href="sec-3-200-other-functions-part-2.html">sec-3-200</a></td>
+</tr>
+<tr>
+<td><code>iautointgrid</code></td>
+<td>设为 0 才手动用 <code>radpot</code>/<code>sphpot</code>/<code>radcut</code> 控制格点；为 1 时 AOM 用 (40,230) 自动格点</td>
+<td><a href="sec-4-15-fuzzy-atomic-space-analysis.html">sec-4-15</a></td>
+</tr>
+<tr>
+<td><code>iautogrid</code></td>
+<td>Λ 指数的 Becke 格点开关；设为 0 后再在 <code>radpot</code>/<code>sphpot</code> 中指定期望值</td>
+<td><a href="sec-3-21-electron-excitation-analysis.html">sec-3-21</a></td>
+</tr>
+<tr>
+<td><code>outmedinfo</code></td>
+<td>设为 1 则全空间积分时导出 <code>integrate.txt</code>（序号、坐标、函数值、Lebedev 权重、原子权重），PEOE 下可监视每轮电荷/电负性</td>
+<td><a href="sec-3-100-other-functions-part-1.html">sec-3-100</a></td>
+</tr>
+<tr>
+<td><code>expcutoff</code></td>
+<td>指数求值截断：指数小于 -40 跳过（实空间函数 12、14、16 除外）；设 0 可关闭该处理</td>
+<td><a href="sec-2-6-real-space-functions.html">sec-2-6</a></td>
+</tr>
+<tr>
+<td><code>expcutoff_PBC</code></td>
+<td>上条的 PBC 版本：<code>exp(x)</code> 的 <code>x</code> 小于此值跳过求值，增大省时但变差</td>
+<td><a href="sec-2-9-analysis-of-periodic-systems.html">sec-2-9</a></td>
+</tr>
+<tr>
+<td><code>laplfac</code></td>
+<td>电子密度拉普拉斯乘子，默认 1.0；设为其它值则 <code>∇²ρ</code> 整体乘以该值</td>
+<td><a href="sec-2-6-real-space-functions.html">sec-2-6</a></td>
+</tr>
+<tr>
+<td><code>ipolarpara</code></td>
+<td>设为 1 时自旋密度函数返回自旋极化参数函数而非自旋密度</td>
+<td><a href="sec-2-6-real-space-functions.html">sec-2-6</a></td>
+</tr>
+<tr>
+<td><code>ELF_addminimal</code></td>
+<td>改为 0 则关闭给 <code>D(r)</code> 加极小值 1e-5 的处理（该处理抑制分子边界外 ELF 恒为 1 的缺陷）</td>
+<td><a href="sec-2-6-real-space-functions.html">sec-2-6</a></td>
+</tr>
+<tr>
+<td><code>ELFLOL_type</code></td>
+<td>0 为 Becke 定义的 ELF/LOL；改为 1 用 Tsirelson 定义的 ELF；改为 2 用另一形式 <code>LOL(r)=1/(1+[1/τ(r)]²)</code></td>
+<td><a href="sec-2-6-real-space-functions.html">sec-2-6</a></td>
+</tr>
+<tr>
+<td><code>iESPcode</code></td>
+<td>ESP 计算代码：1 为旧慢代码，2（默认）为基于 LIBRETA 的新快代码</td>
+<td><a href="sec-2-6-real-space-functions.html">sec-2-6</a></td>
+</tr>
+<tr>
+<td><code>atomdenscut</code></td>
+<td>设为 0 关闭小贡献跳过；默认 H/C/N/O 对某点贡献小于 0.00001 时不计算</td>
+<td><a href="sec-2-6-real-space-functions.html">sec-2-6</a></td>
+</tr>
+<tr>
+<td><code>RDG_maxrho</code></td>
+<td>默认 0.05：电子密度大于此值处 RDG 置 100.0 以屏蔽成键区；设为 0 取消该处理</td>
+<td><a href="sec-3-23-visual-study-of-weak-interaction.html">sec-3-23</a></td>
+</tr>
+<tr>
+<td><code>RDGprodens_maxrho</code></td>
+<td>上条在 promolecular 近似下的对应物，默认阈值 0.1</td>
+<td><a href="sec-3-23-visual-study-of-weak-interaction.html">sec-3-23</a></td>
+</tr>
+<tr>
+<td><code>refxyz</code></td>
+<td>参考点坐标（Bohr），如 <code>0.0,0.0,-0.3</code>；影响关联空穴、<code>srcfuncmode=1</code> 的源函数、模糊空间参考点</td>
+<td><a href="sec-2-6-real-space-functions.html">sec-2-6</a></td>
+</tr>
+<tr>
+<td><code>paircorrtype</code></td>
+<td>对密度 Γ 考虑的相关：1 为 Fermi（交换）空穴，2 为 Coulomb 空穴，3 为总关联空穴；单行列式下 1 与 3 等价、2 无意义</td>
+<td><a href="sec-4-3-output-and-plot-various-properties-in-a-line.html">sec-4-3</a></td>
+</tr>
+<tr>
+<td><code>pairfunctype</code></td>
+<td>实空间函数 17（关联空穴/交换-关联密度/关联因子）算哪个函数和哪个自旋；闭壳层 α/β 相同</td>
+<td><a href="sec-4-3-output-and-plot-various-properties-in-a-line.html">sec-4-3</a></td>
+</tr>
+<tr>
+<td><code>iALIEdecomp</code></td>
+<td>设为 1 时主功能 1 除输出平均局域电离能外还输出每个占据 MO 的贡献</td>
+<td><a href="sec-2-6-real-space-functions.html">sec-2-6</a></td>
+</tr>
+<tr>
+<td><code>srcfuncmode</code></td>
+<td>源函数模式：1（默认）以 <code>refxyz</code> 为固定参考点、<code>r'</code> 为变量；2 反之</td>
+<td><a href="sec-2-6-real-space-functions.html">sec-2-6</a></td>
+</tr>
+<tr>
+<td><code>uservar</code></td>
+<td>通用数值变量：IRI 参数 <code>a</code>（0 即推荐值 1.1）；局域温度分母密度阈值；910~914 原子权重函数的指定原子；KED 附加 <code>∇²ρ/uservar</code> 项</td>
+<td><a href="sec-2-7-user-defined-real-space-function.html">sec-2-7</a></td>
+</tr>
+<tr>
+<td><code>IRI_rhocut</code></td>
+<td>默认 0.00005 a.u.：ρ 小于等于此值处 IRI 置大值 5.0；设为 0 取消（做 basin/拓扑分析时应设 0）</td>
+<td><a href="sec-3-23-visual-study-of-weak-interaction.html">sec-3-23</a></td>
+</tr>
+<tr>
+<td><code>ivdwprobe</code></td>
+<td>vdW 势探针原子的元素序号，默认 6（碳）；设为 0 则进入功能时手动输入元素名</td>
+<td><a href="sec-3-23-visual-study-of-weak-interaction.html">sec-3-23</a></td>
+</tr>
+<tr>
+<td><code>iuserfunc</code></td>
+<td>自定义实空间函数序号：12 为核吸引势能密度，3 为 r² 期望密度，33/34 为 PAEM 的波函数/DFT 版 XC 势，92/93/94 为 vdW/排斥/色散势，98 为 Δf_w，-1 为载入 cube 的插值函数，-3 为 B 样条插值，10000+i 指向第 i 个主实空间函数</td>
+<td><a href="sec-2-7-user-defined-real-space-function.html">sec-2-7</a></td>
+</tr>
+<tr>
+<td><code>steric_addminimal</code></td>
+<td>空间位阻势分母中的小量 δ；设为 0 则恢复原始表达式</td>
+<td><a href="sec-2-7-user-defined-real-space-function.html">sec-2-7</a></td>
+</tr>
+<tr>
+<td><code>ispecial</code></td>
+<td>多功能模式开关：决定 Pauli 势算法（0 为能量分解式，1 为原始定义）；为 1 时输出原子四极矩、偶极前平移使核贡献为零、用自定义函数代密度；模糊/CDFT 的 AOM 含全部轨道须设为 3</td>
+<td><a href="sec-2-7-user-defined-real-space-function.html">sec-2-7</a></td>
+</tr>
+<tr>
+<td><code>iDFTxcsel</code></td>
+<td>XC 泛函选择：0-29 为只 X 部分，30-69 为只 C 部分，70-99 为整个 XC（如 32 对应 LYP 相关）</td>
+<td><a href="sec-2-7-user-defined-real-space-function.html">sec-2-7</a></td>
+</tr>
+<tr>
+<td><code>iKEDsel</code></td>
+<td>动能密度形式选择（自定义函数 1200/1210、Pauli 相关量用；原始定义 Pauli 势目前只支持 3、5、7）</td>
+<td><a href="sec-2-7-user-defined-real-space-function.html">sec-2-7</a></td>
+</tr>
+<tr>
+<td><code>graphformat</code></td>
+<td>导出图片格式，默认 <code>png</code>；线条为主的图建议 <code>pdf</code>/<code>svg</code>，嵌入 Office 常用 <code>wmf</code></td>
+<td><a href="sec-2-8-graphic-formats-and-image-size.html">sec-2-8</a></td>
+</tr>
+<tr>
+<td><code>graph1Dsize</code> / <code>graph2Dsize</code> / <code>graph3Dsize</code></td>
+<td>曲线图 / 二维图（填充、等值线、浮雕等）/ 三维图（等值面、结构）的图像高宽</td>
+<td><a href="sec-2-8-graphic-formats-and-image-size.html">sec-2-8</a></td>
+</tr>
+<tr>
+<td><code>symbolsize</code></td>
+<td>主功能 100 双函数散点图中点的大小</td>
+<td><a href="sec-3-100-other-functions-part-1.html">sec-3-100</a></td>
+</tr>
+<tr>
+<td><code>aug1D</code></td>
+<td>沿线绘图模式 1 两侧延长距离，默认 1.5 Bohr（也可用选项 0 临时改）</td>
+<td><a href="sec-3-4-outputting-and-plotting-specific-property-in-a-line.html">sec-3-4</a></td>
+</tr>
+<tr>
+<td><code>num1Dpoints</code></td>
+<td>线上取点数，默认 3000（ESP 自动降为六分之一）；光谱曲线的实际点数亦由此控制</td>
+<td><a href="sec-3-4-outputting-and-plotting-specific-property-in-a-line.html">sec-3-4</a></td>
+</tr>
+<tr>
+<td><code>Aug2D</code></td>
+<td>平面图作图区外延默认值，默认 4.5 Bohr（也可用选项 0 临时改）</td>
+<td><a href="sec-3-5-outputting-and-plotting-specific-property-in-a-plane.html">sec-3-5</a></td>
+</tr>
+<tr>
+<td><code>Aug3D</code></td>
+<td>格点盒子与轨道等值面盒子的外延默认值；Rydberg 等弥散轨道经 Other settings 临时增大（如 12 Bohr）</td>
+<td><a href="sec-3-2-showing-molecular-structure.html">sec-3-2</a></td>
+</tr>
+<tr>
+<td><code>pleatmlabsize</code> / <code>iatmlabtype</code></td>
+<td>平面图原子标签的大小 / 形式（原子序号还是元素名）</td>
+<td><a href="sec-3-5-outputting-and-plotting-specific-property-in-a-plane.html">sec-3-5</a></td>
+</tr>
+<tr>
+<td><code>disshowlabel</code></td>
+<td>距平面距离阈值：小于此值才显示原子标签（选项 17 可临时改），盆间路径距平面超此值部分不显示</td>
+<td><a href="sec-3-5-outputting-and-plotting-specific-property-in-a-plane.html">sec-3-5</a></td>
+</tr>
+<tr>
+<td><code>iatom_on_plane_far</code></td>
+<td>与远离作图平面的原子的显示控制相关（手册中英文原文在此处均截断，确切行为见 <code>settings.ini</code> 注释）</td>
+<td><a href="sec-3-5-outputting-and-plotting-specific-property-in-a-plane.html">sec-3-5</a></td>
+</tr>
+<tr>
+<td><code>nprevorbgrid</code></td>
+<td>主功能 0 轨道等值面默认格点数（Isosur. quality 可临时调高，注意当前等值面会被删除）</td>
+<td><a href="sec-3-2-showing-molecular-structure.html">sec-3-2</a></td>
+</tr>
+<tr>
+<td><code>isoRGB_same</code> / <code>isoRGB_oppo</code></td>
+<td>等值面正值部分 / 负值部分的默认 RGB（如 <code>1.0,0.0,0.0</code> 为纯红）</td>
+<td><a href="sec-3-2-showing-molecular-structure.html">sec-3-2</a></td>
+</tr>
+<tr>
+<td><code>bondRGB</code> / <code>atmlabRGB</code> / <code>atmcolorfile</code></td>
+<td>键连线 / 原子标签颜色与原子球颜色文件，改后重启生效</td>
+<td><a href="sec-3-2-showing-molecular-structure.html">sec-3-2</a></td>
+</tr>
+<tr>
+<td><code>CP_RGB_2D</code></td>
+<td>平面图上各类临界点的颜色设置</td>
+<td><a href="sec-4-4-output-and-plot-various-properties-in-a-plane.html">sec-4-4</a></td>
+</tr>
+<tr>
+<td><code>iplaneextdata</code></td>
+<td>设为 1 时平面格点数据不内部计算，改从外部纯文本文件载入（各点坐标自动输出，可用 cubegen 等第三方工具算值）</td>
+<td><a href="sec-3-5-outputting-and-plotting-specific-property-in-a-plane.html">sec-3-5</a></td>
+</tr>
+<tr>
+<td><code>isurfstyle</code></td>
+<td>盆间表面描绘方式：1 为路径束，2（默认）为实心面，3 少用</td>
+<td><a href="sec-3-14-topology-analysis.html">sec-3-14</a></td>
+</tr>
+<tr>
+<td><code>MCvolmethod</code></td>
+<td>vdW 体积区域定义：(1) 原子 vdW 球叠加（快、无需波函数）；(2) 电子密度等值面包围区（0.001 孤立体系，0.002 凝聚相）</td>
+<td><a href="sec-3-100-other-functions-part-1.html">sec-3-100</a></td>
+</tr>
+<tr>
+<td><code>bndordthres</code></td>
+<td>键级打印阈值，默认 0.05；DA 加成早期弱键须设为 0.0 才输出</td>
+<td><a href="sec-3-11-bond-order-analysis.html">sec-3-11</a></td>
+</tr>
+<tr>
+<td><code>compthres</code></td>
+<td>轨道成分打印阈值，默认只打印大于 0.5% 的项；激发态 MO 跃迁打印阈值为其 10 倍（即 5%）</td>
+<td><a href="sec-3-10-orbital-composition-analysis.html">sec-3-10</a></td>
+</tr>
+<tr>
+<td><code>compthresCDA</code></td>
+<td>CDA 片段轨道贡献显示阈值，默认只显示贡献 ≥1% 的片段轨道</td>
+<td><a href="sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram.html">sec-3-19</a></td>
+</tr>
+<tr>
+<td><code>iCDAcomp</code></td>
+<td>改为 2 则用 SCPA 代替 Mulliken 算片段轨道组成（组成恒正且不超过 100%）</td>
+<td><a href="sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram.html">sec-3-19</a></td>
+</tr>
+<tr>
+<td><code>iMCBOtype</code></td>
+<td>设为 1 直接打印正反向平均的多中心键级；设为 2 直接打印多中心指数 MCI</td>
+<td><a href="sec-3-11-bond-order-analysis.html">sec-3-11</a></td>
+</tr>
+<tr>
+<td><code>ishowptESP</code></td>
+<td>设为 0 则主功能 1 与拓扑分析的临界点性质中跳过最耗时的 ESP 计算</td>
+<td><a href="sec-3-3-outputting-all-properties-at-a-point.html">sec-3-3</a></td>
+</tr>
+<tr>
+<td><code>ibasinlocmin</code></td>
+<td>设为 1 则 basin 分析定位极小值（排斥子）而非极大值，用于找 RDG/IRI 极小</td>
+<td><a href="sec-3-20-basin-analysis.html">sec-3-20</a></td>
+</tr>
+<tr>
+<td><code>ispheratm</code></td>
+<td>设为 0 则跳过 promolecular 计算前的原子电子密度球化步骤</td>
+<td><a href="sec-3-7-custom-operation-promolecular-and-deformation-properties.html">sec-3-7</a></td>
+</tr>
+<tr>
+<td><code>SpherIVgroup</code></td>
+<td>设为 1 则 IV A 族原子也用复制旋转单占据轨道法球化，而非默认的 sp³ 组态</td>
+<td><a href="sec-3-7-custom-operation-promolecular-and-deformation-properties.html">sec-3-7</a></td>
+</tr>
+<tr>
+<td><code>iloadGaugeom</code></td>
+<td>从 Gaussian 输出文件加载几何：1（默认）为输入取向，2 为标准取向</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5</a></td>
+</tr>
+<tr>
+<td><code>iloadORCAgeom</code></td>
+<td>设为 1（默认）则从 ORCA 输出文件加载最终几何</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5</a></td>
+</tr>
+<tr>
+<td><code>ifchprog</code></td>
+<td>较老版本（约 ≤5.0）Q-Chem 产生的 <code>.fchk</code> 载入前须设为 2</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5</a></td>
+</tr>
+<tr>
+<td><code>ishowchgtrans</code></td>
+<td>设为 1 则 ADCH/CM5 计算中输出原子间电荷转移细节</td>
+<td><a href="sec-3-9-population-analysis-and-calculation-of-atomic-charges.html">sec-3-9</a></td>
+</tr>
+<tr>
+<td><code>uESEinp</code></td>
+<td>设为 1 则 CM5 计算后生成 uESE/xESE 溶剂化模型输入（须在气相 B3LYP/def2-TZVP 下算 CM5）</td>
+<td><a href="sec-3-9-population-analysis-and-calculation-of-atomic-charges.html">sec-3-9</a></td>
+</tr>
+<tr>
+<td><code>maxloadexc</code></td>
+<td>非零且激发态数超限时只载入前该数目个态（如 5），加速跃迁偶极矩与 SOS 计算</td>
+<td><a href="sec-3-21-electron-excitation-analysis.html">sec-3-21</a></td>
+</tr>
+<tr>
+<td><code>NICSnptlim</code></td>
+<td>每个 Gaussian NMR 输入文件的原子数（真实+Bq）上限，默认 8000；G09 老版本须配 <code>guess=huckel</code> 否则须设很小（如 1000）</td>
+<td><a href="sec-3-28-electron-delocalization-and-aromaticity-analyses.html">sec-3-28</a></td>
+</tr>
+<tr>
+<td><code>iprintLMOorder</code></td>
+<td>设为 1 则定域轨道成分按原子/原子对顺序打印，便于找目标键的 LMO</td>
+<td><a href="sec-4-19-orbital-localization-analysis.html">sec-4-19</a></td>
+</tr>
+<tr>
+<td><code>IGMvdwscl</code></td>
+<td>IGMH/mIGM/IGM 加速：只算落在两以上片段缩放 vdW 球重叠区内的格点（如设 2.0，此时只能画 δg_inter）</td>
+<td><a href="sec-4-20-visual-study-of-weak-interactions.html">sec-4-20</a></td>
+</tr>
+<tr>
+<td><code>amIGMvdwscl</code></td>
+<td>aIGM/amIGM 加速的片段 1 缩放 vdW 半径因子，默认 2；设为 0 关闭加速</td>
+<td><a href="sec-4-20-visual-study-of-weak-interactions.html">sec-4-20</a></td>
+</tr>
+<tr>
+<td><code>readEDF</code> / <code>isupplyEDF</code></td>
+<td><code>readEDF</code> 从 1 改为 0 则含赝势的 <code>.wfx</code> 不从其 EDF 字段读内 Post Hollis 数据而用内置库；<code>isupplyEDF</code> 设为 0 关闭从内置 EDF 库自动补充，设为 1 则从原子 <code>.wfx</code> 借用 EDF</td>
+<td><a href="sec-6-4-details-about-supplying-inner-core-electron-density.html">sec-6-4</a></td>
+</tr>
+<tr>
+<td><code>ESPrhoiso</code></td>
+<td>设为大于 0 的值（如 0.001）则只对该电子密度等值面附近格点算 ESP，其余置 0，大幅降 ESP 着色 vdW 面代价</td>
+<td><a href="sec-4-A-special-topics-and-advanced-tutorials.html">sec-4-A</a></td>
+</tr>
+<tr>
+<td><code>imolsurparmode</code></td>
+<td>局域分子表面分析的划分模式，直接影响结果（教程例用 <code>imolsurparmode=1</code>）</td>
+<td><a href="sec-4-12-quantitative-analysis-of-molecular-surface.html">sec-4-12</a></td>
+</tr>
+<tr>
+<td><code>isilent</code></td>
+<td>由 0 改为 1（等价于命令行 <code>-silent</code>）则运行中禁止自动显示任何图形/GUI</td>
+<td><a href="sec-5-2-running-multiwfn-in-silent-mode.html">sec-5-2</a></td>
+</tr>
+<tr>
+<td><code>ifdoPBCxyz</code></td>
+<td>X/Y/Z 三方向是否考虑周期性，如 <code>1,1,0</code> 忽略 Z 方向（二维平行 XY 体系推荐，沿 Z 一维链推荐 <code>0,0,1</code>）</td>
+<td><a href="sec-2-9-analysis-of-periodic-systems.html">sec-2-9</a></td>
+</tr>
+<tr>
+<td><code>PBCnxnynz</code></td>
+<td>X/Y/Z 三方向各考虑多少邻镜像，默认 <code>1,1,1</code>；原胞很小（如金刚石 3.5 Å）建议 <code>2,2,2</code></td>
+<td><a href="sec-2-9-analysis-of-periodic-systems.html">sec-2-9</a></td>
+</tr>
+</tbody></table>
+<h2 id="程序关键词">程序关键词</h2>
+<table>
+<thead>
+<tr>
+<th>参数/关键词</th>
+<th>含义与取值</th>
+<th>出处</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>nosymm</code></td>
+<td>禁止 Gaussian 自动重定向/标准取向；凡是要求片段与复合物坐标严格一致的任务都必须加，包括碎片组合初猜、分子间轨道重叠、ETS-NOCV 片段单点、密度差/差值平面图与等值面、CDA 片段计算、超胞 PBC 平移矢量核对</td>
+<td><a href="sec-3-100-other-functions-part-1.html">sec-3-100-other-functions-part-1.md</a></td>
+</tr>
+<tr>
+<td><code>pop=full</code></td>
+<td>Gaussian 路线关键词，使输出文件中打印全部轨道信息；碎片组合初猜要求每个碎片计算都指定 <code>nosymm</code> 和 <code>pop=full</code>；单体轨道重叠要求两单体输出指定 <code>nosymm pop=full</code>；仅画 TDOS 时可用带 <code>pop=full</code> 的 Gaussian 单点输出代替波函数文件</td>
+<td><a href="sec-3-100-other-functions-part-1.html">sec-3-100-other-functions-part-1.md</a></td>
+</tr>
+<tr>
+<td><code>pop=nboread</code></td>
+<td>告诉 Gaussian 把 <code>$NBO ... $END</code> 段转交给内嵌 NBO 模块；是使用 NAO 基分析（NAO 轨道组成、NAO 基多中心键级与 Wiberg 分解、AdNDP、Yoshizawa 输运路径、NBO plot 文件）的前提路线关键词</td>
+<td><a href="sec-3-11-bond-order-analysis.html">sec-3-11-bond-order-analysis.md</a></td>
+</tr>
+<tr>
+<td><code>$NBO DMNAO $END</code></td>
+<td>写在 Gaussian 输入文件几何之后、空行隔开的 NBO 输入段，使 NBO 打印 NAO 基下的密度矩阵；选项 -2（NAO 基多中心键级）、选项 9（NAO 基 Wiberg 分解）、AV1245/AVmin NAO 版、AdNDP 都要求此关键词，且此时不可用 <code>.fch</code> 作输入</td>
+<td><a href="sec-3-11-bond-order-analysis.html">sec-3-11-bond-order-analysis.md</a></td>
+</tr>
+<tr>
+<td><code>#p PBE1PBE/6-311G** pop=nboread</code> + <code>$NBO DMNAO $END</code></td>
+<td>NAO 基多中心键级/Wiberg 分解的标准 Gaussian 输入写法示例：路线行指定 <code>pop=nboread</code>，几何后空行写 <code>$NBO DMNAO $END</code>；输出 <code>.out</code>（不是 <code>.fch</code>）作为 Multiwfn 输入</td>
+<td><a href="sec-3-11-bond-order-analysis.html">sec-3-11-bond-order-analysis.md</a></td>
+</tr>
+<tr>
+<td><code>NAOMO</code>（<code>$NBO NAOMO $END</code>）</td>
+<td>NBO 输入关键词，使 NBO 输出 NAO 基下的 MO 系数矩阵；默认 NBO 不输出此矩阵，必须在 <code>$NBO ... $END</code> 间手动添加；对应 Gaussian 输入示例为 <code>#P b3lyp/6-31g* pop=nboread</code> 路线加尾行 <code>$NBO NAOMO $END</code>，且任务须为单点任务</td>
+<td><a href="sec-3-10-orbital-composition-analysis.html">sec-3-10-orbital-composition-analysis.md</a></td>
+</tr>
+<tr>
+<td><code>AONAO</code>（<code>$NBO AONAO DMNAO $END</code>）</td>
+<td>NBO 输入关键词，输出原始基函数到 NAO 的变换矩阵；AdNDP 要求 Gaussian 路线加 <code>pop=nboread</code>、几何后加 <code>$NBO AONAO DMNAO $END</code>，启动 Multiwfn 时载入 <code>.out</code> 而非 <code>.fch</code>，可视化 AdNDP 轨道另需同名 <code>.fch</code></td>
+<td><a href="sec-3-17-adaptive-natural-density-partitioning-analysis.html">sec-3-17-adaptive-natural-density-partitioning-analysis.md</a></td>
+</tr>
+<tr>
+<td><code>$NBO archive file=C:\Li5+ $END</code></td>
+<td>NBO 输入关键词写法示例（<code>.gjf</code> 末行改写），使 Gaussian 运行后产生 <code>.47</code> 文件（含 Fock 矩阵）；AdNDP 界面选项 16 输入该 <code>.47</code> 路径即可打印各已取 AdNDP 轨道能量</td>
+<td><a href="sec-4-14-adaptive-natural-density-partitioning-adndp-analysis.html">sec-4-14-adaptive-natural-density-partitioning-adndp-analysis.md</a></td>
+</tr>
+<tr>
+<td><code>$NBO plot file=C:\NH2COH $END</code></td>
+<td>NBO 输入关键词写法示例，与 <code>pop=nboread</code> 联用产生 <code>.31</code><del><code>.41</code> plot 文件；载入 <code>.31</code>（基函数信息）+ <code>.37</code>（NBO 信息）后可在主功能 0 查看 NBO/NAO/NHO（<code>.32</code></del><code>.40</code> 依次对应 PNAO/NAO/PNHO/NHO/PNBO/NBO/PNLMO/NLMO/MO）</td>
+<td><a href="sec-3-2-showing-molecular-structure.html">sec-3-2-showing-molecular-structure.md</a></td>
+</tr>
+<tr>
+<td><code>pop=saveNBO</code> / <code>pop=saveNLMO</code></td>
+<td>Gaussian 路线关键词，把 NBO/NLMO 存入 checkpoint，对应 <code>.fch</code> 可直接载入主功能 0 查看 NBO，或作为 LOBA/mLOBA 分析输入；HF/DFT 首行加 <code>saveNBOene</code>，post-HF 加 <code>density</code> 时首行加 <code>saveNBOocc</code></td>
+<td><a href="sec-3-2-showing-molecular-structure.html">sec-3-2-showing-molecular-structure.md</a></td>
+</tr>
+<tr>
+<td><code>bndidx</code></td>
+<td>NBO 程序关键词，打印 NAO 基 Wiberg 键级；Multiwfn 键级选项 -2 只输两个原子序号时的结果与 <code>bndidx</code> 打印值完全一致</td>
+<td><a href="sec-3-11-bond-order-analysis.html">sec-3-11-bond-order-analysis.md</a></td>
+</tr>
+<tr>
+<td>GENNBO / <code>.47</code> 文件</td>
+<td>独立 NBO 程序（又称 GENNBO）及其输入/输出文件；可在 <code>.47</code> 的 <code>$NBO...$END</code> 域中加入 <code>NAOMO</code> 后载入做 Yoshizawa 分析；AdNDP 轨道能量也可由 <code>.47</code> 的 <code>$FOCK</code> 提供；主功能 100 子功能 2 可导出 GENNBO 输入（<code>.47</code>）</td>
+<td><a href="sec-3-10-orbital-composition-analysis.html">sec-3-10-orbital-composition-analysis.md</a></td>
+</tr>
+<tr>
+<td><code>$FOCK</code>（<code>.47</code>）</td>
+<td><code>.47</code> 文件中的 Fock 矩阵段；AdNDP 选项 16 算轨道能量时，能量可由 Fock 矩阵文本或 <code>.47</code> 的 <code>$FOCK</code> 提供</td>
+<td><a href="sec-3-17-adaptive-natural-density-partitioning-analysis.html">sec-3-17-adaptive-natural-density-partitioning-analysis.md</a></td>
+</tr>
+<tr>
+<td><code>#P</code></td>
+<td>Gaussian 路线必须以 <code>#P</code> 开头才能在输出中记录 SCF 每步中间信息（监控 SCF 收敛、碎片组合 <code>new.gjf</code> 跑完取首末迭代能量都依赖它）；只写 <code>#</code> 则无中间信息</td>
+<td><a href="sec-3-100-other-functions-part-1.html">sec-3-100-other-functions-part-1.md</a></td>
+</tr>
+<tr>
+<td><code>SCF=QC</code> / <code>SCF=XQC</code>（不兼容 <code>SCF=DM</code>）</td>
+<td>SCF 收敛监控功能兼容的 Gaussian SCF 算法关键词；<code>SCF=DM</code> 不兼容</td>
+<td><a href="sec-3-100-other-functions-part-1.html">sec-3-100-other-functions-part-1.md</a></td>
+</tr>
+<tr>
+<td><code>IOp(3/33=1)</code>（<code>IOp(3/33=1) nosymm guess=only</code>）</td>
+<td>分子间轨道重叠积分的二聚体 Gaussian 输出路线要求；Multiwfn 从该文件读取重叠矩阵，MO 本身不用（<code>guess=only</code> 只存初猜）</td>
+<td><a href="sec-3-100-other-functions-part-1.html">sec-3-100-other-functions-part-1.md</a></td>
+</tr>
+<tr>
+<td><code>guess=only</code> / <code>guess(save,only)</code> / <code>guess=read</code></td>
+<td>二聚体轨道重叠计算中二聚体用 <code>guess(save,only)</code> 只存初猜；碎片组合初猜输出的 <code>new.gjf</code> 靠读入碎片轨道作初猜；二聚体中单体顺序与载入顺序须一致</td>
+<td><a href="sec-4-100-other-functions-part-1.html">sec-4-100-other-functions-part-1.md</a></td>
+</tr>
+<tr>
+<td><code>IOp(3/32=2)</code></td>
+<td>用 Gaussian 跑弥散函数体系的 <code>new.gjf</code> 时若在 Link401 出错，加上此关键词再试</td>
+<td><a href="sec-3-100-other-functions-part-1.html">sec-3-100-other-functions-part-1.md</a></td>
+</tr>
+<tr>
+<td><code>IOp(9/40=4)</code> / <code>IOp(9/40=5)</code></td>
+<td>Gaussian 激发计算输出组态系数的 IOp：主功能 18 空穴–电子分析要求加 <code>IOp(9/40=4)</code>（否则只载入极少组态，空穴/电子积分偏离 1.0）；子功能 5 跃迁偶极矩/SOS 若 Normalization 偏离期望则改用 <code>IOp(9/40=5)</code> 输出更多组态</td>
+<td><a href="sec-3-21-electron-excitation-analysis.html">sec-3-21-electron-excitation-analysis.md</a></td>
+</tr>
+<tr>
+<td><code>TPrint 1E-8</code> / <code>TPrint 1E-10</code></td>
+<td>ORCA 端对应 <code>IOp(9/40)</code> 的组态输出阈值：空穴–电子分析用 <code>TPrint 1E-8</code>，跃迁偶极矩 Normalization 不对时改用 <code>TPrint 1E-10</code></td>
+<td><a href="sec-3-21-electron-excitation-analysis.html">sec-3-21-electron-excitation-analysis.md</a></td>
+</tr>
+<tr>
+<td><code>freq</code> / <code>freq=raman</code> / <code>freq=VCD</code> / <code>freq=ROA</code> / <code>freq=anharm</code> / <code>freq=intmodes</code></td>
+<td>主功能 11 光谱输入的 Gaussian 频率任务关键词：<code>freq</code> 画 IR，<code>freq=raman</code> 画 Raman，<code>freq=VCD</code>/<code>freq=ROA</code> 画 VCD/ROA，<code>freq=anharm</code> 为非谐（Multiwfn 会提示选非谐数据），<code>freq=intmodes</code> 输出内坐标振动模式供 PVS/PVDOS-RIC 用</td>
+<td><a href="sec-3-13-plotting-spectra.html">sec-3-13-plotting-spectra.md</a></td>
+</tr>
+<tr>
+<td><code>CPHF=rdfreq</code>（几何后空行写入射光频率）</td>
+<td>预共振 Raman 的 Gaussian 任务关键词：<code>freq=raman</code> 另加 <code>CPHF=rdfreq</code>，并在几何后空行写入射光频率如 <code>300nm 400nm 500nm</code>；ROA 任务同样在几何后空行指定入射频率</td>
+<td><a href="sec-3-13-plotting-spectra.html">sec-3-13-plotting-spectra.md</a></td>
+</tr>
+<tr>
+<td><code>polar</code> + <code>CPHF=RdFreq</code> / <code>DCSHG</code>（几何后给频率，输入须用 <code>#P</code>）</td>
+<td>Gaussian（超）极化率任务关键词：跑 <code>polar</code> 任务输入须用 <code>#P</code>；频率相关计算需在几何后给频率并用 <code>CPHF=RdFreq</code>/<code>DCSHG</code>，再进主功能 24 子功能 1 解析</td>
+<td><a href="sec-3-27-hyperpolarizability-analysis.html">sec-3-27-hyperpolarizability-analysis.md</a></td>
+</tr>
+<tr>
+<td><code>ExtraLinks=L608</code></td>
+<td>Shubin Liu 能量分解（主功能 21 子功能 2）要求的 Gaussian 输出：输入为 <code>.fch/.fchk</code> 加含 <code>ExtraLinks=L608</code> 分解量的 Gaussian 输出；输入文件末尾需按泛函写 <code>IOp(3/74)</code> 值</td>
+<td><a href="sec-3-24-energy-decomposition-analysis.html">sec-3-24-energy-decomposition-analysis.md</a></td>
+</tr>
+<tr>
+<td><code>pop=MK</code> / <code>pop=CHELPG</code> + <code>IOp(6/33=2)</code>，<code>IOp(6/42=x)</code></td>
+<td>RESP 拟合直接从 Gaussian 输出载入拟合点+ESP 的任务关键词组合；<code>IOp(6/42=x)</code> 设 MK 点密度，建议 <code>x=6</code> 对应 Multiwfn 默认</td>
+<td><a href="sec-3-9-population-analysis-and-calculation-of-atomic-charges.html">sec-3-9-population-analysis-and-calculation-of-atomic-charges.md</a></td>
+</tr>
+<tr>
+<td>ORCA 激发/光谱输入：<code>%tddft nroots 20 TDA false end</code>，<code>dosoc true</code>；<code>%elprop Polar 1 end</code> + <code>numfreq</code>；<code>%freq doVCD true end</code></td>
+<td>主功能 11 UV-Vis/ECD 要求 ORCA TDDFT 输出（<code>TDA false</code> 关掉默认 TDA，SOC 用 <code>dosoc true</code>，sTDA/sTD-DFT 亦支持）；Raman 需 <code>%elprop Polar 1 end</code> + <code>numfreq</code>，VCD 需 <code>%freq doVCD true end</code>；ORCA SOC-TDDFT 输出可选载入 SOC 修正数据</td>
+<td><a href="sec-3-13-plotting-spectra.html">sec-3-13-plotting-spectra.md</a></td>
+</tr>
+<tr>
+<td>ORCA NMR 输入：<code>! B3LYP/G 6-31G* NMR cpcm(chloroform) RIJK autoaux</code></td>
+<td>ORCA NMR 光谱输入关键词示例；Gaussian NMR 示例为 <code># B972/def2tzvp scrf=solvent=chloroform NMR</code>；CP2K NMR 用 <code>.data</code> 文件</td>
+<td><a href="sec-3-13-plotting-spectra.html">sec-3-13-plotting-spectra.md</a></td>
+</tr>
+<tr>
+<td>sTDA 的 <code>tda.dat</code>；xtb 输出；BDF 输出；CP2K TDDFPT 输出</td>
+<td>主功能 11 UV-Vis/ECD 除 Gaussian/ORCA 外还支持的激发计算输出：sTDA 的 <code>tda.dat</code>、xtb 输出、BDF TDDFT 输出、CP2K TDDFPT 输出；注意勿用 <code>.fch/.molden/.wfn</code> 作光谱输入</td>
+<td><a href="sec-3-13-plotting-spectra.html">sec-3-13-plotting-spectra.md</a></td>
+</tr>
+<tr>
+<td><code>5d</code>（混合基组）/ <code>TV</code>（PBC 平移矢量）</td>
+<td>CDA/ETS-NOCV 混合基组计算须加 <code>5d</code>（与片段计算一致）；Gaussian PBC 输入用 <code>TV</code> 给平移矢量（路线如 <code>#P PBEPBE/3-21g/Auto SCF=Tight</code>，再 <code>formchk</code> 得 <code>graphene.fch</code>）；若 PBC 未加 <code>nosymm</code> 则以 <code>.fch</code> 的 Translation vectors 为准</td>
+<td><a href="sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram.html">sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram.md</a></td>
+</tr>
+<tr>
+<td><code>$coord</code> / <code>$periodic</code> / <code>$lattice</code>（Turbomole coordination 文件）</td>
+<td>纯文本文件第一行为 <code>&amp;coord</code> 即被当作 Turbomole coordination 文件加载；<code>$coord</code> 段提供原子信息，若有 <code>$periodic</code> 和 <code>$lattice</code> 还提供晶胞信息</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.gms</code>（GAMESS-US/Firefly 输出改扩展名）</td>
+<td>把 GAMESS-US 或 Firefly 输出文件扩展名改为 <code>.gms</code>，Multiwfn 才能识别；点群不是 C1 时无法处理；作用类似于 <code>.molden</code> 和 <code>.fch</code>（提供坐标、GTF 和基函数信息）</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>formchk</code> / <code>.fch</code>与<code>.fchk</code>无区别</td>
+<td>Gaussian 的 checkpoint（<code>.chk</code>）须经 <code>formchk</code> 转为格式化文件；<code>.fch</code> 与 <code>.fchk</code> 内容无区别，只是 Windows/Linux 版 <code>formchk</code> 默认扩展名不同；想让 Multiwfn 直接打开 <code>.chk</code> 须在 <code>settings.ini</code> 设 <code>formchkpath</code></td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>field=z+300</code>（外电场单点）</td>
+<td>电荷位移曲线 CDC 实例中施加外电场的 Gaussian 关键词写法：<code>field=z+300</code> 施加电场，分别算有场/无场两套 <code>.wfn</code> 再积分得 CDC</td>
+<td><a href="sec-4-13-process-grid-data.html">sec-4-13-process-grid-data.md</a></td>
+</tr>
+<tr>
+<td>基组写法 <code>6-31G*</code> / <code>6-311G**</code> / <code>def2-TZVP</code> / <code>aug-cc-pVTZ</code> / <code>/Auto</code></td>
+<td>手册实例高频基组与 PBC 基组写法：AdNDP 对基组不敏感（HF/STO-3G 已够）；ETS-NOCV/CDA 通常 def2-TZVP 这类 3-zeta 足够、勿用弥散与隐式溶剂；PBC 路线示例含 <code>/Auto</code>（如 <code>#P PBEPBE/3-21g/Auto SCF=Tight</code>）</td>
+<td><a href="sec-3-26-ets-nocv-analysis.html">sec-3-26-ets-nocv-analysis.md</a></td>
+</tr>
+<tr>
+<td><code>multiple.txt</code>（光谱加权/同图，NMR 文件名须含 <code>multiple</code>）</td>
+<td>主功能 11 多体系同图与构象加权光谱的输入文件名（其它文件名不被识别），每行“文件路径 权重或图例”；NMR 加权文件名须含 <code>multiple</code>（如 <code>valine_multiple.txt</code>），且各体系原子数相同</td>
+<td><a href="sec-3-13-plotting-spectra.html">sec-3-13-plotting-spectra.md</a></td>
+</tr>
+</tbody></table>
+<h2 id="环境变量与文件格式">环境变量与文件格式</h2>
+<table>
+<thead>
+<tr>
+<th>参数/关键词</th>
+<th>含义与取值</th>
+<th>出处</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Multiwfnpath</code></td>
+<td>Multiwfn 安装目录。<code>settings.ini</code> 查找顺序：当前文件夹 → <code>Multiwfnpath</code> 所指路径 → 默认设置；<code>GUIsettings.ini</code> 的写入/优先载入位置也受其影响。Linux 下在 <code>~/.bashrc</code> 中如 <code>export Multiwfnpath=/sob/Multiwfn_3.6_bin_Linux</code>。</td>
+<td><a href="sec-2-3-files-of-multiwfn.html">sec-2-3-files-of-multiwfn.md</a></td>
+</tr>
+<tr>
+<td><code>PATH</code>（Linux，含 Multiwfn 目录）</td>
+<td>把 Multiwfn 目录加入 <code>PATH</code> 后可在任意位置用 <code>Multiwfn</code> 命令启动，如 <code>export PATH=$PATH:/sob/Multiwfn_3.6_bin_Linux</code>；之后需 <code>chmod +x /sob/Multiwfn_3.6_bin_Linux/Multiwfn</code> 加可执行权限。</td>
+<td><a href="sec-2-1-install.html">sec-2-1-install.md</a></td>
+</tr>
+<tr>
+<td><code>PATH</code>（Windows，含 Gaussian 目录）</td>
+<td>配置 IRC 等需调用 Gaussian 的教程前，除新建 <code>GAUSS_EXEDIR</code> 外还要把 Gaussian 安装目录加入 <code>PATH</code> 环境变量，否则 Windows 下无法正常调用 Gaussian。</td>
+<td><a href="sec-4-A-special-topics-and-advanced-tutorials.html">sec-4-A-special-topics-and-advanced-tutorials.md</a></td>
+</tr>
+<tr>
+<td><code>OMP_STACKSIZE</code></td>
+<td>每个 OpenMP 线程的栈大小。Linux 在 <code>~/.bashrc</code> 中设 <code>export OMP_STACKSIZE=1000M</code> 并配 <code>ulimit -s unlimited</code>（无效则改用 <code>ulimit -Sn unlimited</code>）；MacOS 在 <code>.profile</code> 中设 <code>export OMP_STACKSIZE=64000000</code>（单位字节）；大体系并行崩溃时应增大它（Windows 版则增大 <code>settings.ini</code> 的 <code>ompstacksize</code>）。</td>
+<td><a href="sec-2-1-install.html">sec-2-1-install.md</a></td>
+</tr>
+<tr>
+<td><code>DISPLAY</code></td>
+<td>纯文本远程连接服务器用 Multiwfn 时若载入文件后卡住约两秒，在 <code>~/.bashrc</code> 中加入 <code>export DISPLAY=":0"</code>。</td>
+<td><a href="sec-2-1-install.html">sec-2-1-install.md</a></td>
+</tr>
+<tr>
+<td><code>GAUSS_EXEDIR</code></td>
+<td>Windows 下 Multiwfn 调用 Gaussian 的必需变量，值为 Gaussian 安装目录（如 <code>D:\study\g16w\</code>，假设 <code>g16.exe</code> 在其中），否则报 <code>No executable for file l1.exe</code>。前置条件是 <code>settings.ini</code> 的 <code>gaupath</code> 已设为 Gaussian 可执行文件实际路径。</td>
+<td><a href="sec-6-1-setting-up-running-environment-for-gaussian-in-windows.html">sec-6-1-setting-up-running-environment-for-gaussian-in-windows.md</a></td>
+</tr>
+<tr>
+<td><code>GAUSS_MEMDEF</code></td>
+<td>cubegen 可分配内存上限。大 <code>.fch</code>/<code>.fchk</code> 经 Multiwfn 调 cubegen 失败常因超过默认上限，分析前执行如 <code>export GAUSS_MEMDEF=4GB</code> 即可；它是 cubegen 崩溃三原因之二（另两项见 <code>nouseout</code> 行）。</td>
+<td><a href="sec-5-7-make-use-of-cubegen-utility-in-gaussian-package.html">sec-5-7-make-use-of-cubegen-utility-in-gaussian-package.md</a></td>
+</tr>
+<tr>
+<td><code>$SCR</code>（GAMESS-US）</td>
+<td>GAMESS-US 跑完后含 <code>.wfn</code> 格式波函数信息的 <code>.dat</code> 位于 <code>$SCR</code> 定义的目录（见 <code>rungms</code> 脚本），截取 <code>----- TOP OF INPUT FILE FOR BADER'S AIMPAC PROGRAM -----</code> 与 <code>----- END OF INPUT FILE FOR BADER'S AIMPAC PROGRAM -----</code> 之间内容存为 <code>.wfn</code>。</td>
+<td><a href="sec-4-prologue-and-generation-of-input-files.html">sec-4-prologue-and-generation-of-input-files.md</a></td>
+</tr>
+<tr>
+<td><code>.mwfn</code></td>
+<td>Multiwfn 自 3.7 定义的最理想波函数存储交换格式，严格、简洁、紧凑、可扩展；<code>.molden</code> 用得多时建议经主功能 100 子功能 2 转为 <code>.mwfn</code> 以加快加载。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.fch</code> / <code>.fchk</code> / <code>.chk</code></td>
+<td>Gaussian <code>formchk test.chk</code> 由 <code>%chk=test.chk</code> 生成；两者无区别（分别为 Windows/Linux 版 <code>formchk</code> 默认扩展名）。含虚轨道与基函数信息，比 <code>.wfn</code>/<code>.wfx</code> 丰富；<code>settings.ini</code> 设 <code>formchkpath</code> 后可直接载入 <code>.chk</code>（自动转后删除）；post-HF/TDDFT 默认仍是 HF/基态轨道，做相关分析须用主功能 200 子功能 16 生成自然轨道或带 <code>density</code> 重跑加 <code>guess (save,only,naturalorbitals) chkbasis</code> 并在首行写 <code>saveNO</code>；老 Q-Chem（≤5.0）的 <code>.fchk</code> 须设 <code>ifchprog=2</code>。</td>
+<td><a href="sec-4-prologue-and-generation-of-input-files.html">sec-4-prologue-and-generation-of-input-files.md</a></td>
+</tr>
+<tr>
+<td><code>.wfn</code></td>
+<td>AIM 波函数文件：原子坐标、元素、轨道能量、占据数、笛卡尔 GTF 展开系数，角动量至多 <code>f</code>（<code>g</code>/<code>h</code> 按给定 21~56 编号记录时可识别），不含虚轨道。Gaussian 用 <code>out=wfn</code>（坐标后空一行写目标路径如 <code>C:\otoboku\H2O.wfn</code>）生成；MCSCF 另加 <code>pop=no</code>；post-HF 须加 <code>density</code> 否则存的仍是 HF 轨道；早于 G09 B.01 的 ROHF/RODFT 任务单占据数误写 2.0，须手动把末处 <code>OCC NO =</code> 后改为 <code>1.0000000</code>。ORCA 用 <code>aim</code> 关键词或 <code>orca_2aim XXX</code> 由 <code>XXX.gbw</code> 生成（≥4.1 用 ECP 时生不成，更推荐 <code>.molden</code>）。</td>
+<td><a href="sec-4-prologue-and-generation-of-input-files.html">sec-4-prologue-and-generation-of-input-files.md</a></td>
+</tr>
+<tr>
+<td><code>.wfx</code></td>
+<td><code>.wfn</code> 扩展：更高精度、无限高 GTF 角动量，独有 EDF 段（S 型 GTF 拟合 ECP 内层密度）。Gaussian 用 <code>out=wfx</code>（G09 B.01 起）生成；仅电子密度及其梯度/Laplacian、局域信息熵、RDG、<code>Sign(λ₂)</code> 及密度/Laplacian 拓扑考虑 EDF，ESP 与动能密度、ELF 等不受 EDF 影响，重元素分析这些性质须用全电子或小核 ECP；非 Gaussian 程序的 <code>.wfx</code> 无 EDF 段。EDF 正确性校验：主功能 100 子功能 4 全空间积分密度应约等于总电子数。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.molden</code> / <code>.molden.input</code> / <code>molden.inp</code> / <code>MOLDEN</code></td>
+<td>通用波函数交换格式（含全部占/虚轨道系数、占据数、自旋、能量、对称性）。正式支持仅 Molpro、ORCA、xtb、Dalton、NWChem（球谐且 <code>noautosym</code>）、MRCC（球谐）、deMon2k、BDF、CP2K（球谐）；NWChem 必须球谐（<code>spherical</code>）且对称体系加 <code>noautosym</code>；ORCA 用 <code>orca_2mkl XX -molden</code> 由 <code>XX.gbw</code> 生成（或设 <code>orca_2mklpath</code> 直接载入 <code>.gbw</code>）；xtb 加 <code>--molden</code> 得 <code>molden.input</code>；MRCC 算完把 <code>MOLDEN</code> 改后缀；他程序文件先用附录 5 方法验波函数或经 <code>molden2aim</code>（<code>m2a.ini</code>）标准化。</td>
+<td><a href="sec-4-prologue-and-generation-of-input-files.html">sec-4-prologue-and-generation-of-input-files.md</a></td>
+</tr>
+<tr>
+<td><code>.molden</code> 的 ECP 核电荷处理</td>
+<td>Molden 不显式记录核电荷，Multiwfn 把 <code>[Atoms]</code> 段第三列原子序号当核电荷；用赝势时须手动改为价电子数（有效核电荷），或在文件头加 <code>[Nval]</code> 段（如 <code>Na 9</code> / <code>Cl 7</code>）；ORCA ≥6.0 的文件含 <code>[Pseudo]</code> 段且标题行有 <code>orca</code> 字样时自动正确。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.gbw</code></td>
+<td>ORCA 二进制波函数文件本身不是 Multiwfn 输入格式；把 <code>settings.ini</code> 的 <code>orca_2mklpath</code> 设为 ORCA 的 <code>orca_2mkl</code> 实际路径后可直接载入（另有 <code>examples/scripts/gbw2fch.sh</code> 批量转 <code>.fch</code> 供 cubegen 用）。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.gms</code></td>
+<td>GAMESS-US/Firefly 输出文件改后缀即得，提供坐标、GTF 与基函数信息；仅保证默认 NPRINT 的 HF/DFT/TDDFT 且点群 C1 能正常载入；示例输入/输出见 <code>GAMESS_US.inp</code> 与 <code>UKS_cc-pVDZ.gms</code>。</td>
+<td><a href="sec-4-prologue-and-generation-of-input-files.html">sec-4-prologue-and-generation-of-input-files.md</a></td>
+</tr>
+<tr>
+<td>NBO 绘图文件 <code>.31</code>~<code>.40</code></td>
+<td><code>.31</code> 记基函数信息，<code>.32</code>~<code>.40</code> 记 PNAO/NAO/PNHO/NHO/PNBO/NBO/PNLMO/NLMO/MO 系数；先输 <code>.31</code> 路径再输其一（同名可只输后缀）；只有 NBO/NLMO 轨道算实空间函数才有意义。Gaussian 端用 <code>pop=nboread</code> 加 <code>$NBO plot file=... $END</code> 或 <code>pop=saveNBO</code>（HF/DFT 首行另加 <code>saveNBOene</code>，post-HF 加 <code>density</code> 时加 <code>saveNBOocc</code>）产生。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.pdb</code> / <code>.xyz</code></td>
+<td>只提供原子坐标。<code>.xyz</code> 多帧只读第一帧；VMD 由 MD 轨迹导出的 <code>.xyz</code> 用模拟原子名时若同目录有同名 <code>.pdb</code> 则借用其元素名；<code>.mol</code>/<code>.mol2</code> 另有连接表，EEM 电荷计算需要它。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.mol</code> / <code>.sdf</code></td>
+<td>V2000 版，原子数与键数上限各 999；<code>.sdf</code> 为带附加信息的 <code>.mol</code> 外包装。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.mol2</code></td>
+<td>含连接表；EEM 电荷（主功能 7 选项 17）要求此类输入，离子体系先用选项 2 设净电荷。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.gro</code></td>
+<td>GROMOS/GROMACS 结构格式，只提供原子信息；按原子名加残基名猜元素，可能猜错，载入后须核对分子式。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.cif</code></td>
+<td>记录晶体结构的标准格式；必须显式给出对称操作，否则无法生成等效原子。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.chg</code></td>
+<td>自由格式纯文本：元素名（≤2 字符）、XYZ（Å，前三列）、电荷（第四列），空白分隔；载入显示总电荷与偶极矩；用途为在分子表面可视化原子电荷 ESP，或经主功能 7 子功能 <code>-2</code> 算库仑作用能。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.pqr</code></td>
+<td>类 <code>.pdb</code>，坐标列之后另有电荷列与半径列（小数位不限，空白分隔）；<code>REMARK</code> 段为注释，加载跳过。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.cub</code> / <code>.cube</code></td>
+<td>Gaussian 型 cube：记原子坐标加一套实空间函数或多套轨道格点数据；载入后主功能 0 看等值面、主功能 13 处理格点；主功能 5 后处理选项 2 导出。VMD、GaussView、VESTA 均支持。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.vti</code></td>
+<td>ParaView VTK Image Data，只支持 ASCII 标量数据；与 <code>.cub</code> 相似但不含原子信息。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.dx</code></td>
+<td>体积数据格式，如由 VMD Volmap 插件导出。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.grd</code></td>
+<td>DMol3 体积数据格式，不记录原子信息。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>.gjf</code>（Gaussian 输入）</td>
+<td>提供原子坐标、α/β 电子数（须笛卡尔坐标）；<code>Tv</code> 字段另提供晶胞信息。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td>Gaussian / ORCA 输出文件</td>
+<td>只提供原子信息。Gaussian 输出由 <code>iloadGaugeom=1</code>（默认，输入取向）/<code>2</code>（标准取向）控制载入最终几何与电子数；ORCA 输出由 <code>iloadORCAgeom=1</code>（默认）控制。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td>CP2K <code>.inp</code> / <code>.restart</code></td>
+<td>提供原子坐标与晶胞信息；原子须用 Å 笛卡尔坐标记录。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td>Quantum ESPRESSO <code>.inp</code> / <code>.in</code></td>
+<td>提供原子坐标与晶胞信息；只支持 <code>ibrav=0</code>。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td>Turbomole coordination 文件</td>
+<td>首行为 <code>&amp;coord</code> 的纯文本；<code>$coord</code> 段给原子信息，另有 <code>$periodic</code> 与 <code>$lattice</code> 时给晶胞信息。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td>VASP：<code>POSCAR</code> / <code>CHGCAR</code> / <code>CHG</code> / <code>ELFCAR</code> / <code>LOCPOT</code></td>
+<td>文件名须含相应字符串且无 <code>.in</code>/<code>.inp</code> 扩展名（如 <code>POSCAR_Si8</code>）。<code>POSCAR</code> 给晶胞与原子；<code>CHGCAR</code>/<code>CHG</code> 给电子密度（自旋极化兼记自旋密度）；<code>ELFCAR</code> 给 ELF；<code>LOCPOT</code> 给单电子外势（<code>LVHAR=.TRUE.</code> 为 ESP 负值，<code>.FALSE.</code> 为 PAEM）。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td>纯文本文件</td>
+<td>仅用于特殊功能，如 DOS/光谱绘制、带初猜 Gaussian 输入文件生成；文件名含 <code>multiple</code> 的加权文件、<code>MPP_SDP.txt</code> 等按各章节格式要求准备。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td>幽灵原子（<code>Bq</code> / 元素序号 0）</td>
+<td>任何波函数格式均允许：带基函数、无核电荷，元素序号记 0、元素名记 <code>Bq</code>，核电荷按零处理。</td>
+<td><a href="sec-2-5-input-files-and-wavefunction-types.html">sec-2-5-input-files-and-wavefunction-types.md</a></td>
+</tr>
+<tr>
+<td><code>molden2aim</code> 输出 <code>.wfn</code> 的 <code>charge</code> 字段</td>
+<td>该工具输出的 <code>charge</code> 是周期表序号而非有效核电荷（即使 用 ECP），与 Gaussian（ECP 下记有效核电荷，如 Lanl2DZ 下 Au 记 19.0）不一致；用 ECP 且算 ESP 时须手动改为有效核电荷；其 <code>g</code> 型 GTF 可被 Multiwfn 识别。</td>
+<td><a href="sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs.html">sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs.md</a></td>
+</tr>
+<tr>
+<td><code>Default.Rou</code>（Windows + Gaussian）</td>
+<td>Multiwfn 调 Gaussian 时在当前文件夹（而非 Gaussian 临时文件夹）找 <code>Default.Rou</code>；其中有重要设置（如默认 CPU 核心数）时须复制到当前文件夹才生效。</td>
+<td><a href="sec-6-1-setting-up-running-environment-for-gaussian-in-windows.html">sec-6-1-setting-up-running-environment-for-gaussian-in-windows.md</a></td>
+</tr>
+<tr>
+<td><code>nouseout</code>（cubegen 日志）</td>
+<td>cubegen 输出转存于当前文件夹 <code>nouseout</code>；调用 cubegen 后崩溃先查它。另两类常见原因：<code>.fch</code> 无波函数/缺预期密度矩阵/已损坏，或 cubegen 太旧与文件不兼容。</td>
+<td><a href="sec-5-7-make-use-of-cubegen-utility-in-gaussian-package.html">sec-5-7-make-use-of-cubegen-utility-in-gaussian-package.md</a></td>
+</tr>
+</tbody></table>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="PARAMS";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script>
+<script src="app.js"></script></body></html>

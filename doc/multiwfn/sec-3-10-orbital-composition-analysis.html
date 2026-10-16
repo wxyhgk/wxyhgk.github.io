@@ -1,0 +1,141 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.10 轨道成分分析 (8) · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="310-轨道成分分析-8"><strong>3.10 轨道成分分析 (8)</strong></h1>
+<p>注意，这里的&quot;轨道&quot;一词不限于分子轨道，例如，若输入文件带有自然键轨道 (NBO)，则被分析的是 NBO。有一篇很好的论文比较了各种轨道成分分析方法，见 <em>Acta Chim. Sinica</em>, <strong>69</strong>, 2393 (2011)（中文，<a href="http://sioc-journal.cn/Jwk_hxxb/CN/abstract/abstract340458.shtml">http://sioc-journal.cn/Jwk_hxxb/CN/abstract/abstract340458.shtml</a>）。</p>
+<p>无论你选择哪种轨道成分分析方法，若要求 Multiwfn 打印某轨道中各原子的成分，在输出中你会发现一个值&quot;轨道离域指数&quot; (ODI)。该值越低，轨道离域越强。当你要定量比较各轨道空间离域程度时，会发现该指数很有用。该 ODI 在<a href="sec-4-8-molecular-orbital-composition-analysis.html#485-%E9%80%9A%E8%BF%87%E8%BD%A8%E9%81%93%E7%A6%BB%E5%9F%9F%E6%8C%87%E6%95%B0odi%E5%AE%9A%E9%87%8F%E8%BD%A8%E9%81%93%E7%9A%84%E7%A9%BA%E9%97%B4%E7%A6%BB%E5%9F%9F%E7%A8%8B%E5%BA%A6">4.8.5节</a>有详细描述和示例。</p>
+<h2 id="3101-用-mullikenstout-politzer-和-scpa-方法输出特定轨道中的基函数壳层和原子成分-1-2-3"><strong>3.10.1 用 Mulliken、Stout-Politzer 和 SCPA 方法输出特定轨道中的基函数、壳层和原子成分 (1, 2, 3)</strong></h2>
+<p>Mulliken、SCPA 和 Stout-Politzer 方法支持将轨道分解为基函数、壳层和原子成分。实际上，我已在<a href="sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#395-ros--schuit-%E5%AE%9A%E4%B9%89%E7%9A%84%E4%BF%AE%E6%AD%A3-mulliken-%E5%8E%9F%E5%AD%90%E5%B8%83%E5%B1%85-scpa-7">3.9.5节</a>、<a href="sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#396-stout--politzer-%E5%AE%9A%E4%B9%89%E7%9A%84%E4%BF%AE%E6%AD%A3-mulliken-%E5%8E%9F%E5%AD%90%E5%B8%83%E5%B1%85-8">3.9.6节</a>和<a href="sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#397-bickelhaupt-%E5%AE%9A%E4%B9%89%E7%9A%84%E4%BF%AE%E6%AD%A3-mulliken-%E5%8E%9F%E5%AD%90%E5%B8%83%E5%B1%85-9">3.9.7节</a>介绍过相关理论，$\Theta_{i,a}$×100% 就是基函数 <em>a</em> 在轨道 <em>i</em> 中的成分，若将一个壳层内所有基函数的成分加起来就得到壳层成分，若将归属于同一原子的所有壳层的成分加起来就得到原子成分。</p>
+<p>这些方法依赖于基组展开，在当前 Multiwfn 版本中你必须用 .mwfn、.fch、.molden 或 .gms 作为输入文件。</p>
+<p>当你从主菜单进入&quot;轨道成分分析&quot;子菜单后，选择要用哪种方法做分解，然后输入轨道序号，结果会立即打印在屏幕上，你也可以输入 <em>-1</em> 打印所有轨道的基本信息以找到你感兴趣的那个。默认只打印成分大于 0.5% 的项，该阈值可通过 <em>settings.ini</em> 中的 &quot;compthres&quot; 调整。</p>
+<p>若 .mwfn/.fch/.molden 文件中存储的基函数是球谐函数型，打印的基函数标号形如 D+1、F-3 而非 XX、XYY。Multiwfn 用的球谐基函数标号与 Gaussian 程序完全相同，转换关系为：</p>
+<p>$\mathrm{D\ 0}=-0.5\cdot XX-0.5\cdot YY+ZZ$ 注：对应于 d $z^{2}$</p>
+<p>$\mathrm{D+1}=XZ$</p>
+<p>$\mathrm{D-1}=YZ$</p>
+<p>$\mathrm{D+2}=\sqrt{3}/2\cdot (XX-YY)$ 注：对应于 d( $x^{2}$ - $y^{2}$ )</p>
+<p>$\mathrm{D-2}=XY$</p>
+<p>$\mathrm{F\ 0}=-3/2/\sqrt{5}\cdot (XXZ+YYZ)+ZZZ$</p>
+<p>$\mathrm{F+1}=-\sqrt{3/8}\cdot XXX-\sqrt{3/40}\cdot XYY+\sqrt{6/5}\cdot XZZ$</p>
+<p>$\mathrm{F-1}=-\sqrt{3/40}\cdot XXY-\sqrt{3/8}\cdot YYY+\sqrt{6/5}\cdot YZZ$</p>
+<p>$\mathrm{F+2}=\sqrt{3}/2\cdot (XXZ-YYZ)$</p>
+<p>$\mathrm{F-2}=XYZ$</p>
+<p>$\mathrm{F+3}=\sqrt{5/8}\cdot XXX-3/\sqrt{8}\cdot XYY$</p>
+<p>$\mathrm{F-3}=3/\sqrt{8}\cdot XXY-\sqrt{5/8}\cdot YYY$</p>
+<p>$\mathrm{G\ 0}=ZZZZ+3/8\cdot (XXXX+YYYY)-3\cdot \sqrt{3/35}\cdot (XXZZ+YYZZ-1/4\cdot XXYY)$</p>
+<p>$\mathrm{G+1}=2\cdot \sqrt{5/14}\cdot XZZZ-3/2\cdot \sqrt{5/14}\cdot XXXZ-3/2/\sqrt{14}\cdot XYYZ$</p>
+<p>$\mathrm{G-1}=2\cdot \sqrt{5/14}\cdot YZZZ-3/2\cdot \sqrt{5/14}\cdot YYYZ-3/2/\sqrt{14}\cdot XXYZ$</p>
+<p>$\mathrm{G+2}=3\cdot \sqrt{3/28}\cdot (XXZZ-YYZZ)-\sqrt{5}/4\cdot (XXXX-YYYY)$</p>
+<p>$\mathrm{G-2}=3/\sqrt{7}\cdot XYZZ-\sqrt{5/28}\cdot (XXXY+XYYY)$</p>
+<p>$\mathrm{G+3}=\sqrt{5/8}\cdot XXXZ-3/\sqrt{8}\cdot XYYZ$</p>
+<p>$\mathrm{G-3}=-\sqrt{5/8}\cdot YYYZ+3/\sqrt{8}\cdot XXYZ$</p>
+<p>$\mathrm{G+4}=\sqrt{35}/8\cdot (XXXX+YYYY)-3/4\cdot \sqrt{3}\cdot XXYY$</p>
+<p>$\mathrm{G-4}=\sqrt{5}/2\cdot (XXXY-XYYY)$</p>
+<p>$\mathrm{H\ 0}=ZZZZZ-5/\sqrt{21}\cdot (XXZZZ+YYZZZ)+5/8\cdot (XXXXZ+YYYYZ)+\sqrt{15/7}/4\cdot XXYYZ$</p>
+<p>$\mathrm{H+1}=\sqrt{5/3}\cdot XZZZZ-3\cdot \sqrt{5/28}\cdot XXXZZ-3/\sqrt{28}\cdot XYYZZ+\sqrt{15}/8\cdot XXXXX+\sqrt{5/3}/8\cdot XYYYY+\sqrt{5/7}/4\cdot XXXYY$</p>
+<p>$\mathrm{H-1}=\sqrt{5/3}\cdot YZZZZ-3\cdot \sqrt{5/28}\cdot YYYZZ-3/\sqrt{28}\cdot XXYZZ+\sqrt{15}/8\cdot YYYYY+\sqrt{5/3}/8\cdot XXXXY+\sqrt{5/7}/4\cdot XXYYY$</p>
+<p>$\mathrm{H+2}=\sqrt{5}/2\cdot (XXZZZ-YYZZZ)-\sqrt{35/3}/4\cdot (XXXXZ-YYYYZ)$</p>
+<p>$\mathrm{H-2}=\sqrt{5/3}\cdot XYZZZ-\sqrt{5/12}\cdot (XXXYZ+XYYYZ)$</p>
+<p>$\mathrm{H+3}=\sqrt{5/6}\cdot XXXZZ-\sqrt{3/2}\cdot XYYZZ-\sqrt{35/2}/8\cdot (XXXXX-XYYYY)+\sqrt{5/6}/4\cdot XXXYY$</p>
+<p>$\mathrm{H-3}=-\sqrt{5/6}\cdot YYYZZ+\sqrt{3/2}\cdot XXYZZ-\sqrt{35/2}/8\cdot (XXXXY-YYYYY)-\sqrt{5/6}/4\cdot XXYYY$</p>
+<p>$\mathrm{H+4}=\sqrt{35}/8\cdot (XXXXZ+YYYYZ)-3/4\cdot \sqrt{3}\cdot XXYYZ$</p>
+<p>$\mathrm{H-4}=\sqrt{5}/2\cdot (XXXYZ-XYYYZ)$</p>
+<p>$\mathrm{H+5}=3/8\cdot \sqrt{7/2}\cdot XXXXX+5/8\cdot \sqrt{7/2}\cdot XYYYY-5/4\cdot \sqrt{3/2}\cdot XXXYY$</p>
+<p>$\mathrm{H-5}=3/8\cdot \sqrt{7/2}\cdot YYYYY+5/8\cdot \sqrt{7/2}\cdot XXXXY-5/4\cdot \sqrt{3/2}\cdot XXYYY$</p>
+<p>例子见<a href="sec-4-8-molecular-orbital-composition-analysis.html#481-%E7%94%A8mulliken%E6%96%B9%E6%B3%95%E5%88%86%E6%9E%90%E4%B9%99%E9%85%B0%E8%83%BA">4.8.1节</a>。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>基函数</p>
+</blockquote>
+<h2 id="3102-定义片段-1-和-2--1--2"><strong>3.10.2 定义片段 1 和 2 (-1, -2)</strong></h2>
+<p>在用 Mulliken、Stout-Politzer 和 SCPA 方法做片段成分分析之前，必须先定义片段。若你感兴趣的只是一个片段的成分而非两个片段之间的成分（交叉项成分），只需定义片段 1。片段的内容可选为基函数、壳层、原子或其混合，无论选什么，最终记录的只是相应基函数的序号。</p>
+<p>定义片段界面中所有支持的命令都是自明的，我不再赘述，只举一个例子，即把片段定义为原子 3 的所有 P 壳层：首先输入命令 <em>all</em>，列出所有基函数的信息，找出归属于中心 3 且包含 X、Y、Z 型基函数（即 PX、PY、PZ）的壳层。假设这类壳层的序号为 3、6、7，则输入 <em>s 3,6,7</em> 将其加入片段。若要验证操作，再输入 <em>all</em> 并检查相应行最左侧是否出现星号，被标记的基函数即已被纳入片段。最后输入字母 <em>q</em> 保存当前片段并返回上一级……</p>
+<p>默认片段没有任何内容。每次进入片段定义界面时，片段状态与上次离开界面时相同。因此，若你之前已定义过片段而想彻底重定义，别忘了先用 &quot;clean&quot; 命令清空片段。</p>
+<h2 id="3103-用-mullikenstout-politzer-和-scpa-方法输出片段-1-的成分和片段间成分-4-5-6"><strong>3.10.3 用 Mulliken、Stout-Politzer 和 SCPA 方法输出片段 1 的成分和片段间成分 (4, 5, 6)</strong></h2>
+<p>定义片段 1 后，基于 Mulliken、Stout-Politzer 和 SCPA 方法的片段成分分析即可用。片段成分是片段内所有基函数成分之和，在该功能中所有轨道的片段成分会同时打印在屏幕上。若你选的分析方法是 Mulliken（子功能 4）或 Stout-Politzer（子功能 5），以下分量项会与总成分一起输出：</p>
+<p><strong>c^2 项：</strong> 片段 1 内基函数系数的平方和，即 $\sum_{a\in\mathrm{frag1}} C_{a,i}^2\times 100\%$ 。</p>
+<p><strong>内交叉项 (Int.cross)：</strong> 片段 1 内的内部交叉项之和，即 $\sum_{a\in\mathrm{frag1}}\sum_{b\in\mathrm{frag2}} C_{a,i}C_{b,i}S_{a,b}\times 100\%$ 。</p>
+<p><strong>外交叉项 (Ext.cross)：</strong> 片段 1 与所有其它原子之间总交叉项中归属于片段 1 的部分，即 $\sum_{a\in\mathrm{frag1}}\sum_{b\notin\mathrm{frag1}} w_{a,b}2C_{a,i}C_{b,i}S_{a,b}\times 100\%$ 。</p>
+<p>显然，片段 1 的总成分等于 c^2 项 + 内交叉项 + 外交叉项。</p>
+<p>若还定义了片段 2（你<em>必须</em>已定义过片段 1），在子功能 5 (Mulliken) 或子功能 5 (Stout-Politzer) 中还会输出每个轨道中片段 1 与片段 2 之间的交叉项，即 $\sum_{a\in\mathrm{frag1}}\sum_{b\in\mathrm{frag2}} 2C_{a,i}C_{b,i}S_{a,b}\times 100\%$。&quot;Frag1 部分&quot;和 &quot;Frag2 部分&quot;对应交叉项中分别归属于片段 1 和片段 2 的分量，对 Mulliken 分析两者当然因&quot;均分&quot;而完全相等。</p>
+<h2 id="3104-用自然原子轨道方法做轨道成分分析-7"><strong>3.10.4 用自然原子轨道方法做轨道成分分析 (7)</strong></h2>
+<p>该功能用于基于自然原子轨道 (NAO) 计算轨道成分。该思想在我发表于 <em>Acta Chim. Sinica</em>, <strong>69</strong>, 2393 (2011) <a href="http://sioc-journal.cn/Jwk_hxxb/CN/abstract/abstract340458.shtml">http://sioc-journal.cn/Jwk_hxxb/CN/abstract/abstract340458.shtml</a> 的论文中提出。</p>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>著名的自然键轨道 (NBO) 分析的第一步是基于密度矩阵将原始基函数转换为 NAO。所得 NAO 可分为三类：</p>
+<ul>
+<li><p>芯型 NAO，描述内层电子密度，其占据数几乎等于整数</p>
+</li>
+<li><p>价型 NAO，描述价层电子密度，一般具有高占据数</p>
+</li>
+<li><p>Rydberg 型 NAO，主要体现电子的极化和离域特征，其占据数很低</p>
+</li>
+</ul>
+<p>芯和价 NAO 统称为最小集，它们有很强的物理意义并与&quot;实际&quot;原子轨道一一对应，是我们最应关注的。占据 MO 几乎完全由最小集 NAO 贡献。Rydberg NAO 没有明确的物理解释，在占据 MO 中其贡献可忽略，但它们对虚轨道常有很大贡献。</p>
+<p>由于 NAO 是正交归一集，若有 NAO 基下的 MO 系数矩阵，只需将相应展开系数平方再乘以 100% 即得某 NAO 对特定 MO 的贡献。某原子的成分可算作该中心最小集 NAO 成分之和。</p>
+<p>这种基于 NAO 的轨道成分计算方法有很好的基组稳定性，如 Hirshfeld 方法，特别适合分析占据轨道的成分。但对虚轨道，由于 Rydberg NAO 的贡献常很大，该方法不再很好用。</p>
+<h3 id="输入文件"><strong>输入文件</strong></h3>
+<p>NAO 基下的 MO 系数矩阵不能由 Multiwfn 自身产生，你需要提供含该矩阵的 NBO 程序输出文件作为 Multiwfn 输入文件。默认 NBO 程序不输出该矩阵，需在 NBO 输入文件的 \$NBO ... \$END 字段间手动添加 <em>NAOMO</em> 关键词。这里的 NBO 程序可以是独立 NBO 程序（又称 GENNBO），也可以是量子化学软件内嵌的 NBO 模块，如 Gaussian 的 L607。</p>
+<h3 id="选项"><strong>选项</strong></h3>
+<p>载入合适的输入文件并进入本功能后，你会在界面中发现以下选项：</p>
+<p><strong>-1 定义片段</strong>：该选项用于定义片段，片段贡献分析（选项 1）需要它。所有命令都是自明的。</p>
+<p><strong>0 显示某轨道的成分</strong>：打印 NAO、壳层和原子对特定 MO 的贡献。同时分别报告芯、价和 Rydberg 型 NAO 的贡献。</p>
+<p><strong>1 显示片段对一批轨道的贡献</strong>：打印由选项 -1 定义的片段对特定轨道的贡献。</p>
+<p><strong>2 选择输出模式</strong>：该选项控制选项 0 打印哪些项，有四种模式：</p>
+<ul>
+<li><p>(0) 显示所有项</p>
+</li>
+<li><p>(1) 显示非 Rydberg 项</p>
+</li>
+<li><p>(2) 显示贡献大于特定标准的项</p>
+</li>
+<li><p>(3) 显示贡献大于特定标准的非 Rydberg 项（默认）</p>
+</li>
+</ul>
+<p><strong>3 切换自旋类型</strong>：若当前体系是开壳层可见该选项。可选择要分析的 MO 的自旋。</p>
+<p>例子见<a href="sec-4-8-molecular-orbital-composition-analysis.html#482-%E7%94%A8%E8%87%AA%E7%84%B6%E5%8E%9F%E5%AD%90%E8%BD%A8%E9%81%93%E6%96%B9%E6%B3%95%E5%88%86%E6%9E%90%E6%B0%B4">4.8.2节</a>。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>NAO 基下的 MO 系数</p>
+</blockquote>
+<h2 id="3105-用-hirshfeld-或-hirshfeld-i-方法计算原子和片段贡献-810"><strong>3.10.5 用 Hirshfeld 或 Hirshfeld-I 方法计算原子和片段贡献 (8,10)</strong></h2>
+<p>Hirshfeld 和 Hirshfeld-I 权重函数（分别见<a href="sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#391-hirshfeld-%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7-1">3.9.1节</a>和<a href="sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#3913-hirshfeld-i-%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7-15">3.9.13节</a>）也可用于将轨道分解为原子和片段成分，原子 <em>A</em> 在轨道 <em>i</em> 中的成分为 $\int\varphi_i^2(\mathbf{r})w_A(\mathbf{r})\mathrm{d}\mathbf{r}\times 100\%$ 。片段的成分就是属于该片段的原子的成分之和。这些方法有很好的基组稳定性，总是比 Mulliken 和 MMPA 更可靠合理。实际上，Hirshfeld 划分已经足够好，更复杂且计算量大的 Hirshfeld-I 划分并无必要。</p>
+<p>若选择用 Hirshfeld 划分，程序会提示选择生成构建 Hirshfeld 权重函数的原子密度的方式，强烈建议用内建原子密度而非原子 .wfn 文件，因为前者方便得多。若选择用 Hirshfeld-I 划分，会先做常规 HI 迭代以得到收敛的原子权重函数（若对操作困惑，请参考<a href="sec-4-7-population-analysis-and-atomic-charge-calculation.html#474-hirshfeld-i%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7%E8%AE%A1%E7%AE%97%E7%A4%BA%E4%BE%8B">4.7.4节</a>计算 HI 电荷的例子和<a href="sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#3913-hirshfeld-i-%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7-15">3.9.13节</a>介绍的 Hirshfeld-I 实现细节）。</p>
+<p>计算轨道成分前会自动进行数据初始化。完成后可输入感兴趣的轨道序号。因数值积分总会引入一些误差，所有原子成分之和不严格等于 100%，极少数情况下偏差可能较显著，故 Multiwfn 会自动归一化并在 &quot;After normalization&quot; 标题下打印结果。</p>
+<p>若想同时查看某原子在特定范围轨道中的成分，选择选项 -2，再输入原子序号和轨道序号范围。</p>
+<p>若想研究片段对轨道的贡献，先用 -9 定义片段，再输入轨道序号时片段的贡献会与所有原子的贡献一起输出。也可选择 -3 计算所定义片段对一段轨道的贡献。</p>
+<p>若选选项 -4，程序会计算每个原子在每个轨道中的成分并全部导出到当前文件夹的 <em>orbcomp.txt</em>。</p>
+<p>例子见<a href="sec-4-8-molecular-orbital-composition-analysis.html#483-%E7%94%A8hirshfeld%E5%92%8Cbecke%E6%96%B9%E6%B3%95%E5%88%86%E6%9E%90%E4%B9%99%E9%85%B0%E8%83%BA">4.8.3节</a>。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>原子坐标和 GTF</p>
+</blockquote>
+<h2 id="3106-用-becke-方法计算原子和片段贡献-9"><strong>3.10.6 用 Becke 方法计算原子和片段贡献 (9)</strong></h2>
+<p>该功能与<a href="#3105-%E7%94%A8-hirshfeld-%E6%88%96-hirshfeld-i-%E6%96%B9%E6%B3%95%E8%AE%A1%E7%AE%97%E5%8E%9F%E5%AD%90%E5%92%8C%E7%89%87%E6%AE%B5%E8%B4%A1%E7%8C%AE-810">3.10.5节</a>介绍的功能很相似，唯一区别是用 Becke 划分代替 Hirshfeld 划分。多数情况下两者结果定性一致。用 Becke 划分代替 Hirshfeld 划分有个突出优点，即不需要原子波函数文件，因为 Becke 原子空间可简单地基于原子半径构建。关于 Becke 划分的更多细节见<a href="sec-3-18-fuzzy-atomic-space-analysis.html#3180-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5">3.18.0节</a>。例子见<a href="sec-4-8-molecular-orbital-composition-analysis.html#483-%E7%94%A8hirshfeld%E5%92%8Cbecke%E6%96%B9%E6%B3%95%E5%88%86%E6%9E%90%E4%B9%99%E9%85%B0%E8%83%BA">4.8.3节</a>。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>原子坐标和 GTF</p>
+</blockquote>
+<h2 id="3107-用-aim-方法计算原子和片段贡献-11"><strong>3.10.7 用 AIM 方法计算原子和片段贡献 (11)</strong></h2>
+<p>Multiwfn 也能基于分子空间的 atoms-in-molecules (AIM) 划分计算轨道成分。该划分方法中每个原子 basin 对应一个原子的空间，关于 basin 和 AIM 划分的概念细节见<a href="sec-3-20-basin-analysis.html">第 3.20 节</a>。要在 AIM 划分下计算轨道成分，应使用 basin 分析模块（主功能 17）的子功能 11，例子见<a href="sec-4-8-molecular-orbital-composition-analysis.html#486-%E8%AE%A1%E7%AE%97aim%E7%9B%86%E5%8F%8A%E5%85%B6%E4%BB%96%E7%B1%BB%E5%9E%8B%E7%9B%86%E8%B4%A1%E7%8C%AE%E7%9A%84%E8%BD%A8%E9%81%93%E7%BB%84%E6%88%90">4.8.6节</a>。</p>
+<p>通常，我不推荐用这种方式计算轨道成分，因为耗时远高于其它方式而结果并不更好。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>原子坐标和 GTF</p>
+</blockquote>
+<h2 id="310100-用-loba-和-mloba-方法评估氧化态-100"><strong>3.10.100 用 LOBA 和 mLOBA 方法评估氧化态 (100)</strong></h2>
+<p>该功能实现了发表于 <em>Phys. Chem. Chem. Phys.</em>, <strong>11</strong>, 11297 (2009) 的定域轨道键分析 (LOBA) 方法，以及我提出的 modified LOBA (mLOBA)（待发表）。</p>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>LOBA 是基于定域 MO (LMO) 的轨道成分评估原子氧化态的方法。思想很简单：若某原子核电荷为 <em>Z</em>，它在 <em>N</em> 个占据 LMO 中的成分大于给定阈值（例如 50%。此时这些 LMO 中的电子可近似视为完全归属于该原子。若某 LMO 双占据，应计两次），则该原子的氧化态为 <em>Z</em>−<em>N</em>。</p>
+<p>LOBA 的思想也可推广以定义片段的氧化态，即若某片段内核电荷之和为 <em>Z</em>，片段对 <em>N</em> 个 LMO 的贡献大于某阈值，则片段氧化态为 <em>Z</em>−<em>N</em>。</p>
+<p>mLOBA 采用不同的方式确定 LMO 电子的归属。该方法中，每个 LMO 的电子指派给对它贡献最大的原子。这不仅消除了阈值选择的任意性，还保证氧化态之和严格等于当前体系的净电荷。此外，mLOBA 中片段的氧化态就是其所有组成原子氧化态之和。强烈建议用 mLOBA 代替 LOBA！</p>
+<p>mLOBA 唯一的缺点是当存在（局域）几何对称性时结果可能不平衡。例如乙烷中有一个对应 C-C 键的 LMO，两个碳原子对它贡献相等。在 mLOBA 中，LOBA 的两个电子可能被指派给其中任一个碳，最终一个碳氧化态为 -4 而另一个为 -2。规避该问题的最好办法是将两个碳定义为一个片段并求片段氧化态，结果为 -6，每个碳的氧化态应视为 -6/2 = -3，这完全合理。</p>
+<p>LOBA/mLOBA 方法的结果在某种程度上依赖于轨道成分分析方法的选择。Multiwfn 对 LOBA/mLOBA 分析采用 Hirshfeld 方法，它比 LOBA 原论文用的 Mulliken 方法稳健得多。因此，尽管一些论文报道了 LOBA 的失效例子，其中多数在 Multiwfn 中并不失效！</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>要用该功能，应提供记录 LMO（或 NBO）的 .mwfn、.fch 或 .molden 文件。例如，可用 Multiwfn 做轨道定域化以产生含 LMO 的波函数文件。若你是 Gaussian 用户，可用 <em>pop=saveNBO</em> 或 <em>pop=saveNLMO</em> 任务所得 .fch 文件作为输入文件，基于 NBO 或 NLMO 做 LOBA 分析。当内存中有 LMO 后，进入主功能 8 的子功能 100，再输入一个阈值（例如 50）即得 LOBA 方法的氧化态；或者输入 <em>m</em> 即得 mLOBA 方法的氧化态。也可在 LOBA/mLOBA 界面输入 -1 定义片段，片段氧化态会与原子氧化态一起打印。</p>
+<p>例子见<a href="sec-4-8-molecular-orbital-composition-analysis.html#484-%E7%94%A8lobamloba%E6%96%B9%E6%B3%95%E8%AE%A1%E7%AE%97%E6%B0%A7%E5%8C%96%E6%80%81">4.8.4节</a>。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-3-10-orbital-composition-analysis";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script>
+<script src="app.js"></script></body></html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>主功能300：其它功能，第三部分 · Multiwfn中文手册</title><link rel="stylesheet" href="../style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="主功能300其它功能第三部分">主功能300：其它功能，第三部分</h1>
+<p>功能概述：主功能 300 是 Multiwfn“其它功能”的第三部分，共 8 个子功能（编号 1、2、4、5、6、7、8、9；编号 3 空缺）。内容覆盖晶胞自由区域可视化与自由体积、原子径向密度拟合为 STO/GTF、STM 图像模拟、电偶极/多极矩与电子空间范围、输入 Fock 矩阵求轨道能量、几何相关操作、表面距离投影图与 Fermi 能级确定。这些功能多面向周期体系、实空间建模与实验图像模拟，输入从普通波函数文件到 <code>.cif</code>/<code>.pdb</code>/<code>.47</code> 矩阵文件不等。</p>
+<h2 id="子功能-1查看胞中的自由区域并计算自由体积">子功能 1：查看胞中的自由区域并计算自由体积</h2>
+<p>说明：对分子动力学胞或实验晶体计算原始格点数据（格点到任一原子距离小于 Bondi vdW 半径则记为占据）与平滑格点数据（高斯/Becke/误差开关函数），等值面展示自由区域并输出自由体积与占比；支持非正交胞。选项 1 设格点并计算，2 开关周期边界，3 开关平滑数据，4 选平滑函数，5 设边界闭合，6 设 vdW 半径缩放。</p>
+<p>菜单路径：主功能 <code>300</code> → 子功能 <code>1</code>。</p>
+<p>输入要求：含胞信息的文件（如 <code>.cif</code>、<code>.gro</code>、带 CRYST1 的 <code>.pdb</code>）；无胞信息则假设正交盒。实例文件 <code>examples\coal.pdb</code>（含 <code>CRYST1 31.064 31.100 31.093 90.00 90.00 90.00</code>）、<code>examples\COF_12000N2.cif</code>。</p>
+<p>操作步骤（原始格式，煤结构）：</p>
+<p><pre><code class="language-text">examples\coal.pdb
+300  // Other functions (Part 3)
+1  // Viewing free regions and calculating free volume in a cell
+4  // Set method of smoothing
+1  // Gaussian function
+1.8  // FWHM of Gaussian function is 1.8 times of vdW radius, which is found to be able to result in satisfactory isosurface map of smoothed grid data for present system
+1  // Set grid and start calculation
+[Press ENTER button]  // Use default origin (0,0,0), which is suitable for present system
+[Press ENTER button]  // Use default box lengths, which correspond to the lengths of the three sides of the present cell
+[Press ENTER button]  // Use default grid space 0.25 Å, which is usually fine enough</code></pre></p>
+<p>COF 晶体（非正交胞，默认设置直接计算）：</p>
+<p><pre><code class="language-text">examples\COF_12000N2.cif
+300  // Other functions (Part 3)
+1  // Viewing free regions and calculating free volume in a cell
+1  // Set grid and start calculation
+[Press ENTER button]  // Use default origin (0,0,0)
+[Press ENTER button]  // Use default box lengths
+[Press ENTER button]  // Use default grid space 0.25 Å</code></pre></p>
+<p>产出：<code>Volume of entire box</code> 与 <code>Free volume</code>（煤 14783.074 Å³、占比 49.21%；COF 1953.217 Å³、占比 65.19%）；后处理菜单可视化等值面（默认 0.5）或导出 cube（非正交胞导出 <code>free_smooth.cub</code> 用 VMD/VESTA 渲染）。</p>
+<p>来源链接：<a href="../sec-3-300-other-functions-part-3.html#33001-%E6%9F%A5%E7%9C%8B%E8%83%9E%E4%B8%AD%E7%9A%84%E8%87%AA%E7%94%B1%E5%8C%BA%E5%9F%9F%E5%B9%B6%E8%AE%A1%E7%AE%97%E8%87%AA%E7%94%B1%E4%BD%93%E7%A7%AF">3.300.1</a>；实例 <a href="../sec-4-300-other-functions-part-3.html#43001-%E5%8F%AF%E8%A7%86%E5%8C%96%E6%99%B6%E8%83%9E%E4%B8%AD%E7%9A%84%E8%87%AA%E7%94%B1%E5%8C%BA%E5%9F%9F%E5%B9%B6%E8%AE%A1%E7%AE%97%E8%87%AA%E7%94%B1%E4%BD%93%E7%A7%AF%E7%9A%84%E4%BE%8B%E5%AD%90">4.300.1</a>；博客 <a href="http://sobereva.com/539">http://sobereva.com/539</a>、<a href="http://sobereva.com/617">http://sobereva.com/617</a>。</p>
+<h2 id="子功能-2将原子径向密度拟合为多个-sto-或-gtf-的线性组合">子功能 2：将原子径向密度拟合为多个 STO 或 GTF 的线性组合</h2>
+<p>说明：把 $\rho(r) \approx \sum_i c_i e^{-\zeta r}$（STO）或 $\sum_i c_i e^{-\zeta r^2}$（GTF）用 Levenberg-Marquardt 算法拟合球平均原子径向密度；拟合类别可选绝对误差/相对误差（默认，推荐）/RDF 误差；指数可固定或优化；自动删除冗余函数并按电子数缩放系数。常用流程：载入原点处单原子波函数 → 子功能 2 → 选项 3 设初猜 → 选项 1 拟合 → 检查 RMSE、$r^2$、曲线与积分。</p>
+<p>菜单路径：主功能 <code>300</code> → 子功能 <code>2</code>。</p>
+<p>输入要求：单原子波函数文件（GTF，原子须在原点），如 <code>examples\atomwfn\Si.wfn</code>、<code>Br.wfn</code>（ROHF/6-31G*）。</p>
+<p>操作步骤（原始格式，Si 粗拟合）：</p>
+<p><pre><code class="language-text">examples\atomwfn\Si.wfn  // Generated at ROHF/6-31G* level
+300  // Other functions (Part 3)
+2  // Fitting atomic radial density as multiple STOs or GTFs
+3  // Check or set initial guess of coefficients and exponents of fitting functions
+2  // Set initial guess as "crude fitting by a few STOs with variable exponents". Then from screen you can find only four STOs will be employed in the fitting, their initial status are</code></pre></p>
+<p><pre><code class="language-text">           Coefficient       Exponent
+STO  1:    1.000000E+03    2.700000E+01
+STO  2:    3.000000E+02    9.000000E+00
+STO  3:    2.000000E+01    3.000000E+00
+STO  4:    1.000000E+00    1.000000E+00</code></pre></p>
+<p><pre><code class="language-text">0  // Return to upper level of menu
+1  // Start fitting</code></pre></p>
+<p>拟合函数初猜文件格式（选项 1 载入，第一、二列为系数与指数）：</p>
+<p><pre><code class="language-text">4.0 1000
+2.0 100
+1.0 1.5</code></pre></p>
+<p>产出：拟合系数与指数、缩放因子、RMSE 与 Pearson $r$/$r^2$（Si 用 4 STO 得 $r^2=0.9907$；Br 用 30 GTF 固定指数得 $r^2=0.9994<code>，指数相近者可经选项 10 合并重拟合）；拟合后选项支持对数曲线可视化、导出 </code>fitdens.txt`、多求积点积分检验与 Fortran 代码输出。</p>
+<p>来源链接：<a href="../sec-3-300-other-functions-part-3.html#33002-%E5%B0%86%E5%8E%9F%E5%AD%90%E5%BE%84%E5%90%91%E5%AF%86%E5%BA%A6%E6%8B%9F%E5%90%88%E4%B8%BA%E5%A4%9A%E4%B8%AA-sto-%E6%88%96-gtf-%E7%9A%84%E7%BA%BF%E6%80%A7%E7%BB%84%E5%90%88">3.300.2</a>；实例 <a href="../sec-4-300-other-functions-part-3.html#43002-%E5%B0%86%E5%8E%9F%E5%AD%90%E5%BE%84%E5%90%91%E5%AF%86%E5%BA%A6%E6%8B%9F%E5%90%88%E4%B8%BA-sto-%E6%88%96-gtf-%E7%9A%84%E4%BE%8B%E5%AD%90">4.300.2</a>。</p>
+<h2 id="子功能-4模拟扫描隧道显微镜stm图像">子功能 4：模拟扫描隧道显微镜（STM）图像</h2>
+<p>说明：基于 Tersoff-Hamann 模型，$I(\mathbf{r}) \propto \sum |\varphi_i(\mathbf{r})|^2$（V&lt;0 取 $E_F+eV\to E_F$ 占据轨道，V&gt;0 取 $E_F\to E_F+eV$ 非占据轨道），$E_F$ 默认取 HOMO/LUMO 平均；支持恒高模式（固定 Z 平面算电流）与恒流模式（选项 1 切换，算三维 LDOS 再定电流求 $z_c(x,y)$）。仅 HF/KS-DFT（禁双杂化与多组态），分子须平行 XY 平面（菲 <code>examples\phenanthrene.fch</code> 在 YZ 平面，需先经主功能 6 子功能 33 两次旋转至 Z=0 平面并经主功能 100 子功能 2 存为 <code>mol.mwfn</code>）。</p>
+<p>菜单路径：主功能 <code>300</code> → 子功能 <code>4</code>。</p>
+<p>输入要求：含基函数文件（HF/KS-DFT；V&gt;0 需含非占据轨道，故纯 <code>.wfn</code> 不可用）。</p>
+<p>操作步骤（原始格式，旋转到 XY 平面）：</p>
+<p><pre><code class="language-text">examples\phenanthrene.fch
+6  // Check &amp; modify wavefunction
+33  // Rotate wavefunction, namely X→Y, Y→Z, Z→X
+0  // Rotate all orbitals
+y  // Also rotate molecule structure. Then the molecule will be on XZ plane
+33  // Rotate wavefunction again
+0  // Rotate all orbitals
+y  // Also rotate molecule structure</code></pre></p>
+<p>恒高模式（V=−5.0 V、Z=1.2 Å）：</p>
+<p><pre><code class="language-text">mol.mwfn
+300  // Other function (Part 3)
+4  // Simulating STM image</code></pre></p>
+<p><pre><code class="language-text">2  // Set bias voltage
+-5  // Bias voltage of -5.0 V
+7  // Set Z coordinate
+1.2  // Z=1.2 Å
+0  // Calculate tunneling current on the plane</code></pre></p>
+<p>恒流模式：</p>
+<p><pre><code class="language-text">mol.mwfn
+300  // Other function (Part 3)
+4  // Simulating STM image
+1  // Switch the mode of STM image to constant current
+2  // Set bias voltage
+-5  // Again we use bias voltage of -5.0 V</code></pre></p>
+<p>再选选项 0 算三维 LDOS（最大 0.048 a.u.），后处理选项 3 输入电流值（如 <code>0.01</code>）得 $z_c$ 图（Z 范围 0.70–1.206 Å）。</p>
+<p>产出：恒高 LDOS/电流平面图（4 个占据 MO 贡献，最大 0.010218 a.u.）、恒流 $z_c(x,y)$ 图与 LDOS 等值面/cube。</p>
+<p>来源链接：<a href="../sec-3-300-other-functions-part-3.html#33004-%E6%A8%A1%E6%8B%9F%E6%89%AB%E6%8F%8F%E9%9A%A7%E9%81%93%E6%98%BE%E5%BE%AE%E9%95%9C-stm-%E5%9B%BE%E5%83%8F">3.300.4</a>；实例 <a href="../sec-4-300-other-functions-part-3.html#43004-%E6%A8%A1%E6%8B%9F%E6%89%AB%E6%8F%8F%E9%9A%A7%E9%81%93%E6%98%BE%E5%BE%AE%E9%95%9Cstm%E5%9B%BE%E5%83%8F%E7%9A%84%E4%BE%8B%E5%AD%90">4.300.4</a>；博客 <a href="http://sobereva.com/549">http://sobereva.com/549</a>。</p>
+<h2 id="子功能-5计算电偶极多极矩和电子空间范围">子功能 5：计算电偶极/多极矩和电子空间范围</h2>
+<p>说明：解析积分计算偶极矩 $\boldsymbol{\mu}$、四极矩（标准/无迹/球谐形式）、八极矩、十六极矩、正负电荷中心与电子空间范围 $\langle r^2\rangle$（附 XYZ 分量）；<code>.chg</code>/<code>.pqr</code> 输入则基于原子电荷计算。</p>
+<p>菜单路径：主功能 <code>300</code> → 子功能 <code>5</code>。</p>
+<p>输入要求：原子坐标，加 GTF/基函数或原子电荷之一。实例 <code>examples\uracil.wfn</code>。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\uracil.wfn
+300  // Other function (Part 3)
+5  // Calculate electric dipole moment and multipole moments</code></pre></p>
+<p>产出：偶极矩 1.884103 a.u.（4.788911 Debye）、四极/八极/十六极各形式分量与大小、$\langle r^2\rangle = 822.650952$（X/Y/Z 分量 501.33/286.86/34.46）。<code>settings.ini</code> 中 <code>ispecial=1</code> 则先平移使核偶极贡献为零。</p>
+<p>来源链接：<a href="../sec-3-300-other-functions-part-3.html#33005-%E8%AE%A1%E7%AE%97%E7%94%B5%E5%81%B6%E6%9E%81%E5%A4%9A%E6%9E%81%E7%9F%A9%E5%92%8C%E7%94%B5%E5%AD%90%E7%A9%BA%E9%97%B4%E8%8C%83%E5%9B%B4">3.300.5</a>；实例 <a href="../sec-4-300-other-functions-part-3.html#43005-%E8%AE%A1%E7%AE%97%E5%B0%BF%E5%98%A7%E5%95%B6%E7%9A%84%E7%94%B5%E5%81%B6%E6%9E%81%E7%9F%A9%E5%A4%9A%E6%9E%81%E7%9F%A9%E5%92%8C%E7%94%B5%E5%AD%90%E7%A9%BA%E9%97%B4%E5%88%86%E5%B8%83%E8%8C%83%E5%9B%B4">4.300.5</a>；博客 <a href="http://sobereva.com/616">http://sobereva.com/616</a>。</p>
+<h2 id="子功能-6通过输入-fock-矩阵计算当前轨道能量">子功能 6：通过输入 Fock 矩阵计算当前轨道能量</h2>
+<p>说明：载入外部 Fock/KS 矩阵（纯文本、<code>new.fch</code> 反推的 <code>KS.txt</code> 或 Gaussian <code>.47</code> 文件，详见附录 7）后，把矩阵对内存中任意轨道（特别适合 NTO）求期望值得轨道能量。</p>
+<p>菜单路径：主功能 <code>300</code> → 子功能 <code>6</code>。</p>
+<p>输入要求：含基函数文件与 Fock/KS 矩阵纯文本文件。实例：给体-π-受体 S0→S1 的 NTO（<code>examples\excit\D-pi-A.fchk</code>/<code>.out</code>）。</p>
+<p>操作步骤（原始格式，三步）：</p>
+<p><pre><code class="language-text">examples\excit\D-pi-A.fchk
+18  // Electron excitation analysis
+6  // Generate natural transition orbitals (NTOs)
+examples\excit\D-pi-A.out
+1  // The first excited state (S1 state)</code></pre></p>
+<p><pre><code class="language-text">examples\excit\D-pi-A.fchk
+100  // Other functions (Part 1)
+17  // Generate Fock/KS matrix based on orbital energies and coefficients
+KS.txt</code></pre></p>
+<p><pre><code class="language-text">NTO.mwfn
+300  // Other functions (Part 3)
+6  // Calculate energies of the present orbitals
+KS.txt</code></pre></p>
+<p>或用 Gaussian 输入 <code># CAM-B3LYP/6-31g(d) pop=nboread</code>（配 <code>$NBO archive file=C:\D-PI-A $END</code>）产生 <code>.47</code> 文件直接载入。NTO 对本例贡献 99.2%；最高占据/非占据 NTO（轨道 56/57）能量为 −9.4672/−0.7101 eV，可经选项 1 导出 <code>orbene.txt</code>。</p>
+<p>产出：内存各轨道能量与 <code>orbene.txt</code>。</p>
+<p>来源链接：<a href="../sec-3-300-other-functions-part-3.html#33006-%E9%80%9A%E8%BF%87%E8%BE%93%E5%85%A5-fock-%E7%9F%A9%E9%98%B5%E8%AE%A1%E7%AE%97%E5%BD%93%E5%89%8D%E8%BD%A8%E9%81%93%E8%83%BD%E9%87%8F">3.300.6</a>；实例 <a href="../sec-4-300-other-functions-part-3.html#43006-%E8%AE%A1%E7%AE%97%E8%BD%A8%E9%81%93%E8%83%BD%E9%87%8F%E4%BB%A5-nto-%E8%BD%A8%E9%81%93%E4%B8%BA%E4%BE%8B">4.300.6</a>；<a href="../sec-6-7-about-providing-fock-ks-matrix-to-multiwfn.html">附录 7</a>。</p>
+<h2 id="子功能-7当前体系的几何相关操作">子功能 7：当前体系的几何相关操作</h2>
+<p>说明：对当前体系做平移、旋转、重取向、缩放、增删原子、超胞构建等 28 类几何操作（效果可累积；选项 0 可视化，−1/−2/−3/−4 导出 <code>.xyz</code>/<code>.pdb</code>/<code>.gjf</code>/<code>.cif</code>，−9 恢复初始几何；旋转不变换轨道系数）。注意选项 14 空缺。</p>
+<p>菜单路径：主功能 <code>300</code> → 子功能 <code>7</code>。</p>
+<p>输入要求：原子坐标（含胞体系同时操作胞矢量；选项 19–28 需胞信息）。</p>
+<p>操作步骤（原始格式，选项清单照搬原文）：<code>1 Translate selected atoms according to a translation vector</code>；<code>2 Translate the system such that the center of selected atoms is at origin</code>；<code>3 Rotate selected atoms around a Cartesian axis or a bond</code>；<code>4 Rotate selected atoms by applying a given rotation matrix</code>（$\mathbf{v}_{new}=\mathbf{M}\mathbf{v}_{old}$ 或 $\mathbf{w}_{new}=\mathbf{w}_{old}\mathbf{M}$）；<code>5 Make a bond parallel to a vector or Cartesian axis</code>；<code>6 Make a vector parallel to a vector or Cartesian axis</code>；<code>7 Make electric dipole moment parallel to a vector or Cartesian axis</code>（需波函数）；<code>8 Make longest axis of selected atoms parallel to a vector or Cartesian axis</code>；<code>9 Mirror inversion for selected atoms</code>；<code>10 Center inversion for selected atoms</code>；<code>11 Make the plane defined by selected atoms parallel to a Cartesian plane</code>；<code>12 Scale Cartesian coordinates of selected atoms</code>；<code>13 Reorder atom sequence</code>；<code>15 Add an atom</code>；<code>16 Remove some atoms</code>；<code>17 Crop some atoms</code>；<code>18 Generate randomly displaced geometries</code>（导出 <code>new.xyz</code>）；<code>19 Translate and duplicate cell (construct supercell)</code>；<code>20 Make truncated molecules by cell boundary whole</code>；<code>21 Scale cell length and atom coordinates correspondingly</code>；<code>22 Wrap all atoms outside the cell into the cell</code>；<code>23 Translate system along cell axes by given distances</code>；<code>24 Translate system to center selected part in the cell</code>；<code>25 Extract a molecular cluster (central molecule + neighbouring ones)</code>（判据默认 1.2，尿素 Hirshfeld 面/指纹图分析前用此提团簇）；<code>26 Set cell information</code>；<code>27 Add boundary atoms</code>；<code>28 Axes interconversion</code>。</p>
+<p>产出：变换后的内存几何（可导出文件/超胞/分子簇/随机位移系综）。</p>
+<p>来源链接：<a href="../sec-3-300-other-functions-part-3.html#33007-%E5%BD%93%E5%89%8D%E4%BD%93%E7%B3%BB%E7%9A%84%E5%87%A0%E4%BD%95%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C">3.300.7</a>；博客 <a href="http://sobereva.com/610">http://sobereva.com/610</a>。</p>
+<h2 id="子功能-8绘制表面距离投影图">子功能 8：绘制表面距离投影图</h2>
+<p>说明：在每 $(x,y)$ 点从 $Z_{\mathrm{start}}$ 向 $Z_{\mathrm{end}}$ 扫描至分子表面，绘制相对高度的填充色图加等值线，直观表征位阻与表面起伏，也兼容周期固体表面。选项 1 选表面定义（promolecular 密度等值面/波函数密度等值面/vdW 球叠加），选项 2–4 设 XY 范围与格点数，选项 6–8 设 Z 扫描步数与起止，选项 9 设等值线数，选项 0 计算绘图。</p>
+<p>菜单路径：主功能 <code>300</code> → 子功能 <code>8</code>。</p>
+<p>输入要求：原子坐标（promolecular/vdW 表面）；波函数电子密度表面需 GTFs。实例 <code>examples\excit\Ru(bpy3)2+.gjf</code>（[Ru(bpy)₃]²⁺，已处合适取向）。</p>
+<p>操作步骤（原始格式，默认 promolecular 0.05 a.u. 直接计算）：</p>
+<p><pre><code class="language-text">examples\excit\Ru(bpy3)2+.gjf
+300  // Other functions (Part 3)
+8  // Plot molecular surface distance projection map</code></pre></p>
+<p><pre><code class="language-text">-1  // Return
+1  // Set definition of molecular surface
+3  // Superposition of atomic van der Waals spheres scaled by a factor
+1  // We do not scale van der Waals radii in this example, so we set scale factor to 1
+0  // Start calculation
+0  // Show the map on screen</code></pre></p>
+<p>vdW 图显示 Ru 被配体深深包埋；切 0.005 a.u. 密度等值面（选项 1→1→输入 <code>0.005</code>）得更光滑的同类图。</p>
+<p>产出：表面距离投影填充色图（默认 25 条等值线）与配体包埋 Ru 的直观证据。</p>
+<p>来源链接：<a href="../sec-3-300-other-functions-part-3.html#33008-%E7%BB%98%E5%88%B6%E8%A1%A8%E9%9D%A2%E8%B7%9D%E7%A6%BB%E6%8A%95%E5%BD%B1%E5%9B%BE">3.300.8</a>；实例 <a href="../sec-4-300-other-functions-part-3.html#43008-%E4%B8%BArubpy%E2%82%83%C2%B2-%E9%85%8D%E4%BD%8D%E4%BD%93%E7%BB%98%E5%88%B6%E8%A1%A8%E9%9D%A2%E8%B7%9D%E7%A6%BB%E6%8A%95%E5%BD%B1%E5%9B%BE">4.300.8</a>；博客 <a href="http://sobereva.com/589">http://sobereva.com/589</a>。</p>
+<h2 id="子功能-9确定-fermi-能级">子功能 9：确定 Fermi 能级</h2>
+<p>说明：按 Fermi-Dirac 分布 $\eta_i = n/\{1+\exp[(E_i-E_f)/(k_BT)]\}$（限制/非限制 $n=2.0/1.0$），二分迭代调 $E_f$ 使总电子数与实际一致（偏差&lt;1E-6，最多 1000 步）；初猜为 HOMO/LUMO 平均；T=0 K 时定义不明。</p>
+<p>菜单路径：主功能 <code>300</code> → 子功能 <code>9</code>。</p>
+<p>输入要求：含占据与非占据轨道文件（<code>.mwfn</code>/<code>.fch</code>/<code>.molden</code>；<code>.wfn</code> 通常无虚轨道不可用）或手写轨道能量纯文本。实例 <code>examples\Li6.fch</code>。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\Li6.fch
+300   //Other function (Part 3)
+9   //Determine Fermi level
+3000   //Temperature (K)</code></pre></p>
+<p>输出迭代收敛于 <code>Fermi level is -0.09117890 Hartree -2.481104 eV</code>（500 K 时为 −2.476 eV，即 HOMO/LUMO 平均）。</p>
+<p>纯文本输入格式（闭壳：第一行占据数与非占据数，后接 Hartree 能量）：</p>
+<p><pre><code class="language-text">5 20
+ -19.138047 -0.997376 -0.514852 -0.371177 -0.291987
+   0.065333 0.151203 0.756610 [...ignored] 3.307120 3.531811 3.692553</code></pre></p>
+<p>开壳（第一行依次为 alpha 占据、alpha 非占据、beta 占据、beta 非占据数）：</p>
+<p><pre><code class="language-text">6 13 4 15
+-19.33565   //The first alpha orbital
+ -1.18124
+ -0.66585
+[...ignored]
+  2.13855
+  2.46757
+  3.40210   //The last alpha orbital
+-19.30115   //The first beta orbital
+ -1.09028
+ -0.63075
+[...ignored]
+  2.49486
+  3.45566   // The last beta orbital</code></pre></p>
+<p>产出：给定温度下的 Fermi 能级。</p>
+<p>来源链接：<a href="../sec-3-300-other-functions-part-3.html#33009-%E7%A1%AE%E5%AE%9A-fermi-%E8%83%BD%E7%BA%A7">3.300.9</a>。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="menu/func-300";const ROOT="../";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script>
+<script src="../app.js"></script></body></html>

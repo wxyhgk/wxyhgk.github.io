@@ -1,0 +1,177 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2.9 周期体系的分析 · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="29-周期体系的分析"><strong>2.9 周期体系的分析</strong></h1>
+<p>Multiwfn 能够处理周期体系，本节将给出详细介绍。要分析周期体系的波函数，既可以使用量子化学程序产生的团簇模型的波函数，也可以使用 CP2K 程序产生的周期性波函数，分别如<a href="#291-%E5%9F%BA%E4%BA%8E%E5%9B%A2%E7%B0%87%E6%A8%A1%E5%9E%8B%E6%B3%A2%E5%87%BD%E6%95%B0%E7%9A%84%E6%B3%A2%E5%87%BD%E6%95%B0%E5%88%86%E6%9E%90">2.9.1节</a>和<a href="#292-%E5%9F%BA%E4%BA%8E%E5%91%A8%E6%9C%9F%E6%80%A7%E6%B3%A2%E5%87%BD%E6%95%B0%E7%9A%84%E6%B3%A2%E5%87%BD%E6%95%B0%E5%88%86%E6%9E%90">2.9.2节</a>所述。Multiwfn 中有许多分析与波函数无关，将它们应用于周期体系时的特别注意事项将在<a href="#293-%E5%91%A8%E6%9C%9F%E4%BD%93%E7%B3%BB%E7%9A%84%E5%85%B6%E5%AE%83%E5%90%84%E7%B1%BB%E5%88%86%E6%9E%90">2.9.3节</a>中描述。</p>
+<h3 id="291-基于团簇模型波函数的波函数分析"><strong>2.9.1 基于团簇模型波函数的波函数分析</strong></h3>
+<p>你可以将晶体的原胞扩展为一个大的超胞，然后从超胞中截取出一个团簇。基于该团簇，你可以用任何量子化学程序进行优化或单点任务，然后像往常一样在 Multiwfn 中分析所得波函数。当然，为了尽量减小因团簇尺寸有限带来的人为边界效应，团簇应当足够大。如果你不确定可接受的最小尺寸是多大，可以针对团簇尺寸对结果做收敛性测试。重要的是要认识到，不应讨论团簇边界原子的电子结构，因为由于不可避免的边界效应，它必定是没有意义的。</p>
+<p>如果晶体结构是由 X 射线衍射实验确定的，你应当始终对氢的位置进行优化，因为 X 射线衍射通常无法准确确定氢。</p>
+<p>如果原子位置已由实验以令人满意的分辨率确定，则应略去对重原子（即非氢原子）的几何优化。但是，如果你要研究表面反应或吸附，或研究晶体内部的反应，则应固定边界重原子以模拟体相环境，同时优化团簇中心区域以体现反应或吸附对几何结构的影响。</p>
+<p>常见的晶体有四种，相关说明如下：</p>
+<ul>
+<li><p>分子晶体：这是最简单的情况。<a href="sec-4-12-quantitative-analysis-of-molecular-surface.html#4126-%E5%B0%BF%E7%B4%A0%E6%99%B6%E4%BD%93%E7%9A%84hirshfeld%E8%A1%A8%E9%9D%A2%E5%88%86%E6%9E%90%E5%92%8C%E6%8C%87%E7%BA%B9%E5%9B%BE%E5%88%86%E6%9E%90-fingerprint-plot-analysis">4.12.6节</a>展示了如何从尿素晶体中截取出尿素团簇，你可以仿照它构建其它种类的团簇。利用团簇模型分析分子晶体波函数的一个很好的例子是 <em>J. Comput. Chem.</em>, <strong>33</strong>, 580 (2012) 的图 6，其中基于 B3LYP/6-31G** 波函数对尿素团簇做了约化密度梯度分析。另一个例子：&quot;基于背景电荷计算晶体环境中分子的吸收光谱&quot; (<a href="http://sobereva.com/579">http://sobereva.com/579</a>)。</p>
+</li>
+<li><p>金属晶体：利用该模型的一个例子见我的博客文章：&quot;基于团簇模型用量子化学程序计算金属表面吸附&quot; (<a href="http://sobereva.com/540">http://sobereva.com/540</a>)。不推荐用团簇模型研究 <em>d</em> 区和 <em>f</em> 区金属，因为相应团簇的自洽场很难收敛，且容易收敛到不稳定的波函数。</p>
+</li>
+<li><p>共价晶体：石墨烯和金刚石是典型例子，你应当用氢饱和边界原子以避免悬空键，悬空键会使当前体系的电子结构高度不真实。当然，所加氢的位置应当进行优化。一个很好的例子是 <em>Mater. Sci. Eng. B</em>, <strong>273</strong>, 115425 (2021) DOI: <a href="https://doi.org/10.1016/j.mseb.2021.115425">10.1016/j.mseb.2021.115425</a>，该工作用 Multiwfn 研究了环[18]碳与石墨烯碎片之间的相互作用。</p>
+</li>
+<li><p>离子或半离子晶体：NaCl 和 TiO₂ 是典型情况。这类晶体需要特别注意以恰当处理边界效应。通常应使用下文提到的嵌入团簇模型。首先应确定一个大小合适的区域进行量子化学处理（称为 QM 区域）。该区域越大，结果往往越好，但也越昂贵。应在 QM 区域周围的晶体格点上添加许多层点电荷作为背景电荷，以模拟 QM 原子与环境原子之间的静电相互作用。环境原子的点电荷值可取其氧化态，也可用更好的但更复杂的方法通过迭代过程确定，见 <em>Inorg. Chem.</em>, <strong>58</strong>, 9303 (2019)。此外，应在最靠近 QM 区域的一层环境原子上添加相应元素的有效核势 (ECP，不带基函数)，它们被称为 capped ECP (cECP)，这个非常薄的区域被视为缓冲区域。缓冲区域的存在是为了避免电子从 QM 区域溢出到相邻点电荷的正库仑奇点附近，当 QM 区域带负电时它极为重要。关于上述嵌入团簇模型的细节见 <em>Inorg. Chem.</em>, <strong>58</strong>, 9303 (2019) 和 <em>J. Chem. Theory Comput.</em>, <strong>16</strong>, 6950 (2020)，前一篇论文的 SI 给出了一个 ORCA 输入文件示例。另见 <em>Surface Sci.</em>, <strong>471</strong>, 21 (2001) 的另一个应用。注意，避免电子溢出问题的另一种方法是用高斯电荷分布表示环境原子，这被称为静电势的高斯展开 (GEEP)，CP2K 的 QM/MM 处理支持它，见 <em>J. Chem. Theory Comput.</em>, <strong>1</strong>, 1176 (2005)。</p>
+</li>
+</ul>
+<h3 id="292-基于周期性波函数的波函数分析"><strong>2.9.2 基于周期性波函数的波函数分析</strong></h3>
+<p>要直接用 Multiwfn 分析周期性波函数，你应当使用免费且高效的 CP2K 程序 (<a href="https://www.cp2k.org">https://www.cp2k.org</a>)对周期体系进行计算，细节如下。目前除 CP2K 外 Multiwfn 不支持其它第一性原理程序。Gaussian 程序周期计算产生的 .fch/fchk 文件也被完全支持，但它没有实用价值，因为 Gaussian 的周期计算极慢。</p>
+<h4 id="2921-生成-molden-波函数文件"><strong>2.9.2.1 生成 .molden 波函数文件</strong></h4>
+<blockquote>
+<p><strong>注</strong></p>
+<p>关于该主题的更多信息和讨论，见&quot;谈谈用 CP2K 生成供 Multiwfn 使用的 molden 格式波函数文件&quot; (<a href="http://sobereva.com/651">http://sobereva.com/651</a>，中文)</p>
+</blockquote>
+<p>CP2K 导出的 .molden 文件可用作 Multiwfn 的输入文件。为了生成它，你应在输入文件的 $DFT 字段中添加以下内容：</p>
+<p><pre><code class="language-text">    &amp;PRINT
+      &amp;MO_MOLDEN
+        NDIGITS 9
+      &amp;END MO_MOLDEN
+    &amp;END PRINT</code></pre></p>
+<p>计算结束后，你会在当前文件夹得到一个 .molden 文件。</p>
+<p><strong>CP2K ≥ 2026.2 用户</strong></p>
+<p>如果体系是周期的，还应在 &amp;MO_MOLDEN 字段中插入 <em>WRITE_CELL T</em>，以要求 CP2K 将原胞信息以 [Cell] 字段写入 .molden 文件。</p>
+<p>如果使用了赝势，还应在 &amp;MO_MOLDEN 字段中插入 <em>WRITE_PSEUDO T</em>，以要求 CP2K 将每个原子的实际价电子数以 [Pseudo] 字段写入 .molden 文件。</p>
+<p><strong>CP2K &lt; 2026.2 用户</strong></p>
+<p>你应当编辑该文件以手动在文件开头添加原胞信息，例如：</p>
+<p><pre><code class="language-text">[Molden Format]
+[Cell]
+7.13358000    0.00000000    0.00000000
+0.00000000    7.13358000    0.00000000
+0.00000000    0.00000000    7.13358000
+ [Atoms] AU
+ C        1       4       0.000000       0.000000       0.000000
+ C        2       4       1.685064       1.685064       1.685064
+ C        3       4       0.000000       3.370128       3.370128
+...ignored</code></pre></p>
+<p>高亮的三行分别对应原胞的三个平移矢量（也称为原胞矢量），单位为 Å。支持任何类型的原胞，原胞不一定是正交的。</p>
+<p>为方便起见，你也可以用晶胞长度 (<em>a</em>、<em>b</em>、<em>c</em>)和晶胞角度 (<em>α</em>、<em>β</em>、<em>γ</em>) 来指定原胞信息。例如，以下内容定义了 <em>a</em> = 15 Å、<em>b</em> = 13 Å、<em>c</em> = 18.5 Å、<em>α</em> = 90°、<em>β</em> = 90°、<em>γ</em> = 121.3°：</p>
+<p><pre><code class="language-text">[Cell]
+15 13 18.5 90 90 121.3</code></pre></p>
+<p>此外，如果你不想修改 .molden 文件，也可以将原胞信息（三个原胞矢量占三行，或六个晶胞参数占一行）提供在一个名为 <em>[Cell].txt</em> 的文本文件中并放在当前文件夹。当 .molden 文件中找不到 [Cell] 而当前文件夹检测到 <em>[Cell].txt</em> 时，Multiwfn 会询问你是否从中载入原胞信息。</p>
+<p>如果你使用了赝势，建议将原子的元素序号修改为实际价电子数，这样在研究电子密度及其导数时可以自动采用合适的内层电子密度函数 (EDF) 来表示内层电子的电子密度（细节见<a href="sec-6-4-details-about-supplying-inner-core-electron-density.html">附录 4</a>），且 Multiwfn 能正确计算原子电荷，这就是上例中 &quot;C&quot; 后的第二项已由元素序号 (6) 改为 4 的原因。如果你觉得逐个原子修改文件太麻烦，可以用 [Nval] 字段为特定元素手动指定价电子数，例如：</p>
+<p><pre><code class="language-text">...ignored
+0.00000000    7.13358000    0.00000000
+0.00000000    0.00000000    7.13358000
+[Nval]
+C 4
+O 6
+ [Atoms] AU
+...ignored</code></pre></p>
+<p>为金刚石 2×2 超胞生成 .molden 文件的 CP2K 输入文件示例已提供为 <em>examples\PBC\CP2K_diamond_2x2_DZVP-MOLOPT.inp</em>。</p>
+<h4 id="2922-可用于分析周期性波函数的功能"><strong>2.9.2.2 可用于分析周期性波函数的功能</strong></h4>
+<p>目前 Multiwfn 中正式支持周期性波函数的功能有限，以下功能已经过测试，发现它们对周期体系工作良好，其它功能可能工作正常也可能不正常。未来将有更多功能正式支持周期性波函数。</p>
+<ul>
+<li><p>显示轨道（主功能 0）</p>
+</li>
+<li><p>计算一点处的性质（主功能 1）</p>
+</li>
+<li><p>拓扑分析（主功能 2）</p>
+</li>
+<li><p>绘制实空间函数的曲线图（主功能 3），包括 promolecular 和 deformation 性质</p>
+</li>
+<li><p>绘制实空间函数的平面图（主功能 4），包括 promolecular 和 deformation 性质</p>
+</li>
+<li><p>计算格点数据并绘制实空间函数的等值面图（主功能 5），包括 promolecular 和 deformation 性质。注意，在非正交原胞的情况下，等值面图在 Multiwfn 中无法正确绘制，但你可以将格点数据导出为 cube 文件再在 VMD 和 VESTA 中可视化</p>
+</li>
+<li><p>原子电荷和布居分析：Hirshfeld、Hirshfeld-I、MBIS、CM5、1.2*CM5、Mulliken 布居、Löwdin 布居、各种 modified Mulliken 布居、PEOE (Gasteiger)、EEM 和 AIM（通过 basin 分析模块）</p>
+</li>
+<li><p>通过 Mulliken、Stout-Politzer、SCPA 和 Hirshfeld 方法的轨道成分分析，包括显示片段贡献（主功能 8 中的子功能 1-6）</p>
+</li>
+<li><p>用 LOBA/mLOBA 方法计算氧化态</p>
+</li>
+<li><p>键级分析：Mayer 键级、Wiberg 键级、Mulliken 键级及其分解分析、轨道占据微扰 Mayer 键级、fuzzy 键级</p>
+</li>
+<li><p>电子离域和芳香性分析：多中心键级、HOMA、HOMAc、HOMER、Bird、AV1245</p>
+</li>
+<li><p>绘制 TDOS、PDOS、OPDOS、LDOS、MO-PDOS 和 COHP（主功能 10）</p>
+</li>
+<li><p>电荷分解分析 (CDA)</p>
+</li>
+<li><p>用 Mulliken 或 Löwdin 布居的 Pipek-Mezey 方法进行轨道定域化（主功能 19）</p>
+</li>
+<li><p>弱相互作用的可视化分析（IGMH、mIGM、amIGM、aIGM、IGM、IRI、NCI、aNCI、DORI）</p>
+</li>
+<li><p>电子激发分析：电子-空穴分析（空穴和电子分布、跃迁密度和跃迁偶极矩密度、与质心无关的各种指数包括 ghost-hunter 指数）、IFCT 分析、NTO 分析、生成并导出跃迁密度矩阵、计算 Mulliken 原子跃迁电荷、生成激发态自然轨道、&quot;查看、修改并导出某个激发的组态系数&quot;、打印所有激发态中的主要 MO 跃迁、CTS 分析</p>
+</li>
+<li><p>Fuzzy 原子空间分析：在 fuzzy 原子空间中对实空间函数做积分、计算 AOM、计算 LI、DI、片段 LI、IFDI、PDI、FLU、FLU-π、CLRK、PLR。支持 Hirshfeld、Hirshfeld-I 和 MBIS 划分</p>
+</li>
+<li><p>其它：在全空间积分函数；双正交化；NAdO 和 BOD</p>
+</li>
+</ul>
+<p>静电势 (ESP) 分析尚不支持！因为 Multiwfn 无法直接基于波函数信息计算 ESP。</p>
+<h4 id="2923-分析周期性波函数的相关参数"><strong>2.9.2.3 分析周期性波函数的相关参数</strong></h4>
+<p><em>settings.ini</em> 中有一些与周期性波函数和结构分析相关的参数，如下所示。注意，对于非正交原胞，上面提到的 X、Y、Z 实际上分别指第一、第二、第三维度。</p>
+<ul>
+<li><p>ifdoPBCxyz：它的三个值分别控制在输入文件提供原胞信息时 X、Y、Z 方向是否考虑周期性。例如，若 &quot;ifdoPBCxyz&quot; 设为 1,1,0，则 Z 方向的周期性将被完全忽略。</p>
+</li>
+<li><p>PBCnxnynz：它的三个值分别控制 X、Y、Z 方向考虑多少个相邻镜像。例如，若 &quot;PBCnxnynz&quot; 设为 1,1,1，则计算时会考虑相对于当前原胞在所有方向上 +1 和 -1 的相邻镜像原胞。&quot;当前原胞&quot;指所考虑的位置或原子所在的原胞。默认的 1,1,1 通常是合适的，没有特殊理由不应更改。原则上，增大这些值会使结果更准确，但会显著增加耗时。</p>
+</li>
+<li><p>expcutoff_PBC：为了降低计算实空间函数时指数项求值的耗时，若发现 exp(<em>x</em>) 的 <em>x</em> 小于该参数，则跳过求值。默认值在速度和精度间取得了很好的平衡。显然，增大该参数会使结果变差但降低耗时。</p>
+</li>
+</ul>
+<p>关于研究一维和二维体系的注记：如果你想研究平行于 XY 平面的二维体系，强烈建议将 &quot;ifdoPBCxyz&quot; 设为 1,1,0，则 Z 方向的周期性将不予考虑，计算耗时也会降低。类似地，对于沿 Z 方向周期的一维体系，建议将 &quot;ifdoPBCxyz&quot; 设为 0,0,1。</p>
+<h4 id="关于-cp2k-计算的非常重要注记"><strong>关于 CP2K 计算的非常重要注记</strong></h4>
+<p>Multiwfn 不考虑 <strong>k</strong> 点采样，也就是说 CP2K 计算中只能包含 gamma 点。因此，原胞尺寸应当足够大，以避免需要考虑 <strong>k</strong> 点采样。</p>
+<p>如果原胞很小，例如金刚石的常规原胞，尺寸约为 3.5 Å，最好将上述 &quot;PBCnxnynz&quot; 参数设为 2,2,2，否则结果会略不准确。</p>
+<p>如果你想用的分析方法与弥散函数不兼容，如 Mayer 键级和 Mulliken 布居分析，则绝不能使用含有强弥散性基函数的基组，否则结果将不合物理。根据我的测试，DZVP-GTH 通常不可接受，而 MOLOPT-SR-GTH 系列基组是很好的选择。</p>
+<h3 id="293-周期体系的其它各类分析"><strong>2.9.3 周期体系的其它各类分析</strong></h3>
+<p>Multiwfn 中的一些功能与波函数无关，只需要原子信息或格点数据，如独立梯度模型 (IGM) 分析、promolecular 近似下的约化密度梯度 (RDG) 分析、Hirshfeld 面分析、配位数计算。此时，你可以用 CP2K、Quantum ESPREESO、Abinit 和 VASP 等任何第一性原理程序优化晶体或表面，然后将所得几何结构转换为 Multiwfn 支持的任何文件格式（例如 .xyz、.pdb、.mol2）再作为输入文件。</p>
+<p>目前，只有少数这些功能明确支持考虑周期性边界条件 (PBC)，如下所示（换句话说，其它功能会简单地把当前体系当作孤立体系处理）：</p>
+<ul>
+<li><p>显示几何结构和格点数据（主功能 0）</p>
+</li>
+<li><p>处理格点数据（主功能 13），包括绘制（局域）积分曲线</p>
+</li>
+<li><p>基于 promolecular 密度的 RDG/NCI 分析、独立梯度模型 (IGM)、modified IGM (mIGM)、averaged IGM (aIGM)、averaged mIGM (amIGM)</p>
+</li>
+<li><p>van der Waals 势分析（主功能 20 的子功能 6）</p>
+</li>
+<li><p>色散能的原子贡献和色散密度分析（<a href="sec-3-24-energy-decomposition-analysis.html#3244-%E5%8E%9F%E5%AD%90%E5%AF%B9%E8%89%B2%E6%95%A3%E8%83%BD%E8%B4%A1%E7%8C%AE%E7%9A%84%E5%88%86%E6%9E%90">3.24.4节</a>）</p>
+</li>
+<li><p>评估原子间连接性和原子配位数（主功能 100 的子功能 9）</p>
+</li>
+<li><p>计算空腔直径（见<a href="sec-3-100-other-functions-part-1.html#310021-%E5%9F%BA%E4%BA%8E%E5%87%A0%E4%BD%95%E4%BF%A1%E6%81%AF%E8%AE%A1%E7%AE%97%E7%89%B9%E5%AE%9A%E5%8E%9F%E5%AD%90%E7%9A%84%E6%80%A7%E8%B4%A8calculate-properties-based-on-geometry-information-for-specific-atoms">3.100.21节</a>所述）</p>
+</li>
+<li><p>显示多孔体系的自由区域并计算自由体积（主功能 300 的子功能 1）</p>
+</li>
+<li><p>绘制分子表面距离投影图（主功能 300 的子功能 8）</p>
+</li>
+<li><p>Domain 分析（主功能 200 的子功能 14）</p>
+</li>
+<li><p>计算键长/键级交替 (BLA/BOA)（主功能 200 的子功能 9）</p>
+</li>
+</ul>
+<p>注意，上一节提到的 &quot;ifdoPBCxyz&quot; 参数也影响周期体系几何分析的结果。</p>
+<h3 id="294-可向-multiwfn-提供原胞信息的文件"><strong>2.9.4 可向 Multiwfn 提供原胞信息的文件</strong></h3>
+<p>为了在上述功能中明确考虑 PBC，需要原胞信息。以下文件可向 Multiwfn 提供原胞信息：</p>
+<p>♦ .cif 文件</p>
+<p>♦ CP2K 产生并按<a href="#292-%E5%9F%BA%E4%BA%8E%E5%91%A8%E6%9C%9F%E6%80%A7%E6%B3%A2%E5%87%BD%E6%95%B0%E7%9A%84%E6%B3%A2%E5%87%BD%E6%95%B0%E5%88%86%E6%9E%90">2.9.2节</a>修改的 .molden 文件</p>
+<p>♦ 含有 &quot;Ndim&quot; 字段且 Ndim&gt;0 的 .mwfn 文件</p>
+<p>♦ 含有 &quot;CRYST1&quot; 字段的 .pdb 和 .pqr 文件</p>
+<p>♦ GROMACS/GROMOS 程序的 .gro 文件</p>
+<p>♦ 含有 &quot;@&lt;TRIPOS&gt;CRYSIN&quot; 字段的 .mol2 文件</p>
+<p>♦ 含有 &quot;Tv&quot;（平移矢量）信息的 Gaussian 输入文件</p>
+<p>♦ Gaussian PBC 计算产生的 .fch/fchk 文件</p>
+<p>♦ CP2K 输入文件或 restart 文件</p>
+<p>♦ VASP 程序的 POSCAR、CHGCAR、CHG、ELFCAR、LOCPOT 文件</p>
+<p>♦ .xyz 文件。原始格式没有记录原胞信息的字段，但你可以在该文件的第二行手动添加原胞信息以向 Multiwfn 提供原胞信息。例如，第二行的以下内容定义了三个平移矢量为 (7.426 0.0 0.0)、(-3.66 6.40 0.0) 和 (0.0 0.0 10.0) Å：</p>
+<p><pre><code class="language-text">Tv_1: 7.426 0.0 0.0 Tv_2: -3.66 6.40 0.0 Tv_3: 0.0 0.0 10.0</code></pre></p>
+<p>或者，在第二行你可以用与 extended xyz 格式相同的方式（&quot;Lattice&quot; 标签）记录原胞信息，例如：</p>
+<p><pre><code class="language-text">Lattice="7.426 0.0 0.0 -3.66 6.40 0.0 0.0 0.0 10.0"</code></pre></p>
+<p>♦ .wfn 文件。原始格式没有记录原胞信息的字段，但你可以在文件末尾手动添加如下原胞信息。该字段包含三个原胞矢量，格式与上文 CP2K 文件中的 [Cell] 字段相同，单位为 Å：</p>
+<p><pre><code class="language-text">[Cell]
+ 9.901    0.0     0.0
+-4.879   8.534   0.0
+ 0.0    0.0    10.0</code></pre></p>
+<p>若原胞信息可用，主功能 100 的子功能 2 导出的这些文件也会携带原胞信息：.mwfn、.molden、.pdb、.pqr、.xyz、.fch、.gjf、.wfn、CP2K 输入文件。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-2-9-analysis-of-periodic-systems";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script>
+<script src="app.js"></script></body></html>

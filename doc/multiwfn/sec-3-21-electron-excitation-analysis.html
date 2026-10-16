@@ -1,0 +1,1194 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.21 电子激发分析 (18) · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="321-电子激发分析-18"><strong>3.21 电子激发分析 (18)</strong></h1>
+<h2 id="321a-电子激发分析模块的基本信息"><strong>3.21.A 电子激发分析模块的基本信息</strong></h2>
+<h3 id="321a1-概述"><strong>3.21.A.1 概述</strong></h3>
+<p>主功能 18 包含大量用于电子激发分析的子功能，即以各种方式表征电子激发。该类别的所有功能完全支持单参考方法（<em>即</em> 产生激发态波函数的参考波函数是单个 Slater 行列式），包括 TDDFT、TDA-DFT、CIS 和 TDHF，跃迁密度矩阵绘制功能也支持 ZINDO。其它激发态方法如 EOM-CCSD、LR-CC2/3、CASSCF、CASPT2 和 MRCI 则不正式支持。这些电子激发分析功能的一些例子见第 <a href="sec-4-18-electron-excitation-analysis.html">4.18</a> 节。</p>
+<p>Multiwfn 的所有电子激发分析完全支持闭壳和开壳体系。</p>
+<h3 id="321a2-关于单参考方法的基础知识"><strong>3.21.A.2 关于单参考方法的基础知识</strong></h3>
+<p>CIS 和 TDA-DFT 方法的激发态波函数 (Ψ$^{exc}$) 可表示为</p>
+<p><div class="mathdisp" data-mi="0" title="点击复制 TeX">$$
+\Psi^{\mathrm{exc}}=\sum_{i\to a}w_i^a\Phi_i^a\equiv\sum_{i}^{\mathrm{occ}}\sum_{a}^{\mathrm{vir}}w_i^a\Phi_i^a
+$$</div></p>
+<p>其中 <em>i</em> 和 $a$ 分别遍历所有占据和所有非占据 MO，下文亦然。${\Phi}_{i}^{a}$ 是把一个电子从原来占据的 MO <em>i</em> 移到虚 MO $a$ 对应的组态态函数。<em>w</em> 称为组态系数。CIS 或 TDA-DFT 框架下的电子激发因此可表示为轨道对跃迁的线性组合。权重系数 <em>w</em> 满足归一化条件：</p>
+<p><div class="mathdisp" data-mi="1" title="点击复制 TeX">$$
+\sum_{i\to a}\left(w_i^a\right)^2=1.0
+$$</div></p>
+<p>显然，<em>i</em>→ $a$ 轨道对跃迁对电子激发的贡献为 ${{100\%\times (w}_{i}^{a})}^{2}$。</p>
+<p>而对 TDHF 和 TDDFT，激发态波函数还包含所谓的退激发部分：</p>
+<p><div class="mathdisp" data-mi="2" title="点击复制 TeX">$$
+\Psi^{\mathrm{exc}}=\sum_{i\to a}w_i^a\Phi_i^a+\sum_{i\leftarrow a}w_i^{\prime a}\Phi_i^a
+$$</div></p>
+<p>其中 <em>w</em> 和 <em>w&#39;</em> 分别对应激发和退激发的组态系数。此时归一化条件变为：</p>
+<p><div class="mathdisp" data-mi="3" title="点击复制 TeX">$$
+\sum_{i\to a}\left(w_i^a\right)^2-\sum_{i\leftarrow a}\left(w_i^{\prime a}\right)^2=1
+$$</div></p>
+<p>CIS/TDHF 和 TDA-DFT/TDDFT 用的 MO 分别由当前体系基态的 HF 和 DFT 计算产生。由占据 MO 组成的 Slater 行列式即基态波函数，称为参考态。若参考态是闭壳的，则 α 和 β MO 完全匹配，β→β 轨道跃迁与 α→α 轨道跃迁一一对应；此时只记录一套轨道跃迁，相应地组态系数归一到 0.5 而非 1。</p>
+<h3 id="321a3-输入文件"><strong>3.21.A.3 输入文件</strong></h3>
+<p>几乎所有电子激发分析功能的输入文件基本相同，子功能 3（基于密度差格点数据分析电荷转移）除外。<strong>需要两种输入文件</strong>：</p>
+<p><strong>(1) 含基函数和分子轨道信息的文件（参考态的轨道波函数）</strong></p>
+<p>激发态计算（如 TDDFT）产生的 mwfn、.fch/.fchk、.molden 和 .gms 文件可直接使用。该文件应在 Multiwfn 启动时载入。例如，可用 Gaussian 的 TDDFT 任务 .chk 文件经 formchk 转换的 .fch 文件，再如，可用 ORCA 的 TDDFT 任务 .gbw 文件经 orca_2mkl 转换的 .molden.input 文件。</p>
+<p><strong>(2) 含激发态组态系数的文件</strong></p>
+<p>进入相应的分析功能时应输入这类文件的路径，Multiwfn 从该文件载入组态系数。有以下几种情形：</p>
+<ul>
+<li><p><strong>Gaussian 用户</strong>：CIS、TDHF、TDDFT 和 TDA-DFT 任务的输出文件（.out 或 .log）可用。单点和优化任务都支持；对后者，Multiwfn 在终点几何分析电子激发。由于默认 Gaussian 只输出绝对值大于 0.1 的组态系数，为达到可接受的精度，必须在 route 部分加 <em>IOp(9/40=4)</em> 关键词，使所有幅度大于 0.0001 的组态系数都被打印（若发现 Multiwfn 中的计算太贵，用 <em>IOp(9/40=3)</em> 代替一般也可接受）。隐式溶剂化模型，包括溶剂对跃迁响应的外迭代（态特定）处理，完全兼容。</p>
+</li>
+<li><p><strong>用 CIS 或 TDA-DFT 的 ORCA 用户</strong>：CIS 或 TDA-DFT 任务的输出文件可用。注意必须在 %cis 或 %tddft 中用 <em>TPrint</em> 关键词，否则只打印极少量的组态系数。<em>TPrint x</em> 指输出对激发态贡献大于 <em>x</em>*100% 的组态。一般我建议用 <em>TPrint 1E-8</em>。由于贡献算为组态系数的平方，<em>TPrint 1E-8</em> 就是输出系数值绝对值大于 1E-4 的组态，效果与 Gaussian 中的 <em>IOp(9/40=4)</em> 完全相同。下面是输入例子：</p>
+<pre><code class="language-orca">! PBE0 def2-SVP
+%tddft
+nroots 8
+tprint 1E-8
+end
+</code></pre>
+<p>ORCA 的自旋翻转 TDDFT 输出文件也支持，只需在 %tddft 中加 <em>SF TRUE</em> 并设参考态自旋多重度 ≥ 3。注意只有少数功能正式支持，包括产生激发态自然轨道、空穴-电子分析及相关分析，其它功能未经测试。特别地，所有直接基于跃迁密度矩阵的分析（包括 NTO 分析）都不支持。</p>
+</li>
+<li><p><strong>用 TDDFT 的 ORCA 用户</strong>：由于输出文件中没有显式记录激发和退激发组态的系数，此时不仅需要 TDDFT 输出文件，还需要一个记录所有组态系数的 json 文件。运行典型的名为<em>例如</em> <em>TDDFT.inp</em> 的 TDDFT 输入文件后，当前文件夹有 <em>TDDFT.gbw</em>。然后创建名为 <em>TDDFT.json.conf</em> 的文本文件，内容如下。</p>
+<pre><code class="language-json">{
+&quot;CIS&quot;: true,
+&quot;CISNRoots&quot;: true
+}
+</code></pre>
+<p>然后运行 <em>orca_2json TDDFT.gbw</em>，当前文件夹得到 <em>TDDFT.json</em>。之后，当 Multiwfn 在分析中尝试载入输入的 <em>TDDFT.out</em> 时，若同名同文件夹有 .json 后缀的文件（<em>即 TDDFT.json</em>），激发和退激发组态自动从 <em>TDDFT.json</em> 载入。若仍困惑，请读我的博客文章 <a href="http://sobereva.com/758">http://sobereva.com/758</a>（中文），其中描述了如何准备文件并结合 ORCA 的 TDDFT 计算用 Multiwfn 做典型分析。</p>
+</li>
+<li><p><strong>用 sTDA 或 sTDDFT 的 ORCA 用户</strong>：它们分别是常规 TDA 和 TDDFT 的近似，其输出文件可用。在 ORCA 中，它们的计算基于 DFT MO；DFT 单点任务完成后，sTDA/sTDDFT 以可忽略的代价算出激发态。做这些计算用如下关键词（详见 ORCA 手册）</p>
+<pre><code class="language-orca">! wB97X-D3 def2-SV(P) def2/J RIJCOSX
+%tddft
+Mode sTDDFT    //The sTDDFT may also be changed to sTDA
+Ethresh 7.0
+PThresh 1e-4
+PTLimit 30
+maxcore 6000
+end
+</code></pre>
+<p>重要的是注意计算中只打印三个最大的组态系数（不幸的是 <em>TPrint</em> 对 sTDA/sTDDFT 计算无效），因此组态系数的归一化条件常被明显破坏，此时分析结果不可靠甚至完全误导！所以，请留意选中激发态载入后屏幕显示的 &quot;Deviation to expected normalization value&quot;。</p>
+</li>
+<li><p><strong>BDF 用户</strong>：BDF 程序 TDDFT 任务的输出文件可用。</p>
+</li>
+<li><p><strong>CP2K 用户</strong>：支持 CP2K 的周期性 TDDFT（含/不含 sTDA 核）任务。目前只有空穴-电子分析、NTO 分析、“产生特定激发态的自然轨道”、“检查、修改和导出激发的组态系数”和“打印所有激发态中的主要 MO 跃迁”正式支持，其它分析可能行也可能不行（至少我没测试过）。</p>
+<p>启动 Multiwfn 后，应载入含所有虚轨道和晶胞信息的 .molden 文件。然后进入分析模块后，载入 CP2K 的输出文件。</p>
+<p>值得注意的是用 Multiwfn 准备 CP2K 的 TDDFT 任务输入文件很容易。启动 Multiwfn 后先载入结构文件（对晶体常用 .cif，详见第 <a href="sec-2-9-analysis-of-periodic-systems.html#293-%E5%91%A8%E6%9C%9F%E4%BD%93%E7%B3%BB%E7%9A%84%E5%85%B6%E5%AE%83%E5%90%84%E7%B1%BB%E5%88%86%E6%9E%90">2.9.3</a> 节），然后输入 <em>cp2k</em> 和要导出的输入文件路径。之后可先进入选项 -11 再进子选项 19 把当前晶胞扩展为超胞（如需要）。然后回到创建 CP2K 输入文件的界面，选选项 15 开启 TDDFT 计算，再输入 <em>y</em> 让 CP2K 生成含所有轨道的 .molden 文件并指定求解记录多少虚轨道。最后选选项 0 产生 CP2K 输入文件。再用 CP2K 运行该输入文件，算完后手动把晶胞信息插入 .molden 文件（如第 <a href="sec-2-9-analysis-of-periodic-systems.html#2921-%E7%94%9F%E6%88%90-molden-%E6%B3%A2%E5%87%BD%E6%95%B0%E6%96%87%E4%BB%B6">2.9.2.1</a> 节所述）。此时 .molden 文件和输出文件可用于电子激发分析。</p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>注意 .molden 文件中记录的虚轨道应覆盖打印的组态涉及的所有虚轨道。若不知应算多少虚轨道，直接设非常大的值使所有虚轨道都被求解记录，但此时 .molden 文件可能很大。也可先做一次 TDDFT，再查看打印的组态找出最高的虚轨道，然后在输入文件中恰当设定要求解的虚轨道数并重做单点以产生 .molden 文件。</p>
+</blockquote>
+</li>
+<li><p><strong>一般情形</strong>：也可用纯文本文件作输入文件。跃迁信息的格式应与 Gaussian 输出完全相同，例如：（// 及其后的文字不应出现在你的文件中）</p>
+<pre><code class="language-text">Excited State   1   1   5.7945    // Label, index, multiplicity and excitation energy (eV)
+       5 -&gt;  6         0.70642    // MO pairs and configuration coefficients
+                                  // Use a blank line to separate each excited state
+Excited State   2   1   7.8943
+       5 -&gt;  7         0.63860
+       5 -&gt;  8         0.30006
+
+Excited State   3   1   7.8943
+       5 -&gt;  7        -0.30006
+       5 -&gt;  8         0.63860
+       4 &lt;-  8         0.01000
+</code></pre>
+<p>下面给出非限制性 TDDFT 计算的例子。注意自旋多重度设为 0，即未定义，因为这类计算产生的激发态不是纯自旋态。</p>
+<pre><code class="language-text">Excited State   1      0     2.07774
+       600B -&gt; 601B        -0.676085
+       598A -&gt; 602A         0.454805
+       600A -&gt; 603A         0.416875
+...ignored
+
+ Excited State   2      0     2.07792
+       599B -&gt; 601B         0.561757
+       598A -&gt; 601A         0.496762
+       600B -&gt; 603B         0.468381
+...ignored
+</code></pre>
+<p>显然，上述两种文件必须对应相同几何和相同计算水平。例如，若 .fch 中的 MO 在 B3LYP/6-31G* 水平产生，而 Gaussian 输出文件对应 PBE0/6-31G* 水平的 TDDFT 任务，分析结果完全无意义。</p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>注 1：对闭壳参考情形，纯文本文件中的系数应遵循 Gaussian 惯例，即所有系数平方和为 0.5（而非归一到 1.0）。</p>
+<p>注 2：给 Multiwfn 的纯文本文件中 MO 编号应从 1 开始。但 ORCA 等一些程序的 MO 编号从 0 开始，其用户准备纯文本文件时需手动把 MO 编号加 1。</p>
+</blockquote>
+</li>
+<li><p><strong>GAMESS-US 和 Firefly 用户的特殊情形</strong>：若你是 Firefly 或 GAMESS-US 用户，做电子激发分析不需要像上文那样分别提供两种文件。若 Multiwfn 用的输入文件是 .gms 后缀的 TDDFT 输出文件，Multiwfn 启动时不仅从该文件载入基函数和分子轨道信息，做电子激发分析时还载入激发态的组态系数。&quot;examples\excit\&quot; 文件夹中的 <em>H2CO_TDDFT_Firefly.gms</em> 和 <em>H2CO_TDDFT_GAMESS.gms</em> 分别是 Firefly 和 GAMESS-US 的 TDDFT 输出文件例子。</p>
+<ul>
+<li><p>Firefly 用户应减小 $TDDFT 中的 &quot;PRTTOL&quot; 参数以打印更多组态系数。</p>
+</li>
+<li><p>GAMESS-US 没有控制组态系数打印阈值的选项，因此有些有不可忽略贡献的组态可能被忽略，分析结果可能不太准。此外 Multiwfn 不支持 GAMESS-US 的 CIS 任务。</p>
+</li>
+</ul>
+<p>GAMESS-US 和 Firefly 的激发态优化和频率任务的输出文件不支持。</p>
+</li>
+</ul>
+<h2 id="3210-检查修改和导出激发的组态系数--1"><strong>3.21.0 检查、修改和导出激发的组态系数 (-1)</strong></h2>
+<p>该功能可检查、修改和导出组态系数。本功能所需的输入文件已在本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头详细介绍，即 Multiwfn 启动时载入含基函数信息的文件，再载入含激发态组态系数的文件。屏幕打印所有识别的激发态的总结，应选其中之一，该电子激发涉及的轨道对的组态系数被载入。之后自动显示对激发绝对贡献最大的至多 10 个轨道对。然后在新出现的菜单中有以下选项：</p>
+<ul>
+<li><p><strong>1 Set coefficient of an orbital pair</strong>：用该选项把某轨道对的已载入组态系数换为输入值。</p>
+</li>
+<li><p><strong>2 Set coefficient for specific range of orbital pairs</strong>：该选项用于批量把已载入组态系数换为输入值。应输入轨道跃迁对应的占据 MO 和虚 MO 的编号范围。</p>
+<p>用上述两选项手动修改系数后，为使修改影响后续电子激发分析，应先用选项 -3 把修改后的系数导出为纯文本文件，再把该文件作电子激发分析的第二种输入文件。</p>
+</li>
+<li><p><strong>-1 Retrieve original coefficient of all orbital pairs</strong>：若已用上述两选项手动修改过组态系数，可选该选项把系数恢复为原来载入的值。</p>
+</li>
+<li><p><strong>-2 Print coefficient (and contribution to excitation) of some orbital pairs</strong>：用该选项可打印绝对值大于特定值的组态系数，同时显示其对电子激发的相应贡献。通过该选项可轻松找出哪些轨道对跃迁对电子激发有关键贡献。</p>
+</li>
+<li><p><strong>-3 Export current excitation information to a plain text file</strong>：当前选中激发态的基本信息和组态系数可导出到指定的纯文本文件。<strong>该文件之后可用作 Multiwfn 各种电子激发分析功能的第二种输入文件</strong>，<em>例如</em> 空穴-电子分析和 NTO 分析，分析结果对应修改后的组态系数。</p>
+</li>
+</ul>
+<p>显然，若把某些轨道对的系数设为零，则它们对所研究量的贡献被完全忽略；而若除特定轨道对外清掉所有系数，则所得量只揭示该轨道跃迁的特征。</p>
+<p>第 <a href="sec-4-18-electron-excitation-analysis.html#41810-%E8%8E%B7%E5%BE%97%E5%88%86%E5%AD%90%E8%BD%A8%E9%81%93%E5%AF%B9%E5%AF%B9%E8%B7%83%E8%BF%81%E5%81%B6%E6%9E%81%E7%9F%A9%E7%9A%84%E8%B4%A1%E7%8C%AE">4.18.10</a> 节的例子用了该功能。</p>
+<h2 id="3211-分析并可视化空穴电子分布跃迁密度和跃迁电磁偶极矩密度-1"><strong>3.21.1 分析并可视化空穴&amp;电子分布、跃迁密度和跃迁电/磁偶极矩密度 (1)</strong></h2>
+<p>该非常强大的模块用于分析并可视化空穴-电子分布、跃迁密度和跃迁电/磁偶极矩密度。而且，空穴和电子可分解为轨道对贡献以及原子和片段贡献；进而原子/片段贡献可直接绘制为热图以便直观查看。</p>
+<h3 id="32111-理论"><strong>3.21.1.1 理论</strong></h3>
+<p>该模块涉及许多知识点，先在下面描述。</p>
+<h4 id="理论-1空穴和电子的实空间表示"><strong>理论 1：空穴和电子的实空间表示</strong></h4>
+<p>单电子激发过程可描述为“一个电子离开<em>空穴</em>跑到<em>电子</em>上”，“空穴”和“电子”有不同的定义方式。若激发可完美描述为 HOMO→LUMO 跃迁，则空穴和电子可简单用 HOMO 和 LUMO 分别表示。但在大多数实际情况，单轨道对表示不合适，激发必须表示为多个 MO 对带相应权重系数的跃迁。</p>
+<p>当没有占主导的 MO 对跃迁时如何表示空穴和电子分布？一种方式是用自然跃迁轨道 (NTO) 分析，如第 <a href="#3216-%E4%BA%A7%E7%94%9F%E8%87%AA%E7%84%B6%E8%B7%83%E8%BF%81%E8%BD%A8%E9%81%93-ntos-6">3.21.6</a> 节介绍。不幸的是，很多情形即使 MO 已变换为 NTO，仍没有占主导的 NTO 对。空穴和电子最好的表示应是本节介绍的，想法最初由我和合作者 Cheng Zhong 在 2013 年提出。虽然详细介绍该方法的论文尚未发表，若你的研究涉及该理论，请引用我的工作：<em>Carbon</em>, <strong>165</strong>, 461-467 (2020) DOI: <a href="http://doi.org/10.1016/j.carbon.2020.05.023">10.1016/j.carbon.2020.05.023</a>，其中用了空穴-电子分析并做了简述。</p>
+<p>可证明空穴和电子的密度分布可完美定义为</p>
+<p><div class="mathdisp" data-mi="4" title="点击复制 TeX">$$
+\begin{gathered}\rho^{\mathrm{hole}}(\mathbf{r})=\rho_{(\mathrm{loc})}^{\mathrm{hole}}(\mathbf{r})+\rho_{(\mathrm{cross})}^{\mathrm{hole}}(\mathbf{r})=\sum_{i\to a}(w_i^a)^2\varphi_i(\mathbf{r})\varphi_i(\mathbf{r})+\sum_{i\to a}\sum_{j\neq i\to a}w_i^a w_j^a\varphi_i(\mathbf{r})\varphi_j(\mathbf{r})\\ \rho^{\mathrm{ele}}(\mathbf{r})=\rho_{(\mathrm{loc})}^{\mathrm{ele}}(\mathbf{r})+\rho_{(\mathrm{cross})}^{\mathrm{ele}}(\mathbf{r})=\sum_{i\to a}(w_i^a)^2\varphi_a(\mathbf{r})\varphi_a(\mathbf{r})+\sum_{i\to a}\sum_{i\to b\neq a}w_i^a w_i^b\varphi_a(\mathbf{r})\varphi_b(\mathbf{r})\end{gathered}
+$$</div></p>
+<p>注意这里用的记号：</p>
+<p><div class="mathdisp" data-mi="5" title="点击复制 TeX">$$
+\sum_{i\to a}\equiv\sum_{i}^{\mathrm{occ}}\sum_{a}^{\mathrm{vir}}\qquad \sum_{i\to a}\sum_{j\neq i\to a}\equiv\sum_{i}^{\mathrm{occ}}\sum_{j\neq i}^{\mathrm{occ}}\sum_{a}^{\mathrm{vir}}
+$$</div></p>
+<p>其中 $\varphi$ 表示 MO 波函数。&quot;loc&quot; 和 &quot;cross&quot; 分别代表局域项和交叉项对空穴和电子分布的贡献。注意上文给出的空穴和电子定义是密度形式而非波函数形式，因而空穴和电子没有相位（若确实需要空穴和电子的相位信息，应求助 NTO 分析，见第 <a href="#3216-%E4%BA%A7%E7%94%9F%E8%87%AA%E7%84%B6%E8%B7%83%E8%BF%81%E8%BD%A8%E9%81%93-ntos-6">3.21.6</a> 节）。</p>
+<p>由于 MO 的正交归一以及所有组态系数平方和为 1.0 的事实，显然</p>
+<p><div class="mathdisp" data-mi="6" title="点击复制 TeX">$$
+\int\rho^{\mathrm{hole}}(\mathbf{r})\mathrm{d}\mathbf{r}=1\qquad \int\rho^{\mathrm{ele}}(\mathbf{r})\mathrm{d}\mathbf{r}=1
+$$</div></p>
+<p>这是任何合理的空穴和电子分布定义都应满足的重要性质，表明有一个电子被激发。</p>
+<p>空穴和电子分布之间的重叠函数可定义为</p>
+<p><div class="mathdisp" data-mi="7" title="点击复制 TeX">$$
+S_{\mathrm{m}}(\mathbf{r})=\min\left[\rho^{\mathrm{hole}}(\mathbf{r}),\rho^{\mathrm{ele}}(\mathbf{r})\right]
+$$</div></p>
+<p>即处处取 <em>ρ</em>$^{hole}$ 和 <em>ρ</em>$^{ele}$ 的最小值。另一个衡量重叠的函数是</p>
+<p><div class="mathdisp" data-mi="8" title="点击复制 TeX">$$
+S_{r}(\mathbf{r})=\sqrt{\rho^{\mathrm{hole}}(\mathbf{r})\rho^{\mathrm{ele}}(\mathbf{r})}
+$$</div></p>
+<p>显然 $S_\mathrm{r}$ 总等于或大于 $S_\mathrm{m}$。两种定义都合理，但我更喜欢用 $S_\mathrm{r}$，因为其图形效果更好且数学意义更明确。</p>
+<p>激发态与基态之间的电荷密度差 (CDD) 可轻松计算为</p>
+<p><div class="mathdisp" data-mi="9" title="点击复制 TeX">$$
+\Delta\rho(\mathbf{r})=\rho^{\mathrm{ele}}(\mathbf{r})-\rho^{\mathrm{hole}}(\mathbf{r})
+$$</div></p>
+<p>注：注意若你是 Gaussian 用户，这样算出的 Δ<em>ρ</em> 与用激发态密度减基态密度产生的 Δ<em>ρ</em> 明显不同，除非产生激发态 .wfn/wfx 文件时指定了关键词 <em>density=rhoci</em>。因为默认 Gaussian 导出到 .wfn/wfx 文件的激发态密度是弛豫密度而非未弛豫密度（后者直接由 MO 和激发态组态系数构建）。换言之，未弛豫激发态密度可简单写为 ${\rho}^{\mathrm{excited}}\left( \mathbf{r} \right)={\rho}^{\mathrm{ground}}\left( \mathbf{r} \right)-{\rho}^{\mathrm{hole}}\left( \mathbf{r} \right)+{\rho}^{\mathrm{ele}}\left( \mathbf{r} \right)$，而导出弛豫激发态密度需要用非常复杂的 &quot;Z-vector&quot; 方法。</p>
+<p>推广后，上述空穴和电子定义也可用于 TDHF 和 TDDFT 情形，其中必须考虑退激发。推广的局域项为</p>
+<p><div class="mathdisp" data-mi="10" title="点击复制 TeX">$$
+\begin{gathered}\rho_{(\mathrm{loc})}^{\mathrm{hole}}=\sum_{i\to a}\left(w_i^a\right)^2\rho_i-\sum_{i\leftarrow a}\left(w_i^{\prime a}\right)^2\rho_i\\ \rho_{(\mathrm{loc})}^{\mathrm{ele}}=\sum_{i\to a}\left(w_i^a\right)^2\rho_a-\sum_{i\leftarrow a}\left(w_i^{\prime a}\right)^2\rho_a\end{gathered}
+$$</div></p>
+<p>其中 $\rho_i=|\varphi_i|^2$ 代表轨道 <em>i</em> 的电子密度，<em>w&#39;</em> 表示退激发的组态系数。推广的交叉项为</p>
+<p><div class="mathdisp" data-mi="11" title="点击复制 TeX">$$
+\begin{gathered}\rho_{(\mathrm{cross})}^{\mathrm{hole}}=\sum_{i\to a}\sum_{j\neq i\to a}w_i^a w_j^a\varphi_i\varphi_j-\sum_{i\leftarrow a}\sum_{j\neq i\leftarrow a}w_i^{\prime a}w_j^{\prime a}\varphi_i\varphi_j\\ \rho_{(\mathrm{cross})}^{\mathrm{ele}}=\sum_{i\to a}\sum_{i\to b\neq a}w_i^a w_i^b\varphi_a\varphi_b-\sum_{i\leftarrow a}\sum_{i\leftarrow b\neq a}w_i^{\prime a}w_i^{\prime b}\varphi_a\varphi_b\end{gathered}
+$$</div></p>
+<p>若把局域和交叉项合并，空穴和电子的表达式可简单表示为</p>
+<p><div class="mathdisp" data-mi="12" title="点击复制 TeX">$$
+\begin{gathered}\rho^{\mathrm{hole}}=\sum_{i,j\to a}w_i^a w_j^a\varphi_i\varphi_j-\sum_{i,j\leftarrow a}w_i^{\prime a}w_j^{\prime a}\varphi_i\varphi_j\\ \rho^{\mathrm{ele}}=\sum_{i\to a,b}w_i^a w_i^b\varphi_a\varphi_b-\sum_{i\leftarrow a,b}w_i^{\prime a}w_i^{\prime b}\varphi_a\varphi_b\end{gathered}
+$$</div></p>
+<h4 id="理论-2mo基函数原子和片段对空穴和电子分布的贡献"><strong>理论 2：MO、基函数、原子和片段对空穴和电子分布的贡献</strong></h4>
+<p>为考察哪些 MO 对空穴和电子有显著贡献，我定义了占据 MO 对空穴的贡献和虚 MO 对电子的贡献如下</p>
+<p><div class="mathdisp" data-mi="13" title="点击复制 TeX">$$
+\Theta_i^{\mathrm{hole}}=\sum_{a}\left[(w_i^a)^2-(w_i^{\prime a})^2\right]\qquad \Theta_a^{\mathrm{ele}}=\sum_{i}\left[(w_i^a)^2-(w_i^{\prime a})^2\right]
+$$</div></p>
+<p>显然成立以下归一化条件：</p>
+<p><div class="mathdisp" data-mi="14" title="点击复制 TeX">$$
+\sum_{i}\Theta_i^{\mathrm{hole}}=1\qquad \sum_{a}\Theta_a^{\mathrm{ele}}=1
+$$</div></p>
+<p>原子对空穴/电子的贡献可用 Hirshfeld、Hirshfeld-I 和 Becke 等实空间划分轻松计算。例如用 Hirshfeld 划分算原子 <em>A</em> 对空穴的贡献：</p>
+<p><div class="mathdisp" data-mi="15" title="点击复制 TeX">$$
+\Theta_A^{\mathrm{hole}}=\int w_A^{\mathrm{Hirsh}}(\mathbf{r})\rho^{\mathrm{hole}}(\mathbf{r})\mathrm{d}\mathbf{r}
+$$</div></p>
+<p>其中 ${w}_{A}^{\mathrm{Hirsh}}$ 是 Hirshfeld 划分下原子 <em>A</em> 的权重函数，详见第 <a href="sec-3-9-population-analysis-and-calculation-of-atomic-charges.html#391-hirshfeld-%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7-1">3.9.1</a> 节。</p>
+<p>Mulliken 型划分也可能，工作方程推导如下。考虑空穴的归一化条件（为简单暂时忽略退激发部分）</p>
+<p><div class="mathdisp" data-mi="16" title="点击复制 TeX">$$
+\begin{aligned}&\int\left(\sum_{i,j\to a}w_i^a w_j^a\varphi_i\varphi_j\right)\mathrm{d}\mathbf{r}=1\\ &\int\left(\sum_{i,j\to a}w_i^a w_j^a\sum_{\mu}\sum_{\nu}C_{\mu,i}C_{\nu,j}\chi_{\mu}\chi_{\nu}\right)\mathrm{d}\mathbf{r}=1\\ &\sum_{i,j\to a}w_i^a w_j^a\sum_{\mu}\sum_{\nu}C_{\mu,i}C_{\nu,j}\int\chi_{\mu}\chi_{\nu}\mathrm{d}\mathbf{r}=1\\ &\sum_{i,j\to a}w_i^a w_j^a\sum_{\mu}\sum_{\nu}C_{\mu,i}C_{\nu,j}S_{\mu,\nu}=1\end{aligned}
+$$</div></p>
+<p>其中 <em>χ</em> 表示基函数，<strong>S</strong> 和 <strong>C</strong> 分别是重叠矩阵和系数矩阵。若用 Mulliken 型方法把 $\sum_{\mu}\sum_{\nu}C_{\mu,i}C_{\nu,j}S_{\mu,\nu}$ 项划分为原子贡献，则可如下定义原子 <em>A</em> 对空穴的贡献</p>
+<p><div class="mathdisp" data-mi="17" title="点击复制 TeX">$$
+\Theta_A^{\mathrm{hole}}=\sum_{i,j\to a}w_i^a w_j^a\frac{1}{2}\left(\sum_{\mu\in A}\sum_{\nu}C_{\mu,i}C_{\nu,j}S_{\mu,\nu}+\sum_{\mu}\sum_{\nu\in A}C_{\mu,i}C_{\nu,j}S_{\mu,\nu}\right)
+$$</div></p>
+<p>上述处理同样可用于空穴的退激发部分以及电子。实际用于计算原子对空穴和电子贡献的工作方程为</p>
+<p><div class="mathdisp" data-mi="18" title="点击复制 TeX">$$
+\begin{gathered}\Theta_A^{\mathrm{hole}}=\sum_{i,j\to a}w_i^a w_j^a\frac{1}{2}\left(\sum_{\mu\in A}\sum_{\nu}T_{\mu,\nu}^{ij}+\sum_{\mu}\sum_{\nu\in A}T_{\mu,\nu}^{ij}\right)-\sum_{i,j\leftarrow a}w_i^{\prime a}w_j^{\prime a}\frac{1}{2}\left(\sum_{\mu\in A}\sum_{\nu}T_{\mu,\nu}^{ij}+\sum_{\mu}\sum_{\nu\in A}T_{\mu,\nu}^{ij}\right)\\ \Theta_A^{\mathrm{ele}}=\sum_{i\to a,b}w_i^a w_i^b\frac{1}{2}\left(\sum_{\mu\in A}\sum_{\nu}T_{\mu,\nu}^{ab}+\sum_{\mu}\sum_{\nu\in A}T_{\mu,\nu}^{ab}\right)-\sum_{i\leftarrow a,b}w_i^{\prime a}w_i^{\prime b}\frac{1}{2}\left(\sum_{\mu\in A}\sum_{\nu}T_{\mu,\nu}^{ab}+\sum_{\mu}\sum_{\nu\in A}T_{\mu,\nu}^{ab}\right)\end{gathered}
+$$</div></p>
+<p>其中 <strong>T</strong> 是为方便计算的中间矩阵，定义为 $T_{\mu,\nu}^{ij}=C_{\mu,i}C_{\nu,j}S_{\mu,\nu}$。</p>
+<p>基函数 <em>µ</em> 对空穴和电子的贡献可定义为</p>
+<p><div class="mathdisp" data-mi="19" title="点击复制 TeX">$$
+\begin{gathered}\Theta_{\mu}^{\mathrm{hole}}=\sum_{i,j\to a}w_i^a w_j^a\frac{1}{2}\left(\sum_{\nu}T_{\mu,\nu}^{ij}+\sum_{\nu}T_{\nu,\mu}^{ij}\right)-\sum_{i,j\leftarrow a}w_i^{\prime a}w_j^{\prime a}\frac{1}{2}\left(\sum_{\nu}T_{\mu,\nu}^{ij}+\sum_{\nu}T_{\nu,\mu}^{ij}\right)\\ \Theta_{\mu}^{\mathrm{ele}}=\sum_{i\to a,b}w_i^a w_i^b\frac{1}{2}\left(\sum_{\nu}T_{\mu,\nu}^{ab}+\sum_{\nu}T_{\nu,\mu}^{ab}\right)-\sum_{i\leftarrow a,b}w_i^{\prime a}w_i^{\prime b}\frac{1}{2}\left(\sum_{\nu}T_{\mu,\nu}^{ab}+\sum_{\nu}T_{\nu,\mu}^{ab}\right)\end{gathered}
+$$</div></p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>为显著节省计算时间，Multiwfn 忽略相应两组态系数乘积幅度小于 0.001 的所有项。该技巧带来的精度损失可忽略。</p>
+</blockquote>
+<p>对 Mulliken 型和 Hirshfeld 划分，片段对空穴和电子的贡献可简单加和原子贡献得到：</p>
+<p><div class="mathdisp" data-mi="20" title="点击复制 TeX">$$
+\Theta_{\mathrm{frag}}^{\mathrm{hole}}=\sum_{A\in\mathrm{frag}}\Theta_A^{\mathrm{hole}}\qquad \Theta_{\mathrm{frag}}^{\mathrm{ele}}=\sum_{A\in\mathrm{frag}}\Theta_A^{\mathrm{ele}}
+$$</div></p>
+<p>进而，我定义了原子和片段对电荷密度差（原子和片段电子布居的变化）的贡献为</p>
+<p><div class="mathdisp" data-mi="21" title="点击复制 TeX">$$
+\Theta_A^{\mathrm{CDD}}=\Theta_A^{\mathrm{ele}}-\Theta_A^{\mathrm{hole}}\qquad \Theta_{\mathrm{frag}}^{\mathrm{CDD}}=\Theta_{\mathrm{frag}}^{\mathrm{ele}}-\Theta_{\mathrm{frag}}^{\mathrm{hole}}
+$$</div></p>
+<p>原子和片段空间中空穴和电子的重叠定义为其贡献的几何平均：</p>
+<p><div class="mathdisp" data-mi="22" title="点击复制 TeX">$$
+\Theta_A^{\mathrm{ovlp}}=\sqrt{\Theta_A^{\mathrm{ele}}\Theta_A^{\mathrm{hole}}}\qquad \Theta_{\mathrm{frag}}^{\mathrm{ovlp}}=\sqrt{\Theta_{\mathrm{frag}}^{\mathrm{ele}}\Theta_{\mathrm{frag}}^{\mathrm{hole}}}
+$$</div></p>
+<p>注意这种形式的重叠不具加和性，即 $\Theta_A^{\mathrm{ovlp}}+\Theta_B^{\mathrm{ovlp}}\neq\Theta_{AB}^{\mathrm{ovlp}}$。</p>
+<p>Mulliken 型划分对大多数情形合理，但它与弥散函数不兼容。该划分另一个众所周知的缺点是某些情形一些原子贡献可能是小的负值，显然此时相应原子空间中空穴和电子的重叠无法计算，Multiwfn 自动把重叠值设为零。显然，当必须用弥散函数（<em>例如</em> 阴离子体系、Rydberg 激发态），或观察到明显的原子对空穴或电子的负贡献时，必须换用更稳健但计算代价更高的 Hirshfeld 划分。</p>
+<p>Mulliken 型和 Hirshfeld 划分可在空穴-电子分析模块直接选择。由于 Multiwfn 的极大灵活性，也可用其它方式确定原子对空穴和电子的贡献，如 Becke 和 Hirshfeld-I 划分。但必须手动计算。例如，若想对空穴和电子用 Becke 划分，应先导出空穴或电子的 cube 文件，再把 <em>settings.ini</em> 中的 &quot;iuserfunc&quot; 设为 -1（此时用户自定义函数对应基于格点数据的插值函数），再把空穴或电子 cube 文件载入 Multiwfn，用主功能 15 的子功能 1 在每个 Becke 原子模糊空间积分“用户自定义函数”。注意若在主功能 15 中先选选项 -4 定义片段再用子功能 1 积分用户自定义函数，则所有原子的结果之和对应片段贡献。</p>
+<h4 id="理论-3全空间空穴和电子分布的定量表征"><strong>理论 3：全空间空穴和电子分布的定量表征</strong></h4>
+<p>空穴和电子的整体分布可用以下方式定量表征，它们对识别电子激发类型很有用。</p>
+<p>为空穴和电子的重叠程度，$S_\mathrm{m}$ 指数和 $S_\mathrm{r}$ 指数定义为（$S_\mathrm{r}$ 必等于或大于 $S_\mathrm{m}$ 指数）</p>
+<p><div class="mathdisp" data-mi="23" title="点击复制 TeX">$$
+\begin{gathered}S_{\mathrm{m}}\ \mathrm{index}=\int S_{\mathrm{m}}(\mathbf{r})\mathrm{d}\mathbf{r}\equiv\int\min\left[\rho^{\mathrm{hole}}(\mathbf{r}),\rho^{\mathrm{ele}}(\mathbf{r})\right]\mathrm{d}\mathbf{r}\\ S_{\mathrm{r}}\ \mathrm{index}=\int S_{\mathrm{r}}(\mathbf{r})\mathrm{d}\mathbf{r}\equiv\int\sqrt{\rho^{\mathrm{hole}}(\mathbf{r})\rho^{\mathrm{ele}}(\mathbf{r})}\mathrm{d}\mathbf{r}\end{gathered}
+$$</div></p>
+<p>质心可用于揭示空穴和电子分布的最具代表性的位置。例如电子质心的 X 坐标写为</p>
+<p><div class="mathdisp" data-mi="24" title="点击复制 TeX">$$
+X_{\mathrm{ele}}=\int x\rho^{\mathrm{ele}}(\mathbf{r})\mathrm{d}\mathbf{r}
+$$</div></p>
+<p>其中 <em>x</em> 是位置矢量 <strong>r</strong> 的 X 分量。</p>
+<p>相应方向上空穴和电子质心之间的距离可衡量 X/Y/Z 的电荷转移 (CT) 长度：</p>
+<p><div class="mathdisp" data-mi="25" title="点击复制 TeX">$$
+D_{x}=\left|X_{\mathrm{ele}}-X_{\mathrm{hole}}\right|\qquad D_{y}=\left|Y_{\mathrm{ele}}-Y_{\mathrm{hole}}\right|\qquad D_{z}=\left|Z_{\mathrm{ele}}-Z_{\mathrm{hole}}\right|
+$$</div></p>
+<p>CT 长度的总大小称为 <em>D</em> 指数：</p>
+<p><div class="mathdisp" data-mi="26" title="点击复制 TeX">$$
+D\ \mathrm{index}=\left|\mathbf{D}\right|\equiv\sqrt{(D_{x})^2+(D_{y})^2+(D_{z})^2}
+$$</div></p>
+<p>值得注意的是激发态（对应未弛豫密度）相对基态的偶极矩在 X、Y、Z 的变化可简单算为</p>
+<p><div class="mathdisp" data-mi="27" title="点击复制 TeX">$$
+\Delta\mu_{\mathrm{x}}=-(X_{\mathrm{ele}}-X_{\mathrm{hole}})\qquad \Delta\mu_{\mathrm{y}}=-(Y_{\mathrm{ele}}-Y_{\mathrm{hole}})\qquad \Delta\mu_{\mathrm{z}}=-(Z_{\mathrm{ele}}-Z_{\mathrm{hole}})
+$$</div></p>
+<p>空穴和电子的 RMSD 可用于表征其空间分布范围。例如空穴 RMSD 的 X 分量表示为</p>
+<p><div class="mathdisp" data-mi="28" title="点击复制 TeX">$$
+\sigma_{\mathrm{hole},x}=\sqrt{\int(x-X_{\mathrm{hole}})^2\rho^{\mathrm{hole}}(\mathbf{r})\mathrm{d}\mathbf{r}}
+$$</div></p>
+<p>|<strong>σ</strong>$_{hole}$| 和 |<strong>σ</strong>$_{ele}$| 分别称为 <em>σ</em>$_{hole}$ 和 <em>σ</em>$_{ele}$ 指数，分别衡量空穴和电子的整体 RMSD。</p>
+<p>X/Y/Z 方向电子与空穴 RMSD 之差可用 Δ$σ_{λ}$ 衡量，整体之差可用 Δ<em>σ</em> 指数衡量</p>
+<p><div class="mathdisp" data-mi="29" title="点击复制 TeX">$$
+\begin{gathered}\Delta\sigma_{\lambda}=\sigma_{\mathrm{ele},\lambda}-\sigma_{\mathrm{hole},\lambda}\qquad \lambda=\{x,y,z\}\\ \Delta\sigma\ \mathrm{index}=\left|\boldsymbol{\sigma}_{\mathrm{ele}}\right|-\left|\boldsymbol{\sigma}_{\mathrm{hole}}\right|\end{gathered}
+$$</div></p>
+<p>$H_{λ}$ 衡量 X/Y/Z 方向空穴和电子分布空间扩展的平均程度，$H_{\mathrm{CT}}$ 是 CT 方向的，<em>H</em> 指数是整体衡量</p>
+<p><div class="mathdisp" data-mi="30" title="点击复制 TeX">$$
+\begin{gathered}H_{\lambda}=(\sigma_{\mathrm{ele},\lambda}+\sigma_{\mathrm{hole},\lambda})/2\qquad \lambda=\{x,y,z\}\\ H_{\mathrm{CT}}=\left|\mathbf{H}\cdot\mathbf{u}_{\mathrm{CT}}\right|\\ H\ \mathrm{index}=\left(\left|\boldsymbol{\sigma}_{\mathrm{ele}}\right|+\left|\boldsymbol{\sigma}_{\mathrm{hole}}\right|\right)/2\end{gathered}
+$$</div></p>
+<p>其中 $u_{\mathrm{CT}}$ 是 CT 方向的单位矢量，可用空穴和电子的质心直接导出。</p>
+<p><em>t</em> 指数用于衡量 CT 方向空穴和电子的分离程度：</p>
+<p><div class="mathdisp" data-mi="31" title="点击复制 TeX">$$
+t\ \mathrm{index}=D\ \mathrm{index}-H_{\mathrm{CT}}
+$$</div></p>
+<p>若 <em>t</em> 指数$<0$，意味着空穴和电子没有因 CT 而实质分离。空穴和电子分布的明显分离必然对应明显为正的 <em>t</em> 指数。</p>
+<p>空穴离域指数 (HDI) 和电子离域指数 (EDI) 定义为</p>
+<p><div class="mathdisp" data-mi="32" title="点击复制 TeX">$$
+\begin{gathered}HDI=100\times\sqrt{\int[\rho^{\mathrm{hole}}(\mathbf{r})]^2\mathrm{d}\mathbf{r}}\\ EDI=100\times\sqrt{\int[\rho^{\mathrm{ele}}(\mathbf{r})]^2\mathrm{d}\mathbf{r}}\end{gathered}
+$$</div></p>
+<p>发现 HDI (EDI) 越小，空穴（电子）的空间离域越大；换言之，在整个体系分布越均匀。HDI 和 EDI 在定量空间分布广度上很有用（虽然 |<strong>σ</strong>$_{hole}$| 和 |<strong>σ</strong>$_{ele}$| 也能揭示这一点，但当空穴或电子集中在多个区域时它们不合适）。</p>
+<p>空穴和电子分布中常有许多节点或复杂涨落。为使空穴和电子的直观研究更容易，$C_{\mathrm{hole}}$ 和 $C_{\mathrm{ele}}$ 函数定义为。$C_{\mathrm{hole}}$ 和 $C_{\mathrm{ele}}$ 的函数行为类似 Gaussian 函数，是高度光滑的函数，值从空穴/电子的质心向外渐近趋于零。</p>
+<p><div class="mathdisp" data-mi="33" title="点击复制 TeX">$$
+\begin{gathered}C_{\mathrm{ele}}(\mathbf{r})=A_{\mathrm{ele}}\exp\left(-\frac{(x-X_{\mathrm{ele}})^2}{2\sigma_{\mathrm{ele},x}^2}-\frac{(y-Y_{\mathrm{ele}})^2}{2\sigma_{\mathrm{ele},y}^2}-\frac{(z-Z_{\mathrm{ele}})^2}{2\sigma_{\mathrm{ele},z}^2}\right)\\ C_{\mathrm{hole}}(\mathbf{r})=A_{\mathrm{hole}}\exp\left(-\frac{(x-X_{\mathrm{hole}})^2}{2\sigma_{\mathrm{hole},x}^2}-\frac{(y-Y_{\mathrm{hole}})^2}{2\sigma_{\mathrm{hole},y}^2}-\frac{(z-Z_{\mathrm{hole}})^2}{2\sigma_{\mathrm{hole},z}^2}\right)\end{gathered}
+$$</div></p>
+<p>引入因子 <em>A</em> 使 $C_{\mathrm{hole}}$ 和 $C_{\mathrm{ele}}$ 归一化。</p>
+<p>事实上，上述 RMSD、$C_{\mathrm{hole}}$、$C_{\mathrm{ele}}$、<em>H</em> 和 <em>t</em> 指数的定义受 <em>J. Chem. Theory Comput.</em>, <strong>7</strong>, 2498 (2011) 启发，这些量最初用于基于密度差分析电子激发，但我发现它们在空穴-电子分析框架下都很好用。还注意引入空穴-电子分析框架时这些指数的许多细节已被修改。</p>
+<p>上述定量指数可用于区分电子激发类型。我的经验规则总结如下，应适用于大多数情形。</p>
+<table style="width: auto; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th rowspan="2" style="text-align: center;">激发类型</th>
+<th colspan="5" style="text-align: center;">指数</th>
+</tr>
+<tr>
+<th style="text-align: center;"><em>D</em></th>
+<th style="text-align: center;"><em>S</em>$_{r}$</th>
+<th style="text-align: center;"><em>t</em></th>
+<th style="text-align: center;">∆<em>σ</em></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">LE</td>
+<td style="text-align: center;">小</td>
+<td style="text-align: center;">中 ~ 大</td>
+<td style="text-align: center;">&lt;0</td>
+<td style="text-align: center;">小</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align: center;">单方向 CT</td>
+<td style="text-align: center;">大</td>
+<td style="text-align: center;">?</td>
+<td style="text-align: center;">?</td>
+<td style="text-align: center;">?</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align: center;">中心对称 CT</td>
+<td style="text-align: center;">小</td>
+<td style="text-align: center;">?</td>
+<td style="text-align: center;">&lt;0</td>
+<td style="text-align: center;">大</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align: center;">Rydberg</td>
+<td style="text-align: center;">小</td>
+<td style="text-align: center;">小</td>
+<td style="text-align: center;">&lt;0</td>
+<td style="text-align: center;">大</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<p>表中涉及三种激发：</p>
+<ul>
+<li><p>局域激发 (LE, local excitation)：空穴和电子占据类似的空间区域。</p>
+</li>
+<li><p>电荷转移激发 (CT)：空穴和电子的空间分离大，导致电荷密度的明显位移。CT 可以是单方向或多方向的（中心对称 CT 是后者的特例）。</p>
+</li>
+<li><p>Rydberg 激发：电子主要由非常弥散的 MO 组成，因此电子和空穴的重叠必然小。这类激发一般不导致显著的长程电荷密度位移。</p>
+</li>
+</ul>
+<h4 id="理论-4跃迁密度矩阵和跃迁密度"><strong>理论 4：跃迁密度矩阵和跃迁密度</strong></h4>
+<p><em>N</em> 电子体系激发态与基态之间的（单电子、无自旋）跃迁密度矩阵在实空间表示中定义为（假设实型波函数，故省略复共轭符号）</p>
+<p><div class="mathdisp" data-mi="34" title="点击复制 TeX">$$
+T(\mathbf{r};\mathbf{r}')\equiv T(\mathbf{r}_1;\mathbf{r}_1')=\int\Phi^0(x_1,x_2,\cdots x_N)\Psi^{\mathrm{exc}}(x_1',x_2,\cdots x_N)\mathrm{d}\sigma_1\mathrm{d}x_2\mathrm{d}x_3\cdots\mathrm{d}x_N
+$$</div></p>
+<p>其中 Φ⁰ 是基态波函数的 Slater 行列式。<strong>x</strong> 是自旋-空间坐标，<em>σ</em> 代表自旋坐标。<strong>T</strong> 被称为矩阵是因为它有两个连续编号。</p>
+<p>对单参考方法产生的激发态波函数，展开 Ψ$^{exc}$ 并用 Slater-Condon 规则，可轻松证明 <strong>T</strong> 可显式写为</p>
+<p><div class="mathdisp" data-mi="35" title="点击复制 TeX">$$
+T(\mathbf{r};\mathbf{r}')=\sum_{i}\sum_{a}w_i^a\varphi_i(\mathbf{r})\varphi_a(\mathbf{r}')
+$$</div></p>
+<p>若只取跃迁密度矩阵的对角项，则得到跃迁密度</p>
+<p><div class="mathdisp" data-mi="36" title="点击复制 TeX">$$
+T(\mathbf{r})=\sum_{i}\sum_{a}w_i^a\varphi_i(\mathbf{r})\varphi_a(\mathbf{r})
+$$</div></p>
+<p><em>T</em>(<strong>r</strong>) 可作为普通的实空间函数研究，例如可视化为等值面图。假设只有一对占主导的轨道跃迁，例如 HOMO→LUMO，则 <em>T</em>(<strong>r</strong>) 就是 $\varphi$ $_{HOMO}$(<strong>r</strong>) $\varphi$ $_{LUMO}$(<strong>r</strong>)。因此容易理解，若某区域跃迁密度幅度大，空穴和电子在该区域必然强耦合；而若某区域 <em>T</em>(<strong>r</strong>) 分布小，则该区域空穴和电子的重叠应不显著。显然，<em>T</em>(<strong>r</strong>) 是表征电子激发内在本质的有用函数，其主要分布特征与 $S_{r}$ (<strong>r</strong>) 函数密切相关。</p>
+<p>注意由于 MO 的正交归一，<em>T</em>(<strong>r</strong>) 在全空间的积分为严格零。若激发态和基态对应不同自旋态，由于自旋坐标的正交归一，<em>T</em>(<strong>r</strong>;<strong>r&#39;</strong>) 必为零矩阵，<em>T</em>(<strong>r</strong>) 相应处处为零。但注意 Multiwfn 计算时只考虑 <em>T</em>(<strong>r</strong>) 的空间部分，因此仍能研究<em>例如</em> S0→T1 激发的 <em>T</em>(<strong>r</strong>)。</p>
+<h4 id="理论-5跃迁电磁偶极矩密度"><strong>理论 5：跃迁电/磁偶极矩密度</strong></h4>
+<p>注意跃迁偶极矩有很多种，包括跃迁电偶极矩、跃迁磁偶极矩、跃迁速度偶极矩等。“跃迁偶极矩”一词一般指跃迁电偶极矩。</p>
+<p>跃迁电偶极矩密度的 X、Y、Z 分量可分别写为 X、Y、Z 坐标变量与跃迁密度乘积的负值：</p>
+<p><div class="mathdisp" data-mi="37" title="点击复制 TeX">$$
+T_{\mathrm{x}}(\mathbf{r})=-xT(\mathbf{r})\qquad T_{\mathrm{y}}(\mathbf{r})=-yT(\mathbf{r})\qquad T_{\mathrm{z}}(\mathbf{r})=-zT(\mathbf{r})
+$$</div></p>
+<p>在全空间积分跃迁电偶极矩密度得到跃迁偶极矩 <strong>D</strong></p>
+<p><div class="mathdisp" data-mi="38" title="点击复制 TeX">$$
+D_{\mathrm{x}}=\int T_{\mathrm{x}}(\mathbf{r})\mathrm{d}\mathbf{r}\qquad D_{\mathrm{y}}=\int T_{\mathrm{y}}(\mathbf{r})\mathrm{d}\mathbf{r}\qquad D_{\mathrm{z}}=\int T_{\mathrm{z}}(\mathbf{r})\mathrm{d}\mathbf{r}
+$$</div></p>
+<p>显然，通过绘制跃迁电偶极矩密度可方便研究各分子区域对跃迁电偶极矩的贡献。</p>
+<p>接下来看跃迁磁偶极矩。电子运动产生的磁偶极矩的算符是角动量算符 <strong>L</strong>（见<em>例如</em> <em>Theor. Chim. Acta</em>, <strong>6</strong>, 341 (1966)）</p>
+<p><div class="mathdisp" data-mi="39" title="点击复制 TeX">$$
+\begin{aligned}&\hat{\mathbf{L}}=-i(\mathbf{r}\times\nabla)=\hat{\mathbf{i}}L_{x}+\hat{\mathbf{j}}L_{y}+\hat{\mathbf{k}}L_{z}\\ &=-i\left[\hat{\mathbf{i}}\left(y\frac{\partial}{\partial z}-z\frac{\partial}{\partial y}\right)+\hat{\mathbf{j}}\left(z\frac{\partial}{\partial x}-x\frac{\partial}{\partial z}\right)+\hat{\mathbf{k}}\left(x\frac{\partial}{\partial y}-y\frac{\partial}{\partial x}\right)\right]\end{aligned}
+$$</div></p>
+<p>其中 <strong>i</strong>、<strong>j</strong>、<strong>k</strong> 分别是 X、Y、Z 方向的单位矢量。因此，跃迁磁偶极矩的 X 分量可显式定义如下。为得到实数值，去掉虚数和负号；符号 &quot;←&quot; 在 TDHF/TDDFT 形式中表示退激发 MO 对。</p>
+<p><div class="mathdisp" data-mi="40" title="点击复制 TeX">$$
+M_{x}=\left\langle\Phi^0\left|y\frac{\partial}{\partial z}-z\frac{\partial}{\partial y}\right|\Psi^{\mathrm{exc}}\right\rangle=\sum_{i\to a}w_i^a\left\langle\varphi_i\left|y\frac{\partial}{\partial z}-z\frac{\partial}{\partial y}\right|\varphi_a\right\rangle-\sum_{j\leftarrow b}w_j^{\prime b}\left\langle\varphi_j\left|y\frac{\partial}{\partial z}-z\frac{\partial}{\partial y}\right|\varphi_b\right\rangle
+$$</div></p>
+<p>$M_{y}$ 和 $M_{z}$ 可类似定义。注意要把上文给出的跃迁磁偶极矩（也是 Multiwfn 输出的）换为更常用的定义 $\frac{1}{2}i\left\langle {\psi}_{i}\middle|\mathbf{r}\times\mathbf{\nabla }\middle|{\psi}_{j} \right\rangle$，应手动除以 2。</p>
+<p>可通过关系 $M_{i}=\int m_{i}(\mathbf{r})\mathrm{d}\mathbf{r}\qquad i=x,y,z$ 定义跃迁磁偶极矩密度分量 $m_{i}$ (<strong>r</strong>)，从而跃迁磁偶极矩的分布可视化为<em>例如</em>等值面图。下面给出 X 分量 $m_{i}$ (<strong>r</strong>) 的显式表达式，Y 和 Z 分量可类似定义。</p>
+<p><div class="mathdisp" data-mi="41" title="点击复制 TeX">$$
+m_{\mathrm{x}}(\mathbf{r})=\sum_{i\to a}w_i^a\varphi_i(\mathbf{r})\left[y\frac{\partial\varphi_a}{\partial z}(\mathbf{r})-z\frac{\partial\varphi_a}{\partial y}(\mathbf{r})\right]-\sum_{j\leftarrow b}w_j^{\prime b}\varphi_j(\mathbf{r})\left[y\frac{\partial\varphi_b}{\partial z}(\mathbf{r})-z\frac{\partial\varphi_b}{\partial y}(\mathbf{r})\right]
+$$</div></p>
+<h4 id="理论-6空穴和电子之间的-coulomb-吸引激子结合能"><strong>理论 6：空穴和电子之间的 Coulomb 吸引（激子结合能）</strong></h4>
+<p>“电子”当然带负电，而“空穴”可视为带正电，因此形式上二者之间有 Coulomb 吸引能，其负值称为激子结合能，是正值。该项可用简单的 Coulomb 公式计算（原子单位形式）：</p>
+<p><div class="mathdisp" data-mi="42" title="点击复制 TeX">$$
+E_{\mathrm{C}}=\int\int\frac{\rho^{\mathrm{hole}}(\mathbf{r}_1)\rho^{\mathrm{ele}}(\mathbf{r}_2)}{\left|\mathbf{r}_1-\mathbf{r}_2\right|}\mathrm{d}\mathbf{r}_1\mathrm{d}\mathbf{r}_2
+$$</div></p>
+<p>关于激子结合能的讨论见<em>例如</em> <em>J. Chem. Phys.</em>, <strong>143</strong>, 244905 (2015) 和 <em>J. Phys. Chem. C</em>, <strong>121</strong>, 17088 (2017)。</p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>注意上式算出的激子结合能不同于另一种形式定义的激子结合能，即 $E_{C}$ =(IP-EA)- $E_{optical gap}$（更多细节见 <em>Mater. Horiz.</em>, <strong>1</strong>, 17 (2014)），因为实际的电子电离和电子亲合过程涉及电子相关和轨道弛豫效应；而且事实上 $E_{C}$ 中还有交换项（尽管空穴和电子分离显著时它可忽略）。计算 Multiwfn 中的激子结合能时忽略了所有这些因素。</p>
+</blockquote>
+<p>在 Multiwfn 中，上面积分直接基于空穴和电子的均匀分布格点数据计算。注意虽然代码已大幅优化并行化，计算代价仍高，因此计算时需耐心等待。代价形式上正比于格点数的平方；因此中等质量格点的代价比低质量格点高一个量级。</p>
+<h3 id="32112-用法与功能"><strong>3.21.1.2 用法与功能</strong></h3>
+<p>本模块所需的输入文件已在本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头详细介绍，即 Multiwfn 启动时载入含基函数信息的文件，再载入含激发态组态系数信息的文件。屏幕打印识别的激发态的总结，应选要做上述分析的激发态。每次只能分析一个态，若想分析另一态，应退出该功能再进入选另一态。</p>
+<p>本模块有很多功能，下面依次描述。</p>
+<h4 id="功能-1可视化并分析空穴电子和跃迁密度等"><strong>功能 1：可视化并分析空穴、电子和跃迁密度等</strong></h4>
+<p>进入该功能后，被要求设置格点数据，然后对空穴分布、电子分布、空穴和电子的重叠、跃迁密度、跃迁电/磁偶极矩密度、电荷密度差和 $C_{\mathrm{ele}}$ / $C_{\mathrm{hole}}$ 函数计算格点数据。</p>
+<p>格点数据算完后，基于均匀分布格点数据计算第 <a href="#32111-%E7%90%86%E8%AE%BA">3.21.1.1</a> 节介绍的各种量并显示在屏幕上，其意义应很容易理解。输出的跃迁电/磁偶极矩通过积分跃迁偶极矩密度的格点数据算出，值应与量子化学程序直接输出的很接近。空穴或电子在全空间积分的理想值为 1.0，而跃迁密度理想值为 0。若实际输出值偏离期望值太远，则打印的 <em>t</em> 指数、<em>H</em> 指数、<em>D</em> 指数、$S_{m}$ 指数等可能不可靠。有三个原因可能导致该问题：</p>
+<ul>
+<li><p>(1) 格点质量太差。应用更多格点数</p>
+</li>
+<li><p>(2) 格点数据的空间范围太窄，应增大外延距离使格点数据覆盖更广的区域</p>
+</li>
+<li><p>(3) 忘了用本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头提到的 <em>IOp(9/40=x)</em> 选项，结果只载入了极少量的组态系数</p>
+</li>
+</ul>
+<p>在后处理菜单中，空穴、电子、跃迁密度、$S_{m}$ / $S_{r}$ 等的格点数据可直接可视化为等值面图，或通过相应选项导出为当前文件夹下的 cube 文件。也可选相应选项计算空穴和电子分布之间的 Coulomb 吸引能，注意即使只选低质量格点该计算也很贵。</p>
+<p>默认不计算跃迁磁偶极矩密度，因为它不如跃迁电偶极矩密度重要。若想计算它，进入该功能前选选项 -1。</p>
+<p>对大体系，若格点数据的计算代价太高而只需定性查看空穴、电子、跃迁密度等的等值面图，在 Gaussian 中可放心用 <em>IOp(9/40=3)</em> 代替 <em>IOp(9/40=4)</em>，从而考虑更少组态。</p>
+<h4 id="功能-2显示分子轨道对空穴和电子分布的贡献"><strong>功能 2：显示分子轨道对空穴和电子分布的贡献</strong></h4>
+<p>只需输入打印阈值，就会显示 MO 对空穴和电子分布的贡献。该功能对识别哪些 MO 对空穴和电子有显著贡献很有用。下面是输出例子：</p>
+<p><pre><code class="language-text"> MO     126, Occ:   2.00000    Hole:  0.29664     Electron:  0.00000
+ MO     127, Occ:   2.00000    Hole:  0.19783     Electron:  0.00000
+ MO     128, Occ:   2.00000    Hole:  0.38666     Electron:  0.00000
+ MO     130, Occ:   0.00000    Hole:  0.00000     Electron:  0.08058
+ MO     131, Occ:   0.00000    Hole:  0.00000     Electron:  0.46282
+ MO     132, Occ:   0.00000    Hole:  0.00000     Electron:  0.16703
+ MO     133, Occ:   0.00000    Hole:  0.00000     Electron:  0.22976
+ Sum of hole:  1.00000    Sum of electron:  1.00000</code></pre></p>
+<h4 id="功能-3显示原子或片段对空穴和电子的贡献并把贡献绘制为热图"><strong>功能 3：显示原子或片段对空穴和电子的贡献并把贡献绘制为热图</strong></h4>
+<p>进入该功能后，屏幕打印第 <a href="#32111-%E7%90%86%E8%AE%BA">3.21.1.1</a> 节“理论 2”提到的许多量，下面是输出例子。原子贡献用 Mulliken 型划分得到。</p>
+<p><pre><code class="language-text">Contribution of each non-hydrogen atom to hole and electron:
+    1(C )  Hole:  1.37 %  Electron:  8.96 %  Overlap:  3.50 %  Diff.:   7.59 %
+    2(C )  Hole: 11.86 %  Electron:  0.74 %  Overlap:  2.97 %  Diff.: -11.11 %
+    3(C )  Hole:  8.96 %  Electron: 11.00 %  Overlap:  9.93 %  Diff.:   2.04 %
+...[ignored]
+   14(N )  Hole:  0.18 %  Electron: 23.80 %  Overlap:  2.07 %  Diff.:  23.62 %
+   15(O )  Hole:  3.07 %  Electron: 17.23 %  Overlap:  7.28 %  Diff.:  14.16 %
+   16(O )  Hole:  3.07 %  Electron: 17.23 %  Overlap:  7.28 %  Diff.:  14.16 %</code></pre></p>
+<p>输出中 &quot;Overlap&quot; 就是 &quot;Hole&quot; 和 &quot;Electron&quot; 的几何平均，而 &quot;Diff.&quot; 由 &quot;Electron&quot; 减 &quot;Hole&quot; 得到。由于氢一般不参与感兴趣的电子激发，默认忽略氢，但可通过 &quot;Toggle if taking hydrogens into account&quot; 选项切换状态。</p>
+<p>若需要分子片段对上述量的贡献，可选选项 &quot;-1 Load fragment definition&quot; 再依次输入片段数和每个片段的原子编号。片段定义也可从外部纯文本文件载入，其中每片段占一行，例如</p>
+<p><pre><code class="language-text">1,3,6-10,12
+2,4,5
+11
+13-15</code></pre></p>
+<p>该例子共定义四个片段，第一片段由原子 1,3,6,7,8,9,10,12 组成。片段定义完成后，片段对各种量的贡献立刻打印在屏幕上。</p>
+<p>原子/片段在空穴和电子中的组成以及各原子/片段空间中空穴-电子重叠可绘制为热图，从而非常生动展示其分布特征。下面是例子，颜色对应函数值，横坐标对应原子编号。</p>
+<p><img src="assets/figures/sec3-21/fig1-hole-electron-overlap-heatmap.png" alt="某体系 37 个激发的空穴、电子和重叠分布的热图，右侧为数值标尺"></p>
+<p>从图可立刻认出这是局域激发，因为空穴和电子大都在由原子 1-14 组成的片段上分布。特别地，原子 7 和 8 是对该电子激发贡献最大的原子。若在绘图前载入片段定义，则热图横坐标对应片段编号。菜单中还有调整色标、图的比例和 X 轴标签间隔的选项。</p>
+<p>该空穴-电子模块的非常详细的例子见第 <a href="sec-4-18-electron-excitation-analysis.html#4181-%E7%94%A8%E7%A9%BA%E7%A9%B4-%E7%94%B5%E5%AD%90%E5%88%86%E6%9E%90%E5%AE%8C%E6%95%B4%E8%A1%A8%E5%BE%81%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91">4.18.1</a> 节。用该模块分析跃迁密度和跃迁偶极矩密度的例子见第 <a href="sec-4-18-electron-excitation-analysis.html#41821-%E5%9C%A8%E5%AE%9E%E7%A9%BA%E9%97%B4%E5%88%86%E6%9E%90%E8%B7%83%E8%BF%81%E5%AF%86%E5%BA%A6%E5%92%8C%E8%B7%83%E8%BF%81%E5%81%B6%E6%9E%81%E7%9F%A9%E5%AF%86%E5%BA%A6">4.18.2.1</a> 节。更多讨论和例子见我的博客文章“使用 Multiwfn 做空穴-电子分析全面考察电子激发特征”（中文，<a href="http://sobereva.com/434">http://sobereva.com/434</a>）。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>见本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头。</p>
+</blockquote>
+<h2 id="3212-把各种原子片段跃迁矩阵绘制为热图-2"><strong>3.21.2 把各种原子/片段跃迁矩阵绘制为热图 (2)</strong></h2>
+<p>该功能用于把各种原子跃迁矩阵 (ATM, atom transition matrix) 绘制为热图（颜色填充矩阵图）。ATM 指任何表示两态之间电子跃迁信息的基于原子的矩阵。例如，它可对应基于原子的跃迁密度矩阵（见下）、原子-原子电荷转移矩阵、原子跃迁偶极矩矩阵等。在该功能中，ATM 还可进一步转为片段跃迁矩阵 (FTM) 再绘制为热图。</p>
+<p>虽然该功能也可绘制其它矩阵的热图，但开发该功能的主要目的是绘制基于原子或片段的跃迁密度矩阵，因此先介绍跃迁密度矩阵相关的理论。</p>
+<h3 id="关于跃迁密度矩阵-tdm-的理论"><strong>关于跃迁密度矩阵 (TDM) 的理论</strong></h3>
+<p>下面，“TDM”指基函数表示下的跃迁密度矩阵。基态与激发态之间的 TDM 可算为（为简单忽略退激发跃迁）</p>
+<p><div class="mathdisp" data-mi="43" title="点击复制 TeX">$$
+P_{\mu\nu}^{\mathrm{tran}}=\sum_{i}^{\mathrm{occ}}\sum_{a}^{\mathrm{vir}}w_i^a C_{\mu i}C_{\nu a}
+$$</div></p>
+<p>其中 $C_{\mu i}$ 表示 MO <em>i</em> 中基函数 <em>µ</em> 的展开系数。顺便值得注意的是实空间表示的 TDM（第 <a href="#32111-%E7%90%86%E8%AE%BA">3.21.1.1</a> 节介绍）可通过基函数表示的 TDM 轻松构建（<em>χ</em> 代表基函数）：</p>
+<p><div class="mathdisp" data-mi="44" title="点击复制 TeX">$$
+T(\mathbf{r};\mathbf{r}')=\sum_{\mu}\sum_{\nu}P_{\mu\nu}^{\mathrm{tran}}\chi_{\mu}(\mathbf{r})\chi_{\nu}(\mathbf{r}')
+$$</div></p>
+<p>TDM 的非对角元本质代表电子激发中各基函数之间的耦合。假设只有两个基函数同时激发可完美表示为 <em>i</em>→ $a$ MO 跃迁，则 TDM 可显式写为如下形式（注意元的编号已按 TDM 热图的惯例重排）</p>
+<p><div class="mathdisp" data-mi="45" title="点击复制 TeX">$$
+\mathbf{P}^{\mathrm{tran}}=\begin{bmatrix}1,2 & 2,2\\ 1,1 & 2,1\end{bmatrix}=\begin{bmatrix}C_{1i}C_{2a} & C_{2i}C_{2a}\\ C_{1i}C_{1a} & C_{2i}C_{1a}\end{bmatrix}
+$$</div></p>
+<p>若非对角元 ${P}_{1,2}^{\mathrm{tran}}$ 幅度大，意味着基函数 1 和 2 分别显著参与占据轨道 <em>i</em> 和虚轨道 $a$。更一般地，可说基函数 1 和 2 分别对空穴和电子有大贡献，此时两基函数在激发中强耦合。对角项也有意义，若元 ${P}_{\mu,\mu}^{\mathrm{tran}}$ 幅度大，意味着基函数 <em>µ</em> 必<em>同时</em>对空穴和电子都有大贡献。</p>
+<p>由于 TDM 一般不是对称矩阵，为使某些讨论更容易，一些论文用下面的对称化形式</p>
+<p><div class="mathdisp" data-mi="46" title="点击复制 TeX">$$
+\overline{\mathbf{P}}_{\mu\nu}^{\mathrm{tran}}=\frac{\mathbf{P}_{\mu\nu}^{\mathrm{tran}}+\mathbf{P}_{\nu\mu}^{\mathrm{tran}}}{\sqrt{2}}
+$$</div></p>
+<p>TDM 可按基函数与原子的对应关系收缩为基于原子的形式，记为 <strong>p</strong>。在 Multiwfn 中有以下构建方式：</p>
+<p><div class="mathdisp" data-mi="47" title="点击复制 TeX">$$
+\begin{gathered}\mathrm{Way}\ 1:\ p_{AB}=\sum_{\mu\in A}\sum_{\nu\in B}(P_{\mu\nu}^{\mathrm{tran}})^2\\ \mathrm{Way}\ 2:\ p_{AB}=\sqrt{\sum_{\mu\in A}\sum_{\nu\in B}(P_{\mu\nu}^{\mathrm{tran}})^2}\\ \mathrm{Way}\ 3:\ p_{AB}=\sum_{\mu\in A}\sum_{\nu\in B}\left|P_{\mu\nu}^{\mathrm{tran}}\right|\\ \mathrm{Way}\ 4:\ p_{AA}=\sum_{\mu\in A}\left|P_{\mu\mu}^{\mathrm{tran}}\right|,\qquad p_{A\neq B}^{\mathrm{tran}}=\sqrt{\sum_{\mu\in A}\sum_{\nu\in B}(P_{\mu\nu}^{\mathrm{tran}})^2}\end{gathered}
+$$</div></p>
+<p>其中 <em>µ</em> 和 <em>ν</em> 分别表示中心在原子 <em>A</em> 上和 <em>B</em> 上的基函数。这里可用原始形式和对称化形式的 TDM。</p>
+<p>若用方式 1，<strong>p</strong> 对应所谓相关电子-空穴几率图 (CEHPD, correlated electron-hole probability diagram) 的矩阵，其 (<em>A</em>,<em>B</em>) 元解释为同时在原子 <em>A</em> 发现空穴、在原子 <em>B</em> 发现电子的几率（该解释在一般情形不严格成立）*。*例子见 <em>J. Chem. Phys.</em>, <strong>113</strong>, 10002 (2000) 和 <em>J. Am. Chem. Soc.</em>, <strong>129</strong>, 14257 (2007)，其中作者用了 ZINDO 水平的 ${\bar{P}}_{\mu\nu}^{\mathrm{tran}}$。</p>
+<p>若 <strong>p</strong> 用方式 2、3 或 4 构建，所得矩阵可称为原子跃迁密度矩阵。例如方式 4 已用于 <em>Chem. Rev.</em>, <strong>102</strong>, 3171 (2002)。但按我的经验，推荐用方式 2 或 3，因为我发现方式 4 的对角项相对非对角项常太大。</p>
+<p>假设构建 <strong>p</strong> 用的 TDM 没有对称化，所得 <strong>p</strong> 的一般结构可表示为如下形式</p>
+<p><div class="mathdisp" data-mi="48" title="点击复制 TeX">$$
+\mathbf{p}\equiv\mathrm{electron}\begin{bmatrix}1,N & 2,N & \cdots & N,N\\ \vdots & \vdots & \ddots & \vdots\\ 1,2 & 2,2 & \cdots & N,2\\ 1,1 & 2,1 & \cdots & N,1\end{bmatrix}\ \ \mathrm{hole}
+$$</div></p>
+<p>与关于 TDM 的讨论完全类似，<strong>p</strong> 矩阵元的物理意义可粗略理解如下，不论具体选哪种构建 <strong>p</strong> 的方式：</p>
+<p>对角项：若 (<em>A</em>,<em>A</em>) 大，意味着原子 <em>A</em> 对空穴和电子都有大贡献，因此电子激发应在原子 <em>A</em> 内导致明显的电荷重组</p>
+<p>非对角项：若 (<em>A</em>,<em>B</em>) 大，则原子 <em>A</em> 应对空穴有大贡献同时原子 <em>B</em> 应对电子有大贡献，意味着电子激发导致从 <em>A</em> 到 <em>B</em> 的 CT</p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>上文提到的“空穴”和“电子”是高度抽象的概念，虽然它们与空穴-电子分析（第 <a href="#3211-%E5%88%86%E6%9E%90%E5%B9%B6%E5%8F%AF%E8%A7%86%E5%8C%96%E7%A9%BA%E7%A9%B4%E7%94%B5%E5%AD%90%E5%88%86%E5%B8%83%E8%B7%83%E8%BF%81%E5%AF%86%E5%BA%A6%E5%92%8C%E8%B7%83%E8%BF%81%E7%94%B5%E7%A3%81%E5%81%B6%E6%9E%81%E7%9F%A9%E5%AF%86%E5%BA%A6-1">3.21.1</a> 节）定义的物理意义相同，但不能期望任何一种上述方式定义的 <strong>p</strong> 的图像总是与原子-原子电荷转移矩阵很接近，后者定义严格得多且更有意义。</p>
+</blockquote>
+<p>若用对称化形式的 TDM 构建 <strong>p</strong>，则 <strong>p</strong> 不反映 CT 方向信息。此时若非对角项 (<em>A</em>,<em>B</em>)=(<em>B</em>,<em>A</em>) 大，可简单说激发中原子 <em>A</em> 与 <em>B</em> 之间的相干强，换言之，原子 <em>A</em> 与 <em>B</em> 之间发生电荷转移。</p>
+<p><strong>p</strong> 的热图对分析大尺寸高共轭分子特别有用。绘图一般省略氢以使图紧凑，因为氢很少参与感兴趣的电子激发。</p>
+<p>若定义了片段，<strong>p</strong>（或其它原子跃迁矩阵）可进一步收缩为基于片段的形式：</p>
+<p><div class="mathdisp" data-mi="49" title="点击复制 TeX">$$
+p_{RS}=\sum_{A\in\mathrm{frag}\ R}\sum_{B\in\mathrm{frag}\ S}p_{AB}
+$$</div></p>
+<p>当想研究各片段在电子激发中的作用时，该形式很方便。</p>
+<h3 id="输入文件"><strong>输入文件</strong></h3>
+<p>由于原子跃迁矩阵有不同类型，且矩阵可以不同方式传给 Multiwfn，有以下几种情形，应使用恰当的输入文件。Multiwfn 启动时载入的文件总是含基函数信息的文件，它应对应进入本功能时需载入的另一文件。</p>
+<ul>
+<li><p>(1) 按常规方式绘制 <strong>p</strong> 的热图</p>
+<p>进入该功能时应载入含激发态组态系数信息的文件（见本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头）。然后 Multiwfn 自动产生基态与所选激发态之间的 TDM，同时可选择是否按上述方式对称化所得 TDM。</p>
+</li>
+<li><p>(2) 基于 Gaussian 输出文件中记录的 TDM 绘制 <strong>p</strong> 的热图</p>
+<p>进入该功能时应载入电子激发任务的 Gaussian 输出文件。Gaussian 输入文件必须指定关键词 <em>density=transition=x IOp(6/8=3)</em>，从而 Gaussian 的 Link 601 在输出文件中打印基态与激发态 <em>x</em> 之间的 TDM。通过该方式，不仅可绘制 CIS/TDHF/TDA-DFT/TDDFT 的 TDM，还可绘制 EOM-CCSD 和半经验 ZINDO 方法产生的 TDM。</p>
+<blockquote>
+<p><strong>注 1</strong></p>
+<p>Gaussian 输出的 TDM 是上述对称化形式。</p>
+</blockquote>
+<blockquote>
+<p><strong>注 2</strong></p>
+<p>若基态是单重态而你用如 <em>TD=triplet</em> 让 Gaussian 算三重态激发态，则输出的 TDM 因自旋禁阻严格为零，Multiwfn 无法绘制相应的 TDM 图。但可绘制单重态-三重态 TDM 的空间部分。为此，应让 Multiwfn 自己产生 TDM，见 (1)。</p>
+</blockquote>
+<blockquote>
+<p><strong>注 3</strong></p>
+<p>若所用基组含弥散基函数，极少数情形 Gaussian 输出的 TDM 不正确，所得热图无用。</p>
+<p>总之，若用的方法不是 ZINDO，不要让 Multiwfn 从 Gaussian 输出文件直接载入 TDM。</p>
+</blockquote>
+</li>
+<li><p>(3) 基于纯文本文件中记录的 TDM 绘制 <strong>p</strong> 的热图</p>
+<p>进入该功能时应载入名为 <em>tdmat.txt</em> 的文件，Multiwfn 从该文件读 TDM。一般 <em>tdmat.txt</em> 由主功能 18 的子功能 9 产生（详见第 <a href="#3219-%E4%BA%A7%E7%94%9F%E5%B9%B6%E5%AF%BC%E5%87%BA%E8%B7%83%E8%BF%81%E5%AF%86%E5%BA%A6%E7%9F%A9%E9%98%B5-9">3.21.9</a> 节），它不仅能产生基态与激发态之间的 TDM，还能产生两激发态之间的 TDM。例子文件为 <em>examples\excit\tdmat.txt</em>。</p>
+</li>
+</ul>
+<p>对上述三种情形，可选择把 TDM 收缩为 <strong>p</strong> 的方式。</p>
+<ul>
+<li><p>(4) 绘制原子跃迁偶极矩矩阵</p>
+<p>进入该功能时应载入名为 <em>AAtrdip.txt</em>、<em>AAtrdipX.txt</em>、<em>AAtrdipY.txt</em>、<em>AAtrdipZ.txt</em> 之一的文件，Multiwfn 从该文件读原子跃迁偶极矩矩阵。一般它们由主功能 18 的子功能 11 产生（详见第 <a href="#32111-%E6%8A%8A%E8%B7%83%E8%BF%81%E7%94%B5%E7%A3%81%E5%81%B6%E6%9E%81%E7%9F%A9%E5%88%86%E8%A7%A3%E4%B8%BA%E5%9F%BA%E5%87%BD%E6%95%B0%E5%92%8C%E5%8E%9F%E5%AD%90%E8%B4%A1%E7%8C%AE-11">3.21.11</a> 节）。绘制这些矩阵的热图可轻松认出哪些原子和哪些原子间耦合显著影响跃迁偶极矩。</p>
+</li>
+<li><p>(5) 绘制原子-原子电荷转移矩阵</p>
+<p>进入该功能时应载入名为 <em>atmCTmat.txt</em> 的文件，Multiwfn 从该文件读原子-原子电荷转移矩阵。一般 <em>atmCTmat.txt</em> 由主功能 18 的子功能 8 产生（详见第 <a href="#3218-%E7%94%A8-ifct-%E6%96%B9%E6%B3%95%E8%AE%A1%E7%AE%97%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91%E4%B8%AD%E7%9A%84%E7%89%87%E6%AE%B5%E9%97%B4%E7%94%B5%E8%8D%B7%E8%BD%AC%E7%A7%BB-8">3.21.8</a> 节）。绘制这类矩阵的热图可直观认出各原子或片段之间的电荷转移以及电荷重组位置。</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>提示</strong></p>
+<p>事实上，也可让 <em>tdmat.txt</em> 或 <em>AAtrdip.txt</em>/<em>atmCTmat.txt</em> 含其它矩阵从而通过本模块绘制为热图。例如，可用主功能 9 的相应子功能把键级矩阵导出为 <em>bndmat.txt</em>，再重命名为 <em>atmCTmat.txt</em> 并删掉第一行，然后进入本模块时把该文件载入 Multiwfn，绘制的热图对应键级矩阵。</p>
+</blockquote>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>如上载入所有需要的文件并产生所有需要的数据后，进入绘制原子跃迁矩阵 (ATM) 热图的界面。有些选项自明，其它描述如下：</p>
+<ul>
+<li><p>选项 0：在屏幕显示 ATM 的热图。默认该图的横纵坐标标签对应非氢原子的编号。</p>
+</li>
+<li><p>选项 1：与选项 0 相同，但把热图保存为当前文件夹下的图形文件。</p>
+</li>
+<li><p>选项 3：把 ATM 导出为当前文件夹下的 <em>matrix.txt</em>，从而方便用 Origin 和 Sigmaplot 等第三方工具绘制。</p>
+</li>
+<li><p>选项 4：切换热图中是否包括氢的状态</p>
+</li>
+<li><p>选项 5：改变色标的上下限。默认自动设为 ATM 的最大和最小矩阵元。</p>
+</li>
+<li><p>选项 6：改变格点数据之间的插值步数。若想让图看起来光滑，应设大值（默认 10 已相当大）；若设为 1，则不做插值，此时图中每个方格恰对应一个矩阵元。</p>
+</li>
+<li><p>选项 8：确定是否归一化。若状态切换为 &quot;Yes&quot;，则用归一化因子使 ATM 所有元之和等于 1。</p>
+</li>
+</ul>
+<p>若选选项 &quot;-1 Define fragments&quot;，可直接输入片段定义或从纯文本文件载入，文件形如下面，每片段占一行：</p>
+<p><pre><code class="language-text">1,3,6-10,12
+2,4,5
+11
+13-15</code></pre></p>
+<p>然后 Multiwfn 把原子跃迁矩阵收缩为片段跃迁矩阵 (FTM)。之后，本模块要绘制或导出的矩阵是 FTM 而非 ATM</p>
+<p>绘制并研究 <strong>p</strong> 矩阵的例子见第 <a href="sec-4-18-electron-excitation-analysis.html#41822-%E7%BB%98%E5%88%B6%E5%B9%B6%E5%88%86%E6%9E%90%E8%B7%83%E8%BF%81%E5%AF%86%E5%BA%A6%E7%9F%A9%E9%98%B5-tdm">4.18.2.2</a> 节；分析跃迁偶极矩矩阵的例子见第 <a href="sec-4-18-electron-excitation-analysis.html#41823-%E7%BB%98%E5%88%B6%E5%B9%B6%E5%88%86%E6%9E%90%E8%B7%83%E8%BF%81%E5%81%B6%E6%9E%81%E7%9F%A9%E7%9F%A9%E9%98%B5">4.18.2.3</a> 节；绘制原子-原子电荷转移矩阵的例子见第 <a href="sec-4-18-electron-excitation-analysis.html#4188-%E7%94%A8-ifct-%E6%96%B9%E6%B3%95%E5%92%8C%E7%94%B5%E8%8D%B7%E8%BD%AC%E7%A7%BB%E7%9F%A9%E9%98%B5%E7%83%AD%E5%9B%BE%E7%A0%94%E7%A9%B6%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91%E4%B8%AD%E7%9A%84%E7%89%87%E6%AE%B5%E9%97%B4%E7%94%B5%E8%8D%B7%E8%BD%AC%E7%A7%BB">4.18.8</a> 节。</p>
+<h2 id="3213-基于密度差格点数据分析电荷转移-3"><strong>3.21.3 基于密度差格点数据分析电荷转移 (3)</strong></h2>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>在 <em>J. Chem. Theory Comput.</em>, <strong>7</strong>, 2498 (2011) 中，作者提出了分析电子跃迁中电荷转移 (CT) 的方法，本功能完整实现了该分析方法。该方法也可能用于研究其它过程中的 CT，如分子复合物的形成。原始论文中作者只讨论了电荷转移在一维的情形，而 Multiwfn 中该方案已推广到三维情形。此外，下面介绍的一些量不是原始论文提出的而是我提出的，原始论文中一些量的定义也被我修改以使分析更有意义。</p>
+<p>激发态 (EX) 与基态 (GS) 之间的电子密度变化为</p>
+<p><div class="mathdisp" data-mi="50" title="点击复制 TeX">$$
+\Delta\rho(\mathbf{r})=\rho_{\mathrm{EX}}(\mathbf{r})-\rho_{\mathrm{GS}}(\mathbf{r})
+$$</div></p>
+<p>注意算 $\rho_{\mathrm{EX}}$ 和 $\rho_{\mathrm{GS}}$ 用的几何必须相同，否则所得 Δ<em>ρ</em> 无意义。因此本功能只能用于表征“垂直”过程。Δ<em>ρ</em> 可分为正负两部分，即 <em>ρ</em>₊ 和 <em>ρ</em>₋。当然，<em>ρ</em>₊ 和 -<em>ρ</em>₋ 在全空间的积分应相等。若观察到明显不等，意味着数值积分误差不可忽略，需要更高质量的格点（<em>即</em> 更多格点数）。即使分析的是单电子激发，<em>ρ</em>₊ 和 <em>ρ</em>₋ 的大小及其在全空间的积分原则上也可大于 1.0，因为一个电子的激发必然导致其余电子分布的重组，它也对 Δ<em>ρ</em> 有贡献。</p>
+<p>转移电荷 $q_{\mathrm{CT}}$ 是 <em>ρ</em>₊ 和 <em>ρ</em>₋ 在全空间积分的幅度。正确认识该量的物理意义很重要。$q_{\mathrm{CT}}$ 只对应电子激发中分布被扰动的电荷总量，不对应从一片段到另一片段（<em>例如</em> 从给体基团到受体基团）的净电荷转移</p>
+<p>Δ<em>ρ</em> 正负部分的重心可算为</p>
+<p><div class="mathdisp" data-mi="51" title="点击复制 TeX">$$
+\begin{gathered}\mathbf{R}_{+}=\int\mathbf{r}\rho_{+}(\mathbf{r})\mathrm{d}\mathbf{r}/\int\rho_{+}(\mathbf{r})\mathrm{d}\mathbf{r}\\ \mathbf{R}_{-}=\int\mathbf{r}\rho_{-}(\mathbf{r})\mathrm{d}\mathbf{r}/\int\rho_{-}(\mathbf{r})\mathrm{d}\mathbf{r}\end{gathered}
+$$</div></p>
+<p>$R_{+}$ 的笛卡尔分量坐标下文称为 $X_{+}$、$Y_{+}$、$Z_{+}$，而 $R_{-}$ 的称为 $X_{-}$、$Y_{-}$、$Z_{-}$。</p>
+<p>两重心之间的距离衡量 CT 长度，其三个笛卡尔分量：</p>
+<p><div class="mathdisp" data-mi="52" title="点击复制 TeX">$$
+D_{x}=\left|X_{+}-X_{-}\right|\qquad D_{y}=\left|Y_{+}-Y_{-}\right|\qquad D_{z}=\left|Z_{+}-Z_{-}\right|
+$$</div></p>
+<p><em>D</em> 指数定义为 $\sqrt{(D_{x})^2+(D_{y})^2+(D_{z})^2}\equiv\left|\mathbf{R}_{+}-\mathbf{R}_{-}\right|$，表征总 CT 长度。</p>
+<p>电子激发导致的偶极矩变化可计算为</p>
+<p><div class="mathdisp" data-mi="53" title="点击复制 TeX">$$
+\begin{gathered}
+\Delta\mu_{X}=(X_{+}-X_{-})q_{\mathrm{CT}}\\
+\Delta\mu_{Y}=(Y_{+}-Y_{-})q_{\mathrm{CT}}\\
+\Delta\mu_{Z}=(Z_{+}-Z_{-})q_{\mathrm{CT}}
+\end{gathered}
+$$</div></p>
+<p><em>ρ</em>₊ 和 <em>ρ</em>₋ 在各方向分布的 RMSD 定义为</p>
+<p><div class="mathdisp" data-mi="54" title="点击复制 TeX">$$
+\sigma_{a,\lambda}=\sqrt{\frac{\int\rho_a(\mathbf{r})(\lambda'-\lambda_a)^2\mathrm{d}\mathbf{r}}{\int\rho_a(\mathbf{r})\mathrm{d}\mathbf{r}}}
+$$</div></p>
+<p>其中 $a$ ={+,-}，<em>λ’</em>={<em>x</em>,<em>y</em>,<em>z</em>}，<em>λ</em>={<em>X</em>, <em>Y</em>, <em>Z</em>}。<em>x</em>、<em>y</em> 和 <em>z</em> 是位置矢量 <strong>r</strong> 的笛卡尔分量。例如 <em>σ</em>$_{+,}$<em>$_{y}$</em> 可显式写为</p>
+<p><div class="mathdisp" data-mi="55" title="点击复制 TeX">$$
+\sigma_{+,y}=\sqrt{\frac{\int\rho_{+}(\mathbf{r})(y-Y_{+})^2\mathrm{d}\mathbf{r}}{\int\rho_{+}(\mathbf{r})\mathrm{d}\mathbf{r}}}
+$$</div></p>
+<p>X/Y/Z 方向 <em>ρ</em>₊ 与 <em>ρ</em>₋ 的 RMSD 之差可用 Δ$σ_{λ}$ 衡量，整体之差可用 Δ<em>σ</em> 指数衡量</p>
+<p><div class="mathdisp" data-mi="56" title="点击复制 TeX">$$
+\begin{gathered}\Delta\sigma_{\lambda}=\sigma_{+,\lambda}-\sigma_{-,\lambda}\qquad \lambda=\{x,y,z\}\\ \Delta\sigma\ \mathrm{index}=\left|\boldsymbol{\sigma}_{+}\right|-\left|\boldsymbol{\sigma}_{-}\right|\end{gathered}
+$$</div></p>
+<p>值得注意的是 <em>D</em> 指数对严格中心对称体系为零，因此对这类体系的 CT 问题讨论无用。但 Δ<em>σ</em> 指数常可用于识别这类激发，因为此时 Δ<em>σ</em> 指数必然大，因为 <em>ρ</em>₊ 的弥散程度远高于 <em>ρ</em>₋。</p>
+<p>$C_{+}$ 和 $C_{-}$ 函数旨在比 Δ<em>ρ</em> 更直观可视化 CT。它们的结构类似 Gaussian 函数，值从函数的质心向外渐近趋于零。</p>
+<p><div class="mathdisp" data-mi="57" title="点击复制 TeX">$$
+\begin{gathered}C_{+}(\mathbf{r})=A_{+}\exp\left(-\frac{(x-X_{+})^2}{2\sigma_{+,x}^2}-\frac{(y-Y_{+})^2}{2\sigma_{+,y}^2}-\frac{(z-Z_{+})^2}{2\sigma_{+,z}^2}\right)\\ C_{-}(\mathbf{r})=A_{-}\exp\left(-\frac{(x-X_{-})^2}{2\sigma_{-,x}^2}-\frac{(y-Y_{-})^2}{2\sigma_{-,y}^2}-\frac{(z-Z_{-})^2}{2\sigma_{-,z}^2}\right)\end{gathered}
+$$</div></p>
+<p>引入归一化因子 <em>A</em> 使 $C_{+}$ 和 $C_{-}$ 在全空间的积分分别等于 <em>ρ</em>₊ 和 <em>ρ</em>₋ 的。</p>
+<p>$H_{λ}$ 衡量 X/Y/Z 方向 <em>ρ</em>₋ 和 <em>ρ</em>₊ 空间扩展的平均程度，$H_{\mathrm{CT}}$ 是 CT 方向的，<em>H</em> 指数是整体衡量：</p>
+<p><div class="mathdisp" data-mi="58" title="点击复制 TeX">$$
+\begin{gathered}H_{\lambda}=(\sigma_{+,\lambda}+\sigma_{-,\lambda})/2\qquad \lambda=\{x,y,z\}\\ H_{\mathrm{CT}}=\left|\mathbf{H}\cdot\mathbf{u}_{\mathrm{CT}}\right|\\ H\ \mathrm{index}=\left(\left|\boldsymbol{\sigma}_{+}\right|+\left|\boldsymbol{\sigma}_{-}\right|\right)/2\end{gathered}
+$$</div></p>
+<p>其中 $u_{\mathrm{CT}}$ 是 CT 方向的单位矢量，可用 <em>ρ</em>₋ 和 <em>ρ</em>₊ 的质心直接导出。</p>
+<p><em>t</em> 指数衡量 <em>ρ</em>₊ 和 <em>ρ</em>₋ 的分离程度：</p>
+<p><div class="mathdisp" data-mi="59" title="点击复制 TeX">$$
+t\ \mathrm{index}=D\ \mathrm{index}-H_{\mathrm{CT}}
+$$</div></p>
+<p>若 <em>t</em> 指数$<0$，意味着 <em>ρ</em>₋ 和 <em>ρ</em>₊ 没有因 CT 而实质分离。<em>ρ</em>₋ 和 <em>ρ</em>₊ 分布的明显分离必然对应明显为正的 <em>t</em> 指数。</p>
+<p>我定义了另一个量衡量 $C_{+}$ 和 $C_{-}$ 之间的重叠程度：</p>
+<p><div class="mathdisp" data-mi="60" title="点击复制 TeX">$$
+S_{+-}=\int\sqrt{C_{+}(\mathbf{r})/A_{+}}\sqrt{C_{-}(\mathbf{r})/A_{-}}\mathrm{d}\mathbf{r}
+$$</div></p>
+<p>若该值等于 1，意味着两函数完全叠加，若为零，表明其分布完全分离。该指数无量纲。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>由于上述所有数值积分都基于均匀分布格点数据计算，用户需用主功能 5 的自定义操作产生 Δ<em>ρ</em> 的格点数据，见第 <a href="sec-3-7-custom-operation-promolecular-and-deformation-properties.html#371-%E5%A4%9A%E4%B8%AA%E6%B3%A2%E5%87%BD%E6%95%B0%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E6%93%8D%E4%BD%9C-custom-operation-for-multiple-wavefunctions0">3.7.1</a> 节，或在 Multiwfn 启动时载入含密度差格点数据的文件（<em>例如</em> cube 文件）。之后进入主功能 18 的子功能 3，上述所有量立刻显示在屏幕上。“Overlap integral between C+ and C-”项就是上文介绍的 $S_{+-}$。在后处理菜单中，用户可选择可视化 $C_{+}$ 和 $C_{-}$，或把两函数的格点数据导出为当前文件夹下的 cube 文件。</p>
+<p>例子见第 <a href="sec-4-18-electron-excitation-analysis.html#4183-%E5%9F%BA%E4%BA%8E%E7%94%B5%E5%AD%90%E5%AF%86%E5%BA%A6%E5%B7%AE%E5%88%86%E6%9E%90%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91%E4%B8%AD%E7%9A%84%E7%94%B5%E8%8D%B7%E8%BD%AC%E7%A7%BB">4.18.3</a> 节。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>电子密度差的格点数据</p>
+</blockquote>
+<h2 id="3214-计算-r-指数衡量电荷转移长度-4"><strong>3.21.4 计算 ∆r 指数衡量电荷转移长度 (4)</strong></h2>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>在 <em>J. Chem. Theory Comput.</em>, <strong>9</strong>, 3118 (2013) 中，提出了 Δ<em>r</em> 指数衡量电子激发中的 CT 长度。Δ<em>r</em> 可表示为</p>
+<p><div class="mathdisp" data-mi="61" title="点击复制 TeX">$$
+\Delta r=\sum_{i,a}\Delta r_i^a
+$$</div></p>
+<p>其中 $\Delta {r}_{i}^{a}$ 是 <em>i</em> 与 $a$ 之间轨道跃迁对 Δ<em>r</em> 指数的贡献：</p>
+<p><div class="mathdisp" data-mi="62" title="点击复制 TeX">$$
+\Delta r_i^a=\frac{(K_i^a)^2}{\sum_{i,a}(K_i^a)^2}\left|\left\langle\varphi_a\left|\mathbf{r}\right|\varphi_a\right\rangle-\left\langle\varphi_i\left|\mathbf{r}\right|\varphi_i\right\rangle\right|
+$$</div></p>
+<p>编号 <em>i</em> 和 $a$ 分别遍历所有占据和虚 MO。$\varphi$ 是轨道波函数。假设算电子激发用的方法是 CIS 或 Tamm-Dancoff 近似下的 TDDFT，则 ${K}_{i}^{a}$ 就是 <em>i</em>→ $a$ 激发的组态系数。而若用的方法是 TDHF 或 TDDFT，则 ${K}_{i}^{a}={w}_{i}^{a}+{w'}_{i}^{a}$，其中 ${w}_{i}^{a}$ 和 ${w'}_{i}^{a}$ 分别表示 <em>i</em>→ $a$ 激发和 <em>i</em>← $a$ 退激发的组态系数。</p>
+<p>Δ<em>r</em> 对诊断某些 DFT 泛函在 TDDFT 中何时失效特别有用。Δ<em>r</em> 大时，BLYP 和 PBE 等纯泛函以及 B3LYP 和 PBE0 等低 Hartree-Fock 交换成分的杂化泛函效果不好。此时应用长程校正泛函；例如 CAM-B3LYP 和 <em>ω</em>B97XD。</p>
+<p>值得一提的是，若电子激发可完美表示为一对 MO 跃迁，则 Δ<em>r</em> 指数与空穴-电子分析框架定义的 <em>D</em> 指数原则上严格相同：</p>
+<p><div class="mathdisp" data-mi="63" title="点击复制 TeX">$$
+\begin{gathered}\Delta r=\left|\left\langle\varphi_a\left|\mathbf{r}\right|\varphi_a\right\rangle-\left\langle\varphi_i\left|\mathbf{r}\right|\varphi_i\right\rangle\right|\equiv\left|\int\mathbf{r}\left|\varphi_a(\mathbf{r})\right|^2\mathrm{d}\mathbf{r}-\int\mathbf{r}\left|\varphi_i(\mathbf{r})\right|^2\mathrm{d}\mathbf{r}\right|\\ D\ \mathrm{index}=\left|\mathbf{D}\right|=\left|\int\mathbf{r}\rho^{\mathrm{ele}}(\mathbf{r})\mathrm{d}\mathbf{r}-\int\mathbf{r}\rho^{\mathrm{hole}}(\mathbf{r})\mathrm{d}\mathbf{r}\right|=\left|\int\mathbf{r}\left|\varphi_a(\mathbf{r})\right|^2\mathrm{d}\mathbf{r}-\int\mathbf{r}\left|\varphi_i(\mathbf{r})\right|^2\mathrm{d}\mathbf{r}\right|\end{gathered}
+$$</div></p>
+<p>但 Multiwfn 输出的值应略有不同，因为它们基于不同的数值积分算法计算。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>本模块所需的输入文件已在本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头详细介绍，即 Multiwfn 启动时载入含基函数信息的文件，再载入含激发态组态系数信息的文件。</p>
+<p>进入本功能（主功能 18 的子功能 4）后，会被提示选择要算 Δ<em>r</em> 的激发态，结果立刻打印在屏幕上。</p>
+<p>若只选了一个态，Multiwfn 会询问是否把 Δ<em>r</em> 分解为轨道对贡献。若输入<em>例如</em> 0.01，则打印对 Δ<em>r</em> 贡献大于 0.01 的轨道对。从输出可轻松识别哪些轨道对对电子激发的电荷转移有显著贡献。</p>
+<p>本功能的例子见第 <a href="sec-4-18-electron-excitation-analysis.html#4184-%E8%AE%A1%E7%AE%97-r-%E5%92%8C-%CE%BB-%E6%8C%87%E6%A0%87%E8%A1%A8%E5%BE%81-n-%E8%8B%AF%E5%9F%BA%E5%90%A1%E5%92%AF%E7%9A%84%E5%90%84%E7%A7%8D%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91">4.18.4</a> 节。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>见本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头。</p>
+</blockquote>
+<h2 id="3215-计算所有态之间的跃迁电磁偶极矩和每个态的偶极矩-5"><strong>3.21.5 计算所有态之间的跃迁电/磁偶极矩和每个态的偶极矩 (5)</strong></h2>
+<p>该功能用于计算所有态（包括基态和激发态）之间的跃迁电/磁偶极矩。该功能还能打印每个态的电偶极矩。</p>
+<p>对跃迁 <em>i</em> → <em>j</em>，跃迁电偶极矩定义为 $\left\langle {\psi}_{i}\middle|\mathbf{-r}\middle|{\psi}_{j} \right\rangle$；当 <em>i</em>=<em>j</em> 时，该量对应此态电子贡献的电偶极矩。跃迁磁偶极矩定义为 $\frac{1}{2}i\left\langle {\psi}_{i}\middle|\mathbf{r}\times\mathbf{\nabla }\middle|{\psi}_{j} \right\rangle$，但该功能输出的矩只对应 $\left\langle {\psi}_{i}\middle|\mathbf{r}\times\mathbf{\nabla }\middle|{\psi}_{j} \right\rangle$，与 Gaussian 中电子激发计算输出的值相同。</p>
+<p>本功能所需的输入文件已在本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头详细介绍，即 Multiwfn 启动时载入含基函数信息的文件，再载入含激发态组态系数信息的文件。若需要非常准确的跃迁偶极矩，应用 Gaussian 的 <em>IOp(9/40=5)</em> 关键词或 ORCA 的 <em>TPrint 1E-10</em> 关键词让程序打印尽可能多的组态系数。</p>
+<p>进入本功能后，打印所有激发的总结。“Normalization”应尽量接近期望值（闭壳和开壳参考态分别为 0.5 和 1.0）。若偏离大，则所得跃迁偶极矩必然误差大，必须让量子化学程序输出更多组态系数。</p>
+<p>在界面中可用选项 0 选择要算的（跃迁）偶极矩类型，默认是电，可换为磁。可用选项 1 ~ 4 选择要做的任务，见下，其中选项 3 和 4 仅在要算的（跃迁）偶极矩设为电时可用。</p>
+<ul>
+<li><p>选项 1：输出所有态（包括基态和激发态）之间的跃迁电偶极矩到屏幕</p>
+</li>
+<li><p>选项 2：与 1 相同，但输出到当前文件夹下的 <em>transdipmom.txt</em>。</p>
+</li>
+<li><p>选项 3：产生 Multiwfn 的 SOS 模块的输入文件作当前文件夹下的 <em>SOS.txt</em>。然后若用 <em>SOS.txt</em> 作输入文件，可用 SOS 模块计算（超）极化率，详见第 <a href="sec-3-27-hyperpolarizability-analysis.html#3272-%E7%94%A8%E6%80%81%E6%B1%82%E5%92%8C-sos-%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6%E8%B6%85%E6%9E%81%E5%8C%96%E7%8E%87%E5%8F%8A%E4%B8%A4%E4%B8%89%E8%83%BD%E7%BA%A7%E6%A8%A1%E5%9E%8B%E5%88%86%E6%9E%90">3.27.2</a> 节。</p>
+</li>
+<li><p>选项 4：输出每个激发态的电偶极矩到当前文件夹下的 <em>dipmom.txt</em>。注意该值同时考虑电子和核的贡献（这与选项 1 和 2 打印的 <em>i</em>=<em>j</em> 情形的值明显不同，后者只考虑电子的贡献）。</p>
+</li>
+</ul>
+<p>所有任务的计算过程分三阶段：</p>
+<ul>
+<li><p>阶段 1：计算所有基函数之间的偶极矩积分</p>
+</li>
+<li><p>阶段 2：计算所有 MO 之间的偶极矩积分</p>
+</li>
+<li><p>阶段 3：计算所有激发态之间的偶极矩积分。一般这是最耗时的步骤。</p>
+</li>
+</ul>
+<p>若量子化学程序的输出文件同时包括单重态和三重态激发态，例如参考态是闭壳而你在 Gaussian 中用了 <em>TD(50-50)</em> 关键词，则上述任务只有 (1) 和 (2) 可用，Multiwfn 分别计算输出所有单重态-单重态对（包括基态）和三重态-三重态对的跃迁偶极矩，而单重态-三重态对被忽略，因为自旋禁阻结果必为零。此外，输出末尾打印 S0 与所有激发态之间的激发能。该功能若想用 PySOC 程序算自旋-轨道耦合矩阵元非常重要，见我的博客文章“使用 Gaussian+PySOC 计算 TDDFT 下的自旋-轨道耦合矩阵元”（<a href="http://sobereva.com/411">http://sobereva.com/411</a>，中文）。</p>
+<p><em>settings.ini</em> 中有参数 &quot;maxloadexc&quot;，若该值不为 0（默认）且实际激发态数高于该值，则只载入前 &quot;maxloadexc&quot; 个激发态做跃迁电偶极矩计算。</p>
+<p>对大体系算激发态之间的跃迁偶极矩相当耗时。但若只需要基态与激发态之间的，数据总能快速算出。此时，开始计算前应选选项“-1: Toggle if only calculating between ground and excited states”将其状态改为“Yes”，则不计算打印激发态之间的跃迁偶极矩。</p>
+<p>该功能的例子见第 <a href="sec-4-18-electron-excitation-analysis.html#4185-%E8%AE%A1%E7%AE%97-4-%E7%A1%9D%E5%9F%BA%E8%8B%AF%E8%83%BA%E5%90%84%E6%BF%80%E5%8F%91%E6%80%81%E7%9A%84%E5%81%B6%E6%9E%81%E7%9F%A9%E5%92%8C%E6%89%80%E6%9C%89%E6%80%81%E4%B9%8B%E9%97%B4%E7%9A%84%E8%B7%83%E8%BF%81%E5%81%B6%E6%9E%81%E7%9F%A9">4.18.5</a> 节。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>见本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头。</p>
+</blockquote>
+<h3 id="附录"><strong>附录</strong></h3>
+<p>本功能用的推导电子态之间跃迁电/磁偶极矩的公式给出如下</p>
+<p>(1) 基态与激发态 <em>K</em> 之间的跃迁电偶极矩：</p>
+<p><div class="mathdisp" data-mi="64" title="点击复制 TeX">$$
+\mathbf{D}_{0\to K}=\left\langle\Psi_0\left|-\mathbf{r}\right|\Psi_K\right\rangle=\sum_{i}^{\mathrm{occ}}\sum_{a}^{\mathrm{vir}}w_{i,a}^{K}\left\langle\varphi_i\left|-\mathbf{r}\right|\varphi_a\right\rangle+\sum_{i}^{\mathrm{occ}}\sum_{a}^{\mathrm{vir}}w_{i,a}^{\prime K}\left\langle\varphi_i\left|-\mathbf{r}\right|\varphi_a\right\rangle
+$$</div></p>
+<p>其中 <em>w</em> 和 <em>w’</em> 分别是激发和退激发组态的系数。<em>i</em> 和 $a$ 分别表示占据和非占据分子轨道的编号。</p>
+<p>(2) 基态与激发态 <em>K</em> 之间的跃迁磁偶极矩：</p>
+<p><div class="mathdisp" data-mi="65" title="点击复制 TeX">$$
+\mathbf{M}_{0\to K}=\left\langle\psi_0\left|\mathbf{r}\times\nabla\right|\psi_K\right\rangle=\sum_{i}^{\mathrm{occ}}\sum_{a}^{\mathrm{vir}}w_{i,a}^{K}\left\langle\varphi_i\left|\mathbf{r}\times\nabla\right|\varphi_a\right\rangle-\sum_{i}^{\mathrm{occ}}\sum_{a}^{\mathrm{vir}}w_{i,a}^{\prime K}\left\langle\varphi_i\left|\mathbf{r}\times\nabla\right|\varphi_a\right\rangle
+$$</div></p>
+<p>为什么计算电和磁跃迁偶极矩时对激发和退激发的处理不同，见 <em>J. Chem. Phys.</em>, <strong>66</strong>, 3460 (1977) 的 Eqs. 22 和 24。</p>
+<p>(3) 激发态 <em>K</em> 与 <em>L</em> 之间的跃迁电/磁偶极矩：</p>
+<p><div class="mathdisp" data-mi="66" title="点击复制 TeX">$$
+\mathbf{T}_{K\to L}=\left\langle\psi_K\left|\hat{\mathbf{v}}\right|\psi_L\right\rangle=\sum_{i}^{\mathrm{occ}}\sum_{a}^{\mathrm{vir}}\tilde{w}_{i,a}^{K}\sum_{j}^{\mathrm{occ}}\sum_{b}^{\mathrm{vir}}\tilde{w}_{j,b}^{L}V^{iajb}
+$$</div></p>
+<p>其中</p>
+<p><div class="mathdisp" data-mi="67" title="点击复制 TeX">$$
+\begin{gathered}V^{iajb}=\left\{\begin{gathered}\left\langle\varphi_i\left|\hat{\mathbf{v}}\right|\varphi_a\right\rangle\qquad (i=j,a\neq b)\\ -\left\langle\varphi_i\left|\hat{\mathbf{v}}\right|\varphi_a\right\rangle\qquad (i\neq j,a=b)\\ \mathbf{v}^0-\left\langle\varphi_i\left|\hat{\mathbf{v}}\right|\varphi_i\right\rangle+\left\langle\varphi_a\left|\hat{\mathbf{v}}\right|\varphi_a\right\rangle\qquad (i=j,a=b)\\ 0\qquad (i\neq j,a\neq b)\end{gathered}\right.\\ \mathbf{v}^0=\sum_{l}^{\mathrm{occ}}\eta_l\left\langle\varphi_l\left|\hat{\mathbf{v}}\right|\varphi_l\right\rangle\end{gathered}
+$$</div></p>
+<p>其中 $\tilde{w}$ 表示 <em>w</em> 和 <em>w’</em>。$v^{0}$ 对应 <em>η</em> 为轨道占据数的基态性质。算符 $\hat{\mathbf{v}}=-\mathbf{r}$ 是跃迁电偶极矩的，$\hat{\mathbf{v}}=\mathbf{r}\times \mathrm{\nabla }$ 是跃迁磁偶极矩的。对 TD 情形，激发与退激发组态之间的 <em>V</em> 项直接忽略。此外，算退激发组态之间的 <em>V</em> 时，换为 −<em>V</em>。</p>
+<h2 id="3216-产生自然跃迁轨道-ntos-6"><strong>3.21.6 产生自然跃迁轨道 (NTOs) (6)</strong></h2>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>该功能用于产生自然跃迁轨道 (NTOs, natural transition orbitals)。NTO 提出于 <em>J. Chem. Phys.</em>, <strong>118</strong>, 4775 (2003)，已成为分析单参考方法得到的电子激发特征的非常流行有用的方式。</p>
+<p>电子态的跃迁常不只由一对 MO 主导，很多情形多个 MO 对跃迁同时有不可忽略的贡献，可计算为相应组态系数的平方。该事实给通过直接可视化相关 MO 分析电子激发特征带来很大障碍。NTO 方法旨在缓解该困难，它对占据 MO 和虚 MO 分别做幺正变换，从而只有一对或极少数轨道对有主导贡献。</p>
+<p>产生 NTO 的基本流程概述如下：</p>
+<p>(1) 产生 MO 基下的跃迁密度矩阵 (<strong>T</strong>)。假设体系有 $n_{\mathrm{occ}}$ 个占据 MO 和 $n_{\mathrm{vir}}$ 个虚 MO，则 <strong>T</strong> 的维数是 ( $n_{\mathrm{occ}}$ , $n_{\mathrm{vir}}$ )，其 (<em>i</em>,<em>l</em>) 元简单构建为</p>
+<p><div class="mathdisp" data-mi="68" title="点击复制 TeX">$$
+T_{i,l}=w_i^a
+$$</div></p>
+<p>其中 $i<n_{\mathrm{occ}}$，$l<n_{\mathrm{vir}}$，$a=l+n_\mathrm{occ}$。${w}_{i}^{a}$ 代表 $i\to a$ 轨道跃迁对应的组态系数。注意对 TD 形式，可能有些退激发，构建 <strong>T</strong> 时直接忽略其组态系数。</p>
+<p>(2) 分别产生占据和虚轨道的临时矩阵</p>
+<p><div class="mathdisp" data-mi="69" title="点击复制 TeX">$$
+\mathbf{T}_{\mathrm{occ}}=\mathbf{T}\mathbf{T}^{\mathrm{T}}\qquad \mathbf{T}_{\mathrm{vir}}=\mathbf{T}^{\mathrm{T}}\mathbf{T}
+$$</div></p>
+<p>显然，$T_{\mathrm{occ}}$ 和 $T_{\mathrm{vir}}$ 都是方阵，维数分别是 $n_{\mathrm{occ}}$ 和 $n_{\mathrm{vir}}$。</p>
+<p>(3) 对角化 $T_{\mathrm{occ}}$ 和 $T_{\mathrm{vir}}$ 得本征值和本征矢</p>
+<p><div class="mathdisp" data-mi="70" title="点击复制 TeX">$$
+\mathbf{U}_{\mathrm{occ}}^{-1}\mathbf{T}_{\mathrm{occ}}\mathbf{U}_{\mathrm{occ}}=\Lambda_{\mathrm{occ}}\qquad \mathbf{U}_{\mathrm{vir}}^{-1}\mathbf{T}_{\mathrm{vir}}\mathbf{U}_{\mathrm{vir}}=\Lambda_{\mathrm{vir}}
+$$</div></p>
+<p>(4) <strong>Λ</strong>$_{occ}$ 和 <strong>Λ</strong>$_{vir}$ 的对角项分别是占据和虚 NTO 的本征值。对前者，本征值一般从小到大排序，而对后者，本征值一般从大到小排序。NTO 对由共享相同本征值的占据 NTO 和虚 NTO 组成。NTO 对的本征值乘 100 就是其对电子激发的百分比贡献。</p>
+<p>对 CIS 和 TDA-DFT，本征值范围必为 0.0~1.0。但在 TDHF 和 TDDFT 情形，由于存在退激发，而 NTO 分析没有显式考虑它，NTO 对的本征值可能略大于 1.0，此时可直接视为 1.0（但若该值远大于 1.0，TDDFT 结果可能不可靠，建议改用 TDA-DFT）。</p>
+<p>(5) MO 通过幺正变换矩阵 <strong>U</strong> 变换为 NTO</p>
+<p><div class="mathdisp" data-mi="71" title="点击复制 TeX">$$
+\mathbf{C}_{\mathrm{occ}}^{\mathrm{NTO}}=\mathbf{C}_{\mathrm{occ}}^{\mathrm{MO}}\mathbf{U}_{\mathrm{occ}}\qquad \mathbf{C}_{\mathrm{vir}}^{\mathrm{NTO}}=\mathbf{C}_{\mathrm{vir}}^{\mathrm{MO}}\mathbf{U}_{\mathrm{vir}}
+$$</div></p>
+<p>其中 ${\mathbf{C}}_{\mathrm{occ}}^{\mathrm{MO}}$ 和 ${\mathbf{C}}_{\mathrm{vir}}^{\mathrm{MO}}$ 分别是原基函数下占据 MO 和虚 MO 的系数矩阵；其列对应不同的 MO。带 NTO 上标的对应矩阵表示占据和虚 NTO 的系数矩阵。</p>
+<h3 id="实现与用法"><strong>实现与用法</strong></h3>
+<p>本功能所需的输入文件已在本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头详细介绍，即 Multiwfn 启动时载入含基函数信息的文件，再载入含激发态组态系数信息的文件。</p>
+<p>进入本功能后，应输入要研究的电子激发的编号，然后 Multiwfn 载入相应的组态系数并按上式产生 NTO，再输出 NTO 对的本征值。接下来，可选择是否把 NTO 导出为 .fch/.molden/.mwfn 文件。若选择导出，就可用 Multiwfn 载入新产生的文件以可视化 NTO、分析 NTO 轨道组成等（注意此时轨道能量字段中的数据实际是 NTO 本征值）。</p>
+<p>本功能对限制性和非限制性参考态都有效；对后者，Alpha 部分和 Beta 部分的结果分别计算打印，只需关注本征值最大的 NTO 对（<em>例如</em> Alpha 部分最大本征值是 0.03，而 Beta 部分最大本征值是 0.95，意味着该电子激发由 Beta NTO 对的跃迁主导）</p>
+<p>按我的经验，NTO 分析常与第 <a href="#3211-%E5%88%86%E6%9E%90%E5%B9%B6%E5%8F%AF%E8%A7%86%E5%8C%96%E7%A9%BA%E7%A9%B4%E7%94%B5%E5%AD%90%E5%88%86%E5%B8%83%E8%B7%83%E8%BF%81%E5%AF%86%E5%BA%A6%E5%92%8C%E8%B7%83%E8%BF%81%E7%94%B5%E7%A3%81%E5%81%B6%E6%9E%81%E7%9F%A9%E5%AF%86%E5%BA%A6-1">3.21.1</a> 节介绍的空穴-电子分析效果相当，即二者都能避免讨论电子激发时查看许多 MO 的必要。NTO 分析相对空穴-电子分析的额外优点是保留了轨道相位信息；但在某些情形 NTO 分析完全失效，即从 MO 变换到 NTO 表示后仍没有占主导的轨道对跃迁。显然此时必须求助空穴-电子分析。</p>
+<p>产生并分析 NTO 的例子见第 <a href="sec-4-18-electron-excitation-analysis.html#4186-%E4%BA%A7%E7%94%9F%E5%B9%B6%E5%88%86%E6%9E%90%E5%B0%BF%E5%98%A7%E5%95%B6%E7%9A%84%E8%87%AA%E7%84%B6%E8%B7%83%E8%BF%81%E8%BD%A8%E9%81%93-nto">4.18.6</a> 节。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>见本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头</p>
+</blockquote>
+<h2 id="3217-计算-ghost-hunter-指数-7"><strong>3.21.7 计算 ghost-hunter 指数 (7)</strong></h2>
+<h3 id="理论背景"><strong>理论背景</strong></h3>
+<p>ghost 态是由纯 DFT 泛函或低 Hartree-Fock 交换成分杂化泛函的交换势在长程电子相互作用中渐近行为明显不正确导致的虚假的很低的电荷转移 (CT) 激发态，其激发波长一般在 1000 nm 或更长。由于 ghost 态不是真实的态，讨论电子激发和绘制电子光谱时应忽略它们。当识别出 ghost 态后，应采用相对高全局 HF 交换成分的 DFT 泛函（<em>例如</em> M06-2X 和 BH&amp;HLYP），或长程校正泛函（<em>例如</em> ωB97XD），或在电子相互作用长程有高 HF 交换成分的 range-separated 泛函（<em>例如</em> CAM-B3LYP），以消除它们。</p>
+<p>CT 态的 TDDFT 激发能下限可表示为</p>
+<p><div class="mathdisp" data-mi="72" title="点击复制 TeX">$$
+{\omega}_{\mathrm{low}}={IP}_{D}-{EA}_{A}-1/R
+$$</div></p>
+<p>其中 $\mathit{IP}_{D}$ 是电子给体部分的电离势（拉出一个电子的能量消耗），$\mathit{EA}_{A}$ 是电子受体部分的电子亲合势（其负值是接收电子带来的能量降低），<em>R</em> 表示 CT 激发后空穴和电子之间的静电相互作用。按 Koopmans 定理，<em>IP</em>≈−ε$_{HOMO}$，<em>EA</em>≈−ε$_{LUMO}$，并假设激发完全对应 HOMO→LUMO 跃迁，其中 HOMO 和 LUMO 分别完全定域在给体和受体区，有</p>
+<p><div class="mathdisp" data-mi="73" title="点击复制 TeX">$$
+{\omega}_{\mathrm{low}}\approx -{\varepsilon}_{\mathrm{HOMO}}+{\varepsilon}_{\mathrm{LUMO}}-1/R
+$$</div></p>
+<p>实际中电子激发由多个轨道跃迁贡献，因此应用加权 MO 能量。此外，<em>R</em> 可用 $D_{\mathrm{CT}}$ 指数估计（见后）。于是上式可转为</p>
+<p><div class="mathdisp" data-mi="74" title="点击复制 TeX">$$
+\omega_{\mathrm{low}}=\underbrace{\sum_{i,a}\left[\frac{\left(w_i^a\right)^2}{\sum_{i,a}\left(w_i^a\right)^2}\left(\varepsilon_a-\varepsilon_i\right)\right]}_{\mathrm{term}\ 1}-\underbrace{\frac{1}{D_{\mathrm{CT}}}}_{\mathrm{term}\ 2}
+$$</div></p>
+<p>其中 <em>i</em> 和 $a$ 分别表示占据和虚 MO。求和遍历所有 TDDFT 组态。<em>w</em> 是组态系数。<em>ε</em> 代表 MO 能量。</p>
+<p>在 <em>J. Comput. Chem.</em>, <strong>38</strong>, 2151 (2017) 中，作者提出了 ghost-hunter 指数 ( $M_{\mathrm{AC}}$ ) 以诊断当前 TDDFT 算出的激发态是否可能是 ghost 态。$M_{\mathrm{AC}}$ 就是上文的 <em>ω</em>$_{low}$。</p>
+<p>注意原始 $M_{\mathrm{AC}}$ 论文中他们在上式中错误用了 <em>w</em> 而非 $w^{2}$，且 $ε_a$ 前的符号错了，这些问题在其后来的论文 <em>J. Chem. Phys.</em>, <strong>154</strong>, 204102 (2021) 中已修正。该论文和原始 $M_{\mathrm{AC}}$ 论文都没有明确提到如何处理退激发组态，在 Multiwfn 的实现中，所有退激发组态都被忽略。</p>
+<p>由于 $M_{\mathrm{AC}}$ 对应 TDDFT 算出的 CT 激发能的理论下限 ( $E_{\mathrm{TDDFT}}$ )，ghost-hunter 指数的论文中认为</p>
+<p><div class="mathdisp" data-mi="75" title="点击复制 TeX">$$
+{E}_{\mathrm{TDDFT}}<{M}_{\mathrm{AC}}\to \mathrm{ghost\ CT\ state}
+$$</div></p>
+<p><div class="mathdisp" data-mi="76" title="点击复制 TeX">$$
+{E}_{\mathrm{TDDFT}}>{M}_{\mathrm{AC}}\to \mathrm{real\ CT\ state}
+$$</div></p>
+<p>ghost-hunter 指数无疑有用，但按我的经验，<em>该判据常过于严格</em>。我建议只把 $E_{\mathrm{TDDFT}}<M_{\mathrm{AC}}$ 视为判断 ghost CT 态存在的必要而非充分条件。</p>
+<h3 id="计算-ghost-hunter-指数"><strong>计算 ghost-hunter 指数</strong></h3>
+<p>要算 $M_{\mathrm{AC}}$，应照常做空穴-电子分析，见第 <a href="#3211-%E5%88%86%E6%9E%90%E5%B9%B6%E5%8F%AF%E8%A7%86%E5%8C%96%E7%A9%BA%E7%A9%B4%E7%94%B5%E5%AD%90%E5%88%86%E5%B8%83%E8%B7%83%E8%BF%81%E5%AF%86%E5%BA%A6%E5%92%8C%E8%B7%83%E8%BF%81%E7%94%B5%E7%A3%81%E5%81%B6%E6%9E%81%E7%9F%A9%E5%AF%86%E5%BA%A6-1">3.21.1</a> 节的介绍和第 <a href="sec-4-18-electron-excitation-analysis.html#4181-%E7%94%A8%E7%A9%BA%E7%A9%B4-%E7%94%B5%E5%AD%90%E5%88%86%E6%9E%90%E5%AE%8C%E6%95%B4%E8%A1%A8%E5%BE%81%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91">4.18.1</a> 节的例子。一旦空穴和电子的格点数据算完，Multiwfn 自动打印 $M_{\mathrm{AC}}$ 指数及其两项（两项的意义见上式）。</p>
+<p>注意在 Multiwfn 中，$M_{\mathrm{AC}}$ 表达式用的 $D_{\mathrm{CT}}$ 算为空穴和电子分布质心之间的距离，该情形对应采用激发态的未弛豫密度。它与原始 $M_{\mathrm{AC}}$ 论文中算的 $D_{\mathrm{CT}}$（下称 $D_{\mathrm{CT}}$ &#39;）多少有些不同，后者算为弛豫激发态密度与基态密度之密度差正负部分质心之间的距离。空穴-电子分析模块算的 $D_{\mathrm{CT}}$ 不仅足够合理，而且比 $D_{\mathrm{CT}}$&#39; 便宜得多，因为对大体系算 TDDFT 弛豫密度相当贵。但若确实想基于 $D_{\mathrm{CT}}$ &#39; 算 $M_{\mathrm{AC}}$ 指数，应通过电子-空穴分析模块得到 $M_{\mathrm{AC}}$ 的第一项，再通过主功能 18 的子功能 3 得到 $D_{\mathrm{CT}}$ &#39;（见第 <a href="sec-4-18-electron-excitation-analysis.html#4183-%E5%9F%BA%E4%BA%8E%E7%94%B5%E5%AD%90%E5%AF%86%E5%BA%A6%E5%B7%AE%E5%88%86%E6%9E%90%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91%E4%B8%AD%E7%9A%84%E7%94%B5%E8%8D%B7%E8%BD%AC%E7%A7%BB">4.18.3</a> 节的例子）并手动算 $M_{\mathrm{AC}}$ 的第二项（即 -1/ $D_{\mathrm{CT}}$ &#39;），最后加总两项得 $M_{\mathrm{AC}}$。</p>
+<p>值得一提的是 $M_{\mathrm{AC}}$ 指数原则上只适用于一维 CT 情形，若 CT 在多个方向发生，则该指数不能正确识别 ghost 态。</p>
+<p>$M_{\mathrm{AC}}$ 的计算包含在第 <a href="sec-4-18-electron-excitation-analysis.html#4181-%E7%94%A8%E7%A9%BA%E7%A9%B4-%E7%94%B5%E5%AD%90%E5%88%86%E6%9E%90%E5%AE%8C%E6%95%B4%E8%A1%A8%E5%BE%81%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91">4.18.1</a> 节的空穴-电子分析例子中。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>见本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头</p>
+</blockquote>
+<h2 id="3218-用-ifct-方法计算电子激发中的片段间电荷转移-8"><strong>3.21.8 用 IFCT 方法计算电子激发中的片段间电荷转移 (8)</strong></h2>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>片段间电荷转移是电子激发过程中非常重要的现象。我设计了一个虽简单但很有用的计算任意片段数之间片段间电荷转移量的方法，描述如下（待发表）。该方法称为 IFCT (InterFragment Charge Transfer)。</p>
+<p>IFCT 方法分三步：</p>
+<p>(1) 计算原子对空穴和电子的贡献（见第 <a href="#32111-%E7%90%86%E8%AE%BA">3.21.1.1</a> 节空穴和电子概念的介绍）</p>
+<p>(2) 加和原子贡献算片段对空穴和电子的贡献</p>
+<p>(3) 构建片段间电荷转移矩阵 <strong>Q</strong>。其 (<em>R</em>,<em>S</em>) 元对应激发中从片段 <em>R</em> 到片段 <em>S</em> 的电子转移：</p>
+<p><div class="mathdisp" data-mi="77" title="点击复制 TeX">$$
+Q_{R,S}=\Theta_{R,\mathrm{hole}}\Theta_{S,\mathrm{ele}}
+$$</div></p>
+<p>其中 Θ<em>$_{R}$</em>$_{,hole}$ 和 Θ<em>$_{S}$</em>$_{,ele}$ 分别表示片段 <em>R</em> 对空穴的贡献和片段 <em>S</em> 对电子的贡献。上式很容易理解，它本质假设从 <em>R</em> 到 <em>S</em> 的电子转移同时正比于 <em>R</em> 在空穴中的组成（电子离开处）和 <em>S</em> 在电子中的组成（电子去处）。</p>
+<p>然后可定义三个额外的有用 量：</p>
+<ul>
+<li><p>片段 <em>S</em> 到 <em>R</em> 的电子净转移：$p_{S\to R}=Q_{S,R}-Q_{R,S}$</p>
+</li>
+<li><p>片段 <em>R</em> 的电子布居变化：$\Delta p_{R}=\sum_{S\neq R}p_{S\to R}=\sum_{S\neq R}\left(Q_{S,R}-Q_{R,S}\right)$</p>
+</li>
+<li><p>片段 <em>R</em> 的片段内电子重排：$Q_{R,R}$</p>
+</li>
+</ul>
+<p>顺便说，容易证明以上述方式计算的片段电子布居变化相当合理：</p>
+<p><div class="mathdisp" data-mi="78" title="点击复制 TeX">$$
+\begin{aligned}&\Delta p_{R}=\sum_{S\neq R}\left(Q_{S,R}-Q_{R,S}\right)=\sum_{S\neq R}\left(\Theta_{S,\mathrm{hole}}\Theta_{R,\mathrm{ele}}-\Theta_{R,\mathrm{hole}}\Theta_{S,\mathrm{ele}}\right)\\ &=\Theta_{R,\mathrm{ele}}\sum_{S\neq R}\Theta_{S,\mathrm{hole}}-\Theta_{R,\mathrm{hole}}\sum_{S\neq R}\Theta_{S,\mathrm{ele}}\\ &=\Theta_{R,\mathrm{ele}}\left(1-\Theta_{R,\mathrm{hole}}\right)-\Theta_{R,\mathrm{hole}}\left(1-\Theta_{R,\mathrm{ele}}\right)\\ &=\Theta_{R,\mathrm{ele}}-\Theta_{R,\mathrm{hole}}\end{aligned}
+$$</div></p>
+<p>容易理解这是计算片段 <em>R</em> 电子布居变化的相当合理的方式，从而很好证明了上文片段间电荷分析形式的合理性。</p>
+<p>此外，值得注意的是片段间转移电子量与片段内重排电子量之和恰等于 1，反映只有一个电子被激发：</p>
+<p><div class="mathdisp" data-mi="79" title="点击复制 TeX">$$
+\begin{aligned}&\sum_{R}\sum_{S\neq R}Q_{R,S}+\sum_{S}Q_{S,S}\\ &=\sum_{R}\sum_{S}Q_{R,S}\\ &=\sum_{R}\sum_{S}\Theta_{R,\mathrm{hole}}\Theta_{S,\mathrm{ele}}\\ &=\sum_{R}\Theta_{R,\mathrm{hole}}\sum_{S}\Theta_{S,\mathrm{ele}}\\ &=1\end{aligned}
+$$</div></p>
+<h3 id="关于-ct-的计算"><strong>关于 CT% 的计算</strong></h3>
+<p>电荷转移百分比 (CT%) 及其补集局域激发百分比 (LE%) 的概念在电子激发研究中常用。在 IFCT 框架中，它们有两种不同的定义，我认为明确区分它们有用。</p>
+<ul>
+<li><p>本征 CT% 和 LE%：前者计算为 $\mathrm{CT}\%=100\%\times \sum_{R} \sum_{S\neq R} {Q}_{R,S}$，后者计算为 $\mathrm{LE}\%=100\%\times \sum_{S} {Q}_{S,S}$，显然二者加和为 100%。该定义对任意片段数都有效。</p>
+</li>
+<li><p>表观 CT% 和 LE%：该定义只对两片段情形有效。表观 CT% 简单计算为 $100\%\times|\Delta p_{R}|$，表观 LE% 定义为 100%−CT%，其中 <em>R</em> 表示任一片段。</p>
+</li>
+</ul>
+<p>在两片段（<em>R</em> 和 <em>S</em>）情形，本征 CT% 和表观 CT% 必然多少有些不同，二者各有价值。本征 CT% 代表本质参与电荷转移的电子量，不反映 <em>R</em>→<em>S</em> 和 <em>S</em>←<em>R</em> 电子转移之间的抵消效应。相反，表观 CT% 对应 <em>R</em> 与 <em>S</em> 之间净电子转移的表观现象，即考虑了双向电子转移的抵消。显然，本征 CT% 必等于或大于表观 CT%，二者相等仅当片段间电荷转移完全是单方向的，即空穴和电子完全分别定域在两片段上。</p>
+<p>值得强调的是 %CT 直接依赖片段的定义，因为它表征片段之间的电荷转移量。极限情形，把整个体系定义为单个片段，则所有激发的 %CT 必严格为零。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>IFCT 分析所需的输入文件已在本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头详细介绍，即 Multiwfn 启动时载入含基函数信息的文件，再载入含激发态组态系数信息的文件。</p>
+<p>进入该功能后，需选择计算片段对空穴和电子分布的方法，选择要研究的激发态，再输入总片段数，之后依次输入每个片段输入原子编号定义每个片段。若想从纯文本文件载入片段定义，可在 Multiwfn 让设定总片段数时输入 <em>0</em>，再输入含片段定义的文件的路径，文件格式形如下面，每片段的定义占一行：</p>
+<p><pre><code class="language-text">1,3,6-10,12
+2,4,5
+11
+13-15</code></pre></p>
+<p>若在这步输入 <em>-1</em>，Multiwfn 不做常规 IFCT 分析而导出当前文件夹下名为 <em>atmCTmat.txt</em> 的文件，该文件记录原子-原子电荷转移矩阵，其元定义为 $Q_{A,B}$ = Θ<em>$_{A}$</em>$_{,hole}$Θ<em>$_{B}$</em>$_{,ele}$。若在进入绘制原子/片段跃迁矩阵的功能后输入该文件的路径（见第 <a href="#3212-%E6%8A%8A%E5%90%84%E7%A7%8D%E5%8E%9F%E5%AD%90%E7%89%87%E6%AE%B5%E8%B7%83%E8%BF%81%E7%9F%A9%E9%98%B5%E7%BB%98%E5%88%B6%E4%B8%BA%E7%83%AD%E5%9B%BE-2">3.21.2</a> 节），该矩阵可绘制为热图以便直观研究其矩阵元。</p>
+<p>片段定义完成后，Multiwfn 计算打印所有已定义片段对空穴和电子的贡献，以及片段之间的电子转移量。此外还打印每个片段的净电子转移以及电子布居变化。下面是输出实例：</p>
+<p><pre><code class="language-text"> Variation of population number of fragment  1:  -0.25313
+ Variation of population number of fragment  2:  -0.23110
+ Variation of population number of fragment  3:   0.48423
+
+ Intrafragment electron redistribution of fragment  1:   0.00334
+ Intrafragment electron redistribution of fragment  2:   0.31271
+ Intrafragment electron redistribution of fragment  3:   0.02419
+
+ Transferred electrons between fragments:
+  1 -&gt;  2:   0.11977       1 &lt;-  2:   0.00874     Net  1 -&gt;  2:   0.11103
+  1 -&gt;  3:   0.14299       1 &lt;-  3:   0.00089     Net  1 -&gt;  3:   0.14210
+  2 -&gt;  3:   0.36476       2 &lt;-  3:   0.02263     Net  2 -&gt;  3:   0.34213</code></pre></p>
+<p>若定义了两片段，则打印本征和表观 CT(%) 和 LE(%)，若定义了多于两片段，只打印本征 CT(%) 和 LE(%)。</p>
+<p>一般 Mulliken 型划分是计算片段对空穴和电子贡献的合理选择，该方法的细节见第 <a href="#32111-%E7%90%86%E8%AE%BA">3.21.1.1</a> 节“理论 2”。但此时绝不能用弥散函数，否则结果可能很误导。Hirshfeld 方法更稳健且与弥散函数完全兼容，但明显更贵。没有弥散函数时，Mulliken 型划分和 Hirshfeld 划分的 IFCT 结果符合很好。</p>
+<p>IFCT 分析的例子见第 <a href="sec-4-18-electron-excitation-analysis.html#4188-%E7%94%A8-ifct-%E6%96%B9%E6%B3%95%E5%92%8C%E7%94%B5%E8%8D%B7%E8%BD%AC%E7%A7%BB%E7%9F%A9%E9%98%B5%E7%83%AD%E5%9B%BE%E7%A0%94%E7%A9%B6%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91%E4%B8%AD%E7%9A%84%E7%89%87%E6%AE%B5%E9%97%B4%E7%94%B5%E8%8D%B7%E8%BD%AC%E7%A7%BB">4.18.8</a> 节。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>见本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头</p>
+</blockquote>
+<h2 id="3219-产生并导出跃迁密度矩阵-9"><strong>3.21.9 产生并导出跃迁密度矩阵 (9)</strong></h2>
+<p>根据 MO 展开系数和组态系数，本功能可构建基函数表示的跃迁密度矩阵 (TDM)。可产生两种 TDM：</p>
+<p>(1) 基态与所选激发态 <em>K</em> 之间的 TDM：</p>
+<p><div class="mathdisp" data-mi="80" title="点击复制 TeX">$$
+P_{\mu\nu}^{\mathrm{tran}}=\sum_{i}^{\mathrm{occ}}\sum_{a}^{\mathrm{vir}}w_{i,a}^{K}C_{\mu i}C_{\nu a}
+$$</div></p>
+<p>其中 <em>w</em> 对应激发涉及组态的系数，$C_{\mu i}$ 表示 MO <em>i</em> 中基函数 <em>µ</em> 的展开系数。此处不区分激发和退激发情形（附注：这样构建的 TDM 适合研究跃迁电偶极矩，但不适合研究跃迁速度和磁偶极矩，见 <em>J. Chem. Phys.</em>, <strong>66</strong>, 3460 (1977) 的 Eqs. 22、23 和 24）。</p>
+<p>(2) 所选两激发态 <em>K</em> 与 <em>L</em> 之间的 TDM：</p>
+<p><div class="mathdisp" data-mi="81" title="点击复制 TeX">$$
+\begin{gathered}P_{\mu\nu}^{KL}=\sum_{i}^{\mathrm{occ}}\sum_{a}^{\mathrm{vir}}w_{i,a}^{K}\sum_{j}^{\mathrm{occ}}\sum_{b}^{\mathrm{vir}}w_{j,b}^{L}V_{\mu\nu}^{iajb}\\ V_{\mu\nu}^{iajb}=\left\{\begin{gathered}C_{\mu a}C_{\nu b}\qquad (i=j,a\neq b)\\ -C_{\nu i}C_{\mu j}\qquad (i\neq j,a=b)\\ P_{\mu\nu}-C_{\mu i}C_{\nu i}+C_{\mu a}C_{\nu a}\qquad (i=j,a=b)\\ 0\qquad (i\neq j,a\neq b)\end{gathered}\right.\end{gathered}
+$$</div></p>
+<p>其中 <strong>P</strong> 是基态的密度矩阵。对 TD 情形，激发与退激发组态之间的 <em>V</em> 直接忽略。此外，算退激发组态之间的 <em>V</em> 时，换为 −<em>V</em>。</p>
+<p>TDM 产生完后，可选择是否对称化 TDM。有两种方式</p>
+<ul>
+<li><p>方式 1：$\overline{P}_{\mu\nu}^{\mathrm{tran}}=\left(P_{\mu\nu}^{\mathrm{tran}}+P_{\nu\mu}^{\mathrm{tran}}\right)/2$</p>
+</li>
+<li><p>方式 2：$\overline{P}_{\mu\nu}^{\mathrm{tran}}=\left(P_{\mu\nu}^{\mathrm{tran}}+P_{\nu\mu}^{\mathrm{tran}}\right)/\sqrt{2}$</p>
+</li>
+</ul>
+<p>方式 1 合理，一般情形应用。但应注意 Gaussian 程序产生的 TDM 对应按方式 2 对称化的，因此若想所得 TDM 遵循 Gaussian 的惯例，应选方式 2。</p>
+<p>产生的矩阵输出到当前文件夹下的 <em>tdmat.txt</em>。也可选择输出当前文件夹下的 <em>TDM.fch</em>，其“Total SCF Density”字段对应 TDM（若想用 Gaussian 的 cubegen 工具算 TrEsp 型原子跃迁电荷，该文件有用，详见第 <a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a9-%E8%AE%A1%E7%AE%97tresp%E7%94%B1%E9%9D%99%E7%94%B5%E5%8A%BF%E5%BE%97%E5%88%B0%E7%9A%84%E8%B7%83%E8%BF%81%E7%94%B5%E8%8D%B7%E7%94%B5%E8%8D%B7%E5%B9%B6%E5%88%86%E6%9E%90%E6%BF%80%E5%AD%90%E8%80%A6%E5%90%88">4.A.9</a> 节）。</p>
+<p>注意当基态和激发态自旋多重度不同时，由于自旋坐标的正交归一，虽然原则上跃迁密度矩阵应为零，但输出的矩阵不为零，因为 Multiwfn 在构建矩阵时只考虑 MO 的空间部分。</p>
+<p>本功能所需的输入文件已在本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头详细介绍，即 Multiwfn 启动时载入含基函数信息的文件，再载入含激发态组态系数信息的文件。</p>
+<p>第 <a href="sec-4-18-electron-excitation-analysis.html#41824-%E7%A0%94%E7%A9%B6%E6%BF%80%E5%8F%91%E6%80%81%E4%B9%8B%E9%97%B4%E7%9A%84%E8%B7%83%E8%BF%81%E5%AF%86%E5%BA%A6%E5%92%8C%E8%B7%83%E8%BF%81%E5%AF%86%E5%BA%A6%E7%9F%A9%E9%98%B5">4.18.2.4</a> 节和第 <a href="sec-4-18-electron-excitation-analysis.html#4189-%E4%BA%A7%E7%94%9F%E8%B7%83%E8%BF%81%E5%AF%86%E5%BA%A6%E7%9F%A9%E9%98%B5%E5%B9%B6%E5%8F%98%E6%8D%A2%E4%B8%BA%E8%BD%A8%E9%81%93%E8%A1%A8%E8%B1%A1">4.18.9</a> 节的例子用了本功能。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>见本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头</p>
+</blockquote>
+<h3 id="附录推导计算两激发态之间-tdm-的公式"><strong>附录：推导计算两激发态之间 TDM 的公式</strong></h3>
+<p>实空间表示的两激发态 <em>K</em> 与 <em>L</em> 之间的 TDM 为</p>
+<p><div class="mathdisp" data-mi="82" title="点击复制 TeX">$$
+T^{KL}(\mathbf{r};\mathbf{r}')=\int\Psi^{K}(\mathbf{r},\mathbf{r}_{2},\cdots,\mathbf{r}_{N})\Psi^{L}(\mathbf{r}',\mathbf{r}_{2},\cdots,\mathbf{r}_{N})\mathrm{d}\mathbf{r}_{2}\cdots\mathrm{d}\mathbf{r}_{N}
+$$</div></p>
+<p>其中激发态波函数表示为单激发 Slater 行列式的线性组合</p>
+<p><div class="mathdisp" data-mi="83" title="点击复制 TeX">$$
+\Psi^{K}=\sum_{i}^{\mathrm{occ}}\sum_{a}^{\mathrm{vir}}w_{i,a}^{K}\Phi_{i}^{a}\qquad \Psi^{L}=\sum_{j}^{\mathrm{occ}}\sum_{b}^{\mathrm{vir}}w_{j,b}^{L}\Phi_{j}^{b}
+$$</div></p>
+<p>有</p>
+<p><div class="mathdisp" data-mi="84" title="点击复制 TeX">$$
+T^{KL}(\mathbf{r};\mathbf{r}')=\sum_{i}^{\mathrm{occ}}\sum_{a}^{\mathrm{vir}}w_{i,a}^{K}\sum_{j}^{\mathrm{occ}}\sum_{b}^{\mathrm{vir}}w_{j,b}^{L}\int\Phi_{i}^{a}(\mathbf{r},\mathbf{r}_{2},\cdots,\mathbf{r}_{N})\Phi_{j}^{b}(\mathbf{r}',\mathbf{r}_{2},\cdots,\mathbf{r}_{N})\mathrm{d}\mathbf{r}_{2}\cdots\mathrm{d}\mathbf{r}_{N}
+$$</div></p>
+<p>Slater-Condon 规则表明，对单电子算符 $\hat{\mathcal{H}}=\sum_{i} {h}_{i}$，两单激发行列式之间的积分即 $\left\langle {\Phi}_{i}^{a}\middle|\hat{\mathcal{H}}\middle|{\Phi}_{j}^{b} \right\rangle$ 满足</p>
+<p><div class="mathdisp" data-mi="85" title="点击复制 TeX">$$
+\begin{aligned}&=0\qquad (i\neq j,a\neq b)\\ &=\left\langle a\middle|h\middle|b\right\rangle\qquad (i=j,a\neq b)\\ &=-\left\langle j\middle|h\middle|i\right\rangle\qquad (i\neq j,a=b)\\ &=\sum_{p}^{N}\left\langle p\middle|h\middle|p\right\rangle-\left\langle i\middle|h\middle|i\right\rangle+\left\langle a\middle|h\middle|a\right\rangle\qquad (i=j,a=b)\end{aligned}
+$$</div></p>
+<p>不做积分而把 <em>h</em> 算符视为 1，基于上述关系有</p>
+<p><div class="mathdisp" data-mi="86" title="点击复制 TeX">$$
+\begin{gathered}T^{KL}(\mathbf{r};\mathbf{r}')=\left\{\begin{gathered}0\qquad (i\neq j,a\neq b)\\ \sum_{i}\sum_{a}\sum_{b}w_{i,a}^{K}w_{i,b}^{L}\varphi_{a}(\mathbf{r})\varphi_{b}(\mathbf{r}')\qquad (i=j,a\neq b)\\ -\sum_{i}\sum_{j}\sum_{a}w_{i,a}^{K}w_{j,a}^{L}\varphi_{j}(\mathbf{r})\varphi_{i}(\mathbf{r}')\qquad (i\neq j,a=b)\\ \sum_{i}\sum_{a}w_{i,a}^{K}w_{i,a}^{L}\left[\sum_{p}^{N}\varphi_{p}(\mathbf{r})\varphi_{p}(\mathbf{r}')-\varphi_{i}(\mathbf{r})\varphi_{i}(\mathbf{r}')+\varphi_{a}(\mathbf{r})\varphi_{a}(\mathbf{r}')\right]\qquad (i=j,a=b)\end{gathered}\right.\end{gathered}
+$$</div></p>
+<p>给定</p>
+<p><div class="mathdisp" data-mi="87" title="点击复制 TeX">$$
+\begin{gathered}T^{KL}(\mathbf{r};\mathbf{r}')=\sum_{\mu}\sum_{\nu}P_{\mu\nu}^{KL}\chi_{\mu}(\mathbf{r})\chi_{\nu}(\mathbf{r}')\\ \varphi_{k}(\mathbf{r})=\sum_{\mu}C_{\mu k}\chi_{\mu}(\mathbf{r})\end{gathered}
+$$</div></p>
+<p>其中 <em>χ</em> 是基函数，最终得到本节前面给出的计算 $P^{KL}$ 的公式。例如 <em>i</em>=<em>j</em>、$a$ ≠<em>b</em> 的情形：</p>
+<p><div class="mathdisp" data-mi="88" title="点击复制 TeX">$$
+\begin{aligned}&T^{KL}(\mathbf{r};\mathbf{r}')=\sum_{i}\sum_{a}\sum_{b}w_{i,a}^{K}w_{i,b}^{L}\varphi_{a}(\mathbf{r})\varphi_{b}(\mathbf{r}')\\ &=\sum_{i}\sum_{a}\sum_{b}w_{i,a}^{K}w_{i,b}^{L}\sum_{\mu}\sum_{\nu}C_{\mu a}C_{\nu b}\chi_{\mu}(\mathbf{r})\chi_{\nu}(\mathbf{r}')\\ &\Rightarrow P^{KL}=\sum_{i}\sum_{a}\sum_{b}w_{i,a}^{K}w_{i,b}^{L}C_{\mu a}C_{\nu b}\end{aligned}
+$$</div></p>
+<h2 id="32110-把跃迁电磁偶极矩分解为分子轨道对贡献-10"><strong>3.21.10 把跃迁电/磁偶极矩分解为分子轨道对贡献 (10)</strong></h2>
+<p>理论化学家常用分子轨道跃迁研究电子激发，该功能在这方面帮助他们。该功能把基态到感兴趣激发态的跃迁电或磁偶极矩分解为分子轨道对贡献，使用户更深入理解电子激发。</p>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>如第 <a href="sec-3-13-plotting-spectra.html#3131-%E7%90%86%E8%AE%BAtheory">3.13.1</a> 节所述，电子激发的振子强度 (<em>f</em>) 直接关联相应吸收峰的积分面积。<em>f</em> 与跃迁电偶极矩 $D^{\mathrm{tran}}$ 有直接关系（原子单位）：</p>
+<p><div class="mathdisp" data-mi="89" title="点击复制 TeX">$$
+f=\frac{2}{3}\Delta E\times\left|\mathbf{D}^{\mathrm{tran}}\right|^{2}
+$$</div></p>
+<p>其中 Δ<em>E</em> 表示两电子态之间的跃迁能。显然，$\mathbf{D}^{\mathrm{tran}}$ 是电子激发的关键量，很大程度决定光吸收。基态与激发态之间的 $\mathbf{D}^{\mathrm{tran}}$ 算为</p>
+<p><div class="mathdisp" data-mi="90" title="点击复制 TeX">$$
+\mathbf{D}^{\mathrm{tran}}=\sum_{i,a}\left(w_{i,a}+w_{i,a}^{\prime}\right)\left\langle\varphi_{i}\middle|-\mathbf{r}\middle|\varphi_{a}\right\rangle
+$$</div></p>
+<p>其中 <em>i</em> 和 $a$ 分别遍历所有占据和虚 MO。<em>w</em> 和 <em>w′</em> 分别是激发和退激发的组态系数。$\varphi$ 表示分子轨道波函数。显然跃迁偶极矩可直接分解为各 MO 对的贡献。通过这种分解，可轻松研究为什么有些激发振子强度相对大因而吸收强，为什么有些激发振子强度小因而在电子光谱中难观察到。</p>
+<p>跃迁磁偶极矩 $\mathbf{M}^{\mathrm{tran}}$ 也是电子激发的重要量，因为 $\mathbf{M}^{\mathrm{tran}}$ 和 $\mathbf{D}^{\mathrm{tran}}$ 共同决定旋光强度，后者决定电子圆二色 (ECD) 和圆偏振发光 (CPL) 光谱。基态与激发态之间的 $\mathbf{M}^{\mathrm{tran}}$ 算为</p>
+<p><div class="mathdisp" data-mi="91" title="点击复制 TeX">$$
+\mathbf{M}^{\mathrm{tran}}=\sum_{i,a}\left(w_{i,a}-w_{i,a}^{\prime}\right)\left\langle\varphi_{i}\middle|\mathbf{r}\times\nabla\middle|\varphi_{a}\right\rangle
+$$</div></p>
+<p>显然，$\mathbf{M}^{\mathrm{tran}}$ 也可直接分解为各 MO 对的贡献。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>本功能所需的输入文件已在本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头详细介绍，即 Multiwfn 启动时载入含基函数信息的文件，进入该功能时再载入含激发态组态系数信息的文件。</p>
+<p>在该功能中，会被要求选择跃迁偶极矩的类型，会被提示选择要把跃迁偶极矩分解为 MO 对的激发态，然后出现菜单。可选相应选项让 Multiwfn 把每个 MO 对的贡献输出到当前文件夹下的 <em>transdip.txt</em>，或让 Multiwfn 按对跃迁偶极矩的贡献排序 MO 对再输出前几个或几十个，从而立刻识别最重要的 MO 跃迁。此外，可要求 Multiwfn 只输出贡献大于给定阈值的 MO 对。</p>
+<p>该功能的例子见第 <a href="sec-4-18-electron-excitation-analysis.html#41810-%E8%8E%B7%E5%BE%97%E5%88%86%E5%AD%90%E8%BD%A8%E9%81%93%E5%AF%B9%E5%AF%B9%E8%B7%83%E8%BF%81%E5%81%B6%E6%9E%81%E7%9F%A9%E7%9A%84%E8%B4%A1%E7%8C%AE">4.18.10</a> 节。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>见本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头</p>
+</blockquote>
+<h2 id="32111-把跃迁电磁偶极矩分解为基函数和原子贡献-11"><strong>3.21.11 把跃迁电/磁偶极矩分解为基函数和原子贡献 (11)</strong></h2>
+<p>该功能用于把基态与所选激发态之间或两激发态之间的跃迁电或磁偶极矩分解为各基函数和原子的贡献。结果导出到 <em>trdipcontri.txt</em>。因此，可轻松查看体系的哪部分对振子强度等激发性质有显著影响。</p>
+<p>分解有很多可能的方式。本功能用 Mulliken 型划分因其简单。基函数 <em>μ</em> 对跃迁电偶极矩矢量的贡献计算为</p>
+<p><div class="mathdisp" data-mi="92" title="点击复制 TeX">$$
+\mathbf{D}_{\mu}=P_{\mu\mu}^{\mathrm{tran}}\left\langle\chi_{\mu}\middle|-\mathbf{r}\middle|\chi_{\mu}\right\rangle+\frac{1}{2}\sum_{\nu\neq\mu}\left(P_{\mu\nu}^{\mathrm{tran}}\left\langle\chi_{\mu}\middle|-\mathbf{r}\middle|\chi_{\nu}\right\rangle+P_{\nu\mu}^{\mathrm{tran}}\left\langle\chi_{\nu}\middle|-\mathbf{r}\middle|\chi_{\mu}\right\rangle\right)
+$$</div></p>
+<p>基函数 <em>μ</em> 对跃迁磁偶极矩矢量的贡献计算为</p>
+<p><div class="mathdisp" data-mi="93" title="点击复制 TeX">$$
+\mathbf{M}_{\mu}=P_{\mu\mu}^{\mathrm{tran}}\left\langle\chi_{\mu}\middle|\mathbf{r}\times\nabla\middle|\chi_{\mu}\right\rangle+\frac{1}{2}\sum_{\nu\neq\mu}\left(P_{\mu\nu}^{\mathrm{tran}}\left\langle\chi_{\mu}\middle|\mathbf{r}\times\nabla\middle|\chi_{\nu}\right\rangle+P_{\nu\mu}^{\mathrm{tran}}\left\langle\chi_{\nu}\middle|\mathbf{r}\times\nabla\middle|\chi_{\mu}\right\rangle\right)
+$$</div></p>
+<p>其中 $P^{\mathrm{tran}}$ 是基态到感兴趣激发态的跃迁密度矩阵。原子的贡献就是属于它的基函数的贡献之和。</p>
+<p>由于 Mulliken 划分与弥散函数不兼容，若所用基组有弥散函数，分解结果不可靠。此时研究各原子贡献的最好方式是可视化跃迁偶极矩密度（见第 <a href="#3211-%E5%88%86%E6%9E%90%E5%B9%B6%E5%8F%AF%E8%A7%86%E5%8C%96%E7%A9%BA%E7%A9%B4%E7%94%B5%E5%AD%90%E5%88%86%E5%B8%83%E8%B7%83%E8%BF%81%E5%AF%86%E5%BA%A6%E5%92%8C%E8%B7%83%E8%BF%81%E7%94%B5%E7%A3%81%E5%81%B6%E6%9E%81%E7%9F%A9%E5%AF%86%E5%BA%A6-1">3.21.1</a> 节）。</p>
+<p>该功能还询问是否输出原子跃迁偶极矩矩阵，若选 <em>y</em>，则矩阵的 X、Y、Z 分量分别导出到当前文件夹下的 <em>AAtrdipX.txt</em>、<em>AAtrdipY.txt</em>、<em>AAtrdipZ.txt</em>，矩阵元定义如下（以跃迁电偶极矩的原子-原子贡献矩阵为例，跃迁磁偶极矩的矩阵类似定义故不显式给出）</p>
+<p><div class="mathdisp" data-mi="94" title="点击复制 TeX">$$
+\begin{gathered}D_{A,B}^{X}=\sum_{\mu\in A}\sum_{\nu\in B}P_{\mu\nu}^{\mathrm{tran}}\left\langle\chi_{\mu}\middle|-x\middle|\chi_{\mu}\right\rangle\\ D_{A,B}^{Y}=\sum_{\mu\in A}\sum_{\nu\in B}P_{\mu\nu}^{\mathrm{tran}}\left\langle\chi_{\mu}\middle|-y\middle|\chi_{\mu}\right\rangle\\ D_{A,B}^{Z}=\sum_{\mu\in A}\sum_{\nu\in B}P_{\mu\nu}^{\mathrm{tran}}\left\langle\chi_{\mu}\middle|-z\middle|\chi_{\mu}\right\rangle\end{gathered}
+$$</div></p>
+<p>例如，项 ${D}_{A,B}^{X}$ 对应 <em>A</em>-<em>B</em> 原子对对跃迁偶极矩 <em>X</em> 分量的联合贡献，$\mathbf{D}^{X}$ 所有元之和等于当前体系跃迁偶极矩的 <em>X</em> 分量。总跃迁偶极矩矩阵（X、Y、Z 平方和）导出为当前文件夹下的 <em>AAtrdip.txt</em>。所有这些 .txt 文件都可直接用原子跃迁矩阵绘制模块绘制为彩色矩阵图（热图）（详见第 <a href="#3212-%E6%8A%8A%E5%90%84%E7%A7%8D%E5%8E%9F%E5%AD%90%E7%89%87%E6%AE%B5%E8%B7%83%E8%BF%81%E7%9F%A9%E9%98%B5%E7%BB%98%E5%88%B6%E4%B8%BA%E7%83%AD%E5%9B%BE-2">3.21.2</a> 节）。</p>
+<p>本功能所需的输入文件已在本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头详细介绍，即 Multiwfn 启动时载入含基函数信息的文件，进入该功能时再载入含激发态组态系数信息的文件。</p>
+<p>第 <a href="sec-4-18-electron-excitation-analysis.html#41811-%E6%8A%8A%E5%88%86%E5%AD%90%E7%89%87%E6%AE%B5%E8%B4%A1%E7%8C%AE%E7%9A%84%E8%B7%83%E8%BF%81%E5%81%B6%E6%9E%81%E7%9F%A9%E7%94%BB%E6%88%90%E7%AE%AD%E5%A4%B4">4.18.11</a> 节的例子用了该功能。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>见本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头</p>
+</blockquote>
+<h2 id="32112-计算-mulliken-原子跃迁电荷-12"><strong>3.21.12 计算 Mulliken 原子跃迁电荷 (12)</strong></h2>
+<p>该功能用于计算原子跃迁电荷，它对研究两分子基态与激发态之间的 Coulomb 耦合（激子耦合）有用，见<em>例如</em> <em>J. Phys. Chem. B</em>, <strong>110</strong>, 17268 (2006) 和 <em>Photosynth. Res.</em>, <strong>111</strong>, 47 (2012)。</p>
+<p>用 Mulliken 方法得到的基函数 <em>μ</em> 的跃迁布居为</p>
+<p><div class="mathdisp" data-mi="95" title="点击复制 TeX">$$
+\Theta_{\mu}^{\mathrm{tran}} = P_{\mu\mu}^{\mathrm{tran}} + \sum_{\nu \neq \mu} S_{\mu\nu} \left( P_{\mu\nu}^{\mathrm{tran}} + P_{\nu\mu}^{\mathrm{tran}} \right) / 2
+$$</div></p>
+<p>于是，原子 <em>A</em> 的 Mulliken 原子跃迁电荷应为 $-\sum_{\mu \in A} \Theta_{\mu}^{\mathrm{tran}}$。所有原子跃迁电荷之和必为零，因为电子激发中总电子数不变。</p>
+<p>本功能所需的输入文件已在本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头详细介绍，即 Multiwfn 启动时载入含基函数信息的文件，进入该功能时再载入含激发态组态系数信息的文件。之后，应选择要算 Mulliken 跃迁电荷的激发态。然后结果输出到当前文件夹下的 <em>atmtrchg.chg</em> 文件，该类文件的格式已在第 <a href="sec-2-5-input-files-and-wavefunction-types.html">2.5</a> 节介绍，该文件的最后一列对应跃迁电荷。</p>
+<p>下面是计算的例子。启动 Multiwfn 并输入</p>
+<p><pre><code class="language-text">examples\excit\N-phenylpyrrole.fch
+18  // Electron excitation analysis
+12  // Calculate Mulliken transition charges
+N-phenylpyrrole.out
+3  // Study the transition from ground state to the third excited state</code></pre></p>
+<p>然后在当前文件夹找到 <em>atmtrchg.chg</em>。</p>
+<p>注意在 Multiwfn 中也可计算 <em>J. Phys. Chem. B</em>, <strong>110</strong>, 17268 (2006) 介绍的 TrEsp（从静电势拟合的跃迁电荷），它基于跃迁密度用 ESP 拟合法得到。做法见第 <a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a9-%E8%AE%A1%E7%AE%97tresp%E7%94%B1%E9%9D%99%E7%94%B5%E5%8A%BF%E5%BE%97%E5%88%B0%E7%9A%84%E8%B7%83%E8%BF%81%E7%94%B5%E8%8D%B7%E7%94%B5%E8%8D%B7%E5%B9%B6%E5%88%86%E6%9E%90%E6%BF%80%E5%AD%90%E8%80%A6%E5%90%88">4.A.9</a> 节。对研究激子耦合，TrEsp 应比 Mulliken 原子跃迁电荷更好，但对大体系，前者的计算代价显著高于后者。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>见本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头</p>
+</blockquote>
+<h2 id="32113-产生特定激发态的自然轨道-13"><strong>3.21.13 产生特定激发态的自然轨道 (13)</strong></h2>
+<p>该功能用于为一批选定的激发态产生自然轨道 (NOs)，再把 NO 导出为 .mwfn 文件。之后，若想对激发态做波函数分析，只需载入相应的 .mwfn 文件。当然，也可用主功能 3、4 和 5 的自定义操作功能用相应的两个 .mwfn 文件计算<em>例如</em>两激发态之间的密度差。</p>
+<p>用该功能应载入含基函数信息的文件，进入该文件时再载入含组态系数的文件，详见本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头。之后，会被提示输入要产生 NO 的激发态的编号。对每个选定的激发态，程序做以下步骤：</p>
+<p>(1) 产生激发态的密度矩阵 $\mathbf{P}^{\mathrm{ES}}$（注意这样构建的密度矩阵对应未弛豫密度）：</p>
+<p><div class="mathdisp" data-mi="96" title="点击复制 TeX">$$
+\mathbf{P}^{\mathrm{ES}} = \mathbf{P}^{\mathrm{GS}} + \Delta\mathbf{P}^{\mathrm{local}} + \Delta\mathbf{P}^{\mathrm{cross}}
+$$</div></p>
+<p>其中 $\mathbf{P}^{\mathrm{GS}}$ 是基态的密度矩阵，Δ $\mathbf{P}^{\mathrm{local}}$ 和 Δ $\mathbf{P}^{\mathrm{cross}}$ 分别是激发态相对基态的密度矩阵变化的局域部分和交叉部分。</p>
+<p>局域部分算为</p>
+<p>$\Delta\mathbf{P}^{\mathrm{local}} = \sum_{i \to a} (w_i^a)^2 \left( -\mathbf{P}^{ii} + \mathbf{P}^{aa} \right) + \sum_{i \leftarrow a} (w_i^a)^2 \left( -\mathbf{P}^{aa} + \mathbf{P}^{ii} \right)$。</p>
+<p>其中 $i$ 和 $j$ 遍历所有占据 MO，而 $a$ 和 $b$ 遍历所有虚 MO。$\mathbf{P}^{\mathrm{rs}}$ 型的矩阵计算为，其中 $\mathbf{C}_r$ 是 MO $r$ 展开系数的列矢量</p>
+<p><div class="mathdisp" data-mi="97" title="点击复制 TeX">$$
+\mathbf{P}^{rs} = \mathbf{C}_r \mathbf{C}_s^{\mathrm{T}}
+$$</div></p>
+<p>交叉部分算为</p>
+<p><div class="mathdisp" data-mi="98" title="点击复制 TeX">$$
+\begin{gathered} \Delta\mathbf{P}^{\mathrm{cross}} = \sum_{i \to a} \sum_{i \to b \neq a} w_i^a w_i^b \mathbf{P}^{ab} - \sum_{i \leftarrow a} \sum_{i \leftarrow b \neq a} w_i^a w_i^b \mathbf{P}^{ab} \\ - \sum_{i \to a} \sum_{j \neq i \to a} w_i^a w_j^a \mathbf{P}^{ij} + \sum_{i \leftarrow a} \sum_{j \neq i \leftarrow a} w_i^a w_j^a \mathbf{P}^{ij} \end{gathered}
+$$</div></p>
+<p>(2) 对角化 $\mathbf{P}^{\mathrm{ES}}$ 产生 NO。每个 NO 是 $\mathbf{P}^{\mathrm{ES}}$ 的本征矢，伴随的本征值是 NO 的占据数。</p>
+<p>(3) 把基函数和 NO 的信息导出为 .molden 文件。若选定的激发态是 2，则导出为当前文件夹下的 <em>NO_0002.mwfn</em>。</p>
+<p>该功能支持闭壳和开壳参考态。对后者，alpha 和 beta 自旋的密度矩阵分别计算，alpha 和 beta 自旋的自然轨道分别产生并导出到 .mwfn 文件。</p>
+<p>第 <a href="sec-4-18-electron-excitation-analysis.html#41813-%E7%A0%94%E7%A9%B6%E5%8D%95%E4%B8%AA%E6%BF%80%E5%8F%91%E6%80%81%E7%9A%84%E7%94%B5%E5%AD%90%E7%BB%93%E6%9E%84%E5%92%8C%E4%B8%A4%E6%BF%80%E5%8F%91%E6%80%81%E4%B9%8B%E9%97%B4%E7%9A%84%E5%B7%AE%E5%88%AB">4.18.13</a> 节的例子充分用了该功能。</p>
+<p>此外，在 <a href="http://sobereva.com/wfnbbs/viewtopic.php?pid=2446">http://sobereva.com/wfnbbs/viewtopic.php?pid=2446</a> 我演示了对 ORCA 程序 SF-TDDFT 计算解出的态产生自然轨道的完整步骤。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>见本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头</p>
+</blockquote>
+<h2 id="32114-计算-λ-指数表征电子激发-14"><strong>3.21.14 计算 Λ 指数表征电子激发 (14)</strong></h2>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>在 <em>J. Chem. Phys.</em>, <strong>128</strong>, 044118 (2008) 中，提出了 Λ 指数区分电子激发类型。Λ 指数的形式与 Δ $r$ 指数（见第 <a href="#3214-%E8%AE%A1%E7%AE%97-r-%E6%8C%87%E6%95%B0%E8%A1%A1%E9%87%8F%E7%94%B5%E8%8D%B7%E8%BD%AC%E7%A7%BB%E9%95%BF%E5%BA%A6-4">3.21.4</a> 节）很相似。Λ 指数可表示为</p>
+<p><div class="mathdisp" data-mi="99" title="点击复制 TeX">$$
+\Lambda = \sum_{i,a} \Lambda_i^a
+$$</div></p>
+<p>其中 $\Lambda_i^a$ 是 $i$ 与 $a$ 之间 MO 跃迁对 Λ 指数的贡献：</p>
+<p><div class="mathdisp" data-mi="100" title="点击复制 TeX">$$
+\Lambda_i^a = \frac{(K_i^a)^2}{\sum_{i,a} (K_i^a)^2} \int \left| \varphi_i(\mathbf{r}) \right| \left| \varphi_a(\mathbf{r}) \right| \mathrm{d}\mathbf{r}
+$$</div></p>
+<p>上式涉及的所有量与 Δ $r$ 指数中的相同。积分对应 MO $i$ 和 $a$ 的重叠程度，用 Becke 多中心格点积分方法数值计算。默认格点是代价和精度的良好折中；若想改，可把 <em>settings.ini</em> 中的 &quot;iautogrid&quot; 设为 0 再在 <em>settings.ini</em> 中指定 &quot;radpot&quot; 和 &quot;sphpot&quot; 为期望值。注意 Λ 指数的计算代价远高于 Δ $r$ 指数，因为上述数值积分步骤昂贵，尤其对大体系。</p>
+<p>Λ 指数的理论下限和上限分别是 0.0 和 1.0；前者（后者）对应空穴和电子完全分离（完美重叠）的情形。</p>
+<p>与 Δ $r$ 指数一样，Λ 指数可用于区分电子激发类型。注意它们的内在特征不同，Δ $r$ 指数本质是组态加权的轨道分离距离的指标，而 Λ 指数反映组态加权的轨道重叠程度。某种意义上，Δ $r$ 和 Λ 指数的物理本质分别类似空穴-电子分析框架定义的 $D$ 和 $S_\mathrm{r}$ 指数（见第 <a href="#32111-%E7%90%86%E8%AE%BA">3.21.1.1</a> 节），但我认为 $D$ 和 $S_\mathrm{r}$ 指数更合理，因为其物理意义更明确且不同组态之间的耦合被充分考虑。因此，无特殊原因更推荐用 $D$ 和 $S_\mathrm{r}$ 指数。</p>
+<p>值得一提的是，若电子激发可完美表示为一对 MO 跃迁，则 Λ 指数与空穴-电子分析框架定义的 $S_\mathrm{r}$ 指数原则上严格相同：</p>
+<p><div class="mathdisp" data-mi="101" title="点击复制 TeX">$$
+\begin{gathered} \Lambda = \int \left| \varphi_i(\mathbf{r}) \right| \left| \varphi_a(\mathbf{r}) \right| \mathrm{d}\mathbf{r} \\ S_{\mathrm{r}} = \int \sqrt{\rho^{\mathrm{hole}}(\mathbf{r}) \rho^{\mathrm{ele}}(\mathbf{r})} \mathrm{d}\mathbf{r} = \int \sqrt{\left| \varphi_i(\mathbf{r}) \right|^2 \left| \varphi_a(\mathbf{r}) \right|^2} \mathrm{d}\mathbf{r} = \int \left| \varphi_i(\mathbf{r}) \right| \left| \varphi_a(\mathbf{r}) \right| \mathrm{d}\mathbf{r} \end{gathered}
+$$</div></p>
+<p>但 Multiwfn 输出的值应略有不同，因为它们基于不同的数值积分算法计算。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>本模块所需的输入文件已在本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头详细介绍，即 Multiwfn 启动时载入含基函数信息的文件，再载入含激发态组态系数信息的文件。</p>
+<p>进入本功能（主功能 18 的子功能 14）后，先计算所有占据与非占据 MO 模之间重叠积分的矩阵，再提示选择要算 Λ 的激发态，结果立刻打印在屏幕上。</p>
+<p>若只选了一个态，Multiwfn 会询问是否把 Λ 分解为轨道对贡献。若输入了<em>例如</em> 0.01，则打印对 Λ 贡献大于 0.01 的轨道对。</p>
+<p>本功能的例子见第 <a href="sec-4-18-electron-excitation-analysis.html#4184-%E8%AE%A1%E7%AE%97-r-%E5%92%8C-%CE%BB-%E6%8C%87%E6%A0%87%E8%A1%A8%E5%BE%81-n-%E8%8B%AF%E5%9F%BA%E5%90%A1%E5%92%AF%E7%9A%84%E5%90%84%E7%A7%8D%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91">4.18.4</a> 节。</p>
+<blockquote>
+<p><strong>所需信息</strong></p>
+<p>见本节 <a href="sec-3-21-electron-excitation-analysis.html">3.21</a> 开头。</p>
+</blockquote>
+<h2 id="32115-打印所有激发态中的主要-mo-跃迁"><strong>3.21.15 打印所有激发态中的主要 MO 跃迁</strong></h2>
+<p>这是显示所有激发态的主要 MO 跃迁的有用功能，从而快速从 MO 角度认出各激发态的基本特征。</p>
+<p>下面是例子。启动 Multiwfn 并输入</p>
+<p><pre><code class="language-text">examples\excit\D-pi-A.out  // Output file of TDDFT task of Gaussian
+18  // Electron excitation analysis
+15  // The present function</code></pre></p>
+<p>立刻看到以下信息，包括每个激发态的激发能、自旋多重度、显著的 MO 跃迁及其贡献。</p>
+<p><pre><code class="language-text">#   1   3.9069 eV    317.35 nm   f=  0.01880   Spin multiplicity= 1:
+   H-4 -&gt; L 81.9%, H-4 -&gt; L+2 12.1%
+ #   2   4.0624 eV    305.20 nm   f=  0.63550   Spin multiplicity= 1:
+   H -&gt; L 86.0%, H-3 -&gt; L 5.3%
+ #   3   4.4166 eV    280.72 nm   f=  0.00010   Spin multiplicity= 1:
+   H-6 -&gt; L 85.3%, H-6 -&gt; L+2 11.9%
+ #   4   4.7912 eV    258.77 nm   f=  0.01350   Spin multiplicity= 1:
+   H-2 -&gt; L 54.5%, H -&gt; L+1 27.6%, H-3 -&gt; L+1 6.4%
+ #   5   4.8872 eV    253.69 nm   f=  0.00790   Spin multiplicity= 1:
+   H -&gt; L+3 57.3%, H-2 -&gt; L 17.0%, H-1 -&gt; L+2 8.8%, H-1 -&gt; L 8.0%</code></pre></p>
+<p>从上输出，例如可发现 HOMO-4 → LUMO 跃迁对基态到 S1 态的激发贡献 81.9%。</p>
+<p>对开壳情形，轨道自旋被显式标出。例如 Ha-4 指 HOM $O_{\mathrm{alpha}}$ −4。</p>
+<p>默认只打印贡献大于 5% 的 MO 跃迁。打印阈值对应 <em>settings.ini</em> 中 &quot;compthres&quot; 参数的 10 倍。</p>
+<p>可用 Gaussian、ORCA、GAMESS-US/Firefly 的 ZINDO/CIS/TDHF/TDA-DFT/TDDFT 任务的输出文件作输入文件。与主功能 18 中的大多数功能不同，本功能不需要含基函数信息的文件。</p>
+<h2 id="32116-电荷转移光谱-cts-分析"><strong>3.21.16 电荷转移光谱 (CTS) 分析</strong></h2>
+<p>该功能用于计算绘制电荷转移光谱 (CTS, charge-transfer spectrum) 的数据。同时，给出所有激发态的 IFCT 分析的主要特征。</p>
+<p>CTS 的想法最早由我在 <em>Carbon</em>, <strong>187</strong>, 78-85 (2022) DOI: <a href="https://doi.org/10.1016/j.carbon.2021.11.005">10.1016/j.carbon.2021.11.005</a> 中为研究 C₁₈@Li 复合物的光谱本质提出，若研究中用该方法请引用该论文。</p>
+<h3 id="cts-理论"><strong>CTS 理论</strong></h3>
+<p>先回顾第 <a href="#3211-%E5%88%86%E6%9E%90%E5%B9%B6%E5%8F%AF%E8%A7%86%E5%8C%96%E7%A9%BA%E7%A9%B4%E7%94%B5%E5%AD%90%E5%88%86%E5%B8%83%E8%B7%83%E8%BF%81%E5%AF%86%E5%BA%A6%E5%92%8C%E8%B7%83%E8%BF%81%E7%94%B5%E7%A3%81%E5%81%B6%E6%9E%81%E7%9F%A9%E5%AF%86%E5%BA%A6-1">3.21.1</a> 节介绍的空穴-电子分析。对每个激发态，能算出空穴和电子分布。用 Mulliken 型划分或 Hirshfeld 划分，可算出各片段对空穴和电子的贡献。然后，按第 <a href="#3218-%E7%94%A8-ifct-%E6%96%B9%E6%B3%95%E8%AE%A1%E7%AE%97%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91%E4%B8%AD%E7%9A%84%E7%89%87%E6%AE%B5%E9%97%B4%E7%94%B5%E8%8D%B7%E8%BD%AC%E7%A7%BB-8">3.21.8</a> 节介绍的 IFCT 分析，可算出片段内电子重排量和片段间电子转移量。激发态的所有重排项和电子转移项之和等于 1。</p>
+<p>如第 <a href="sec-3-13-plotting-spectra.html#3131-%E7%90%86%E8%AE%BAtheory">3.13.1</a> 节介绍，UV-Vis 光谱通过 Gaussian 函数 ( $G$ ) 展宽所有激发态的激发能 ( $E^{\mathrm{exc}}$ ) 和振子强度 ( $f$ ) 得到。数学上，光谱曲线表示为</p>
+<p><div class="mathdisp" data-mi="102" title="点击复制 TeX">$$
+\varepsilon(E)=c\sum_{i}f_i G(E-E_i^{\mathrm{exc}})
+$$</div></p>
+<p>其中 <em>ε</em>( $E$ ) 是能量 $E$ 处的摩尔吸收系数。<em>i</em> 遍历所有激发态。$c$ 是常数。</p>
+<p>CTS 旨在图形化展示电子转移组分和重排组分对 UV-Vis 光谱的贡献。想法很简单，只修改 $f$。假设有两片段 $A$ 和 $B$，则对应从 $A$ 到 $B$ 的电子转移的 CTS 吸收曲线表示为</p>
+<p><div class="mathdisp" data-mi="103" title="点击复制 TeX">$$
+\varepsilon_{A,B}(E)=\sum_{i}f_i Q_i^{A,B}G(E-E_i^{\mathrm{exc}})
+$$</div></p>
+<p>其中 ${Q}_{i}^{A,B}$ 是激发态 $i$ 从 $A$ 到 $B$ 的电子转移量。</p>
+<p>对应片段 <em>A</em> 内电子重排的 CTS 吸收曲线表示为</p>
+<p><div class="mathdisp" data-mi="104" title="点击复制 TeX">$$
+\varepsilon_{A,A}(E)=\sum_{i}f_i Q_i^{A,A}G(E-E_i^{\mathrm{exc}})
+$$</div></p>
+<p>其中 ${Q}_{i}^{A,A}$ 是激发态 $i$ 在片段 $A$ 内的电子重排量。</p>
+<p>因为 ${Q}_{i}^{A,A}+{Q}_{i}^{B,B}+{Q}_{i}^{A,B}+{Q}_{i}^{B,A}=1$（证明见第 <a href="#3218-%E7%94%A8-ifct-%E6%96%B9%E6%B3%95%E8%AE%A1%E7%AE%97%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91%E4%B8%AD%E7%9A%84%E7%89%87%E6%AE%B5%E9%97%B4%E7%94%B5%E8%8D%B7%E8%BD%AC%E7%A7%BB-8">3.21.8</a> 节），四种电荷转移光谱之和恰是 UV-Vis 光谱：</p>
+<p><div class="mathdisp" data-mi="105" title="点击复制 TeX">$$
+\varepsilon_{A,A}(E)+\varepsilon_{B,B}(E)+\varepsilon_{A,B}(E)+\varepsilon_{B,A}(E)=\varepsilon(E)
+$$</div></p>
+<p>显然电荷转移光谱能使 UV-Vis 光谱显著峰的内在本质很容易识别。换言之，总 UV-Vis 光谱被分解为对应不同物理本质的不同子部分。</p>
+<h3 id="绘制-cts-的流程"><strong>绘制 CTS 的流程</strong></h3>
+<ul>
+<li><p>(1) 准备本功能的输入文件。输入文件与空穴-电子或 IFCT 分析完全相同，即含基函数信息的文件和含激发态组态系数的文件。通过量子化学程序产生这些文件的细节见第 <a href="#321a-%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91%E5%88%86%E6%9E%90%E6%A8%A1%E5%9D%97%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF">3.21.A</a> 节。</p>
+</li>
+<li><p>(2) 计算 IFCT 数据并产生绘制 CTS 用的数据文件。启动 Multiwfn 并载入含基函数信息的文件。进入本功能（主功能 18 的子功能 16）。输入片段数（没有上限），输入每个片段的原子编号，再输入含组态系数的文件的路径。最后，选择计算片段对空穴和电子贡献的方法。之后，依次对每个激发态算每个片段对空穴和电子的贡献。</p>
+<blockquote>
+<p><strong>提示</strong></p>
+<p>若原子和激发态数非常大且没用弥散函数，建议选 Mulliken 方法因为它相当快。但若用了弥散函数，必须选更贵但更稳健的 Hirshfeld 方法。</p>
+</blockquote>
+<p>计算完成后，当前文件夹有 <em>IFCTdata.txt</em>，含所有激发态的完整 IFCT 数据。当前文件夹的 <em>IFCTmajor.txt</em> 记录主要的 IFCT 项（贡献大于 5% 的），从中可轻松认出所有激发态的主要特征。当前文件夹新建的 &quot;CT_multiple&quot; 子文件夹中还有一批文件；其中 <em>CT_multiple.txt</em> 是 Multiwfn 光谱绘制模块用的文件；用文本编辑器打开可见它含许多带标签的文件的路径。具体地，<em>total_spectrum.txt</em> 用于绘制 UV-Vis 光谱，带 &quot;ET_&quot; 前缀的文件用于绘制片段间电子转移光谱，带 &quot;Redis_&quot; 前缀的文件用于绘制片段内电子重排光谱。注意移动 &quot;CT_multiple&quot; 子文件夹时，应手动修改其中所含文件的路径。</p>
+</li>
+<li><p>(3) 启动 Multiwfn，把 &quot;CT_multiple&quot; 子文件夹中的 <em>CT_multiple.txt</em> 作输入文件，再进入主功能 11，选 &quot;UV-Vis&quot;，选选项 0 绘制光谱。发现片段间电子转移光谱和片段内电子重排光谱连同 UV-Vis 光谱一起显示。也可用界面的丰富选项美化图形，见第 <a href="sec-3-13-plotting-spectra.html#3133-%E7%94%A8%E6%B3%95%E5%92%8C%E9%80%89%E9%A1%B9usage-and-options">3.13.3</a> 节的说明。</p>
+</li>
+</ul>
+<p>批量激发态算 IFCT 数据并绘制 CTS 的例子见第 <a href="sec-4-18-electron-excitation-analysis.html#41816-%E7%BB%98%E5%88%B6%E7%94%B5%E8%8D%B7%E8%BD%AC%E7%A7%BB%E5%85%89%E8%B0%B1%E5%B9%B6%E8%AE%A1%E7%AE%97%E6%89%80%E6%9C%89%E6%BF%80%E5%8F%91%E6%80%81%E7%9A%84%E4%B8%BB%E8%A6%81%E7%89%B9%E5%BE%81%E4%BB%A5-n-%E8%8B%AF%E5%9F%BA%E5%90%A1%E5%92%AF%E4%B8%BA%E4%BE%8B">4.18.16</a> 节。</p>
+<h2 id="32117-基于电子激发的电子密度极化分析"><strong>3.21.17 基于电子激发的电子密度极化分析</strong></h2>
+<h3 id="1-简介"><strong>1. 简介</strong></h3>
+<p>外加势 <em>δv</em>(<strong>r</strong>) 可导致化学体系电子密度的极化。一般地，相应的电子密度变化下文称为密度极化 ($\rho_{\mathrm{pol}}$)，可通过有和无 <em>δv</em> 得到的密度相减得到。显然，这需要两次单点计算以产生各自状态的波函数文件。</p>
+<p><em>J. Phys. Chem. A</em>, <strong>124</strong>, 633 (2020) 提出了基于电子激发计算（<em>例如</em> TDDFT）计算并分析 $\rho_{\mathrm{pol}}$ 的新颖方法。目前只探索了由一个或多个点电荷组成的 <em>δv</em>。该论文展示了一些实际应用，该方法还在 <em>J. Comput. Chem.</em>, <strong>42</strong>, 1118 (2021) 中用于研究取代对 Mo-oxo 催化剂性能的影响。该方法有两个独特的优点：</p>
+<p>(1) 用足够多激发态做完常规电子激发计算后，可轻松得到任意与时间无关的 <em>δv</em> 诱导的 $\rho_{\mathrm{pol}}$。意味着不需要对每个感兴趣的 <em>δv</em> 都做量子化学计算。但注意该方法得到的 $\rho_{\mathrm{pol}}$ 不如上述传统方法得到的准确，因为该方法基于低阶微扰理论推导。这也意味着 <em>δv</em> 不应太强。例如，它可以是不超过 0.1 e 的点电荷，而 0.5 e 可能太大，除非放在离体系很远处。</p>
+<p>(2) 更重要的是，该方法能从电子激发的角度对 $\rho_{\mathrm{pol}}$ 提供深刻理解和化学洞察。可获得哪些激发对 $\rho_{\mathrm{pol}}$ 有显著贡献的信息，并通过进一步分析激发的跃迁密度的分布讨论为什么贡献显著。换言之，该方法分解 $\rho_{\mathrm{pol}}$ 以揭示其本质。</p>
+<h3 id="2-理论"><strong>2. 理论</strong></h3>
+<p>按微扰理论，被 <em>δv</em> 微扰的基态波函数可按无微扰时相同几何的基态 ( $k$ =0) 和激发态 ( $k>0$) 线性展开：</p>
+<p><div class="mathdisp" data-mi="106" title="点击复制 TeX">$$
+|\left. {\Psi}_{0} \right\rangle=\sum_{k=0}^{\infty } {c}_{k}|{\psi}_{k}^{(0)}⟩
+$$</div></p>
+<p>其中</p>
+<p><div class="mathdisp" data-mi="107" title="点击复制 TeX">$$
+{c}_{k}=-\frac{\left\langle {\Psi}_{k}^{\left( 0 \right)}\middle|\delta v\middle|{\Psi}_{0}^{\left( 0 \right)} \right\rangle}{{E}_{k}^{\left( 0 \right)}-{E}_{0}^{\left( 0 \right)}}=-\frac{\int {\rho}_{0}^{k}(\mathbf{r})\delta v(\mathbf{r})\mathrm{d}\mathbf{r}}{{E}_{k}^{\left( 0 \right)}-{E}_{0}^{\left( 0 \right)}}
+$$</div></p>
+<p>其中分母是激发态 $k$ 的激发能，而 ${\rho}_{0}^{k}$ 是基态与该激发态之间的跃迁密度。跃迁密度的定义见第 <a href="#32111-%E7%90%86%E8%AE%BA">3.21.1.1</a> 节。显然，对激发态，激发能越小，跃迁密度分布与外势的有效重叠（注意相位抵消）越大，系数的幅度越大。注意幅度对后者敏感得多。$k>0$ 系数的平方可理解为电子态的贡献。基态 ( $k$ =0) 系数的平方总接近 1.0，因为假设 <em>δv</em> 弱。</p>
+<p>进而，在 ${c}_{0}^{2}\approx 1$ 条件下，密度极化即有和无微扰的电子密度之差 ( ${\rho}_{\mathrm{pert}}$ 和 ${\rho}_{0}$ ) 可计算为</p>
+<p><div class="mathdisp" data-mi="108" title="点击复制 TeX">$$
+{\rho}_{\mathrm{pol}}(\mathbf{r})={\rho}_{\mathrm{pert}}(\mathbf{r})-{\rho}_{0}(\mathbf{r})\approx 2\sum_{k=1}^{\infty } {c}_{k}{\rho}_{0}^{k}(\mathbf{r})
+$$</div></p>
+<p>$\rho_{\mathrm{pol}}$ 在全空间的积分必为零，因为微扰不改变电子数，但表征被极化的电子量 (<em>δN</em>) 有用；为此，可积分 $\rho_{\mathrm{pol}}$ 的正部或负部，或等价地算为 $\delta N=\frac{1}{2}\int |{\rho}_{\mathrm{pol}}(\mathbf{r})|\mathrm{d}\mathbf{r}$。</p>
+<p>最后，按二阶微扰理论，一阶微扰修正能量代表外势与永久电子分布之间的相互作用能</p>
+<p><div class="mathdisp" data-mi="109" title="点击复制 TeX">$$
+{E}^{(1)}=\left\langle {\Psi}_{0}^{\left( 0 \right)}\middle|\delta v\middle|{\Psi}_{0}^{\left( 0 \right)} \right\rangle=\int {\rho}_{0}(\mathbf{r})\delta v(\mathbf{r})\mathrm{d}\mathbf{r}
+$$</div></p>
+<p>二阶修正能量代表体系为响应微扰扭曲其电子密度（由基态和激发态混合导致）经历的能量稳定化</p>
+<p><div class="mathdisp" data-mi="110" title="点击复制 TeX">$$
+{E}^{(2)}=\sum_{k>0}^{\infty } \frac{{\left| \left\langle {\Psi}_{k}^{\left( 0 \right)}\middle|\delta v\middle|{\Psi}_{0}^{\left( 0 \right)} \right\rangle \right|}^{2}}{{E}_{0}^{\left( 0 \right)}-{E}_{k}^{\left( 0 \right)}}=\sum_{k>0}^{\infty } {c}_{k}^{2}\left( {E}_{0}^{\left( 0 \right)}-{E}_{k}^{\left( 0 \right)} \right)
+$$</div></p>
+<p>可见 $E^{(2)}$ 可严格分解为不同激发态的贡献，从中可从能量角度认出不同激发态在响应微扰中的重要性。</p>
+<h3 id="3-实际指导"><strong>3. 实际指导</strong></h3>
+<p>任意数目的点电荷可作外势，表示为 $\delta v\left( \mathbf{r} \right)=-\sum_{i}^{n} \frac{{q}_{i}}{|\mathbf{r}-{\mathbf{R}}_{i}|}$，其中 $q$ <em>$_{i}$</em> 和 $R_{i}$ 分别是点电荷 $i$ 的值和坐标矢量。负号来自电子带 -1 e 电荷。点电荷可放在任何你认为有意义的地方。演示性应用见原始论文。例如，为近似模拟吸电子（给电子）取代基的效应，可在连接取代基的原子的核位置放 +0.1 e (-0.1 e) 的点电荷，见<em>例如</em> <em>J. Comput. Chem.</em>, <strong>42</strong>, 1118 (2021)。再如，为考察 Lewis 碱接近体系对电子分布的影响，可在预期反应复合物中 Lewis 碱原子的位置放略微负的点电荷。</p>
+<p>理论上，只要有激发态波函数，任何算激发态的方法都可用于该分析。但在当前实现中，只支持基于单激发组态的方法，如 CIS 和 TDDFT。一般 TDDFT 加恰当的 DFT 泛函是首选。一般我推荐 ωB97XD 或 CAM-B3LYP 联合 def-TZVP。</p>
+<p>上式涉及无穷多激发态，显然实际研究做不到。算的激发态越多，量子化学程序和 Multiwfn 中的计算代价越高，而忽略重要激发态的风险越低。原始论文和 <em>J. Comput. Chem.</em>, <strong>42</strong>, 1118 (2021) 中考虑了 50 个激发态，该选择可能是很好的起点，但某些情形可能需要更多态。</p>
+<p>在 Multiwfn 中，计算 { $c$ <em>$_{k}$</em>} 涉及的积分基于均匀格点计算。格点间距越小，精度越好而代价越高。对小体系，我建议用 0.1 或 0.15 Bohr 的很精细格点间距，而对大体系，考虑到高计算代价，不得不用 0.2 或 0.25 Bohr 等较大的格点间距（为保证数值精度，建议做格点间距的收敛测试）。</p>
+<h3 id="4-用法"><strong>4. 用法</strong></h3>
+<p>本功能能算 $\rho_{\mathrm{pol}}$、{ $c$ <em>$_{k}$</em>}、$E^{(2)}$、<em>δN</em>。该分析所需的输入文件与第 <a href="#321a-%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91%E5%88%86%E6%9E%90%E6%A8%A1%E5%9D%97%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF">3.21.A</a> 节描述的完全相同。</p>
+<p>使用本功能的步骤如下：</p>
+<ul>
+<li><p>(1) Multiwfn 启动时载入含基函数信息的文件。例如 Gaussian 的 TDDFT 计算产生的 .fchk 文件</p>
+</li>
+<li><p>(2) 进入主功能 18 的子功能 17</p>
+</li>
+<li><p>(3) 输入点电荷总数，再输入每个的 X、Y、Z 坐标和电荷值</p>
+</li>
+<li><p>(4) 设置格点</p>
+</li>
+<li><p>(5) 载入含激发态计算组态系数的文件，如 Gaussian 的 TDDFT 任务的输出文件</p>
+</li>
+</ul>
+<p>然后 Multiwfn 开始对每个激发态算数据。算完后，屏幕显示每个激发态的激发能、$c$ <em>$_{k}$</em> 和 $E^{(2)}$，再给出总 $E^{(2)}$ 和 <em>δN</em>。还显示 $\rho_{\mathrm{pol}}$ 在全空间的积分，它越接近 0，表明当前格点质量越好。</p>
+<p>之后出现后处理菜单，其中 $\rho_{\mathrm{pol}}$、<em>δv</em> 和感兴趣激发态的跃迁密度（例如 | $c_{k}$ | 最大的），可直接绘制为等值面图，或导出为 .cub 文件。</p>
+<p>该功能的例子见第 <a href="sec-4-18-electron-excitation-analysis.html#41817-%E5%9F%BA%E4%BA%8E%E7%94%B5%E5%AD%90%E6%BF%80%E5%8F%91%E5%81%9A%E7%94%B5%E5%AD%90%E5%AF%86%E5%BA%A6%E6%9E%81%E5%8C%96%E5%88%86%E6%9E%90%E7%9A%84%E4%BE%8B%E5%AD%90">4.18.17</a> 节。</p>
+<h2 id="32118-计算手性体系的-ecdcpl-不对称因子-g"><strong>3.21.18 计算手性体系的 ECD/CPL 不对称因子 (<em>g</em>)</strong></h2>
+<p>本节介绍的功能使基于 Gaussian 或 ORCA 的输出文件非常容易得到手性体系 ECD/CPL 的不对称因子 ( $g$ ) 及相关量，同时跃迁电/磁偶极矩 ( ${\boldsymbol{\mu}}^{\mathrm{tran}}$ 和 ${\mathbf{m}}^{\mathrm{tran}}$ ) 可在 VMD 中容易直观可视化。</p>
+<h3 id="背景理论"><strong>背景理论</strong></h3>
+<h4 id="1-吸收情形"><strong>(1) 吸收情形</strong></h4>
+<p>手性体系对左旋和右旋圆偏振光的吸收因电子激发而不同，体现为电子圆二色 (ECD)。对每个激发态，吸收的不对称因子 ( $g_{\mathrm{abs}}$ ) 定义为</p>
+<p><div class="mathdisp" data-mi="111" title="点击复制 TeX">$$
+{g}_{\mathrm{abs}}=\frac{{\varepsilon}_{\mathrm{L}}-{\varepsilon}_{\mathrm{R}}}{\frac{1}{2}({\varepsilon}_{\mathrm{L}}+{\varepsilon}_{\mathrm{R}})}
+$$</div></p>
+<p>其中 ${\varepsilon}_{\mathrm{L}}$ 和 ${\varepsilon}_{\mathrm{R}}$ 分别是左旋和右旋圆偏振光的分子吸收系数。</p>
+<p>$g_{\mathrm{abs}}$ 可基于旋光强度 ( $R$ ) 和偶极强度 ( $D$ ) 计算为</p>
+<p><div class="mathdisp" data-mi="112" title="点击复制 TeX">$$
+{g}_{\mathrm{abs}}=4\frac{R}{D}
+$$</div></p>
+<p>旋光强度算为</p>
+<p><div class="mathdisp" data-mi="113" title="点击复制 TeX">$$
+R=\mathrm{Im}\left( {\boldsymbol{\mu}}_{0v}^{\mathrm{tran}}\cdot {\mathbf{m}}_{v0}^{\mathrm{tran}} \right)
+$$</div></p>
+<p>对实波函数，${\mathbf{m}}_{v0}^{\mathrm{tran}}=-{\mathbf{m}}_{0v}^{\mathrm{tran}}$，所以</p>
+<p><div class="mathdisp" data-mi="114" title="点击复制 TeX">$$
+R=-\mathrm{Im}\left( {\boldsymbol{\mu}}_{0v}^{\mathrm{tran}}\cdot {\mathbf{m}}_{0v}^{\mathrm{tran}} \right)=-|{\boldsymbol{\mu}}_{0v}^{\mathrm{tran}}||{\mathbf{m}}_{0v}^{\mathrm{tran}}|\mathrm{cos}\theta
+$$</div></p>
+<p>其中 <em>θ</em> 是 ${\boldsymbol{\mu}}_{0v}^{\mathrm{tran}}=\left\langle {\Psi}_{0}\middle|-\mathbf{r}\middle|{\Psi}_{v} \right\rangle$ 与 ${\mathbf{m}}_{0v}^{\mathrm{tran}}=\frac{1}{2}i\left\langle {\Psi}_{0}\middle|\mathbf{r\times \nabla }\middle|{\Psi}_{v} \right\rangle$ 之间的夹角，二者分别是基态 (0) 到激发态 ( $v$ ) 的跃迁电偶极矩和跃迁磁偶极矩。</p>
+<p>偶极强度算为</p>
+<p><div class="mathdisp" data-mi="115" title="点击复制 TeX">$$
+D={\left| {\boldsymbol{\mu}}_{0v}^{\mathrm{tran}}{|}^{2}+|{\mathbf{m}}_{0v}^{\mathrm{tran}} \right|}^{2}
+$$</div></p>
+<p>1 a.u. 的 ${\boldsymbol{\mu}}^{\mathrm{tran}}$ 对应 2.541746×10⁻¹⁸ esu·cm，1 a.u. 的 ${\mathbf{m}}^{\mathrm{tran}}$ 对应 1.85480201566(56)×10⁻²⁰ erg/Gauss，所以 1 a.u. 的 <em>R</em> 对应 2.541746×1.85480201566×10⁻³⁸ erg·esu·cm/Gauss，其中 erg·esu·cm/Gauss 是 cgs 单位。一般 $R$ 以 10⁻⁴⁰ cgs 为单位报告。实际 1 esu·cm = 1 erg/Gauss = 1 g$^{1/2}$·cm$^{5/2}$/s，所以容易理解为什么 <em>g</em> 无量纲。</p>
+<p>因为 ${\mathbf{m}}^{\mathrm{tran}}$ 的幅度一般显著小于 ${\boldsymbol{\mu}}^{\mathrm{tran}}$，至少对有机体系，文献常用近似：</p>
+<p><div class="mathdisp" data-mi="116" title="点击复制 TeX">$$
+g\approx -4\frac{|{\mathbf{m}}_{0v}^{\mathrm{tran}}|\mathrm{cos}\theta}{|{\boldsymbol{\mu}}_{0v}^{\mathrm{tran}}|}
+$$</div></p>
+<p>应注意 Gaussian 的电子激发计算输出的 ${\mathbf{m}}_{0v}^{\mathrm{tran}}$ 实际对应 $\left\langle {\Psi}_{0}\middle|\mathbf{r\times \nabla }\middle|{\Psi}_{v} \right\rangle$，而 ORCA 输出的对应 $\frac{1}{2}\left\langle {\Psi}_{0}\middle|\mathbf{r\times \nabla }\middle|{\Psi}_{v} \right\rangle$。</p>
+<p>许多论文漏了负号，导致结果错误反转。</p>
+<h4 id="2-发射情形"><strong>(2) 发射情形</strong></h4>
+<p>手性体系也有圆偏振发光 (CPL) 现象。发光的不对称因子 ( $g_{\mathrm{lum}}$ ) 也称 CPL 不对称因子 ( $g_{\mathrm{CPL}}$ )，定义为</p>
+<p><div class="mathdisp" data-mi="117" title="点击复制 TeX">$$
+{g}_{\mathrm{lum}}=\frac{{I}_{\mathrm{L}}-{I}_{\mathrm{R}}}{\frac{1}{2}({I}_{\mathrm{L}}+{I}_{\mathrm{R}})}
+$$</div></p>
+<p>其中 ${I}_{\mathrm{L}}$ 和 ${I}_{\mathrm{R}}$ 分别是左旋和右旋圆偏振发光的强度。按 Kasha 规则，有机体系一般只有一个发射态，对应最低单重激发态 (S₁)。与 $g_{\mathrm{abs}}$ 一样，$g_{\mathrm{lum}}$ 理论上也算为 $4R/D$，但只应对该发射态在优化的极小结构算。</p>
+<p>重要的是注意在完全相同的几何（完全忽略几何弛豫）下，按算符性质，假设波函数是实的，吸收和发射过程有相同的跃迁电偶极矩，即 ${\boldsymbol{\mu}}_{v0}^{\mathrm{tran}}={\boldsymbol{\mu}}_{0v}^{\mathrm{tran}}$，而其跃迁磁偶极矩方向相反，即 ${\mathbf{m}}_{v0}^{\mathrm{tran}}=-{\mathbf{m}}_{0v}^{\mathrm{tran}}$。但绝不要天真地把这些关系代入上述公式得出 S₁→S₀ 的 $R_{\mathrm{lum}}$ 等于 S₀→S₁ 的 $R_{\mathrm{abs}}$ 的负值的结论。事实上，$R_{\mathrm{abs}}$ = $R_{\mathrm{lum}}$，因而 $g_{\mathrm{abs}}$ = $g_{\mathrm{lum}}$，这是由于吸收和发射过程旋光强度的物理定义（有点复杂，这里不细说）。实际中，由于 S₀ 和 S₁ 极小之间的几何弛豫，常观察到 $R_{\mathrm{abs}}$ 和 $R_{\mathrm{lum}}$ 符号不同。</p>
+<p>我发现许多论文忽略了这里提到的点，使论文中的 $g_{\mathrm{lum}}$ 或相关中间数据不正确，特别是 $R_{\mathrm{lum}}$ 的符号和/或 CPL 过程跃迁磁偶极矩的方向被错误反转。</p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>用该功能，输入文件应是 Gaussian 或 ORCA 的电子激发任务（一般 TDDFT）的输出文件。对 CPL 情形，发射态几何优化任务的输出文件也可接受，因为 Multiwfn 自动载入最后一次输出的数据（对应发射态的极小结构）。进入主功能 18 的子功能 18 后，Multiwfn 从输出文件载入跃迁电和磁偶极矩，再计算打印所有激发态的 $|{\boldsymbol{\mu}}^{\mathrm{tran}}|$、$|{\mathbf{m}}^{\mathrm{tran}}|$、<em>θ</em>、cos(<em>θ</em>)、$R$、$g$。需区分 ECD 和 CPL 情形：</p>
+<ul>
+<li><p>对 ECD：电子激发计算应在基态的极小结构做，进入该功能后应选“1 This study is for ECD”。</p>
+</li>
+<li><p>对 CPL：电子激发计算应在实际发射态的极小结构做（一般可用 Kasha 规则确定），进入该功能后应选“1 This study is for CPL”，它反转载入的跃迁磁偶极矩（由于上述原因，旋光强度的计算不受该处理影响）。显然，只有实际发射态对应的打印数据有意义。</p>
+<p>在后处理菜单中，可选选项 1 产生 VMD 的绘图脚本，在 VMD 中执行该脚本后，自定义命令 <em>emtran</em> 可用。若运行例如 <em>emtran 3</em>，则第 3 激发态的 ${\boldsymbol{\mu}}^{\mathrm{tran}}$ 和 ${\mathbf{m}}^{\mathrm{tran}}$ 分别作为红色和青色箭头画在图形窗口，从而直观理解其取向。也可给该命令补充参数控制箭头长度、半径和箭头中心的位移，完整用法见脚本顶部的注释行。</p>
+</li>
+</ul>
+<p>例子见第 <a href="sec-4-18-electron-excitation-analysis.html#41818-%E8%AE%A1%E7%AE%97-p-6%E8%9E%BA%E7%83%AF-ecdcpl-%E4%B8%8D%E5%AF%B9%E7%A7%B0%E5%9B%A0%E5%AD%90-g-%E7%9A%84%E4%BE%8B%E5%AD%90">4.18.18</a> 节。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-3-21-electron-excitation-analysis";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script><script>const MATHS=["\\Psi^{\\mathrm{exc}}=\\sum_{i\\to a}w_i^a\\Phi_i^a\\equiv\\sum_{i}^{\\mathrm{occ}}\\sum_{a}^{\\mathrm{vir}}w_i^a\\Phi_i^a","\\sum_{i\\to a}\\left(w_i^a\\right)^2=1.0","\\Psi^{\\mathrm{exc}}=\\sum_{i\\to a}w_i^a\\Phi_i^a+\\sum_{i\\leftarrow a}w_i^{\\prime a}\\Phi_i^a","\\sum_{i\\to a}\\left(w_i^a\\right)^2-\\sum_{i\\leftarrow a}\\left(w_i^{\\prime a}\\right)^2=1","\\begin{gathered}\\rho^{\\mathrm{hole}}(\\mathbf{r})=\\rho_{(\\mathrm{loc})}^{\\mathrm{hole}}(\\mathbf{r})+\\rho_{(\\mathrm{cross})}^{\\mathrm{hole}}(\\mathbf{r})=\\sum_{i\\to a}(w_i^a)^2\\varphi_i(\\mathbf{r})\\varphi_i(\\mathbf{r})+\\sum_{i\\to a}\\sum_{j\\neq i\\to a}w_i^a w_j^a\\varphi_i(\\mathbf{r})\\varphi_j(\\mathbf{r})\\\\ \\rho^{\\mathrm{ele}}(\\mathbf{r})=\\rho_{(\\mathrm{loc})}^{\\mathrm{ele}}(\\mathbf{r})+\\rho_{(\\mathrm{cross})}^{\\mathrm{ele}}(\\mathbf{r})=\\sum_{i\\to a}(w_i^a)^2\\varphi_a(\\mathbf{r})\\varphi_a(\\mathbf{r})+\\sum_{i\\to a}\\sum_{i\\to b\\neq a}w_i^a w_i^b\\varphi_a(\\mathbf{r})\\varphi_b(\\mathbf{r})\\end{gathered}","\\sum_{i\\to a}\\equiv\\sum_{i}^{\\mathrm{occ}}\\sum_{a}^{\\mathrm{vir}}\\qquad \\sum_{i\\to a}\\sum_{j\\neq i\\to a}\\equiv\\sum_{i}^{\\mathrm{occ}}\\sum_{j\\neq i}^{\\mathrm{occ}}\\sum_{a}^{\\mathrm{vir}}","\\int\\rho^{\\mathrm{hole}}(\\mathbf{r})\\mathrm{d}\\mathbf{r}=1\\qquad \\int\\rho^{\\mathrm{ele}}(\\mathbf{r})\\mathrm{d}\\mathbf{r}=1","S_{\\mathrm{m}}(\\mathbf{r})=\\min\\left[\\rho^{\\mathrm{hole}}(\\mathbf{r}),\\rho^{\\mathrm{ele}}(\\mathbf{r})\\right]","S_{r}(\\mathbf{r})=\\sqrt{\\rho^{\\mathrm{hole}}(\\mathbf{r})\\rho^{\\mathrm{ele}}(\\mathbf{r})}","\\Delta\\rho(\\mathbf{r})=\\rho^{\\mathrm{ele}}(\\mathbf{r})-\\rho^{\\mathrm{hole}}(\\mathbf{r})","\\begin{gathered}\\rho_{(\\mathrm{loc})}^{\\mathrm{hole}}=\\sum_{i\\to a}\\left(w_i^a\\right)^2\\rho_i-\\sum_{i\\leftarrow a}\\left(w_i^{\\prime a}\\right)^2\\rho_i\\\\ \\rho_{(\\mathrm{loc})}^{\\mathrm{ele}}=\\sum_{i\\to a}\\left(w_i^a\\right)^2\\rho_a-\\sum_{i\\leftarrow a}\\left(w_i^{\\prime a}\\right)^2\\rho_a\\end{gathered}","\\begin{gathered}\\rho_{(\\mathrm{cross})}^{\\mathrm{hole}}=\\sum_{i\\to a}\\sum_{j\\neq i\\to a}w_i^a w_j^a\\varphi_i\\varphi_j-\\sum_{i\\leftarrow a}\\sum_{j\\neq i\\leftarrow a}w_i^{\\prime a}w_j^{\\prime a}\\varphi_i\\varphi_j\\\\ \\rho_{(\\mathrm{cross})}^{\\mathrm{ele}}=\\sum_{i\\to a}\\sum_{i\\to b\\neq a}w_i^a w_i^b\\varphi_a\\varphi_b-\\sum_{i\\leftarrow a}\\sum_{i\\leftarrow b\\neq a}w_i^{\\prime a}w_i^{\\prime b}\\varphi_a\\varphi_b\\end{gathered}","\\begin{gathered}\\rho^{\\mathrm{hole}}=\\sum_{i,j\\to a}w_i^a w_j^a\\varphi_i\\varphi_j-\\sum_{i,j\\leftarrow a}w_i^{\\prime a}w_j^{\\prime a}\\varphi_i\\varphi_j\\\\ \\rho^{\\mathrm{ele}}=\\sum_{i\\to a,b}w_i^a w_i^b\\varphi_a\\varphi_b-\\sum_{i\\leftarrow a,b}w_i^{\\prime a}w_i^{\\prime b}\\varphi_a\\varphi_b\\end{gathered}","\\Theta_i^{\\mathrm{hole}}=\\sum_{a}\\left[(w_i^a)^2-(w_i^{\\prime a})^2\\right]\\qquad \\Theta_a^{\\mathrm{ele}}=\\sum_{i}\\left[(w_i^a)^2-(w_i^{\\prime a})^2\\right]","\\sum_{i}\\Theta_i^{\\mathrm{hole}}=1\\qquad \\sum_{a}\\Theta_a^{\\mathrm{ele}}=1","\\Theta_A^{\\mathrm{hole}}=\\int w_A^{\\mathrm{Hirsh}}(\\mathbf{r})\\rho^{\\mathrm{hole}}(\\mathbf{r})\\mathrm{d}\\mathbf{r}","\\begin{aligned}&\\int\\left(\\sum_{i,j\\to a}w_i^a w_j^a\\varphi_i\\varphi_j\\right)\\mathrm{d}\\mathbf{r}=1\\\\ &\\int\\left(\\sum_{i,j\\to a}w_i^a w_j^a\\sum_{\\mu}\\sum_{\\nu}C_{\\mu,i}C_{\\nu,j}\\chi_{\\mu}\\chi_{\\nu}\\right)\\mathrm{d}\\mathbf{r}=1\\\\ &\\sum_{i,j\\to a}w_i^a w_j^a\\sum_{\\mu}\\sum_{\\nu}C_{\\mu,i}C_{\\nu,j}\\int\\chi_{\\mu}\\chi_{\\nu}\\mathrm{d}\\mathbf{r}=1\\\\ &\\sum_{i,j\\to a}w_i^a w_j^a\\sum_{\\mu}\\sum_{\\nu}C_{\\mu,i}C_{\\nu,j}S_{\\mu,\\nu}=1\\end{aligned}","\\Theta_A^{\\mathrm{hole}}=\\sum_{i,j\\to a}w_i^a w_j^a\\frac{1}{2}\\left(\\sum_{\\mu\\in A}\\sum_{\\nu}C_{\\mu,i}C_{\\nu,j}S_{\\mu,\\nu}+\\sum_{\\mu}\\sum_{\\nu\\in A}C_{\\mu,i}C_{\\nu,j}S_{\\mu,\\nu}\\right)","\\begin{gathered}\\Theta_A^{\\mathrm{hole}}=\\sum_{i,j\\to a}w_i^a w_j^a\\frac{1}{2}\\left(\\sum_{\\mu\\in A}\\sum_{\\nu}T_{\\mu,\\nu}^{ij}+\\sum_{\\mu}\\sum_{\\nu\\in A}T_{\\mu,\\nu}^{ij}\\right)-\\sum_{i,j\\leftarrow a}w_i^{\\prime a}w_j^{\\prime a}\\frac{1}{2}\\left(\\sum_{\\mu\\in A}\\sum_{\\nu}T_{\\mu,\\nu}^{ij}+\\sum_{\\mu}\\sum_{\\nu\\in A}T_{\\mu,\\nu}^{ij}\\right)\\\\ \\Theta_A^{\\mathrm{ele}}=\\sum_{i\\to a,b}w_i^a w_i^b\\frac{1}{2}\\left(\\sum_{\\mu\\in A}\\sum_{\\nu}T_{\\mu,\\nu}^{ab}+\\sum_{\\mu}\\sum_{\\nu\\in A}T_{\\mu,\\nu}^{ab}\\right)-\\sum_{i\\leftarrow a,b}w_i^{\\prime a}w_i^{\\prime b}\\frac{1}{2}\\left(\\sum_{\\mu\\in A}\\sum_{\\nu}T_{\\mu,\\nu}^{ab}+\\sum_{\\mu}\\sum_{\\nu\\in A}T_{\\mu,\\nu}^{ab}\\right)\\end{gathered}","\\begin{gathered}\\Theta_{\\mu}^{\\mathrm{hole}}=\\sum_{i,j\\to a}w_i^a w_j^a\\frac{1}{2}\\left(\\sum_{\\nu}T_{\\mu,\\nu}^{ij}+\\sum_{\\nu}T_{\\nu,\\mu}^{ij}\\right)-\\sum_{i,j\\leftarrow a}w_i^{\\prime a}w_j^{\\prime a}\\frac{1}{2}\\left(\\sum_{\\nu}T_{\\mu,\\nu}^{ij}+\\sum_{\\nu}T_{\\nu,\\mu}^{ij}\\right)\\\\ \\Theta_{\\mu}^{\\mathrm{ele}}=\\sum_{i\\to a,b}w_i^a w_i^b\\frac{1}{2}\\left(\\sum_{\\nu}T_{\\mu,\\nu}^{ab}+\\sum_{\\nu}T_{\\nu,\\mu}^{ab}\\right)-\\sum_{i\\leftarrow a,b}w_i^{\\prime a}w_i^{\\prime b}\\frac{1}{2}\\left(\\sum_{\\nu}T_{\\mu,\\nu}^{ab}+\\sum_{\\nu}T_{\\nu,\\mu}^{ab}\\right)\\end{gathered}","\\Theta_{\\mathrm{frag}}^{\\mathrm{hole}}=\\sum_{A\\in\\mathrm{frag}}\\Theta_A^{\\mathrm{hole}}\\qquad \\Theta_{\\mathrm{frag}}^{\\mathrm{ele}}=\\sum_{A\\in\\mathrm{frag}}\\Theta_A^{\\mathrm{ele}}","\\Theta_A^{\\mathrm{CDD}}=\\Theta_A^{\\mathrm{ele}}-\\Theta_A^{\\mathrm{hole}}\\qquad \\Theta_{\\mathrm{frag}}^{\\mathrm{CDD}}=\\Theta_{\\mathrm{frag}}^{\\mathrm{ele}}-\\Theta_{\\mathrm{frag}}^{\\mathrm{hole}}","\\Theta_A^{\\mathrm{ovlp}}=\\sqrt{\\Theta_A^{\\mathrm{ele}}\\Theta_A^{\\mathrm{hole}}}\\qquad \\Theta_{\\mathrm{frag}}^{\\mathrm{ovlp}}=\\sqrt{\\Theta_{\\mathrm{frag}}^{\\mathrm{ele}}\\Theta_{\\mathrm{frag}}^{\\mathrm{hole}}}","\\begin{gathered}S_{\\mathrm{m}}\\ \\mathrm{index}=\\int S_{\\mathrm{m}}(\\mathbf{r})\\mathrm{d}\\mathbf{r}\\equiv\\int\\min\\left[\\rho^{\\mathrm{hole}}(\\mathbf{r}),\\rho^{\\mathrm{ele}}(\\mathbf{r})\\right]\\mathrm{d}\\mathbf{r}\\\\ S_{\\mathrm{r}}\\ \\mathrm{index}=\\int S_{\\mathrm{r}}(\\mathbf{r})\\mathrm{d}\\mathbf{r}\\equiv\\int\\sqrt{\\rho^{\\mathrm{hole}}(\\mathbf{r})\\rho^{\\mathrm{ele}}(\\mathbf{r})}\\mathrm{d}\\mathbf{r}\\end{gathered}","X_{\\mathrm{ele}}=\\int x\\rho^{\\mathrm{ele}}(\\mathbf{r})\\mathrm{d}\\mathbf{r}","D_{x}=\\left|X_{\\mathrm{ele}}-X_{\\mathrm{hole}}\\right|\\qquad D_{y}=\\left|Y_{\\mathrm{ele}}-Y_{\\mathrm{hole}}\\right|\\qquad D_{z}=\\left|Z_{\\mathrm{ele}}-Z_{\\mathrm{hole}}\\right|","D\\ \\mathrm{index}=\\left|\\mathbf{D}\\right|\\equiv\\sqrt{(D_{x})^2+(D_{y})^2+(D_{z})^2}","\\Delta\\mu_{\\mathrm{x}}=-(X_{\\mathrm{ele}}-X_{\\mathrm{hole}})\\qquad \\Delta\\mu_{\\mathrm{y}}=-(Y_{\\mathrm{ele}}-Y_{\\mathrm{hole}})\\qquad \\Delta\\mu_{\\mathrm{z}}=-(Z_{\\mathrm{ele}}-Z_{\\mathrm{hole}})","\\sigma_{\\mathrm{hole},x}=\\sqrt{\\int(x-X_{\\mathrm{hole}})^2\\rho^{\\mathrm{hole}}(\\mathbf{r})\\mathrm{d}\\mathbf{r}}","\\begin{gathered}\\Delta\\sigma_{\\lambda}=\\sigma_{\\mathrm{ele},\\lambda}-\\sigma_{\\mathrm{hole},\\lambda}\\qquad \\lambda=\\{x,y,z\\}\\\\ \\Delta\\sigma\\ \\mathrm{index}=\\left|\\boldsymbol{\\sigma}_{\\mathrm{ele}}\\right|-\\left|\\boldsymbol{\\sigma}_{\\mathrm{hole}}\\right|\\end{gathered}","\\begin{gathered}H_{\\lambda}=(\\sigma_{\\mathrm{ele},\\lambda}+\\sigma_{\\mathrm{hole},\\lambda})/2\\qquad \\lambda=\\{x,y,z\\}\\\\ H_{\\mathrm{CT}}=\\left|\\mathbf{H}\\cdot\\mathbf{u}_{\\mathrm{CT}}\\right|\\\\ H\\ \\mathrm{index}=\\left(\\left|\\boldsymbol{\\sigma}_{\\mathrm{ele}}\\right|+\\left|\\boldsymbol{\\sigma}_{\\mathrm{hole}}\\right|\\right)/2\\end{gathered}","t\\ \\mathrm{index}=D\\ \\mathrm{index}-H_{\\mathrm{CT}}","\\begin{gathered}HDI=100\\times\\sqrt{\\int[\\rho^{\\mathrm{hole}}(\\mathbf{r})]^2\\mathrm{d}\\mathbf{r}}\\\\ EDI=100\\times\\sqrt{\\int[\\rho^{\\mathrm{ele}}(\\mathbf{r})]^2\\mathrm{d}\\mathbf{r}}\\end{gathered}","\\begin{gathered}C_{\\mathrm{ele}}(\\mathbf{r})=A_{\\mathrm{ele}}\\exp\\left(-\\frac{(x-X_{\\mathrm{ele}})^2}{2\\sigma_{\\mathrm{ele},x}^2}-\\frac{(y-Y_{\\mathrm{ele}})^2}{2\\sigma_{\\mathrm{ele},y}^2}-\\frac{(z-Z_{\\mathrm{ele}})^2}{2\\sigma_{\\mathrm{ele},z}^2}\\right)\\\\ C_{\\mathrm{hole}}(\\mathbf{r})=A_{\\mathrm{hole}}\\exp\\left(-\\frac{(x-X_{\\mathrm{hole}})^2}{2\\sigma_{\\mathrm{hole},x}^2}-\\frac{(y-Y_{\\mathrm{hole}})^2}{2\\sigma_{\\mathrm{hole},y}^2}-\\frac{(z-Z_{\\mathrm{hole}})^2}{2\\sigma_{\\mathrm{hole},z}^2}\\right)\\end{gathered}","T(\\mathbf{r};\\mathbf{r}')\\equiv T(\\mathbf{r}_1;\\mathbf{r}_1')=\\int\\Phi^0(x_1,x_2,\\cdots x_N)\\Psi^{\\mathrm{exc}}(x_1',x_2,\\cdots x_N)\\mathrm{d}\\sigma_1\\mathrm{d}x_2\\mathrm{d}x_3\\cdots\\mathrm{d}x_N","T(\\mathbf{r};\\mathbf{r}')=\\sum_{i}\\sum_{a}w_i^a\\varphi_i(\\mathbf{r})\\varphi_a(\\mathbf{r}')","T(\\mathbf{r})=\\sum_{i}\\sum_{a}w_i^a\\varphi_i(\\mathbf{r})\\varphi_a(\\mathbf{r})","T_{\\mathrm{x}}(\\mathbf{r})=-xT(\\mathbf{r})\\qquad T_{\\mathrm{y}}(\\mathbf{r})=-yT(\\mathbf{r})\\qquad T_{\\mathrm{z}}(\\mathbf{r})=-zT(\\mathbf{r})","D_{\\mathrm{x}}=\\int T_{\\mathrm{x}}(\\mathbf{r})\\mathrm{d}\\mathbf{r}\\qquad D_{\\mathrm{y}}=\\int T_{\\mathrm{y}}(\\mathbf{r})\\mathrm{d}\\mathbf{r}\\qquad D_{\\mathrm{z}}=\\int T_{\\mathrm{z}}(\\mathbf{r})\\mathrm{d}\\mathbf{r}","\\begin{aligned}&\\hat{\\mathbf{L}}=-i(\\mathbf{r}\\times\\nabla)=\\hat{\\mathbf{i}}L_{x}+\\hat{\\mathbf{j}}L_{y}+\\hat{\\mathbf{k}}L_{z}\\\\ &=-i\\left[\\hat{\\mathbf{i}}\\left(y\\frac{\\partial}{\\partial z}-z\\frac{\\partial}{\\partial y}\\right)+\\hat{\\mathbf{j}}\\left(z\\frac{\\partial}{\\partial x}-x\\frac{\\partial}{\\partial z}\\right)+\\hat{\\mathbf{k}}\\left(x\\frac{\\partial}{\\partial y}-y\\frac{\\partial}{\\partial x}\\right)\\right]\\end{aligned}","M_{x}=\\left\\langle\\Phi^0\\left|y\\frac{\\partial}{\\partial z}-z\\frac{\\partial}{\\partial y}\\right|\\Psi^{\\mathrm{exc}}\\right\\rangle=\\sum_{i\\to a}w_i^a\\left\\langle\\varphi_i\\left|y\\frac{\\partial}{\\partial z}-z\\frac{\\partial}{\\partial y}\\right|\\varphi_a\\right\\rangle-\\sum_{j\\leftarrow b}w_j^{\\prime b}\\left\\langle\\varphi_j\\left|y\\frac{\\partial}{\\partial z}-z\\frac{\\partial}{\\partial y}\\right|\\varphi_b\\right\\rangle","m_{\\mathrm{x}}(\\mathbf{r})=\\sum_{i\\to a}w_i^a\\varphi_i(\\mathbf{r})\\left[y\\frac{\\partial\\varphi_a}{\\partial z}(\\mathbf{r})-z\\frac{\\partial\\varphi_a}{\\partial y}(\\mathbf{r})\\right]-\\sum_{j\\leftarrow b}w_j^{\\prime b}\\varphi_j(\\mathbf{r})\\left[y\\frac{\\partial\\varphi_b}{\\partial z}(\\mathbf{r})-z\\frac{\\partial\\varphi_b}{\\partial y}(\\mathbf{r})\\right]","E_{\\mathrm{C}}=\\int\\int\\frac{\\rho^{\\mathrm{hole}}(\\mathbf{r}_1)\\rho^{\\mathrm{ele}}(\\mathbf{r}_2)}{\\left|\\mathbf{r}_1-\\mathbf{r}_2\\right|}\\mathrm{d}\\mathbf{r}_1\\mathrm{d}\\mathbf{r}_2","P_{\\mu\\nu}^{\\mathrm{tran}}=\\sum_{i}^{\\mathrm{occ}}\\sum_{a}^{\\mathrm{vir}}w_i^a C_{\\mu i}C_{\\nu a}","T(\\mathbf{r};\\mathbf{r}')=\\sum_{\\mu}\\sum_{\\nu}P_{\\mu\\nu}^{\\mathrm{tran}}\\chi_{\\mu}(\\mathbf{r})\\chi_{\\nu}(\\mathbf{r}')","\\mathbf{P}^{\\mathrm{tran}}=\\begin{bmatrix}1,2 & 2,2\\\\ 1,1 & 2,1\\end{bmatrix}=\\begin{bmatrix}C_{1i}C_{2a} & C_{2i}C_{2a}\\\\ C_{1i}C_{1a} & C_{2i}C_{1a}\\end{bmatrix}","\\overline{\\mathbf{P}}_{\\mu\\nu}^{\\mathrm{tran}}=\\frac{\\mathbf{P}_{\\mu\\nu}^{\\mathrm{tran}}+\\mathbf{P}_{\\nu\\mu}^{\\mathrm{tran}}}{\\sqrt{2}}","\\begin{gathered}\\mathrm{Way}\\ 1:\\ p_{AB}=\\sum_{\\mu\\in A}\\sum_{\\nu\\in B}(P_{\\mu\\nu}^{\\mathrm{tran}})^2\\\\ \\mathrm{Way}\\ 2:\\ p_{AB}=\\sqrt{\\sum_{\\mu\\in A}\\sum_{\\nu\\in B}(P_{\\mu\\nu}^{\\mathrm{tran}})^2}\\\\ \\mathrm{Way}\\ 3:\\ p_{AB}=\\sum_{\\mu\\in A}\\sum_{\\nu\\in B}\\left|P_{\\mu\\nu}^{\\mathrm{tran}}\\right|\\\\ \\mathrm{Way}\\ 4:\\ p_{AA}=\\sum_{\\mu\\in A}\\left|P_{\\mu\\mu}^{\\mathrm{tran}}\\right|,\\qquad p_{A\\neq B}^{\\mathrm{tran}}=\\sqrt{\\sum_{\\mu\\in A}\\sum_{\\nu\\in B}(P_{\\mu\\nu}^{\\mathrm{tran}})^2}\\end{gathered}","\\mathbf{p}\\equiv\\mathrm{electron}\\begin{bmatrix}1,N & 2,N & \\cdots & N,N\\\\ \\vdots & \\vdots & \\ddots & \\vdots\\\\ 1,2 & 2,2 & \\cdots & N,2\\\\ 1,1 & 2,1 & \\cdots & N,1\\end{bmatrix}\\ \\ \\mathrm{hole}","p_{RS}=\\sum_{A\\in\\mathrm{frag}\\ R}\\sum_{B\\in\\mathrm{frag}\\ S}p_{AB}","\\Delta\\rho(\\mathbf{r})=\\rho_{\\mathrm{EX}}(\\mathbf{r})-\\rho_{\\mathrm{GS}}(\\mathbf{r})","\\begin{gathered}\\mathbf{R}_{+}=\\int\\mathbf{r}\\rho_{+}(\\mathbf{r})\\mathrm{d}\\mathbf{r}/\\int\\rho_{+}(\\mathbf{r})\\mathrm{d}\\mathbf{r}\\\\ \\mathbf{R}_{-}=\\int\\mathbf{r}\\rho_{-}(\\mathbf{r})\\mathrm{d}\\mathbf{r}/\\int\\rho_{-}(\\mathbf{r})\\mathrm{d}\\mathbf{r}\\end{gathered}","D_{x}=\\left|X_{+}-X_{-}\\right|\\qquad D_{y}=\\left|Y_{+}-Y_{-}\\right|\\qquad D_{z}=\\left|Z_{+}-Z_{-}\\right|","\\begin{gathered}\n\\Delta\\mu_{X}=(X_{+}-X_{-})q_{\\mathrm{CT}}\\\\\n\\Delta\\mu_{Y}=(Y_{+}-Y_{-})q_{\\mathrm{CT}}\\\\\n\\Delta\\mu_{Z}=(Z_{+}-Z_{-})q_{\\mathrm{CT}}\n\\end{gathered}","\\sigma_{a,\\lambda}=\\sqrt{\\frac{\\int\\rho_a(\\mathbf{r})(\\lambda'-\\lambda_a)^2\\mathrm{d}\\mathbf{r}}{\\int\\rho_a(\\mathbf{r})\\mathrm{d}\\mathbf{r}}}","\\sigma_{+,y}=\\sqrt{\\frac{\\int\\rho_{+}(\\mathbf{r})(y-Y_{+})^2\\mathrm{d}\\mathbf{r}}{\\int\\rho_{+}(\\mathbf{r})\\mathrm{d}\\mathbf{r}}}","\\begin{gathered}\\Delta\\sigma_{\\lambda}=\\sigma_{+,\\lambda}-\\sigma_{-,\\lambda}\\qquad \\lambda=\\{x,y,z\\}\\\\ \\Delta\\sigma\\ \\mathrm{index}=\\left|\\boldsymbol{\\sigma}_{+}\\right|-\\left|\\boldsymbol{\\sigma}_{-}\\right|\\end{gathered}","\\begin{gathered}C_{+}(\\mathbf{r})=A_{+}\\exp\\left(-\\frac{(x-X_{+})^2}{2\\sigma_{+,x}^2}-\\frac{(y-Y_{+})^2}{2\\sigma_{+,y}^2}-\\frac{(z-Z_{+})^2}{2\\sigma_{+,z}^2}\\right)\\\\ C_{-}(\\mathbf{r})=A_{-}\\exp\\left(-\\frac{(x-X_{-})^2}{2\\sigma_{-,x}^2}-\\frac{(y-Y_{-})^2}{2\\sigma_{-,y}^2}-\\frac{(z-Z_{-})^2}{2\\sigma_{-,z}^2}\\right)\\end{gathered}","\\begin{gathered}H_{\\lambda}=(\\sigma_{+,\\lambda}+\\sigma_{-,\\lambda})/2\\qquad \\lambda=\\{x,y,z\\}\\\\ H_{\\mathrm{CT}}=\\left|\\mathbf{H}\\cdot\\mathbf{u}_{\\mathrm{CT}}\\right|\\\\ H\\ \\mathrm{index}=\\left(\\left|\\boldsymbol{\\sigma}_{+}\\right|+\\left|\\boldsymbol{\\sigma}_{-}\\right|\\right)/2\\end{gathered}","t\\ \\mathrm{index}=D\\ \\mathrm{index}-H_{\\mathrm{CT}}","S_{+-}=\\int\\sqrt{C_{+}(\\mathbf{r})/A_{+}}\\sqrt{C_{-}(\\mathbf{r})/A_{-}}\\mathrm{d}\\mathbf{r}","\\Delta r=\\sum_{i,a}\\Delta r_i^a","\\Delta r_i^a=\\frac{(K_i^a)^2}{\\sum_{i,a}(K_i^a)^2}\\left|\\left\\langle\\varphi_a\\left|\\mathbf{r}\\right|\\varphi_a\\right\\rangle-\\left\\langle\\varphi_i\\left|\\mathbf{r}\\right|\\varphi_i\\right\\rangle\\right|","\\begin{gathered}\\Delta r=\\left|\\left\\langle\\varphi_a\\left|\\mathbf{r}\\right|\\varphi_a\\right\\rangle-\\left\\langle\\varphi_i\\left|\\mathbf{r}\\right|\\varphi_i\\right\\rangle\\right|\\equiv\\left|\\int\\mathbf{r}\\left|\\varphi_a(\\mathbf{r})\\right|^2\\mathrm{d}\\mathbf{r}-\\int\\mathbf{r}\\left|\\varphi_i(\\mathbf{r})\\right|^2\\mathrm{d}\\mathbf{r}\\right|\\\\ D\\ \\mathrm{index}=\\left|\\mathbf{D}\\right|=\\left|\\int\\mathbf{r}\\rho^{\\mathrm{ele}}(\\mathbf{r})\\mathrm{d}\\mathbf{r}-\\int\\mathbf{r}\\rho^{\\mathrm{hole}}(\\mathbf{r})\\mathrm{d}\\mathbf{r}\\right|=\\left|\\int\\mathbf{r}\\left|\\varphi_a(\\mathbf{r})\\right|^2\\mathrm{d}\\mathbf{r}-\\int\\mathbf{r}\\left|\\varphi_i(\\mathbf{r})\\right|^2\\mathrm{d}\\mathbf{r}\\right|\\end{gathered}","\\mathbf{D}_{0\\to K}=\\left\\langle\\Psi_0\\left|-\\mathbf{r}\\right|\\Psi_K\\right\\rangle=\\sum_{i}^{\\mathrm{occ}}\\sum_{a}^{\\mathrm{vir}}w_{i,a}^{K}\\left\\langle\\varphi_i\\left|-\\mathbf{r}\\right|\\varphi_a\\right\\rangle+\\sum_{i}^{\\mathrm{occ}}\\sum_{a}^{\\mathrm{vir}}w_{i,a}^{\\prime K}\\left\\langle\\varphi_i\\left|-\\mathbf{r}\\right|\\varphi_a\\right\\rangle","\\mathbf{M}_{0\\to K}=\\left\\langle\\psi_0\\left|\\mathbf{r}\\times\\nabla\\right|\\psi_K\\right\\rangle=\\sum_{i}^{\\mathrm{occ}}\\sum_{a}^{\\mathrm{vir}}w_{i,a}^{K}\\left\\langle\\varphi_i\\left|\\mathbf{r}\\times\\nabla\\right|\\varphi_a\\right\\rangle-\\sum_{i}^{\\mathrm{occ}}\\sum_{a}^{\\mathrm{vir}}w_{i,a}^{\\prime K}\\left\\langle\\varphi_i\\left|\\mathbf{r}\\times\\nabla\\right|\\varphi_a\\right\\rangle","\\mathbf{T}_{K\\to L}=\\left\\langle\\psi_K\\left|\\hat{\\mathbf{v}}\\right|\\psi_L\\right\\rangle=\\sum_{i}^{\\mathrm{occ}}\\sum_{a}^{\\mathrm{vir}}\\tilde{w}_{i,a}^{K}\\sum_{j}^{\\mathrm{occ}}\\sum_{b}^{\\mathrm{vir}}\\tilde{w}_{j,b}^{L}V^{iajb}","\\begin{gathered}V^{iajb}=\\left\\{\\begin{gathered}\\left\\langle\\varphi_i\\left|\\hat{\\mathbf{v}}\\right|\\varphi_a\\right\\rangle\\qquad (i=j,a\\neq b)\\\\ -\\left\\langle\\varphi_i\\left|\\hat{\\mathbf{v}}\\right|\\varphi_a\\right\\rangle\\qquad (i\\neq j,a=b)\\\\ \\mathbf{v}^0-\\left\\langle\\varphi_i\\left|\\hat{\\mathbf{v}}\\right|\\varphi_i\\right\\rangle+\\left\\langle\\varphi_a\\left|\\hat{\\mathbf{v}}\\right|\\varphi_a\\right\\rangle\\qquad (i=j,a=b)\\\\ 0\\qquad (i\\neq j,a\\neq b)\\end{gathered}\\right.\\\\ \\mathbf{v}^0=\\sum_{l}^{\\mathrm{occ}}\\eta_l\\left\\langle\\varphi_l\\left|\\hat{\\mathbf{v}}\\right|\\varphi_l\\right\\rangle\\end{gathered}","T_{i,l}=w_i^a","\\mathbf{T}_{\\mathrm{occ}}=\\mathbf{T}\\mathbf{T}^{\\mathrm{T}}\\qquad \\mathbf{T}_{\\mathrm{vir}}=\\mathbf{T}^{\\mathrm{T}}\\mathbf{T}","\\mathbf{U}_{\\mathrm{occ}}^{-1}\\mathbf{T}_{\\mathrm{occ}}\\mathbf{U}_{\\mathrm{occ}}=\\Lambda_{\\mathrm{occ}}\\qquad \\mathbf{U}_{\\mathrm{vir}}^{-1}\\mathbf{T}_{\\mathrm{vir}}\\mathbf{U}_{\\mathrm{vir}}=\\Lambda_{\\mathrm{vir}}","\\mathbf{C}_{\\mathrm{occ}}^{\\mathrm{NTO}}=\\mathbf{C}_{\\mathrm{occ}}^{\\mathrm{MO}}\\mathbf{U}_{\\mathrm{occ}}\\qquad \\mathbf{C}_{\\mathrm{vir}}^{\\mathrm{NTO}}=\\mathbf{C}_{\\mathrm{vir}}^{\\mathrm{MO}}\\mathbf{U}_{\\mathrm{vir}}","{\\omega}_{\\mathrm{low}}={IP}_{D}-{EA}_{A}-1/R","{\\omega}_{\\mathrm{low}}\\approx -{\\varepsilon}_{\\mathrm{HOMO}}+{\\varepsilon}_{\\mathrm{LUMO}}-1/R","\\omega_{\\mathrm{low}}=\\underbrace{\\sum_{i,a}\\left[\\frac{\\left(w_i^a\\right)^2}{\\sum_{i,a}\\left(w_i^a\\right)^2}\\left(\\varepsilon_a-\\varepsilon_i\\right)\\right]}_{\\mathrm{term}\\ 1}-\\underbrace{\\frac{1}{D_{\\mathrm{CT}}}}_{\\mathrm{term}\\ 2}","{E}_{\\mathrm{TDDFT}}<{M}_{\\mathrm{AC}}\\to \\mathrm{ghost\\ CT\\ state}","{E}_{\\mathrm{TDDFT}}>{M}_{\\mathrm{AC}}\\to \\mathrm{real\\ CT\\ state}","Q_{R,S}=\\Theta_{R,\\mathrm{hole}}\\Theta_{S,\\mathrm{ele}}","\\begin{aligned}&\\Delta p_{R}=\\sum_{S\\neq R}\\left(Q_{S,R}-Q_{R,S}\\right)=\\sum_{S\\neq R}\\left(\\Theta_{S,\\mathrm{hole}}\\Theta_{R,\\mathrm{ele}}-\\Theta_{R,\\mathrm{hole}}\\Theta_{S,\\mathrm{ele}}\\right)\\\\ &=\\Theta_{R,\\mathrm{ele}}\\sum_{S\\neq R}\\Theta_{S,\\mathrm{hole}}-\\Theta_{R,\\mathrm{hole}}\\sum_{S\\neq R}\\Theta_{S,\\mathrm{ele}}\\\\ &=\\Theta_{R,\\mathrm{ele}}\\left(1-\\Theta_{R,\\mathrm{hole}}\\right)-\\Theta_{R,\\mathrm{hole}}\\left(1-\\Theta_{R,\\mathrm{ele}}\\right)\\\\ &=\\Theta_{R,\\mathrm{ele}}-\\Theta_{R,\\mathrm{hole}}\\end{aligned}","\\begin{aligned}&\\sum_{R}\\sum_{S\\neq R}Q_{R,S}+\\sum_{S}Q_{S,S}\\\\ &=\\sum_{R}\\sum_{S}Q_{R,S}\\\\ &=\\sum_{R}\\sum_{S}\\Theta_{R,\\mathrm{hole}}\\Theta_{S,\\mathrm{ele}}\\\\ &=\\sum_{R}\\Theta_{R,\\mathrm{hole}}\\sum_{S}\\Theta_{S,\\mathrm{ele}}\\\\ &=1\\end{aligned}","P_{\\mu\\nu}^{\\mathrm{tran}}=\\sum_{i}^{\\mathrm{occ}}\\sum_{a}^{\\mathrm{vir}}w_{i,a}^{K}C_{\\mu i}C_{\\nu a}","\\begin{gathered}P_{\\mu\\nu}^{KL}=\\sum_{i}^{\\mathrm{occ}}\\sum_{a}^{\\mathrm{vir}}w_{i,a}^{K}\\sum_{j}^{\\mathrm{occ}}\\sum_{b}^{\\mathrm{vir}}w_{j,b}^{L}V_{\\mu\\nu}^{iajb}\\\\ V_{\\mu\\nu}^{iajb}=\\left\\{\\begin{gathered}C_{\\mu a}C_{\\nu b}\\qquad (i=j,a\\neq b)\\\\ -C_{\\nu i}C_{\\mu j}\\qquad (i\\neq j,a=b)\\\\ P_{\\mu\\nu}-C_{\\mu i}C_{\\nu i}+C_{\\mu a}C_{\\nu a}\\qquad (i=j,a=b)\\\\ 0\\qquad (i\\neq j,a\\neq b)\\end{gathered}\\right.\\end{gathered}","T^{KL}(\\mathbf{r};\\mathbf{r}')=\\int\\Psi^{K}(\\mathbf{r},\\mathbf{r}_{2},\\cdots,\\mathbf{r}_{N})\\Psi^{L}(\\mathbf{r}',\\mathbf{r}_{2},\\cdots,\\mathbf{r}_{N})\\mathrm{d}\\mathbf{r}_{2}\\cdots\\mathrm{d}\\mathbf{r}_{N}","\\Psi^{K}=\\sum_{i}^{\\mathrm{occ}}\\sum_{a}^{\\mathrm{vir}}w_{i,a}^{K}\\Phi_{i}^{a}\\qquad \\Psi^{L}=\\sum_{j}^{\\mathrm{occ}}\\sum_{b}^{\\mathrm{vir}}w_{j,b}^{L}\\Phi_{j}^{b}","T^{KL}(\\mathbf{r};\\mathbf{r}')=\\sum_{i}^{\\mathrm{occ}}\\sum_{a}^{\\mathrm{vir}}w_{i,a}^{K}\\sum_{j}^{\\mathrm{occ}}\\sum_{b}^{\\mathrm{vir}}w_{j,b}^{L}\\int\\Phi_{i}^{a}(\\mathbf{r},\\mathbf{r}_{2},\\cdots,\\mathbf{r}_{N})\\Phi_{j}^{b}(\\mathbf{r}',\\mathbf{r}_{2},\\cdots,\\mathbf{r}_{N})\\mathrm{d}\\mathbf{r}_{2}\\cdots\\mathrm{d}\\mathbf{r}_{N}","\\begin{aligned}&=0\\qquad (i\\neq j,a\\neq b)\\\\ &=\\left\\langle a\\middle|h\\middle|b\\right\\rangle\\qquad (i=j,a\\neq b)\\\\ &=-\\left\\langle j\\middle|h\\middle|i\\right\\rangle\\qquad (i\\neq j,a=b)\\\\ &=\\sum_{p}^{N}\\left\\langle p\\middle|h\\middle|p\\right\\rangle-\\left\\langle i\\middle|h\\middle|i\\right\\rangle+\\left\\langle a\\middle|h\\middle|a\\right\\rangle\\qquad (i=j,a=b)\\end{aligned}","\\begin{gathered}T^{KL}(\\mathbf{r};\\mathbf{r}')=\\left\\{\\begin{gathered}0\\qquad (i\\neq j,a\\neq b)\\\\ \\sum_{i}\\sum_{a}\\sum_{b}w_{i,a}^{K}w_{i,b}^{L}\\varphi_{a}(\\mathbf{r})\\varphi_{b}(\\mathbf{r}')\\qquad (i=j,a\\neq b)\\\\ -\\sum_{i}\\sum_{j}\\sum_{a}w_{i,a}^{K}w_{j,a}^{L}\\varphi_{j}(\\mathbf{r})\\varphi_{i}(\\mathbf{r}')\\qquad (i\\neq j,a=b)\\\\ \\sum_{i}\\sum_{a}w_{i,a}^{K}w_{i,a}^{L}\\left[\\sum_{p}^{N}\\varphi_{p}(\\mathbf{r})\\varphi_{p}(\\mathbf{r}')-\\varphi_{i}(\\mathbf{r})\\varphi_{i}(\\mathbf{r}')+\\varphi_{a}(\\mathbf{r})\\varphi_{a}(\\mathbf{r}')\\right]\\qquad (i=j,a=b)\\end{gathered}\\right.\\end{gathered}","\\begin{gathered}T^{KL}(\\mathbf{r};\\mathbf{r}')=\\sum_{\\mu}\\sum_{\\nu}P_{\\mu\\nu}^{KL}\\chi_{\\mu}(\\mathbf{r})\\chi_{\\nu}(\\mathbf{r}')\\\\ \\varphi_{k}(\\mathbf{r})=\\sum_{\\mu}C_{\\mu k}\\chi_{\\mu}(\\mathbf{r})\\end{gathered}","\\begin{aligned}&T^{KL}(\\mathbf{r};\\mathbf{r}')=\\sum_{i}\\sum_{a}\\sum_{b}w_{i,a}^{K}w_{i,b}^{L}\\varphi_{a}(\\mathbf{r})\\varphi_{b}(\\mathbf{r}')\\\\ &=\\sum_{i}\\sum_{a}\\sum_{b}w_{i,a}^{K}w_{i,b}^{L}\\sum_{\\mu}\\sum_{\\nu}C_{\\mu a}C_{\\nu b}\\chi_{\\mu}(\\mathbf{r})\\chi_{\\nu}(\\mathbf{r}')\\\\ &\\Rightarrow P^{KL}=\\sum_{i}\\sum_{a}\\sum_{b}w_{i,a}^{K}w_{i,b}^{L}C_{\\mu a}C_{\\nu b}\\end{aligned}","f=\\frac{2}{3}\\Delta E\\times\\left|\\mathbf{D}^{\\mathrm{tran}}\\right|^{2}","\\mathbf{D}^{\\mathrm{tran}}=\\sum_{i,a}\\left(w_{i,a}+w_{i,a}^{\\prime}\\right)\\left\\langle\\varphi_{i}\\middle|-\\mathbf{r}\\middle|\\varphi_{a}\\right\\rangle","\\mathbf{M}^{\\mathrm{tran}}=\\sum_{i,a}\\left(w_{i,a}-w_{i,a}^{\\prime}\\right)\\left\\langle\\varphi_{i}\\middle|\\mathbf{r}\\times\\nabla\\middle|\\varphi_{a}\\right\\rangle","\\mathbf{D}_{\\mu}=P_{\\mu\\mu}^{\\mathrm{tran}}\\left\\langle\\chi_{\\mu}\\middle|-\\mathbf{r}\\middle|\\chi_{\\mu}\\right\\rangle+\\frac{1}{2}\\sum_{\\nu\\neq\\mu}\\left(P_{\\mu\\nu}^{\\mathrm{tran}}\\left\\langle\\chi_{\\mu}\\middle|-\\mathbf{r}\\middle|\\chi_{\\nu}\\right\\rangle+P_{\\nu\\mu}^{\\mathrm{tran}}\\left\\langle\\chi_{\\nu}\\middle|-\\mathbf{r}\\middle|\\chi_{\\mu}\\right\\rangle\\right)","\\mathbf{M}_{\\mu}=P_{\\mu\\mu}^{\\mathrm{tran}}\\left\\langle\\chi_{\\mu}\\middle|\\mathbf{r}\\times\\nabla\\middle|\\chi_{\\mu}\\right\\rangle+\\frac{1}{2}\\sum_{\\nu\\neq\\mu}\\left(P_{\\mu\\nu}^{\\mathrm{tran}}\\left\\langle\\chi_{\\mu}\\middle|\\mathbf{r}\\times\\nabla\\middle|\\chi_{\\nu}\\right\\rangle+P_{\\nu\\mu}^{\\mathrm{tran}}\\left\\langle\\chi_{\\nu}\\middle|\\mathbf{r}\\times\\nabla\\middle|\\chi_{\\mu}\\right\\rangle\\right)","\\begin{gathered}D_{A,B}^{X}=\\sum_{\\mu\\in A}\\sum_{\\nu\\in B}P_{\\mu\\nu}^{\\mathrm{tran}}\\left\\langle\\chi_{\\mu}\\middle|-x\\middle|\\chi_{\\mu}\\right\\rangle\\\\ D_{A,B}^{Y}=\\sum_{\\mu\\in A}\\sum_{\\nu\\in B}P_{\\mu\\nu}^{\\mathrm{tran}}\\left\\langle\\chi_{\\mu}\\middle|-y\\middle|\\chi_{\\mu}\\right\\rangle\\\\ D_{A,B}^{Z}=\\sum_{\\mu\\in A}\\sum_{\\nu\\in B}P_{\\mu\\nu}^{\\mathrm{tran}}\\left\\langle\\chi_{\\mu}\\middle|-z\\middle|\\chi_{\\mu}\\right\\rangle\\end{gathered}","\\Theta_{\\mu}^{\\mathrm{tran}} = P_{\\mu\\mu}^{\\mathrm{tran}} + \\sum_{\\nu \\neq \\mu} S_{\\mu\\nu} \\left( P_{\\mu\\nu}^{\\mathrm{tran}} + P_{\\nu\\mu}^{\\mathrm{tran}} \\right) / 2","\\mathbf{P}^{\\mathrm{ES}} = \\mathbf{P}^{\\mathrm{GS}} + \\Delta\\mathbf{P}^{\\mathrm{local}} + \\Delta\\mathbf{P}^{\\mathrm{cross}}","\\mathbf{P}^{rs} = \\mathbf{C}_r \\mathbf{C}_s^{\\mathrm{T}}","\\begin{gathered} \\Delta\\mathbf{P}^{\\mathrm{cross}} = \\sum_{i \\to a} \\sum_{i \\to b \\neq a} w_i^a w_i^b \\mathbf{P}^{ab} - \\sum_{i \\leftarrow a} \\sum_{i \\leftarrow b \\neq a} w_i^a w_i^b \\mathbf{P}^{ab} \\\\ - \\sum_{i \\to a} \\sum_{j \\neq i \\to a} w_i^a w_j^a \\mathbf{P}^{ij} + \\sum_{i \\leftarrow a} \\sum_{j \\neq i \\leftarrow a} w_i^a w_j^a \\mathbf{P}^{ij} \\end{gathered}","\\Lambda = \\sum_{i,a} \\Lambda_i^a","\\Lambda_i^a = \\frac{(K_i^a)^2}{\\sum_{i,a} (K_i^a)^2} \\int \\left| \\varphi_i(\\mathbf{r}) \\right| \\left| \\varphi_a(\\mathbf{r}) \\right| \\mathrm{d}\\mathbf{r}","\\begin{gathered} \\Lambda = \\int \\left| \\varphi_i(\\mathbf{r}) \\right| \\left| \\varphi_a(\\mathbf{r}) \\right| \\mathrm{d}\\mathbf{r} \\\\ S_{\\mathrm{r}} = \\int \\sqrt{\\rho^{\\mathrm{hole}}(\\mathbf{r}) \\rho^{\\mathrm{ele}}(\\mathbf{r})} \\mathrm{d}\\mathbf{r} = \\int \\sqrt{\\left| \\varphi_i(\\mathbf{r}) \\right|^2 \\left| \\varphi_a(\\mathbf{r}) \\right|^2} \\mathrm{d}\\mathbf{r} = \\int \\left| \\varphi_i(\\mathbf{r}) \\right| \\left| \\varphi_a(\\mathbf{r}) \\right| \\mathrm{d}\\mathbf{r} \\end{gathered}","\\varepsilon(E)=c\\sum_{i}f_i G(E-E_i^{\\mathrm{exc}})","\\varepsilon_{A,B}(E)=\\sum_{i}f_i Q_i^{A,B}G(E-E_i^{\\mathrm{exc}})","\\varepsilon_{A,A}(E)=\\sum_{i}f_i Q_i^{A,A}G(E-E_i^{\\mathrm{exc}})","\\varepsilon_{A,A}(E)+\\varepsilon_{B,B}(E)+\\varepsilon_{A,B}(E)+\\varepsilon_{B,A}(E)=\\varepsilon(E)","|\\left. {\\Psi}_{0} \\right\\rangle=\\sum_{k=0}^{\\infty } {c}_{k}|{\\psi}_{k}^{(0)}⟩","{c}_{k}=-\\frac{\\left\\langle {\\Psi}_{k}^{\\left( 0 \\right)}\\middle|\\delta v\\middle|{\\Psi}_{0}^{\\left( 0 \\right)} \\right\\rangle}{{E}_{k}^{\\left( 0 \\right)}-{E}_{0}^{\\left( 0 \\right)}}=-\\frac{\\int {\\rho}_{0}^{k}(\\mathbf{r})\\delta v(\\mathbf{r})\\mathrm{d}\\mathbf{r}}{{E}_{k}^{\\left( 0 \\right)}-{E}_{0}^{\\left( 0 \\right)}}","{\\rho}_{\\mathrm{pol}}(\\mathbf{r})={\\rho}_{\\mathrm{pert}}(\\mathbf{r})-{\\rho}_{0}(\\mathbf{r})\\approx 2\\sum_{k=1}^{\\infty } {c}_{k}{\\rho}_{0}^{k}(\\mathbf{r})","{E}^{(1)}=\\left\\langle {\\Psi}_{0}^{\\left( 0 \\right)}\\middle|\\delta v\\middle|{\\Psi}_{0}^{\\left( 0 \\right)} \\right\\rangle=\\int {\\rho}_{0}(\\mathbf{r})\\delta v(\\mathbf{r})\\mathrm{d}\\mathbf{r}","{E}^{(2)}=\\sum_{k>0}^{\\infty } \\frac{{\\left| \\left\\langle {\\Psi}_{k}^{\\left( 0 \\right)}\\middle|\\delta v\\middle|{\\Psi}_{0}^{\\left( 0 \\right)} \\right\\rangle \\right|}^{2}}{{E}_{0}^{\\left( 0 \\right)}-{E}_{k}^{\\left( 0 \\right)}}=\\sum_{k>0}^{\\infty } {c}_{k}^{2}\\left( {E}_{0}^{\\left( 0 \\right)}-{E}_{k}^{\\left( 0 \\right)} \\right)","{g}_{\\mathrm{abs}}=\\frac{{\\varepsilon}_{\\mathrm{L}}-{\\varepsilon}_{\\mathrm{R}}}{\\frac{1}{2}({\\varepsilon}_{\\mathrm{L}}+{\\varepsilon}_{\\mathrm{R}})}","{g}_{\\mathrm{abs}}=4\\frac{R}{D}","R=\\mathrm{Im}\\left( {\\boldsymbol{\\mu}}_{0v}^{\\mathrm{tran}}\\cdot {\\mathbf{m}}_{v0}^{\\mathrm{tran}} \\right)","R=-\\mathrm{Im}\\left( {\\boldsymbol{\\mu}}_{0v}^{\\mathrm{tran}}\\cdot {\\mathbf{m}}_{0v}^{\\mathrm{tran}} \\right)=-|{\\boldsymbol{\\mu}}_{0v}^{\\mathrm{tran}}||{\\mathbf{m}}_{0v}^{\\mathrm{tran}}|\\mathrm{cos}\\theta","D={\\left| {\\boldsymbol{\\mu}}_{0v}^{\\mathrm{tran}}{|}^{2}+|{\\mathbf{m}}_{0v}^{\\mathrm{tran}} \\right|}^{2}","g\\approx -4\\frac{|{\\mathbf{m}}_{0v}^{\\mathrm{tran}}|\\mathrm{cos}\\theta}{|{\\boldsymbol{\\mu}}_{0v}^{\\mathrm{tran}}|}","{g}_{\\mathrm{lum}}=\\frac{{I}_{\\mathrm{L}}-{I}_{\\mathrm{R}}}{\\frac{1}{2}({I}_{\\mathrm{L}}+{I}_{\\mathrm{R}})}"];</script>
+<script src="app.js"></script></body></html>

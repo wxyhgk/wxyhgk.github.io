@@ -1,0 +1,471 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11) · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="313-绘制irramanuv-visecdvcdroa和nmr光谱-11"><strong>3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)</strong></h1>
+<p>Multiwfn有一个非常强大灵活的模块，可用于绘制红外 (Infrared, IR)、普通Raman/预共振 (pre-resonance) Raman、UV-Vis (紫外-可见, ultraviolet-visible)、ECD (电子圆二色, electronic circular dichroism)、VCD (振动圆二色, vibrational circular dichroism)和Raman光学活性 (Raman optical activity, ROA)光谱，介绍见<a href="#3131-%E7%90%86%E8%AE%BAtheory">3.13.1</a>~<a href="#3134-%E5%90%8C%E6%97%B6%E7%BB%98%E5%88%B6%E5%A4%9A%E4%BD%93%E7%B3%BB%E5%92%8C%E5%8A%A0%E6%9D%83%E5%85%89%E8%B0%B1plotting-multiple-systems-together-and-weighted-spectrum">3.13.4</a>节。绘制各类光谱的许多例子见<a href="sec-4-11-plot-various-kinds-of-spectra.html">4.11</a>节。</p>
+<p>Multiwfn还能绘制NMR (核磁共振, nuclear magnetic resonance)光谱，介绍见<a href="#3135-%E7%BB%98%E5%88%B6nmr%E5%85%89%E8%B0%B1plotting-nmr-spectrum">3.13.5</a>节，例子见<a href="sec-4-11-plot-various-kinds-of-spectra.html#41110-%E7%BB%98%E5%88%B6-nmr-%E8%B0%B1-nmr-spectrum">4.11.10</a>节。</p>
+<p>对于振动光谱，Multiwfn能将其分解以深入理解其本质，这称为部分振动光谱 (partial vibrational spectrum, PVS)，将在<a href="#3136-%E9%83%A8%E5%88%86%E6%8C%AF%E5%8A%A8%E5%85%89%E8%B0%B1-partial-vibrational-spectrum-pvs%E5%92%8C%E9%83%A8%E5%88%86%E6%8C%AF%E5%8A%A8%E6%80%81%E5%AF%86%E5%BA%A6-partial-vibrational-density-of-states-pvdos">3.13.6</a>节中描述，相关例子见<a href="sec-4-11-plot-various-kinds-of-spectra.html#41112-%E7%BB%98%E5%88%B6%E9%83%A8%E5%88%86%E6%8C%AF%E5%8A%A8%E8%B0%B1-partial-vibrational-spectrum-pvs%E5%92%8C%E9%83%A8%E5%88%86%E6%8C%AF%E5%8A%A8%E8%83%BD%E6%80%81%E5%AF%86%E5%BA%A6-partial-vibrational-density-of-states-pvdos">4.11.12</a>节。</p>
+<p>Multiwfn能根据理论或实验UV-Vis光谱精确预测颜色，介绍见<a href="#3137-%E5%9F%BA%E4%BA%8Euv-vis%E5%85%89%E8%B0%B1%E6%9B%B2%E7%BA%BF%E9%A2%84%E6%B5%8B%E9%A2%9C%E8%89%B2predicting-color-based-on-uv-vis-spectrum-curve">3.13.7</a>节，例子见<a href="sec-4-11-plot-various-kinds-of-spectra.html#41114-%E9%9D%9B%E8%93%9D-indigo%E5%92%8C%E8%AF%B1%E6%83%91%E7%BA%A2-allura-red%E9%A2%9C%E8%89%B2%E7%9A%84%E9%A2%84%E6%B5%8B">4.11.14</a>节。</p>
+<h2 id="3131-理论theory"><strong>3.13.1 理论(Theory)</strong></h2>
+<p>为了将理论结果与实验光谱比较，必须把对应每个跃迁模式的分立谱线展宽，以模拟真实世界中的情形，振动光谱（IR、Raman、VCD和ROA）常用的展宽函数是洛伦兹函数 (Lorentzian function)，而电子光谱（UV-Vis和ECD）常用高斯函数 (Gaussian function)，详见<a href="sec-3-12-plotting-density-of-states-pes-and-cohp.html#3121-%E7%90%86%E8%AE%BAtheory">3.12.1</a>节。与DOS图不同，DOS图中每个能级的强度总是简单设为1.0（即每个能级展宽出的曲线归一化为1.0），而绘制光谱时跃迁强度是非常重要的数据。</p>
+<p>IR、Raman、VCD和ROA光谱的跃迁能量常用单位是cm⁻¹，UV-Vis和ECD光谱常用eV (1 eV=8.0655×1000 cm⁻¹)、nm和1000 cm⁻¹作单位。量子化学程序输出的每个跃迁模式的强度数据与展宽曲线下的面积成正比。下面分别讨论Multiwfn支持的六种光谱的一些细节。</p>
+<p><strong>IR</strong>：摩尔吸光系数 (molar absorptivity) <em>ε</em> 的常用单位L(mol⋅cm)⁻¹可改写为</p>
+<p><div class="mathdisp" data-mi="0" title="点击复制 TeX">$$
+\frac{\mathrm{L}}{\mathrm{mol}\times\mathrm{cm}}=\frac{1000\mathrm{cm}^3}{\mathrm{mol}\times\mathrm{cm}}=\frac{1000\mathrm{cm}^2}{\mathrm{mol}}
+$$</div></p>
+<p>由于IR强度 $\varsigma=\int\varepsilon(\nu)\mathrm{d}\nu$ ，其中<em>ν</em>为跃迁频率，<em>ς</em>的单位应为</p>
+<p><div class="mathdisp" data-mi="1" title="点击复制 TeX">$$
+\frac{1000\ \mathrm{cm}^2}{\mathrm{mol}}(\mathrm{cm}^{-1})=\frac{1000\ \mathrm{cm}}{\mathrm{mol}}=\frac{0.01\ \mathrm{km}}{\mathrm{mol}}
+$$</div></p>
+<p>然而，km/mol是IR强度更常用的单位，因此若某振动模式的IR强度为<em>p</em> km/mol，则由其展宽出的曲线应归一化为100*<em>p</em>（换言之，曲线下面积为100*<em>p</em>）。有时IR强度用esu²cm²作单位，其与km/mol的换算关系为1 esu²cm² = 2.5066 km/mol。</p>
+<p>下面是Multiwfn绘制的IR光谱示例。注意左轴对应曲线（人工展宽数据），右轴对应分立谱线（原始跃迁数据）。</p>
+<p><img src="assets/figures/sec3-13/fig1-ir-spectrum-example.png" alt="Multiwfn绘制的IR光谱示例，展宽曲线对应左轴，分立跃迁对应右轴"></p>
+<p><strong>Raman（普通或预共振）</strong>：Raman光谱测量散射光的强度。注意，对于特定的振动模式<em>i</em>，其Raman活性 (Raman activity) $S_{i}$ 与Raman强度 (Raman intensity) $I_{i}$ 是两个不同的量。Raman活性是每个分子振动模式的内禀性质，而Raman强度与实验Raman光谱直接相关，其数值取决于入射光波数 (wavenumber) <em>ν</em>₀的选择以及温度。换算关系可在许多论文中找到，例如我的论文<em>Chem. Asian J.</em>, <strong>16</strong>, 56 (2021) DOI: <a href="https://doi.org/10.1002/asia.202001228">10.1002/asia.202001228</a>中给出，可引用：</p>
+<p><div class="mathdisp" data-mi="2" title="点击复制 TeX">$$
+I_i=\frac{C(\nu_0-\nu_i)^4S_i}{\nu_i B_i}\qquad B_i=1-\mathrm{exp}\left(-\frac{hc\nu_i}{kT}\right)
+$$</div></p>
+<p>其中<em>C</em>是对所有峰强度适当选取的公共归一化因子，$ν_{i}$ 为振动频率。只有基于Raman强度展宽的Raman光谱才能与实验光谱严格比较；然而，由于Raman活性和强度的峰位置相同，且特定振动模式的强度与其活性成正比，由Raman活性展宽的Raman光谱在某种意义上也有用。</p>
+<p>几乎所有量子化学程序只输出Raman活性，因此默认情况下，Multiwfn通过展宽Raman活性来模拟Raman光谱。但你也可以让Multiwfn先用选项19（ $v_{0}$ 和<em>T</em>由用户提供）按上式把活性换算为强度，再由Raman强度展宽得到Raman光谱。归一化系数<em>C</em>在Multiwfn中固定为10⁻¹²（这不重要，因为我们关心的是Raman光谱的形状而非绝对高度）。由一个单位Raman活性或强度展宽出的峰的积分等于1。</p>
+<p><strong>UV-Vis</strong>：在理论化学领域，振子强度 (oscillator strength) (<em>f</em>)用于表示UV-Vis光谱中的跃迁强度，其定义为</p>
+<p><div class="mathdisp" data-mi="3" title="点击复制 TeX">$$
+f_{ij}=\frac{2}{3}(E_j-E_i)\left|\boldsymbol{\mu}_{ij}\right|^2
+$$</div></p>
+<p>其中<em>i</em>和<em>j</em>分别代表初态和末态，在UV-Vis光谱语境下分别对应基态和激发态。<em>E</em>为态能量。|<strong>µ</strong><em>$_{ij}$</em>|² 为两态之间跃迁电偶极矩矢量的模方。</p>
+<p>理论数据与实验光谱之间存在如下关系：若X轴和Y轴单位分别用1000 cm⁻¹和L/mol/cm，则由每单位<em>f</em>展宽出的曲线下面积应为1/4.32*10⁶。等价地，若X轴单位用eV，该值应为1/4.32/8.0655*10⁶=28700。利用此关系，可由理论数据模拟UV-Vis光谱。</p>
+<p>荧光光谱可用与UV-Vis完全相同的方式绘制，与UV-Vis的唯一区别是，根据Kasha规则，只应考虑第一单重激发态 (S1)，且应使用优化的S1态几何（但注意有些体系违背Kasha规则）。绘制磷光光谱时，只应考虑第一三重激发态 (T1)，且应使用优化的T1态几何。注意，要得到非零的对应磷光发射的<em>f</em>，必须考虑自旋-轨道耦合效应。</p>
+<p><strong>方向UV-Vis (Directional UV-Vis)</strong>：上面提到的|<strong>µ</strong><em>$_{ij}$</em>|² 可写成其三个笛卡尔分量之和，即 ${\left| {\boldsymbol{\mu}}_{ij} \right|}^{2}={\left( {\mu}_{ij}^{X} \right)}^{2}+{\left( {\mu}_{ij}^{Y} \right)}^{2}+{\left( {\mu}_{ij}^{Z} \right)}^{2}$ 。Multiwfn中所谓的方向UV-Vis光谱 (directional UV-Vis spectrum)，是指只考虑|<strong>µ</strong><em>$_{ij}$</em>|² 中特定分量贡献的情形。你可以选择绘制X、Y、Z、X+Y、X+Z、Y+Z或特定方向类型的光谱。例如，若绘制X+Y类型，则 ${\left| {\boldsymbol{\mu}}_{ij} \right|}^{2}$ 将被替换为 ${\left( {\mu}_{ij}^{X} \right)}^{2}+{\left( {\mu}_{ij}^{Y} \right)}^{2}$ ，所得光谱将只体现当前体系与沿X和Y方向振荡的电场相互作用产生的吸收。若手动把方向定义为(1,0,1)，对应归一化矢量( $\frac{1}{\sqrt{2}},0,\frac{1}{\sqrt{2}}$ )，则 ${\left| {\boldsymbol{\mu}}_{ij} \right|}^{2}={\left( {\frac{1}{\sqrt{2}}\mu}_{ij}^{X} \right)}^{2}+{\left( \frac{1}{\sqrt{2}}{\mu}_{ij}^{Z} \right)}^{2}$ 。显然，方向UV-Vis光谱对从与特定方向振荡电场相互作用的角度理解光吸收本质非常有帮助。相比之下，普通UV-Vis光谱对应入射振荡电场各向同性的情形。注意方向UV-Vis光谱是可加的，例如X、Y和Z三种类型光谱之和，以及X+Y与Z两种类型光谱之和，都等价于普通UV-Vis光谱。</p>
+<p><strong>ECD</strong>：ECD光谱中旋光强度 (rotatory strength)的意义类似于UV-Vis光谱中的振子强度，每个电子跃迁模式对应一个旋光强度。若把旋光强度展宽，经适当缩放和平移后，所得曲线可与实验ECD光谱比较。由一个单位旋光强度展宽出的峰的积分等于1。在量子化学程序（如Gaussian）中，旋光强度可在长度表象 (length representation)或速度表象 (velocity representation)下计算，前者所得强度与原点选取有关，后者与原点无关。对于完备基组情形，两种表象的结果收敛到相同值。通常推荐使用速度表象。</p>
+<p><strong>VCD</strong>：VCD测量分子对左、右圆偏振光在不同波数<em>λ</em>下的吸收系数之差，即VCD曲线可表为 $\Delta \varepsilon(\lambda)={\varepsilon}_{\mathrm{L}}(\lambda)-{\varepsilon}_{\mathrm{R}}(\lambda)$ 。每个振动模式都有一个旋光强度，把所有振动模式的旋光强度展宽后，所得曲线形状可与实验VCD光谱比较。某振动模式对 $\Delta \varepsilon(\lambda)$ 曲线贡献的积分面积与其旋光强度成正比。</p>
+<p><strong>ROA</strong>：ROA光谱测量右旋与左旋圆偏振光散射强度之差：</p>
+<p><div class="mathdisp" data-mi="4" title="点击复制 TeX">$$
+\mathrm{ROA\ intensity}\equiv I_i^{\mathrm{R}}-I_i^{\mathrm{L}}\propto\frac{(\nu_0-\nu_i)^4A_i}{\nu_i B_i}\qquad B_i=1-\mathrm{exp}\left(-\frac{hc\nu_i}{kT}\right)
+$$</div></p>
+<p>Gaussian的ROA任务输出的ROA强度数据实际上是上式中的 $A_{i}$ 项，应按上式将其换算为实际ROA强度。 $A_{i}$ 项与入射光频率有关。由一个单位ROA强度展宽出的峰的积分等于1。ROA有几种不同形式，包括ROA SCP(180)、ROA SCP(90)、ROA DCP(180)，其中90和180表示入射光与散射光的夹角。SCP (散射圆偏振, scattered circular polarization)指入射光为线偏振光而散射光为圆偏振光；DCP (双圆偏振, dual circular polarization)指入射光和散射光均为圆偏振光。常用的是ROA SCP(180)，也称为SCP背散射ROA (SCP backscattered ROA)。</p>
+<p>Gaussian的ROA任务还同时输出频率相关的Raman强度，对应下式中的 $R_{i}$ 项</p>
+<p><div class="mathdisp" data-mi="5" title="点击复制 TeX">$$
+\mathrm{Raman\ intensity}\equiv I_i^{\mathrm{R}}+I_i^{\mathrm{L}}\propto\frac{(\nu_0-\nu_i)^4R_i}{\nu_i B_i}\qquad B_i=1-\mathrm{exp}\left(-\frac{hc\nu_i}{kT}\right)
+$$</div></p>
+<p>相应地，也有Raman SCP(180)、Raman SCP(90)和Raman DCP(180)数据。由于当前所用入射光应远离电子激发能量，这种Raman光谱称为远离共振Raman (far from resonance Raman)。</p>
+<h2 id="3132-输入文件input-file"><strong>3.13.2 输入文件(Input file)</strong></h2>
+<p>本节提到的输入文件是Multiwfn为绘制光谱而支持的输入文件。不要用如.fch、.molden和.wfn作输入文件，显然绘制光谱所需数据没有记录在这些文件中。</p>
+<h3 id="1-gaussian输出文件gaussian-output-file"><strong>1 Gaussian输出文件(Gaussian output file)</strong></h3>
+<ul>
+<li><p>IR光谱：用<em>freq</em>任务的输出文件作输入。若用Gaussian 09 D.01或更新版本，且同时指定了<em>freq=anharm</em>关键词做非谐分析，Multiwfn会提示你选择载入非谐 (anharmonic)频率和IR强度来代替简谐 (harmonic)下的。</p>
+</li>
+<li><p>Raman光谱：用<em>freq=raman</em>任务的输出文件作输入。若要绘制预共振Raman光谱，还应同时用<em>CPHF=rdfreq</em>关键词，并在几何结构说明后的空行后写下入射光频率，如<em>300nm 400nm 500nm</em>。若希望绘制非谐Raman光谱，用*freq(raman,anharm)*关键词，Multiwfn会提示你选择载入非谐频率和Raman活性来代替简谐下的。</p>
+</li>
+<li><p>VCD光谱：用<em>freq=VCD</em>任务的输出文件作输入。若希望绘制非谐Raman光谱（Gaussian自G16起支持），用*freq(VCD,anharm)*关键词，Multiwfn会提示你选择载入非谐频率和旋光强度来代替简谐下的。</p>
+</li>
+</ul>
+<p>对于非谐IR、Raman和VCD光谱，你可选择只载入非谐基频数据，还是同时载入非谐泛频或合频数据。</p>
+<ul>
+<li><p>UV-Vis、方向UV-Vis和ECD光谱：用TDDFT、TDHF、CIS、ZINDO或EOM-CCSD任务的输出文件作输入，无需额外关键词。长度和速度表象下的旋光强度（分别为&quot;R(length)&quot;和&quot;R(velocity)&quot;下的数据）都可被Multiwfn选择载入。激发态优化任务的输出文件也可用，Multiwfn只载入最后一次输出的跃迁信息，因此所得光谱对应最终几何。</p>
+</li>
+<li><p>ROA光谱：用<em>freq=ROA</em>任务的输出文件作输入。入射光频率应在几何结构说明后的空行后指定，如<em>0.02, 0.03, 0.04, 0.05</em>，单位默认为a.u.；或写如<em>500nm 520nm 550nm</em>。</p>
+</li>
+</ul>
+<h3 id="2-orca输出文件orca-output-file"><strong>2 ORCA输出文件(ORCA output file)</strong></h3>
+<ul>
+<li><p>IR光谱：用<em>freq</em>关键词。</p>
+</li>
+<li><p>Raman光谱：用如下关键词</p>
+<pre><code class="language-orca">! b3lyp def2-SVP numfreq
+%elprop Polar 1 end
+</code></pre>
+</li>
+<li><p>UV-Vis、方向UV-Vis和ECD光谱：常用TDDFT，关键词示例：</p>
+<pre><code class="language-orca">! b3lyp def2-SVP
+%tddft
+nroots 20
+TDA false
+end
+</code></pre>
+</li>
+</ul>
+<p>注意，TDDFT计算时ORCA默认用Tamm-Dancoff近似 (Tamm-Dancoff Approximation, TDA)，此时振子强度和旋光强度明显不如TDDFT的好，因此上例中用<em>TDA false</em>使ORCA用标准TDDFT形式。还值得注意的是，ORCA对ECD的旋光强度用长度表象。</p>
+<p>ORCA的sTDA或sTD-DFT任务的输出文件（详见下文）也被Multiwfn支持用于绘制（方向）UV-Vis或ECD光谱。示例如下：</p>
+<pre><code class="language-orca">! PBE0 def2-SVP def2/J RIJCOSX
+%maxcore 6000
+%pal nprocs 36 end
+%tddft
+Mode sTDDFT
+Ethresh 10.0
+maxcore 6000
+end
+</code></pre>
+<p>自ORCA 4.1起，可在TDDFT计算中考虑自旋-轨道耦合 (spin-orbit coupling, SOC)效应，绘制SOC修正的UV-Vis和ECD光谱所需的全部数据都会自动输出。因此，当把SOC-TDDFT任务的输出文件载入Multiwfn后，进入UV-Vis和ECD绘制选项时，可选择载入SOC修正数据而非不考虑SOC的。用*%tddft<em>区加</em>dosoc true*即可很容易地做SOC-TDDFT，例如：</p>
+<pre><code class="language-orca">%tddft nroots=40 TDA false dosoc true end
+</code></pre>
+<p>CIS、TDHF、ZINDO、EOM-CCSD、(DLPNO-)STEOM-CCSD计算的输出文件也可用作Multiwfn模拟（方向）UV-Vis和ECD光谱的输入文件。</p>
+<ul>
+<li><p>VCD：用带*%freq doVCD true end*设置的常规频率分析任务的输出文件。</p>
+</li>
+<li><p>ROA光谱：ORCA目前不支持。</p>
+</li>
+</ul>
+<h3 id="3-grimme的stda输出文件grimmes-stda-output-file"><strong>3 Grimme的sTDA输出文件(Grimme&#39;s sTDA output file)</strong></h3>
+<p>Grimme在<em>J. Chem. Phys.</em>, <strong>138</strong>, 244104 (2013)中提出的sTDA是近似求解TDDFT方程的方法，能把TDDFT计算中电子激发部分的计算量降低约两三个数量级。相应的sTDA程序可在<a href="https://github.com/grimme-lab/stda">https://github.com/grimme-lab/stda</a>免费下载。</p>
+<p>虽然Grimme的sTDA代码已植入ORCA程序，独立sTDA程序输出的<em>tda.dat</em>文件也可用作Multiwfn绘制UV-Vis或ECD的输入文件。</p>
+<p>绘制ECD时，可选择用哪种表象的旋光强度。长度和速度表象已在上文提到，而混合表象 (mixed-form)定义为 $R_{M}$ = $R_{V}$ × $f_{L}$ / $f_{V}$ ，其中 $f_{L}$ 和 $f_{V}$ 分别为振子强度的长度和速度表象， $R_{V}$ 为旋光强度的速度表象，该表象在sTDA原文中被推荐。</p>
+<h3 id="4-grimme的xtb输出文件grimmes-xtb-output-file"><strong>4 Grimme的xtb输出文件(Grimme&#39;s xtb output file)</strong></h3>
+<p>Grimme写的xtb程序主要用于做GFN-xTB计算（<em>J. Chem. Theory Comput.</em>, <strong>13</strong>, 1989 (2017)和<em>J. Chem. Theory Comput.</em>, <strong>15</strong>, 1652 (2019)），可看作DFT方法的半经验变体。它不仅稳健而且很快，可方便地用于含数百原子的体系。注意，虽然xtb频率的精度经检验基本合理，但xtb输出的IR强度质量不太令人满意（据我的经验）。xtb程序可经<a href="https://github.com/grimme-lab/xtb/">https://github.com/grimme-lab/xtb/</a>免费获得。</p>
+<p>运行<em>xtb test.xyz --ohesst</em>，xtb将优化<em>test.xyz</em>中的结构再做频率分析。当前文件夹下输出的<em>vibspectrum</em>含简谐频率和IR强度，可用作Multiwfn绘制IR光谱的输入文件。</p>
+<h3 id="5-cp2k输出文件cp2k-output-file"><strong>5 CP2K输出文件(CP2K output file)</strong></h3>
+<p>CP2K振动分析任务的输出文件可用作绘制IR和Raman光谱的输入文件。<em>INTENSITIES T</em>应出现在*&amp;VIBRATIONAL_ANALYSIS*中。另外，绘制IR时，&amp;DFT中应有以下内容：</p>
+<p><pre><code class="language-text">    &amp;PRINT
+      &amp;MOMENTS
+        PERIODIC T  (for isolated systems, use F)
+      &amp;END
+    &amp;END</code></pre></p>
+<p>绘制Raman光谱时，&amp;FORCE_EVAL中应有以下内容：</p>
+<p><pre><code class="language-text">  &amp;PROPERTIES
+    &amp;LINRES
+      PRECONDITIONER FULL_ALL
+      &amp;POLAR
+        DO_RAMAN T
+        PERIODIC_DIPOLE_OPERATOR T  (for isolated systems, use F)
+      &amp;END POLAR
+    &amp;END LINRES
+  &amp;END PROPERTIES</code></pre></p>
+<p>另外，若在&amp;VIBRATIONAL_ANALYSIS域中加入以下内容，要求CP2K导出含振动模式和IR强度的.mol (Molden)文件，则.mol文件也可用作绘制IR光谱的输入文件。</p>
+<p><pre><code class="language-text">  &amp;PRINT
+    &amp;MOLDEN_VIB
+    &amp;END MOLDEN_VIB
+  &amp;END PRINT</code></pre></p>
+<p>CP2K的TDDFPT计算的输出文件可用作绘制（方向）UV-Vis光谱的输入文件，也支持sTDA核。若在&amp;TDDFPT区用以下内容激活自旋-轨道耦合，则可绘制自旋-轨道耦合修正的UV-Vis光谱。</p>
+<p><pre><code class="language-text">      &amp;SOC
+      &amp;END SOC
+      &amp;PRINT
+        &amp;SOC_PRINT
+          SPLITTING
+          SOME
+        &amp;END SOC_PRINT
+      &amp;END PRINT</code></pre></p>
+<p>Multiwfn可基于CP2K的&amp;XAS_TDP任务产生的.spectrum文件绘制X吸收光谱。你需按下例把.spectrum中的数据手动整理为纯文本文件。</p>
+<p>注意，上述任务的CP2K输入文件可用主功能100的子功能2中的相应选项轻松生成。</p>
+<h3 id="6-bdf输出文件bdf-output-file"><strong>6 BDF输出文件(BDF output file)</strong></h3>
+<p>BDF的TDDFT任务的输出文件可用作绘制UV-Vis光谱的输入文件。</p>
+<h3 id="7-纯文本文件plain-text-file"><strong>7 纯文本文件(Plain text file)</strong></h3>
+<p>为通用起见，Multiwfn支持纯文本文件作输入，你可从上述程序之外的计算化学程序输出文件中提取跃迁数据，再按下例格式填入文件</p>
+<p><pre><code class="language-text">numdata inptype
+energy strength [FWHM]                    ← For transition 1
+energy strength [FWHM]                    ← For transition 2
+energy strength [FWHM]                    ← For transition 3
+...
+energy strength [FWHM]                    ← For transition numdata</code></pre></p>
+<p>其中<em>numdata</em>表示此文件中有多少条目。若<em>inptype</em>设为1，则只读入<em>energy</em>和<em>strength</em>，所有跃迁的半高全宽 (full width at half maximum, FWHM)将自动设定。若<em>inptype</em>设为2，则也读入半高全宽。跃迁应按能量从低到高排序。对IR、Raman、VCD和ROA光谱，<em>energy</em>和<em>FWHM</em>的单位应为cm⁻¹，对UV-Vis和ECD光谱应为eV。强度单位对IR、Raman、ECD、VCD、ROA光谱应分别为km/mol、Å⁴/amu、cgs (10⁻⁴⁰ erg-esu-cm/Gauss)、10⁻⁴⁴ esu²cm²、10⁴ K（UV-Vis的振子强度无量纲）。</p>
+<p>下面是纯文本文件的例子（对IR）：</p>
+<p><pre><code class="language-text">6 2
+  81.32920        0.72170    8.0
+ 417.97970        3.58980    8.0
+ 544.67320       21.06430    8.0
+ 583.12940       41.33960    8.0
+ 678.66900       91.47940    8.0
+ 867.37410        2.94480    8.0</code></pre></p>
+<h2 id="3133-用法和选项usage-and-options"><strong>3.13.3 用法和选项(Usage and options)</strong></h2>
+<p>启动Multiwfn后，先输入上述程序输出文件或含跃迁数据的纯文本文件的路径，再进入主功能11，会被要求选择光谱类型（对预共振Raman和ROA，还需选择感兴趣的频率），之后会看到以下选项。某些选项的含义对各类光谱可能不同。</p>
+<p>注意，在此界面可随时输入<em>s</em>把当前绘制设置存到文件，或输入<em>l</em>从文件载入绘制设置，以便快速恢复绘制状态。</p>
+<p>**-4 设置保存图形文件的格式：**用于选择选项1导出的图形文件的格式。通常推荐用ps、pdf和svg等矢量格式。</p>
+<p>**-2 导出跃迁数据到纯文本文件：*<em>把所有跃迁的能量、强度和半高全宽输出到当前目录的</em>transinfo.txt*，此文件完全符合上节介绍的格式，可直接用作输入文件。</p>
+<p>**-1 显示跃迁数据：**在屏幕上打印所有跃迁的能量和强度数据。</p>
+<p>**0 绘制光谱：**立即绘制光谱！光谱将显示在屏幕上，同时光谱曲线的极小和极大值会显示在控制台窗口。</p>
+<p>**1 保存光谱图形文件到当前文件夹：**如题。</p>
+<p>*<em>2 导出谱线和曲线的X-Y数据集到纯文本文件：*<em>把谱线和展宽光谱的X-Y数据集分别导出到当前目录的</em>spectrum_line.txt*和</em>spectrum_curve.txt*，你可用外部程序（如Origin）由这两个文件重绘曲线和分立谱线图。</p>
+<p>**3 设置X轴上下限：**如题。还需输入刻度间隔。默认X轴范围根据最小和最大跃迁能量自动调整。</p>
+<p>**4 设置左Y轴：**设置左Y轴的起始值、终止值和步长。默认Y轴范围根据最大峰自动调整。</p>
+<p>**5 设置右Y轴：**如选项4，但针对右Y轴。</p>
+<p>多数情况下，调整一侧Y轴设置后，该侧Y轴零点位置与另一侧Y轴零点偏离，图形看起来别扭；为解决此问题，选项4和5让你选择是否相应调整另一侧Y轴范围。若输入<em>y</em>，则另一侧Y轴的上下限和标签间隔将按比例缩放，使左右Y轴零点在同一水平线上。</p>
+<p>**6 选择展宽函数：**可选高斯 (Gaussian)、洛伦兹 (Lorentzian)和赝沃伊特 (Pseudo-Voigt)函数把分立谱线展宽为曲线。</p>
+<p>*<em>7 设置曲线缩放比：*<em>若设为</em>k*，则曲线高度在全范围乘以</em>k*。Raman、ECD、VCD和ROA光谱默认值1.0，IR为100，UV-Vis光谱能量单位为eV或nm时用经验值28700.0，单位为1000 cm⁻¹时用1/(4.32*10⁻⁶)。</p>
+<p>**8 输入半高全宽 (FWHM)：**如题。</p>
+<p>**9 切换显示分立谱线：**选择是否在光谱图上显示跃迁对应的分立谱线。</p>
+<p>**10 切换红外强度单位/设置激发能量单位：**对IR光谱，在km/mol（默认）和esu²cm²之间切换IR强度单位。对UV-Vis和ECD光谱，在eV、nm和1000 cm⁻¹之间选择能量单位。</p>
+<p>**11 设置高斯权重系数：**设置 $w_{\mathrm{gauss}}$ ，即<a href="sec-3-12-plotting-density-of-states-pes-and-cohp.html#3121-%E7%90%86%E8%AE%BAtheory">3.12.1</a>节提到的，此选项只在选赝沃伊特函数时出现。</p>
+<p>*<em>12 设置X方向平移值：*<em>若设为</em>k*，则最终曲线和分立谱线在X方向平移</em>k*。</p>
+<p>**13 设置曲线和分立谱线的颜色：**如题。</p>
+<p>**14 设置跃迁能量（或振动频率）缩放因子：**用此选项，跃迁能量可乘以一个因子，要绘制的光谱会受影响。</p>
+<p>缩放振动频率有两种方法：</p>
+<ul>
+<li><p>(1) 均匀缩放：所选频率简单乘以用户输入的因子。可按序号范围或频率范围选择频率。</p>
+</li>
+<li><p>(2) 幂律缩放：此方法在<em>J. Chem. Theory Comput.</em>, <strong>22</strong>, 9039 (2026)中检验过，表现优于均匀缩放。每个频率按 ${\lambda}_{1}{\omega}^{{\lambda}_{2}}$ 缩放，其中<em>λ</em>₁和<em>λ</em>₂为用户指定的拟合参数，<em>ω</em>为原频率。</p>
+</li>
+</ul>
+<p>*<em>15 输出各跃迁对光谱的贡献：*<em>若选此选项，会提示输入判据（如</em>k*），则不仅总光谱（如选项2），强度绝对值大于</em>k<em>的各跃迁的贡献也会输出到当前文件夹的</em>spectrum_curve.txt*。此功能对识别总光谱本质特别有用。</p>
+<p>在此功能中还可先输入<em>0</em>，再输入光谱的X位置，则对该位置贡献最大的10个跃迁会显示出来，这对弄清特定光谱位置（如重要吸收峰位）的主要贡献者很方便。</p>
+<p>**16 设置光谱极小和极大值标签显示状态：**会进入一个界面，其中有许多选项用于设置如何在图上显示光谱极小和极大值，都是自明的。</p>
+<p>**17 其他绘制设置：**可在此设置各种绘制设置，如是否显示虚线网格线、是否显示坐标轴标签、坐标轴名/刻度/图例文字大小、坐标轴小数位数、左Y轴标签类型、图例位置、设置不同体系谱线和曲线颜色。</p>
+<p>**18 切换各体系光谱加权：**见下节解释。</p>
+<p>**19 把Raman（或ROA）活性换算为强度：**如前所述，此选项用于把Raman（或ROA）活性换算为强度。之后，选项0绘制的Raman（或ROA）光谱将是基于Raman（或ROA）强度而非活性展宽的。入射光波数和温度由用户输入。</p>
+<p>**20 修改强度：**可选择一些跃迁并把其强度（取决于光谱类型）改为特定值。若要绘制荧光光谱，此选项很有用，此时需把除最低单重激发外所有跃迁的振子强度设为零（Kasha规则）。</p>
+<p>**21 设置加权曲线和各体系曲线显示状态：**如下节所示，Multiwfn能按给定权重绘制多体系加权光谱。此选项控制是否绘制加权曲线和各体系曲线。</p>
+<p>**22 设置曲线/谱线/文字/坐标轴粗细：**如题。</p>
+<p>**23 设置显示指示跃迁能级尖峰的状态：**用此选项，可在光谱底部绘制一组或多组尖峰以指示不同组跃迁的位置。若一些跃迁简并，尖峰高度可反映简并度。此选项的说明见<a href="sec-4-11-plot-various-kinds-of-spectra.html#4119-%E6%8A%80%E5%B7%A7%E4%BD%BF%E7%94%A8%E5%B0%96%E5%B3%B0-spikes%E6%8C%87%E7%A4%BA%E8%B7%83%E8%BF%81%E8%83%BD%E7%BA%A7-transition-levels%E7%9A%84%E4%BD%8D%E7%BD%AE">4.11.9</a>节。当同时考虑多体系绘制时此选项不可用。</p>
+<p>注意，构成光谱的实际点数由<em>settings.ini</em>中的&quot;num1Dpoints&quot;参数控制。默认值通常足够大，无需调整。</p>
+<h2 id="3134-同时绘制多体系和加权光谱plotting-multiple-systems-together-and-weighted-spectrum"><strong>3.13.4 同时绘制多体系和加权光谱(Plotting multiple systems together and weighted spectrum)</strong></h2>
+<p>在Multiwfn中，可同时绘制多文件的光谱，同时考虑权重。此功能对获得有许多热可及构象的柔性分子的实际光谱很有用。</p>
+<p>例如，有一分子有四个可及构象，已按Boltzmann方法根据算得的自由能确定了其分布比。若要绘制其加权光谱和每个构象的光谱，应写一个名为<em>multiple.txt</em>的纯文本文件（其他文件名不能被Multiwfn识别），内容为：</p>
+<p><pre><code class="language-text">boltz\Excit\a.out 0.6046
+boltz\Excit\b.out 0.1950
+boltz\Excit\c.out 0.1686
+boltz\Excit\d.out 0.0317</code></pre></p>
+<p>其中第一列和第二列分别对应每个构象输入文件路径和权重。不同类型的输入文件可同时出现在此文件中。若用此文件作输入文件，进入光谱绘制模块后，Multiwfn会依次从这些文件载入数据。绘制光谱时，四个构象的光谱会分别算出并以不同颜色画出。另外，加权光谱作为粗红曲线画在图上，按下式算得：</p>
+<p>weighted spectrum = 0.6046×a + 0.1950×b + 0.1686×c + 0.0317×d</p>
+<p>图中还可看到许多黑色分立谱线，是不同构象分立谱线的集合。注意其高度已乘以相应权重。</p>
+<p>若绘制光谱前选过一次选项18，则图上各构象光谱是加权过的；换言之，这些曲线代表每个构象对实际光谱（粗红曲线）的贡献。此时加权分立谱线的颜色不再全黑，而与曲线颜色一致，以便用户容易识别不同体系曲线与分立谱线的对应。</p>
+<p>若只想同时绘制多体系光谱而不想画加权光谱，则<em>multiple.txt</em>第二列不应为权重，而应为自定义图例，例如</p>
+<p><pre><code class="language-text">boltz\Excit\a.out Molecule A
+boltz\Excit\b.out Molecule B
+boltz\Excit\c.out Molecule C
+boltz\Excit\d.out Molecule D</code></pre></p>
+<p>然后照常绘制光谱，四个体系的曲线会同时显示，图例为&quot;Molecule A&quot;、&quot;Molecule B&quot;等。</p>
+<blockquote>
+<p><strong>注(Note)</strong></p>
+<p>当图例完全由数字组成时，图例会被当作权重。若图例必须为数字，应在图例前加$ 让Multiwfn知道它是图例而非权重。例如，$50 会被识别为“50”图例。</p>
+</blockquote>
+<p>若用Linux平台且<em>multiple.txt</em>中一些文件路径含/符号或空格，应在文件路径两端加双引号，使路径能正确载入。</p>
+<h2 id="3135-绘制nmr光谱plotting-nmr-spectrum"><strong>3.13.5 绘制NMR光谱(Plotting NMR spectrum)</strong></h2>
+<h3 id="理论theory"><strong>理论(Theory)</strong></h3>
+<p>许多量子化学程序能算出原子核处的磁屏蔽张量 (magnetic shielding tensor) <strong>σ</strong>，通常只关心其对角项平均值，即各向同性磁屏蔽值 (isotropic magnetic shielding value) σ$_{iso}$，因为NMR光谱通常在溶剂环境中测定，溶质可自由转动。</p>
+<p>化学位移 (chemical shift) δ按下式算出</p>
+<p><div class="mathdisp" data-mi="6" title="点击复制 TeX">$$
+\delta=\frac{\sigma^{\mathrm{ref}}-\sigma}{1-\sigma^{\mathrm{ref}}}\approx\sigma^{\mathrm{ref}}-\sigma
+$$</div></p>
+<p>其中<em>σ</em>$^{ref}$ 为参比物质的屏蔽值（对¹³C和¹H NMR为四甲基硅烷），<em>σ</em> 为待测样品的屏蔽值。两值必须在完全相同的计算设置（理论方法、基组、溶剂化模型……）下算得。</p>
+<p>确定化学位移的另一方法是缩放法，详见<a href="http://cheshirenmr.info">http://cheshirenmr.info</a>。简言之，此方法按下式很简单地算出δ：</p>
+<p><div class="mathdisp" data-mi="7" title="点击复制 TeX">$$
+\delta=a\times\sigma+b
+$$</div></p>
+<p>其中 $a$ 和<em>b</em> 为对特定计算水平基于训练集预先拟合的斜率和截距参数。例如，若用B3LYP/6-31G*在真空中优化而用B3LYP/6-31G*在SMD溶剂化模型表示的氯仿环境下算屏蔽值，则对¹H NMR有 $a$ = -1.0157和<em>b</em> = 32.2109，而对¹³C NMR有 $a$ = -0.9449和<em>b</em> = 188.4418。</p>
+<p>若体系中有甲基，生成NMR光谱前应对其三个氢的δ取平均，因为甲基转动壁垒极低，实际环境中可自由转动。另外，若有多个热可及且易互变的构象，应按构象权重算出每个原子的加权平均屏蔽值：</p>
+<p><div class="mathdisp" data-mi="8" title="点击复制 TeX">$$
+\overline{\delta^A}=\sum_i p_i\delta_i^A
+$$</div></p>
+<p>其中<em>i</em>为构象序号，<em>A</em>为原子序号。 $p_{i}$ 代表构象<em>i</em>的权重，可按构象间相对自由能由Boltzmann分布算出。</p>
+<p>有了所有原子的δ，就可绘制NMR分立谱线图，图中尖峰的X轴对应δ，Y轴对应简并度 (degeneracy)，若<em>N</em>个化学位移间最大间隔小于特定阈值（如0.05 ppm），简并度为<em>N</em>，其他情形简并度为1.0。</p>
+<p>用洛伦兹函数把尖峰展宽可生成有有限峰宽的实际NMR光谱，半高全宽 (FWHM)是控制峰形的关键参数。此曲线图中峰高对应NMR信号强度。</p>
+<h3 id="输入文件input-file"><strong>输入文件(Input file)</strong></h3>
+<p>Gaussian、ORCA和BDF程序NMR任务的输出文件直接支持用作绘制NMR光谱的输入文件。CP2K的NMR任务生成的.data文件也可用。</p>
+<ul>
+<li><p>Gaussian的NMR任务示例</p>
+<pre><code class="language-text"># B972/def2tzvp scrf=solvent=chloroform NMR
+
+Title Card Required
+
+0 1
+ N                 -0.14557000    1.69364200    0.17479300
+ H                 -1.18363600    1.59873700    0.51496300
+[...ignored]
+</code></pre>
+</li>
+<li><p>ORCA的NMR任务示例</p>
+<pre><code class="language-orca">! B3LYP/G 6-31G* NMR cpcm(chloroform) RIJK autoaux
+* xyz   0   1
+ C                     0.        1.14218   0.72212
+ C                     0.        1.19872  -0.67302
+[...ignored]
+</code></pre>
+</li>
+<li><p>CP2K的NMR任务示例。在普通GAPW任务输入文件的&amp;FORCE_EVAL中加入以下内容。另外，建议设&amp;SCF / EPS_SCF为1E-7、EPS_DEFAULT为1E-14以保证足够数值精度。</p>
+<pre><code class="language-text">&amp;LINRES
+  PRECONDITIONER FULL_KINETIC
+  EPS 1E-8
+  MAX_ITER 300
+  &amp;CURRENT
+    CHI_PBC T
+    GAUGE R_AND_STEP_FUNCTION
+    ORBITAL_CENTER ATOM
+  &amp;END CURRENT
+  &amp;LOCALIZE
+     MAX_ITER 20000
+     EPS_LOCALIZATION 1E-5
+  &amp;END LOCALIZE
+  &amp;NMR
+  &amp;END NMR
+&amp;END LINRES
+</code></pre>
+</li>
+<li><p>纯文本文件</p>
+</li>
+</ul>
+<p>记录原子名和屏蔽值的纯文本文件也可用作绘制NMR光谱的输入文件，例子见<em>examples\spectra\NMR\general.txt</em>。因此原则上Multiwfn可对任何能给出屏蔽值的程序绘制NMR。</p>
+<h3 id="用法usage"><strong>用法(Usage)</strong></h3>
+<p>载入输入文件后，进入主功能11并选NMR，会看到NMR绘制界面。选选项0即显示NMR光谱，原始数据会显示在控制台窗口。此界面多数选项是自明的，下面只提几个值得注意的选项。</p>
+<ul>
+<li><p><strong>-2 导出NMR数据到纯文本文件</strong>：此选项把屏蔽值导出到当前文件夹的<em>NMRdata.txt</em>。若已用选项7把屏蔽值换算为化学位移，则两者都会导出。</p>
+</li>
+<li><p><strong>6 选择绘制时考虑的元素</strong>：用此选项可选择考虑的元素。例如，若要绘制¹H NMR光谱或查看相关数据，应选此选项并输入<em>H</em>。</p>
+</li>
+<li><p><strong>7 设置如何确定化学位移</strong>：默认绘制的NMR光谱X轴对应磁屏蔽值，若要使X轴为化学位移δ，应在绘制前选此选项。在此选项中可选定δ的方式：</p>
+<p>(1) 取当前体系与参比体系屏蔽值之差。可手动输入参比值或直接用内置数据。</p>
+<p>(2) 用缩放法确定δ。可手动输入拟合的斜率和截距，或直接用内置数据。</p>
+<p>有几套内置数据，对应很适合算δ的水平。</p>
+</li>
+<li><p><strong>10 对特定原子平均屏蔽值</strong>：例如，通常应对同一甲基中的氢的δ取平均，可用此功能实现。</p>
+</li>
+<li><p><strong>11 设置特定原子的强度</strong>：默认每个原子强度1.0，即对简并度贡献1.0。用此选项可修改特定原子的强度。例如，若把原子3、6、7的强度设为0，则这些原子会在绘制的光谱中消失。</p>
+</li>
+<li><p><strong>16 改变标记原子的设置</strong>：为在NMR光谱中区分原子，Multiwfn在绘制的峰上标记原子序号。用此选项可控制标记细节，如位置、大小、颜色、标记内容等。</p>
+</li>
+</ul>
+<h3 id="绘制构象加权光谱和含多体系的光谱plotting-conformation-weighted-spectrum-and-spectrum-containing-multiple-systems"><strong>绘制构象加权光谱和含多体系的光谱(Plotting conformation weighted spectrum and spectrum containing multiple systems)</strong></h3>
+<p>构象加权NMR光谱可用纯文本文件作输入（文件名须含&quot;multiple&quot;，例如<em>valine_multiple.txt</em>为有效名），每行含输入文件路径和相应构象权重，例如：</p>
+<p><pre><code class="language-text">D:\valine\conf1.out 0.43
+D:\valine\conf2.out 0.25
+D:\valine\conf3.out 0.32</code></pre></p>
+<p>若只想把多体系NMR光谱画在一起，每行指定文件路径和图例，例如</p>
+<p><pre><code class="language-text">/lovelive/nico.out Isomer 1
+/lovelive/nozomi.out Isomer 2</code></pre></p>
+<p>然后进入NMR绘制界面后，绘图步骤与画单体系完全相同。注意所有体系必须有相同原子数。</p>
+<h3 id="特别说明special-notes"><strong>特别说明(Special notes)</strong></h3>
+<p>要把NMR光谱存为图形文件，可选选项1。强烈建议用pdf格式，因为它是矢量格式，光谱可无损缩放，线条和文字看起来很平滑。格式可用选项-3选择，默认格式可用<em>settings.ini</em>中的&quot;graphformat&quot;更改。</p>
+<p>调整好各种绘制设置后，可在界面中输入<em>s</em>把绘制设置存到特定文本文件，以便将来想以完全相同效果重绘NMR光谱时，输入<em>l</em>直接从文本文件恢复绘制设置。注意对绘制数据的任何操作每次都须手动重做（如平均屏蔽值、把屏蔽值换算为化学位移等）。</p>
+<p>绘制NMR光谱的一些例子见<a href="sec-4-11-plot-various-kinds-of-spectra.html#41110-%E7%BB%98%E5%88%B6-nmr-%E8%B0%B1-nmr-spectrum">4.11.10</a>节。</p>
+<h2 id="3136-部分振动光谱-partial-vibrational-spectrum-pvs和部分振动态密度-partial-vibrational-density-of-states-pvdos"><strong>3.13.6 部分振动光谱 (partial vibrational spectrum, PVS)和部分振动态密度 (partial vibrational density-of-states, PVDOS)</strong></h2>
+<p>部分振动光谱 (PVS)由我提出，用于直观理解振动光谱峰的本质。部分振动态密度 (PVDOS)与之密切相关。本节将描述其定义和在Multiwfn中的实现。</p>
+<h3 id="31361-理论theory"><strong>3.13.6.1 理论(Theory)</strong></h3>
+<h4 id="pvs和pvdos"><strong>PVS和PVDOS</strong></h4>
+<p>回想振动光谱曲线可表为</p>
+<p><div class="mathdisp" data-mi="9" title="点击复制 TeX">$$
+\varepsilon(E)=c\sum_i f_i G(E-E_i^{\mathrm{vib}})
+$$</div></p>
+<p>其中<em>c</em>是取决于振动光谱类型的常数，<em>i</em>遍历所有振动模式，<em>f</em>和 $E^{\mathrm{vib}}$ 分别对应某振动模式的强度（如IR光谱的IR强度、VCD光谱的旋光强度）和跃迁能量，<em>G</em>为展宽函数（振动光谱常用洛伦兹函数）。</p>
+<p>PVS方法把总振动光谱分解为不同碎片 (fragment)的贡献。碎片<em>A</em>的PVS曲线表为</p>
+<p><div class="mathdisp" data-mi="10" title="点击复制 TeX">$$
+\varepsilon_A(E)=c\sum_i\Theta_A^i f_i G(E-E_i^{\mathrm{vib}})
+$$</div></p>
+<p>其中 ${\Theta}_{A}^{i}$ 为碎片<em>A</em>在振动模式<em>i</em>中的组成 (composition)。</p>
+<p>振动态密度 (vibrational density-of-states, VDOS)表示单位波数内振动跃迁密度，表为</p>
+<p><div class="mathdisp" data-mi="11" title="点击复制 TeX">$$
+\rho(E)=c\sum_i G(E-E_i^{\mathrm{vib}})
+$$</div></p>
+<p>系数<em>c</em>和VDOS单位是任意的，只有不同能量处VDOS相对大小有意义。碎片<em>A</em>的部分VDOS (PVDOS)曲线表为</p>
+<p><div class="mathdisp" data-mi="12" title="点击复制 TeX">$$
+\rho_A(E)=c\sum_i\Theta_A^i G(E-E_i^{\mathrm{vib}})
+$$</div></p>
+<h4 id="碎片类型type-of-fragment"><strong>碎片类型(Type of fragment)</strong></h4>
+<p>在Multiwfn中，最多可同时定义10个碎片来画其PVS或PVDOS曲线。碎片可用两种方式定义：</p>
+<p>(1) 一组原子。可考虑其全部笛卡尔坐标或特定笛卡尔分量（即X、Y、Z、XY、XZ或YZ）。</p>
+<p>(2) 一组冗余内坐标 (redundant internal coordinates, RIC)。RIC可为键、角和二面角，允许在碎片中混合。</p>
+<h4 id="振动模式中碎片的组成composition-of-fragment-in-vibrational-modes"><strong>振动模式中碎片的组成(Composition of fragment in vibrational modes)</strong></h4>
+<p>算 ${\Theta}_{A}^{i}$ 的方式不唯一。每个振动模式有两个关键特征：简正坐标 (normal coordinate)和强度，所以 ${\Theta}_{A}^{i}$ 可定义为碎片<em>A</em>对振动模式<em>i</em>其中之一的百分比贡献，如下所述。</p>
+<p><strong>组成类型1：对简正坐标的百分比贡献</strong></p>
+<p>每个振动模式的简正坐标<em>q</em>代表参与振动的3 $N_{\mathrm{atom}}$ 个原子笛卡尔坐标{<em>x</em>}的运动。设 $L_{j}$ $_{,}$<em>$_{i}$</em> 代表 $x_{j}$ 在 $q_{i}$ 中的分量，并设 $q_{i}$ 归一化，则 ${\Theta}_{A}^{i}$ 定义为</p>
+<p><div class="mathdisp" data-mi="13" title="点击复制 TeX">$$
+\Theta_A^i=100\%\times\sum_{j\in A}L_{j,i}^2
+$$</div></p>
+<p>其中<em>j</em>遍历碎片<em>A</em>中原子的全部或特定笛卡尔坐标。</p>
+<p><strong>组成类型2：对强度的百分比贡献</strong></p>
+<p>这种组成类型比组成类型1复杂得多，目前只适用于IR强度。振动模式<em>i</em>的IR强度表为</p>
+<p><div class="mathdisp" data-mi="14" title="点击复制 TeX">$$
+I^i=s\left|\frac{\partial\boldsymbol{\mu}}{\partial q_i}\right|^2=s\sum_{\sigma=x,y,z}\left(\frac{\partial\mu_\sigma}{\partial q_i}\right)^2
+$$</div></p>
+<p>其中<em>s</em>为常数因子， $µ_{σ}$ 代表当前体系电偶极矩的笛卡尔<em>σ</em>分量。 $µ_{σ}$ 对 $q_{i}$ 的导数可进一步写成电偶极矩对原子笛卡尔坐标导数与简正坐标相应分量乘积之和：</p>
+<p><div class="mathdisp" data-mi="15" title="点击复制 TeX">$$
+\frac{\partial\mu_\sigma}{\partial q_i}=\sum_j\frac{\partial\mu_\sigma}{\partial x_j}\frac{\partial x_j}{\partial q_i}\equiv\sum_j\frac{\partial\mu_\sigma}{\partial x_j}L_{j,i}
+$$</div></p>
+<p>经简单整理，IR强度可表为下式，其中碎片<em>B</em>含不属于碎片<em>A</em>的全部原子笛卡尔坐标</p>
+<p><div class="mathdisp" data-mi="16" title="点击复制 TeX">$$
+I^i=s\sum_{\sigma=x,y,z}\left[I_{A,\mathrm{intra}}^{i,\sigma}+I_{B,\mathrm{intra}}^{i,\sigma}+I_{AB}^{i,\sigma}\right]
+$$</div></p>
+<p>其中</p>
+<p><div class="mathdisp" data-mi="17" title="点击复制 TeX">$$
+\begin{gathered}I_{A,\mathrm{intra}}^{i,\sigma}=\left(\sum_{j\in A}\frac{\partial\mu_\sigma}{\partial x_j}L_{j,i}\right)^2\qquad I_{B,\mathrm{intra}}^{i,\sigma}=\left(\sum_{k\in B}\frac{\partial\mu_\sigma}{\partial x_k}L_{k,i}\right)^2\\ I_{AB}^{i,\sigma}=2\left(\sum_{j\in A}\frac{\partial\mu_\sigma}{\partial x_j}L_{j,i}\right)\left(\sum_{k\in B}\frac{\partial\mu_\sigma}{\partial x_k}L_{k,i}\right)\end{gathered}
+$$</div></p>
+<p>其中 ${I}_{A,\mathrm{intra}}^{i,\sigma}$ 代表碎片<em>A</em>对模式<em>i</em>在<em>σ</em>方向的片内贡献， ${I}_{A\mathrm{B}}^{i,\sigma}$ 对应碎片<em>A</em>和<em>B</em>耦合的贡献。把耦合项划分给碎片的方式不唯一，我倾向于简单地平分，此时碎片<em>A</em>对 $I^{i}$ 的贡献写为</p>
+<p><div class="mathdisp" data-mi="18" title="点击复制 TeX">$$
+I_A^i=s\sum_{\sigma=x,y,z}\left(I_{A,\mathrm{intra}}^{i,\sigma}+\frac{1}{2}I_{AB}^{i,\sigma}\right)=s\sum_{\sigma=x,y,z}\left(\sum_{j\in A}\frac{\partial\mu_\sigma}{\partial x_j}L_{j,i}\right)\left(\sum_k\frac{\partial\mu_\sigma}{\partial x_k}L_{k,i}\right)
+$$</div></p>
+<p>最后， ${\Theta}_{A}^{i}$ 按下式算出</p>
+<p><div class="mathdisp" data-mi="19" title="点击复制 TeX">$$
+\Theta_A^i=100\%\times\frac{I_A^i}{I^i}
+$$</div></p>
+<p>注意，以上方式定义的 ${\Theta}_{A}^{i}$ 在某些情况下可略为负或大于100%，这不可避免，绝不意味着结果不正确。负值源于片间耦合贡献可为负，其大小甚至可超过正的片内贡献。</p>
+<h4 id="碎片光谱类型小结summary-of-type-of-fragment-spectrum"><strong>碎片光谱类型小结(Summary of type of fragment spectrum)</strong></h4>
+<p>综合上述全部信息，现在可定义代表碎片对振动模式贡献的不同形式的光谱，Multiwfn目前支持以下：</p>
+<ul>
+<li><p>PVS-NC(atom)</p>
+</li>
+<li><p>PVS-NC(RIC)</p>
+</li>
+<li><p>PVS-I(atom)</p>
+</li>
+<li><p>PVDOS-NC(atom)</p>
+</li>
+<li><p>PVDOS-NC(RIC)</p>
+</li>
+</ul>
+<p>PVS和PVDOS的含义很明确。“I”和“NC”指碎片在振动模式中的组成分别定义为碎片对其强度和简正坐标的贡献。(atom)和(RIC)指碎片分别由一组原子（及其一些笛卡尔分量）和冗余内坐标组成。</p>
+<p>如前所述，PVS-I(atom)只能用于IR光谱的分解分析，而PVS-NC(atom/RIC)可用于分解任何振动光谱。PVDOS与振动光谱类型无关，因为不涉及强度信息。</p>
+<p>不同类型光谱有不同实用价值。例如，从PVS-NC(atom)可直观认出不同波数范围活性振动模式主要有哪些原子参与，而PVS-NC(RIC)允许从内坐标运动角度研究。用PVS-I(atom)，可生动理解振动中哪些原子运动对不同波数处IR吸收强度有显著贡献。光谱不活性的振动模式不能用PVS-NC或PVS-I光谱直观研究，但可分别用PVDOS-NC(atom)和PVDOS-NC(RIC)容易理解哪些原子和内坐标显著参与不同能量区的振动模式。</p>
+<h4 id="重叠pvs-overlap-pvs-opvs和重叠pvdos-overlap-pvdos-opvdos"><strong>重叠PVS (overlap PVS, OPVS)和重叠PVDOS (overlap PVDOS, OPVDOS)</strong></h4>
+<p>为直观研究不同两碎片原子运动在振动光谱中的耦合效应，我定义了OPVS和OPVDOS，分别表为</p>
+<p><div class="mathdisp" data-mi="20" title="点击复制 TeX">$$
+\begin{gathered}\varepsilon_{AB}(E)=c\sum_i\Theta_{AB}^i f_i G(E-E_i^{\mathrm{vib}})\\ \rho_{AB}(E)=c\sum_i\Theta_{AB}^i G(E-E_i^{\mathrm{vib}})\end{gathered}
+$$</div></p>
+<p>其中<em>A</em>和<em>B</em>为要研究其耦合效应的两碎片， ${\Theta}_{AB}^{i}$ 为其对振动模式<em>i</em>的百分比耦合贡献。</p>
+<p>对重叠PVS-NC (OPVS-NC)和重叠PVDOS-NC (OPVDOS-NC)， ${\Theta}_{AB}^{i}$ 定义为</p>
+<p><div class="mathdisp" data-mi="21" title="点击复制 TeX">$$
+\Theta_{AB}^i=100\%\times 2\times\mathrm{min}(\Theta_A^i,\Theta_B^i)
+$$</div></p>
+<p>若模式<em>i</em>被碎片<em>A</em>和<em>B</em>等同贡献，即 ${\Theta}_{A}^{i}={\Theta}_{B}^{i}=50\%$ ，则 ${\Theta}_{AB}^{i}=100\%$ 。在某波数处，OPVS-NC ( ${\varepsilon}_{AB}$ )曲线越接近<em>ε</em>曲线，或OPVDOS-NC ( ${\rho}_{AB}$ )曲线越接近<em>ρ</em>曲线，该波数处光谱越体现碎片<em>A</em>和<em>B</em>的集体运动。</p>
+<p>对重叠PVS-I (OPVS-I)光谱， ${\Theta}_{AB}^{i}$ 定义为 $100\%\times {I}_{AB}^{i}/{I}^{i}$ ，其中 ${I}_{AB}^{i}$ 为碎片<em>A</em>和<em>B</em>对振动模式<em>i</em>的耦合贡献：</p>
+<p><div class="mathdisp" data-mi="22" title="点击复制 TeX">$$
+I_{AB}^i=s\sum_{\sigma=x,y,z}I_{AB}^{i,\sigma}
+$$</div></p>
+<p>OPVS-I曲线越正（负），片间耦合效应对IR吸收的增强（抑制）越多。</p>
+<h3 id="31362-用法usage"><strong>3.13.6.2 用法(Usage)</strong></h3>
+<p>要绘制上介绍的碎片贡献的光谱曲线，启动Multiwfn后，需载入绘制普通振动光谱的输入文件，再进入主功能11，选择要绘制的振动光谱类型，包括IR、Raman、VCD或ROA（PVS-I只支持IR。对VDOS，它们都等价）。然后，选选项“24 Set partial vibrational spectra (PVS) or vibrational DOS (VDOS)”后，会进入定义碎片和调整相关绘制设置的界面。从屏幕上看到，输入<em>t</em>可选碎片光谱类型。输入数字可定义该序号的碎片，请仔细按屏幕提示操作，最多可定义10个碎片。若已定义两个或更多碎片，可用选项0选择要绘制OPVS或OPVDOS曲线的两碎片。</p>
+<p>定义碎片完成后，可输入<em>q</em>离开界面，同时Multiwfn会从输入文件载入所需数据并生成各碎片在每个振动模式中的组成，定量结果会显示在屏幕上。（对PVS-I，还会被要求输入Gaussian的“freq”任务产生的.fch/fchk文件，Multiwfn从中载入算IR强度所需数据。同时，Multiwfn会问是否输出<em>IRinten.txt</em>文件，其中含关于IR强度求值的非常详细的原始和中间信息，对理解 ${I}_{A}^{i,\sigma}$ 的来源特别有帮助）</p>
+<p>离开选项24后，可照常选选项0绘制振动光谱，PVS/OPVS或VDOS/OPVDOS曲线会与振动光谱曲线一起显示。</p>
+<p>注意，要把Raman或ROA光谱与其伴随的PVS-NC曲线一起绘制，需照常先把Raman活性换算为Raman强度。</p>
+<h4 id="输入文件input-file"><strong>输入文件(Input file)</strong></h4>
+<ul>
+<li><p>PVS-NC(atom)和PVDOS-NC(atom)：可用Gaussian、ORCA和CP2K程序频率分析的输出文件作输入文件。</p>
+<p>xtb程序也支持但情况稍特殊：用xtb做Hessian计算任务后，会有<em>vibspectrum</em>和<em>g98.out</em>文件。启动Multiwfn后应载入<em>vibspectrum</em>，在定义碎片并离开选项24界面后，会被要求输入<em>g98.out</em>的路径，Multiwfn从中载入简正坐标。</p>
+</li>
+<li><p>PVS-NC(RIC)和PVDOS-NC(RIC)：应用Gaussian频率分析的输出文件作输入文件。必须用Gaussian的<em>freq=intmodes</em>关键词，使各振动模式中RIC组成写入Gaussian输出文件，离开选项24时Multiwfn会载入。</p>
+</li>
+<li><p>PVS-I(atom)：应用Gaussian频率分析的输出文件作输入文件，且此任务产生的.chk文件转换的.fch/fchk文件必须保留，离开选项24时Multiwfn要求提供。</p>
+</li>
+</ul>
+<p>绘制(O)PVS和(O)VDOS的例子见<a href="sec-4-11-plot-various-kinds-of-spectra.html#41112-%E7%BB%98%E5%88%B6%E9%83%A8%E5%88%86%E6%8C%AF%E5%8A%A8%E8%B0%B1-partial-vibrational-spectrum-pvs%E5%92%8C%E9%83%A8%E5%88%86%E6%8C%AF%E5%8A%A8%E8%83%BD%E6%80%81%E5%AF%86%E5%BA%A6-partial-vibrational-density-of-states-pvdos">4.11.12</a>节。</p>
+<h2 id="3137-基于uv-vis光谱曲线预测颜色predicting-color-based-on-uv-vis-spectrum-curve"><strong>3.13.7 基于UV-Vis光谱曲线预测颜色(Predicting color based on UV-Vis spectrum curve)</strong></h2>
+<p>Multiwfn提供很有用很强大的功能，可基于其UV-Vis吸收光谱曲线预测化学物质的颜色。非常详细的解释见我的博客文章“Predicting color of chemical substances through quantum chemistry calculations and Multiwfn program”(<a href="http://sobereva.com/662">http://sobereva.com/662</a>，中文），这里只给出关键信息。</p>
+<h3 id="理论theory"><strong>理论(Theory)</strong></h3>
+<p>化学物质若在可见光范围有光吸收则显示颜色，显示的颜色对应反射和透射光。本质上，显示的颜色是相对UV-Vis吸收光谱对应颜色（即吸收色）的互补色。要把UV-Vis光谱转为显示的颜色，需以下步骤：</p>
+<ul>
+<li><p>(1) 基于CIE1931 2°三刺激函数（文献中给的表格数据）和按常规方式生成的UV-Vis光谱算出CIE1931 XYZ颜色空间的X、Y、Z值。详见<a href="https://www.oceanopticsbook.info/view/photometry-and-visibility/chromaticity">https://www.oceanopticsbook.info/view/photometry-and-visibility/chromaticity</a>。</p>
+</li>
+<li><p>(2) 经线性变换把X、Y、Z值转为sRGB颜色空间的R、G、B值。详见<a href="https://www.oceanopticsbook.info/view/photometry-and-visibility/from-xyz-to-rgb">https://www.oceanopticsbook.info/view/photometry-and-visibility/from-xyz-to-rgb</a>。注意不用Gamma校正。</p>
+</li>
+<li><p>(3) 若R、G、B值有超出sRGB颜色空间有效范围的，把它缩放到有效范围，即[0,1]。</p>
+</li>
+<li><p>(4) 取吸收光对应颜色的互补色为(1.0-R,1.0-G,1.0-B)。</p>
+</li>
+<li><p>(5) 分别把吸收色及其互补色的最大分量移到1.0，得到其最大亮度色，使两颜色亮度相等。</p>
+</li>
+</ul>
+<p>现在，互补色的最大亮度色可看作化学物质实际显示的颜色。</p>
+<p>注意，Multiwfn不仅报告[0,1]范围吸收色和互补色的R、G、B分量，也报告[0,255]范围的。</p>
+<h3 id="用法usage"><strong>用法(Usage)</strong></h3>
+<p>用Multiwfn预测颜色有两种方式</p>
+<ul>
+<li><p>情形1：直接基于Multiwfn生成的理论UV-Vis光谱预测颜色</p>
+<p>此时输入文件与<a href="#3132-%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6input-file">3.13.2</a>节所述绘制UV-Vis光谱的相同。载入输入文件后，进入主功能11，选选项“25 Evaluate color based on the spectrum in visible range”，则先在屏幕上显示360-830 nm内的UV-Vis光谱，关闭后，会看到UV-Vis光谱对应的吸收色及其互补色。同时，两颜色的最大亮度形式也显示在屏幕上。通常窗口右下角显示的颜色可看作物质实际显示的颜色。同时，从Multiwfn命令行窗口可找到屏幕上颜色的详细参数，如CIE1931 XYZ值、sRGB颜色空间RGB值等。</p>
+</li>
+<li><p>情形2：对纯文本文件记录的给定光谱曲线预测颜色</p>
+<p>此时可基于如实验测定的光谱曲线预测颜色。输入文件应为含两列数据的纯文本文件，第一列为nm单位的波长，第二列为任意单位的吸光度（例子见<em>examples\spectra\Allura_red_UV-Vis.txt</em>。数据范围和间隔任意，两列应用空格或逗号分隔）。载入输入文件后，进入主功能11再选选项“0: Predicting color based on UV-Vis spectrum recorded in text file”，会看到预测的颜色，Multiwfn提供的信息与情形1中提到的形式相同。</p>
+</li>
+</ul>
+<h3 id="两点注意two-noteworthy-points"><strong>两点注意(Two noteworthy points)</strong></h3>
+<p>本功能显然也可用于预测发射光谱的颜色。例如，有一满足Kasha规则的体系。要预测其荧光光谱，应在其优化的S1几何下做电子激发计算，并把输出文件用作Multiwfn输入文件。进入主功能11并选选项3进入绘制UV-Vis光谱模块后，应先选选项“20 Modify oscillator strengths”把除S1外所有激发态的振子强度设为零，再用选项25预测当前光谱（对应荧光光谱）的颜色。此时应把图形窗口中“color”标签下显示的颜色作为荧光发射的颜色，窗口中显示的互补色在此时无用。</p>
+<p>柔性分子在感兴趣温度下常有多个权重不可忽略的构象，若其中一些在可见光范围显示明显不同的光吸收特征，要可靠预测颜色必须考虑构象加权平均光谱。此时应用含构象权重的<em>multiple.txt</em>（见<a href="#3134-%E5%90%8C%E6%97%B6%E7%BB%98%E5%88%B6%E5%A4%9A%E4%BD%93%E7%B3%BB%E5%92%8C%E5%8A%A0%E6%9D%83%E5%85%89%E8%B0%B1plotting-multiple-systems-together-and-weighted-spectrum">3.13.4</a>节）作Multiwfn输入文件，再按上述常规步骤预测颜色。</p>
+<p>预测颜色的例子见<a href="sec-4-11-plot-various-kinds-of-spectra.html#41114-%E9%9D%9B%E8%93%9D-indigo%E5%92%8C%E8%AF%B1%E6%83%91%E7%BA%A2-allura-red%E9%A2%9C%E8%89%B2%E7%9A%84%E9%A2%84%E6%B5%8B">4.11.14</a>节。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-3-13-plotting-spectra";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script><script>const MATHS=["\\frac{\\mathrm{L}}{\\mathrm{mol}\\times\\mathrm{cm}}=\\frac{1000\\mathrm{cm}^3}{\\mathrm{mol}\\times\\mathrm{cm}}=\\frac{1000\\mathrm{cm}^2}{\\mathrm{mol}}","\\frac{1000\\ \\mathrm{cm}^2}{\\mathrm{mol}}(\\mathrm{cm}^{-1})=\\frac{1000\\ \\mathrm{cm}}{\\mathrm{mol}}=\\frac{0.01\\ \\mathrm{km}}{\\mathrm{mol}}","I_i=\\frac{C(\\nu_0-\\nu_i)^4S_i}{\\nu_i B_i}\\qquad B_i=1-\\mathrm{exp}\\left(-\\frac{hc\\nu_i}{kT}\\right)","f_{ij}=\\frac{2}{3}(E_j-E_i)\\left|\\boldsymbol{\\mu}_{ij}\\right|^2","\\mathrm{ROA\\ intensity}\\equiv I_i^{\\mathrm{R}}-I_i^{\\mathrm{L}}\\propto\\frac{(\\nu_0-\\nu_i)^4A_i}{\\nu_i B_i}\\qquad B_i=1-\\mathrm{exp}\\left(-\\frac{hc\\nu_i}{kT}\\right)","\\mathrm{Raman\\ intensity}\\equiv I_i^{\\mathrm{R}}+I_i^{\\mathrm{L}}\\propto\\frac{(\\nu_0-\\nu_i)^4R_i}{\\nu_i B_i}\\qquad B_i=1-\\mathrm{exp}\\left(-\\frac{hc\\nu_i}{kT}\\right)","\\delta=\\frac{\\sigma^{\\mathrm{ref}}-\\sigma}{1-\\sigma^{\\mathrm{ref}}}\\approx\\sigma^{\\mathrm{ref}}-\\sigma","\\delta=a\\times\\sigma+b","\\overline{\\delta^A}=\\sum_i p_i\\delta_i^A","\\varepsilon(E)=c\\sum_i f_i G(E-E_i^{\\mathrm{vib}})","\\varepsilon_A(E)=c\\sum_i\\Theta_A^i f_i G(E-E_i^{\\mathrm{vib}})","\\rho(E)=c\\sum_i G(E-E_i^{\\mathrm{vib}})","\\rho_A(E)=c\\sum_i\\Theta_A^i G(E-E_i^{\\mathrm{vib}})","\\Theta_A^i=100\\%\\times\\sum_{j\\in A}L_{j,i}^2","I^i=s\\left|\\frac{\\partial\\boldsymbol{\\mu}}{\\partial q_i}\\right|^2=s\\sum_{\\sigma=x,y,z}\\left(\\frac{\\partial\\mu_\\sigma}{\\partial q_i}\\right)^2","\\frac{\\partial\\mu_\\sigma}{\\partial q_i}=\\sum_j\\frac{\\partial\\mu_\\sigma}{\\partial x_j}\\frac{\\partial x_j}{\\partial q_i}\\equiv\\sum_j\\frac{\\partial\\mu_\\sigma}{\\partial x_j}L_{j,i}","I^i=s\\sum_{\\sigma=x,y,z}\\left[I_{A,\\mathrm{intra}}^{i,\\sigma}+I_{B,\\mathrm{intra}}^{i,\\sigma}+I_{AB}^{i,\\sigma}\\right]","\\begin{gathered}I_{A,\\mathrm{intra}}^{i,\\sigma}=\\left(\\sum_{j\\in A}\\frac{\\partial\\mu_\\sigma}{\\partial x_j}L_{j,i}\\right)^2\\qquad I_{B,\\mathrm{intra}}^{i,\\sigma}=\\left(\\sum_{k\\in B}\\frac{\\partial\\mu_\\sigma}{\\partial x_k}L_{k,i}\\right)^2\\\\ I_{AB}^{i,\\sigma}=2\\left(\\sum_{j\\in A}\\frac{\\partial\\mu_\\sigma}{\\partial x_j}L_{j,i}\\right)\\left(\\sum_{k\\in B}\\frac{\\partial\\mu_\\sigma}{\\partial x_k}L_{k,i}\\right)\\end{gathered}","I_A^i=s\\sum_{\\sigma=x,y,z}\\left(I_{A,\\mathrm{intra}}^{i,\\sigma}+\\frac{1}{2}I_{AB}^{i,\\sigma}\\right)=s\\sum_{\\sigma=x,y,z}\\left(\\sum_{j\\in A}\\frac{\\partial\\mu_\\sigma}{\\partial x_j}L_{j,i}\\right)\\left(\\sum_k\\frac{\\partial\\mu_\\sigma}{\\partial x_k}L_{k,i}\\right)","\\Theta_A^i=100\\%\\times\\frac{I_A^i}{I^i}","\\begin{gathered}\\varepsilon_{AB}(E)=c\\sum_i\\Theta_{AB}^i f_i G(E-E_i^{\\mathrm{vib}})\\\\ \\rho_{AB}(E)=c\\sum_i\\Theta_{AB}^i G(E-E_i^{\\mathrm{vib}})\\end{gathered}","\\Theta_{AB}^i=100\\%\\times 2\\times\\mathrm{min}(\\Theta_A^i,\\Theta_B^i)","I_{AB}^i=s\\sum_{\\sigma=x,y,z}I_{AB}^{i,\\sigma}"];</script>
+<script src="app.js"></script></body></html>
