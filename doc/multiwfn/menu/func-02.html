@@ -1,0 +1,125 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>主功能2：拓扑分析 · Multiwfn中文手册</title><link rel="stylesheet" href="../style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="主功能2拓扑分析">主功能2：拓扑分析</h1>
+<p>功能概述：拓扑分析模块适用于 Multiwfn 支持的任何光滑实空间函数（电子密度、拉普拉斯、轨道波函数、自旋密度、ELF、LOL、ESP 等），默认分析电子密度，经选项 <code>-11</code> 可切换（切换后先前拓扑结果被清除）。临界点按 Hessian 负本征值个数分为 $(3,-3)$（NCP/极大）、$(3,-1)$（BCP/二阶鞍点）、$(3,+1)$（RCP/一阶鞍点）、$(3,+3)$（CCP/极小）。默认 Newton 法搜索，可配多种起始点模式；找到后用 Poincaré-Hopf 关系 $n_{(3,-3)}-n_{(3,-1)}+n_{(3,+1)}-n_{(3,+3)}=1$（孤立）/$=0$（周期）校验是否找全。之后可生成拓扑路径（键径等）、盆间表面，并可视化、查性质、管理与导出，还可算 Shannon 芳香性指数与 RCP 垂直曲率。</p>
+<h2 id="子功能选项aim-拓扑分析找-cp校验生成键径2-吡哆醇-2-氨基吡啶实例">子功能/选项：AIM 拓扑分析——找 CP、校验、生成键径（2-吡哆醇 2-氨基吡啶实例）</h2>
+<p>说明：先用模式 2（核位置，找 $(3,-3)$）+ 模式 3（原子对中点，找 $(3,-1)$）搜全 CP，用选项 0 可视化并校验 Poincaré-Hopf 关系，再用选项 8 生成拓扑路径（键径），选项 0 复看。品红/橙/黄小球分别对应 $(3,-3)$/$(3,-1)$/$(3,+1)$，棕色线为键径；命令行给出每 BCP 相连两原子。CP 标号颜色经 <code>CP labelling settings</code> → <code>Set label color</code> 改，只标特定 CP 用 <code>Labelling only one CP</code> 输入编号（空输入则显示全部）。</p>
+<p>菜单路径：主菜单 → <code>2</code>（拓扑分析）→ <code>2</code> → <code>3</code> → <code>0</code>（可视化）→ <code>8</code>（生成拓扑路径）</p>
+<p>输入要求：含电子密度等实空间函数的波函数文件（<code>.wfn</code>/<code>.fch</code>）。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\2-pyridoxine_2-aminopyridine.wfn  // Assume that the input file is in a subdirectory of current directory, we can only input relative path rather than entire absolute path
+2  // Topology analysis</code></pre></p>
+<p><pre><code class="language-text">2  // Use nuclear positions as initial guesses, generally used to search (3,-3) CPs
+3  // Use midpoint of each atomic pair in turn as initial guesses. Generally all (3,-1) CPs could be found, some (3,+1) or (3,+3) may also be found at the same time</code></pre></p>
+<p>搜完输入 <code>0</code>，输出末尾给出每类 CP 数目（原始格式）：</p>
+<p><pre><code class="language-text">(3,-3):    25,   (3,-1):    27,   (3,+1):     3,   (3,+3):     0
+  25  -   27  +    3  -    0  =   1</code></pre></p>
+<p>第二行满足 Poincaré-Hopf 关系，意味着 CP 可能已找全。点 GUI 右上角 <code>RETURN</code> 后输入 <code>8</code> 生成拓扑路径，再选 <code>0</code> 查看。</p>
+<p>产出：CP 位置/类型汇总、分子图（键径）、每 BCP 相连原子；N–H···O（CP 53）与 N–H···N（CP 38）氢键 BCP 被定位。</p>
+<p>来源链接：<a href="../sec-3-14-topology-analysis.html">3.14</a> · <a href="../sec-4-2-topology-analysis.html">4.2.1</a></p>
+<h2 id="子功能选项搜索模式-16给定起点核原子对中点三角中心锥体中心球内批点">子功能/选项：搜索模式 1–6（给定起点/核/原子对中点/三角中心/锥体中心/球内批点）</h2>
+<p>说明：模式 1 从给定起点搜（直接输坐标，或输两原子序号取中点，或提供 <code>.pdb</code>/<code>.pqr</code> 依次作起点，或提供 <code>.txt</code> 每行一以 Bohr 为单位的 <code>X Y Z</code> 起点）；模式 2 依次用核位置作起点（最适找 $\rho$ 的 $(3,-3)$ 及 ELF/LOL/拉普拉斯内层 $(3,-3)$）；模式 3 依次用原子对中点（最适找 $(3,-1)$）；模式 4 用三原子三角中心（找 $(3,+1)$）；模式 5 用四原子锥体中心（补找 $(3,+3)$，组合多更耗时；周期体系模式 3 循环实际+镜像原子，模式 4/5 只循环实际原子）；模式 6 在球内随机撒点（先设球心/半径/点数再选 0 开始；选 <code>-1</code> 则每原子中心依次作球心，$n$ 原子、每球 $m$ 点则约 $n \times m$ 个初猜；选 <code>-2</code> 则输入原子序号以其核为球心）。<strong>ELF、LOL、拉普拉斯强烈建议用模式 6 选项 <code>-1</code> 反复搜多次</strong>；每次撒点位置不同，序号也可能不同。</p>
+<p>菜单路径：主功能 <code>2</code> → <code>1</code> / <code>2</code> / <code>3</code> / <code>4</code> / <code>5</code> / <code>6</code></p>
+<p>输入要求：GTFs + 原子坐标；LOL/ELF/ESP 等先经 <code>-11</code> 切换函数。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">1.2 3.10 -0.4
+0.477 5.2 5.92
+-3.26 3.3 0.5
+...</code></pre></p>
+<p>上为模式 1 外部 <code>.txt</code> 起点文件格式（每行一 Bohr 坐标，格式自由）。模式 6 下：</p>
+<p><pre><code class="language-text">6  // 从球内一批点搜索
+-1  // 每个原子中心依次作球心
+0   // 开始搜索</code></pre></p>
+<p>产出：新找到的 CP 并入列表；复杂函数需多次撒点补找。</p>
+<p>来源链接：<a href="../sec-3-14-topology-analysis.html">3.14.2</a></p>
+<h2 id="子功能选项临界点搜索参数-1与搜索算法-1--12">子功能/选项：临界点搜索参数（-1）与搜索算法（-1 → 12）</h2>
+<p>说明：默认参数适合多数体系，特殊情形经 <code>-1</code> 调整：1 最大迭代数；2 步长缩放（默认 1.0，如 <code>uracil.wfn</code> 的 N6–H12 BCP 须降到 0.5 才找得到）；3/4 梯度范数/位移收敛判据（模式 2 暂移梯度模判据，因重原子核处密度峰太尖锐难收敛）；5 CP 间最小距离（小于此值视为重复丢弃）；6 vdW 截断（原子对距离长于 vdW 和乘该值则跳过，模式 3/4/5 省成本）；7 打印搜索细节（仅串行）；8 Hessian 奇异判据（行列式绝对值低于此值终止，过大漏点、过小数值不稳）；9 只保留函数值在指定范围的 CP（如只留低密度弱作用区）；10 限定搜索原子（方式 1 只在片段内搜；方式 2 在两片段之间搜，组合不全落在同一片段，适于分子间 CP；模式 2 下两方式无区别）；11 信赖半径（位移模大于此值则缩放，如设 0.1 Bohr 更稳）；12 搜索算法（默认 Newton；BB 为类牛顿的最速下降变体，不依赖 Hessian，Newton 失败时试；SA/SD 只找 $(3,-3)$/$(3,+3)$，适于只关心极大/极小、行为差或极值区极窄的函数，用微迭代沿梯度正/负向试探，步幅失败则缩至 40% 重试）。</p>
+<p>菜单路径：主功能 <code>2</code> → <code>-1</code>（设临界点搜索参数）→ 子选项 <code>1</code>–<code>12</code></p>
+<p>输入要求：同上。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">-1  // 设置临界点搜索参数
+2   // 步长缩放因子
+0.5</code></pre></p>
+<p>产出：参数更新后重搜可找回遗漏 CP；局域/片段间限定搜索大幅降成本。</p>
+<p>来源链接：<a href="../sec-3-14-topology-analysis.html">3.14.2</a></p>
+<h2 id="子功能选项生成拓扑路径89与路径参数-2">子功能/选项：生成拓扑路径（8/9）与路径参数（-2）</h2>
+<p>说明：选项 8 生成连 $(3,-3)$–$(3,-1)$ 的路径（BCP 沿 Hessian 正本征值本征向量正反位移后沿梯度上坡至 $(3,-3)$，即键径）；选项 9 生成连 $(3,+1)$–$(3,+3)$ 的路径（沿负本征值方向位移后下坡）。路径为曲线上均匀点集。<code>-2</code> 可调：1 路径最大点数（超数未遇 CP 则丢弃，长路径须增大）；2 步长（相邻点间隔，大曲率路径默认步长失败时减小；最大长度不超过 $m \times n$）；3 距任一 CP 小于此值即视为相连停止。</p>
+<p>菜单路径：主功能 <code>2</code> → <code>8</code> / <code>9</code>（生成路径）；→ <code>-2</code>（设路径生成参数）</p>
+<p>输入要求：已完成 CP 搜索。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">8  // 生成连接 (3,-3) 和 (3,-1) 的路径（键径）
+9  // 生成连接 (3,+1) 和 (3,+3) 的路径
+-2 // 设置路径生成参数</code></pre></p>
+<p>产出：键径/拓扑路径；分子图；路径点集供后续可视化与沿路径绘性质曲线。</p>
+<p>来源链接：<a href="../sec-3-14-topology-analysis.html">3.14.3</a></p>
+<h2 id="子功能选项生成删除查看盆间表面10与表面参数-3">子功能/选项：生成/删除/查看盆间表面（10）与表面参数（-3）</h2>
+<p>说明：IBS 为从 $(3,-1)$ 发出的一束路径，把空间切分为各 $(3,-3)$ 流域。须先找全 CP 且至少有一个 $(3,-1)$。输入 <code>15</code> 生成对应序号 CP 的 IBS，<code>-15</code> 删除，<code>0</code> 生成全部（无显示时）或删除全部（已显示时），<code>l</code> 列已生成表，<code>o 4</code> 把源自 CP 4 的全部路径坐标存 <code>surpath.txt</code>，<code>q</code> 返回。<code>-3</code> 可调每面路径数与步长（路径多/步长小更平滑；面积正比于步长×每路径点数；改参数后已生成面丢失）。<code>settings.ini</code> 的 <code>isurfstyle</code> 切换描绘方式（1 路径束；2 实心面，默认；3 少用）。</p>
+<p>菜单路径：主功能 <code>2</code> → <code>10</code>（加/删 IBS）；→ <code>-3</code>（设 IBS 生成参数）</p>
+<p>输入要求：已搜出 $(3,-1)$ 的拓扑结果。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">53  // Generate the IBS corresponding to the (3,-1) CP with index of 33, the same as below. You may need to wait a few seconds for each generation of IBS
+38
+37
+q  // Return</code></pre></p>
+<p>产出：IBS 显示于 GUI；可经选项 0 可视化（如二聚体 CP 53/38/37 对应三张 IBS）。</p>
+<p>来源链接：<a href="../sec-3-14-topology-analysis.html">3.14.4</a> · <a href="../sec-4-2-topology-analysis.html">4.2.1</a></p>
+<h2 id="子功能选项可视化0查-cp-处性质7测几何-9管理-cp-4路径-5">子功能/选项：可视化（0）、查 CP 处性质（7）、测几何（-9）、管理 CP（-4）/路径（-5）</h2>
+<p>说明：<code>0</code> 弹 GUI 控制各类 CP/路径/IBS/结构/标签显示，命令行打印汇总并校验 Poincaré-Hopf 关系；电子密度分析还给出 NCP–原子对应与每 BCP 相连两原子。<code>7</code> 给出指定/全部 CP 处全部实空间函数值与所选函数梯度/Hessian（ESP 最贵，不需要设 <code>ishowptESP=0</code>；后加 <code>d</code> 可分解该 CP 处选定函数为轨道贡献）。<code>-9</code> 测原子/CP 间距离夹角二面角（如 <code>c30 a25</code> 测 CP30–H25 距离得 5.877601 Å；<code>a14 a13 a12</code> 测角得 120.297432 度；<code>q</code> 返回）。<code>-4</code> 打印/增删/导出 CP：子选项 2 按类型/序号范围/距片段距离/密度范围删点，子选项 4 存 <code>CPs.txt</code>，子选项 5 从同格式文件载入（清空当前），子选项 6 导出 <code>.pdb</code>（C/N/O/F 分别对应 $(3,-3)$/$(3,-1)$/$(3,+1)$/$(3,+3)$）。<code>-5</code> 管理路径：子选项 1/2 打印摘要/指定路径坐标，4 导出 <code>paths.txt</code>，5 导入同格式，6 导出 pdb，7 沿选定路径绘实空间函数曲线（<code>Dist.</code>/<code>Value</code> 两列可供 Origin 重绘），3 手动删路径，8 只保留两片段间键径（及相应 BCP）删其余。</p>
+<p>菜单路径：主功能 <code>2</code> → <code>0</code> / <code>7</code> / <code>-9</code> / <code>-4</code> / <code>-5</code></p>
+<p>输入要求：已完成 CP 搜索与路径生成。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">0  // 打印并可视化所有已生成的临界点、路径和盆间表面
+7  // 显示特定临界点或所有临界点处的实空间函数值
+53</code></pre></p>
+<p><pre><code class="language-text">CP Position:    0.44887255865472    3.56434324597741   -0.10652884364257
+CP type: (3,-1)
+Density of all electrons:  0.3129478049E-01
+Density of Alpha electrons:  0.1564739024E-01
+Density of Beta electrons:  0.1564739024E-01
+Spin density of electrons:  0.0000000000E+00
+Lagrangian kinetic energy G(r):  0.2530207716E-01
+Hamiltonian kinetic energy K(r):  0.8463666362E-03
+Potential energy density V(r): -0.2614844379E-01
+Energy density: -0.8463666362E-03
+Laplacian of electron density:  0.9782284209E-01
+Electron localization function (ELF):  0.1105388527E+00
+... (ignored)</code></pre></p>
+<p><pre><code class="language-text">-9
+c30 a25
+a14 a13 a12
+q</code></pre></p>
+<p>产出：BCP 处 $\rho=0.03129$ a.u.，代入 $BE\approx -223.08\times\rho({\mathbf{r}}_{\mathrm{BCP}})+0.7423$（中性 H 键）得 $-6.2$ kcal/mol（$-26.1$ kJ/mol）；<code>CPs.txt</code>/<code>paths.txt</code>/pdb 导出；沿键径性质曲线。</p>
+<p>来源链接：<a href="../sec-3-14-topology-analysis.html">3.14.5</a> · <a href="../sec-4-2-topology-analysis.html">4.2.1</a></p>
+<h2 id="子功能选项切换被分析函数-11与各类函数拓扑elflolespvdwirirdg">子功能/选项：切换被分析函数（-11）与各类函数拓扑（ELF/LOL/ESP/vdW/IRI/RDG）</h2>
+<p>说明：<code>-11</code> 切换被分析实空间函数（电子密度/ELF/LOL/拉普拉斯/ESP 等；一旦切换先前结果清空）。LOL 取 10、ELF 取 9、ESP 取 12、vdW 势取 25、IRI 取 24 后，用模式 6 球内撒点（<code>-1</code> 每原子球心）反复搜；找 ELF/LOL 极大改用 <code>-1</code> → <code>12</code> → <code>3</code> 最速上升算法。ESP 狭窄谷极小用“盆分析定位 + 拓扑精修”联用；vdW/IRI 极小进入即自动切最速下降（Newton 难收敛）。选项 7 查看极小处 ESP/vdW/IRI 值；IRI 结果可转主功能 4 画平面图对照。</p>
+<p>菜单路径：主功能 <code>2</code> → <code>-11</code>（选实空间函数：<code>10</code> LOL / <code>9</code> ELF / <code>12</code> ESP / <code>25</code> vdW 势 / <code>24</code> IRI）→ <code>6</code>（球内撒点）/ <code>2</code>（核位置）→ <code>8</code>（生成拓扑路径）</p>
+<p>输入要求：<code>.wfn</code>/<code>.fch</code>（vdW 势仅需 <code>.xyz</code> 等几何文件）。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">-11  // 选实空间函数，10 为 LOL、9 为 ELF、12 为 ESP
+6    // 球内随机撒点
+-1</code></pre></p>
+<p>ESP 极小专找（原始格式）：<code>vmin</code>（最速下降专找极小）与 <code>6</code> 联用；vdW/IRI 进入即自动切最速下降。</p>
+<p>产出：LOL/ELF 极大、ESP/vdW/IRI 极小 CP 集；选项 7 给出极小处函数值。</p>
+<p>来源链接：<a href="../sec-3-14-topology-analysis.html">3.14</a> · <a href="../sec-4-2-topology-analysis.html">4.2</a></p>
+<h2 id="子功能选项芳香性指数20-shannon--21-rcp-垂直曲率">子功能/选项：芳香性指数（20 Shannon / 21 RCP 垂直曲率）</h2>
+<p>说明：实空间函数须为电子密度时 <code>20</code>/<code>21</code> 可见。<code>20</code> 算 Shannon 指数 $SA=\ln(N)-\sum_i^N(-p_i\ln p_i)$，$p_i=\rho(r_{\mathrm{BCP}_i})/\sum_i\rho(r_{\mathrm{BCP}_i})$，依次输入环 BCP 个数与序号；SA 越小越芳香，0.003–0.005 为芳香/反芳香分界。<code>21</code> 算 RCP 处垂直环平面密度曲率（越负越芳香）：输入 RCP 序号（或直接输点坐标），选模式 2，再输入拟合平面的三原子序号；若环严格垂直笛卡尔轴（如位于 XY 平面），该曲率即 Hessian ZZ 分量，可直接用选项 7 读取。</p>
+<p>菜单路径：主功能 <code>2</code>（实空间函数须为电子密度）→ <code>20</code>（Shannon）/ <code>21</code>（RCP 垂直曲率）</p>
+<p>输入要求：已搜出环 BCP/RCP 的电子密度拓扑结果。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">20  // Calculate Shannon aromaticity index
+44,42,32,29,31,40
+21  // Calculate gradient and curvature of electron density along a given direction
+36
+2
+15,13,17</code></pre></p>
+<p>上例氨基吡啶 SA=0.000812（2-吡哆醇 0.000865），故前者芳香性略强；RCP 曲率氨基吡啶 $-0.0187$ a.u. vs 2-吡哆醇 $-0.0164$ a.u.，结论一致。</p>
+<p>产出：SA 指数；RCP 垂直曲率。</p>
+<p>来源链接：<a href="../sec-3-14-topology-analysis.html">3.14.6</a> · <a href="../sec-4-2-topology-analysis.html">4.2.1</a></p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="menu/func-02";const ROOT="../";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script>
+<script src="../app.js"></script></body></html>

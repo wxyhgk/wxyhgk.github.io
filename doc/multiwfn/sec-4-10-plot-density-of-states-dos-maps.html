@@ -1,0 +1,379 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4.10 绘制态密度 (density-of-states, DOS) 图 · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="410-绘制态密度-density-of-states-dos-图"><strong>4.10 绘制态密度 (density-of-states, DOS) 图</strong></h1>
+<p>在本节中，我将说明如何使用 Multiwfn 轻松绘制各种态密度图。DOS 模块的相关理论和使用介绍见 <a href="sec-3-12-plotting-density-of-states-pes-and-cohp.html">3.12</a> 节。</p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>更深入的讨论和 DOS 作图示例见我的博客文章 &quot;Plotting density-of-states maps by Multiwfn to study electronic structure&quot; (<a href="http://sobereva.com/482">http://sobereva.com/482</a>, 中文)</p>
+</blockquote>
+<h2 id="4101-绘制-n-phenylpyrrole-的总态密度偏态密度和重叠态密度-total-partial-and-overlap-dos"><strong>4.10.1 绘制 N-phenylpyrrole 的总态密度、偏态密度和重叠态密度 (total, partial and overlap DOS)</strong></h2>
+<p>在本例中，我们将为 N-phenylpyrrole 绘制总态密度、偏态密度和重叠态密度 (TDOS、PDOS 和 OPDOS)，其结构如下所示。本例由六部分组成。如果对 DOS 不熟悉，请先阅读 <a href="sec-3-12-plotting-density-of-states-pes-and-cohp.html#3121-%E7%90%86%E8%AE%BAtheory">3.12.1</a> 节。</p>
+<p><img src="assets/figures/ch4/image1007.png" alt="N-phenylpyrrole 的结构"></p>
+<p>由于绘制 PDOS 和 OPDOS 需要基函数信息，在这些例子中我们使用 .fch 作为输入文件，使用 .mwfn、.molden 或 .gms 文件也可以，但不能使用 .wfn/.wfx，因为它们不包含基函数和虚 MOs 的信息。如果只需要获得 TDOS，也可以简单地使用记录 MO 能级的纯文本文件或带有 <em>pop=full</em> 关键词的 Gaussian 输出文件作为输入文件，文件格式见 <a href="sec-3-12-plotting-density-of-states-pes-and-cohp.html#3121-%E7%90%86%E8%AE%BAtheory">3.12.1</a> 节。</p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>值得注意的是，如果打算基于默认的 Mulliken 轨道组成 (orbital composition) 方法绘制 PDOS 和 OPDOS，必须避免使用弥散函数 (diffuse functions)，因为它们会严重损害由 Mulliken 或 SCPA 方法计算的轨道组成的可靠性。然而，如果让 Multiwfn 通过 Hirshfeld 或 Becke 方法计算轨道组成，则可以安全地使用弥散函数，但在这种情况下无法绘制 OPDOS。当前体系的波函数在 B3LYP/6-31G* 水平下产生。</p>
+</blockquote>
+<h3 id="第-1-部分绘制总态密度-tdos"><strong>第 1 部分：绘制总态密度 (TDOS)</strong></h3>
+<p>启动 Multiwfn 并输入以下命令</p>
+<p><pre><code class="language-text">examples\N-phenylpyrrole.fch
+10  // Plot various kinds of DOS maps
+0  // Plot map</code></pre></p>
+<p>由于当前没有定义片段 (fragment)，因此仅绘制 TDOS。TDOS 图立即弹出，如下所示</p>
+<p><img src="assets/figures/ch4/image1008.png" alt="N-phenylpyrrole 的 TDOS 图"></p>
+<p>在该图中，曲线是基于 MO 能级分布模拟的 TDOS，每条离散的竖线对应一个分子轨道 (molecular orbital, MO)，虚线标出 HOMO 的位置，黑色和灰色线分别表示占据和非占据 MO 能级的位置。在负值部分，-0.40 a.u. 附近区域的态密度明显大于其他区域。</p>
+<p>在图上点击鼠标右键将其关闭，并选择选项 0 返回上一级菜单。</p>
+<p>我们还可以更改能量单位和能量范围，并可用线高表示轨道简并度 (orbital degeneracy)。为此，输入以下命令：</p>
+<p><pre><code class="language-text">8  // Switch the unit from the default a.u. to eV
+2  // Set energy range
+-30,5,5  // Set lower and upper limits to -30 eV to 5 eV, the spacing between labels is 5 eV
+9  // Using line height to show orbital degeneracy
+0.05  // If energy difference between two orbitals is less than 0.05 eV, they will be regarded as degenerate
+0  // Plot TDOS map again</code></pre></p>
+<p>现在得到下图。线高表示简并度，对应右侧坐标轴。可以看到，一些轨道的简并度为 2。
+<img src="assets/figures/ch4/image1009.png" alt="带有简并轴 (degeneracy axis)的 N-phenylpyrrole 的总态密度图 (TDOS map)"></p>
+<p>此外，若要在曲线底部绘制竖线，可在后处理菜单 (post-processing menu)中选择选项“22 Toggle drawing lines at bottom of curves”，然后选择选项1重新绘制，将看到</p>
+<p><img src="assets/figures/ch4/image1010.png" alt="在曲线底部绘制了竖线的总态密度图"></p>
+<h3 id="第2部分绘制碎片-fragment的偏态密度-pdos和重叠布居态密度-opdos"><strong>第2部分：绘制碎片 (fragment)的偏态密度 (PDOS)和重叠布居态密度 (OPDOS)</strong></h3>
+<p>接下来，我们将吡咯部分的重原子定义为碎片1，将苯基部分的重原子定义为碎片2，以查看它们的偏态密度和重叠布居态密度。此外，我们将所有氢定义为碎片3。</p>
+<p>启动 Multiwfn 并输入</p>
+<p><pre><code class="language-text">examples\N-phenylpyrrole.fch
+10  // Plot various kinds of DOS maps
+-1  // Enter the interface for defining fragments. You can define up to 10 fragments. PDOS will be plotted for all of them, but OPDOS will only be drawn between fragments 1 and 2
+1   // Define fragment 1
+a 1-5  // Add carbons and nitrogen of pyrrole moiety (atoms 1~5) to the fragment
+q  // Save fragment 1
+2  // Define fragment 2
+a 10-13,15,17  // Add phenyl moiety (atoms 10~13, 15 and 17) to the fragment
+q  // Save fragment 2
+3  // Define fragment 3
+a 6-9,14,16,18-20  // Add all hydrogens to the fragment
+q  // Save fragment 3
+0  // Return to last menu
+2  // Set X-axis
+-1.1,-0.1,0.1  // Set the range of X-axis to -1.2 ~ -0.1 a.u., so that all valence MOs can be shown in the graph. The step between labels is set to 0.1 a.u.
+0  // Draw TDOS+PDOS+OPDOS</code></pre></p>
+<p>当前的图形不是很理想。关闭图形，可看到许多用于自定义图形的选项，如设置曲线颜色、设置图例文本。尝试使用它们，若有疑问可参阅<a href="sec-3-12-plotting-density-of-states-pes-and-cohp.html#3123-%E7%BB%98%E5%88%B6%E6%80%81%E5%AF%86%E5%BA%A6dos%E5%9B%BE%E7%9A%84%E9%80%89%E9%A1%B9%E4%B8%8E%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95">3.12.3</a>节。此处选择选项4并输入 <em>-2,9,1</em>，将左侧Y轴 (Y-axis)（对应总态密度和偏态密度）的下限、上限和标签间隔分别设为-2.0、9.0和1.0。选择14并输入缩放因子0.2，则右侧Y轴（对应重叠布居态密度）的范围将被设为-0.4、1.8（因为-2.0*0.2=-0.4且9.0*0.2=1.8）。缩小右侧Y轴的范围等价于增大重叠布居态密度曲线的幅度，这使图中重叠布居态密度的变化更清晰。然后选择选项1重新绘制态密度图，将看到</p>
+<p><img src="assets/figures/ch4/image1011.png" alt="N-phenylpyrrole的总态密度、三个碎片的偏态密度和重叠布居态密度"></p>
+<p>左侧坐标轴对应总态密度和偏态密度，右侧坐标轴对应重叠布居态密度。红色、蓝色和品红色曲线及离散线分别代表碎片1、2和3的偏态密度。可以看到，在大多数价分子轨道 (valence MOs)中，碎片1和2的贡献量相当。碎片3（氢）主要贡献于-0.60 ~ -0.35 a.u.之间的分子轨道。绿色曲线是碎片1与2之间的重叠布居态密度，其正值部分意味着相应能量范围内的分子轨道在两个碎片之间呈现成键特征 (bonding character)（*e.g.*位于-0.8 a.u.处的轨道，其对应于MO14）；也存在重叠布居态密度为负的区域，<em>e.g.</em> HOMO-1（-0.213 a.u.）表现为两个碎片之间的反键轨道 (antibonding orbitals)。</p>
+<h3 id="第3部分绘制特定原子轨道-atomic-orbital的偏态密度"><strong>第3部分：绘制特定原子轨道 (atomic orbital)的偏态密度</strong></h3>
+<p>当前分子位于YZ平面内，作为示例，让我们查看氮原子的 $p_{x}$ 原子轨道的偏态密度，它代表该位点上的π电子。选择0返回上一级菜单，然后输入
+<pre><code class="language-text">-1  // Define fragments
+-2  // Fragment 2 is not needed, so we input corresponding negative value to unset it
+-3  // Also unset fragment 3
+1  // Redefine fragment 1
+clean  // Clean existing content of the fragment
+all  // Print out information of all basis functions</code></pre></p>
+<p>与氮原子对应的信息提取如下所示</p>
+<p><pre><code class="language-text">Basis:    61    Shell:   25    Center:    5(N )    Type: S
+Basis:    62    Shell:   26    Center:    5(N )    Type: S
+Basis:    63    Shell:   27    Center:    5(N )    Type: X
+Basis:    64    Shell:   27    Center:    5(N )    Type: Y
+Basis:    65    Shell:   27    Center:    5(N )    Type: Z
+Basis:    66    Shell:   28    Center:    5(N )    Type: S
+Basis:    67    Shell:   29    Center:    5(N )    Type: X
+Basis:    68    Shell:   29    Center:    5(N )    Type: Y
+Basis:    69    Shell:   29    Center:    5(N )    Type: Z
+Basis:    70    Shell:   30    Center:    5(N )    Type: XX
+Basis:    71    Shell:   30    Center:    5(N )    Type: YY
+Basis:    72    Shell:   30    Center:    5(N )    Type: ZZ
+Basis:    73    Shell:   30    Center:    5(N )    Type: XY
+Basis:    74    Shell:   30    Center:    5(N )    Type: XZ
+Basis:    75    Shell:   30    Center:    5(N )    Type: YZ</code></pre></p>
+<p>当前体系在 6-31G* 基组 (basis set)下计算，根据基组的定义，每个价层原子轨道 (valence atomic orbital)由两个相应类型的基函数 (basis functions)表示。因此，我们应该将基函数 63 和 67 放入碎片 (fragment)中，它们共同代表氮的 <em>px</em> 轨道（对于其他种类的基组，关于如何确定基函数与原子轨道 (atomic orbitals)之间的对应关系，可参阅<a href="sec-4-7-population-analysis-and-atomic-charge-calculation.html#476-%E9%80%9A%E8%BF%87%E5%B8%83%E5%B1%85%E5%88%86%E6%9E%90%E7%A1%AE%E5%AE%9A%E5%9F%BA%E5%87%BD%E6%95%B0%E4%B8%8E%E5%8E%9F%E5%AD%90%E8%BD%A8%E9%81%93%E7%9A%84%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB">4.7.6</a>节）。输入以下命令</p>
+<p><pre><code class="language-text">b 63,67  // Then you can input command all again, the basis functions added to present fragment are marked by asterisks
+q  // Save fragment
+0  // Return
+0  // Plot TDOS and PDOS</code></pre></p>
+<p>请自行分析所得图形。</p>
+<p><img src="assets/figures/ch4/image1012.png" alt="N-苯基吡咯 (N-phenylpyrrole)所选轨道的 TDOS 与 PDOS"></p>
+<h3 id="第4部分绘制所有-π-分子轨道-molecular-orbitals的-pdos-与-opdos"><strong>第4部分：绘制所有 π 分子轨道 (molecular orbitals)的 PDOS 与 OPDOS</strong></h3>
+<p>该分子位于 YZ 平面上，假设我们只打算研究吡咯和苯基部分 (moieties)的 π 轨道的 PDOS/OPDOS，并想排除所有其他 MOs 的影响，虽然在碎片定义界面中可以逐个选择每个 PX 基函数，但由于原子太多，该过程将花费大量时间，因此非常麻烦。使用条件选择命令要好得多。</p>
+<p>选择选项 0 返回上一级菜单，然后输入</p>
+<p><pre><code class="language-text">-1  // Define fragments
+1  // Redefine fragment 1
+clean  // Clean existing content of the fragment
+cond  // Use conditions to select basis functions. You will be prompted to input three conditions, the basis functions simultaneously satisfying the three conditions will be added to current fragment
+1-5  // The first condition is that the basis functions must belong to the heavy atoms in pyrrole moiety (atoms 1~5)
+[Press ENTER button]  // The second condition is the index range of basis functions. Press ENTER button directly means basis function index is arbitrary
+X  // The third condition is that the type of basis function should be PX
+q  // Save fragment 1
+2  // Define fragment 2
+cond  // Use conditions to select basis functions
+10-13,15,17  // Atom index of the carbons in the phenyl moiety</code></pre>
+<img src="assets/figures/ch4/image1013.png" alt="N-苯基吡咯 (N-phenylpyrrole)的总态密度 (TDOS)、两个碎片 (fragment)的π分子轨道 (MO)的部分态密度 (PDOS)和重叠布居态密度 (OPDOS)"></p>
+<p>此时部分态密度曲线仅覆盖高能区，这表明当前体系中大多数π分子轨道的能量高于σ分子轨道。请使用Multiwfn的主功能0可视化相应的分子轨道等值面 (isosurfaces)。</p>
+<h3 id="第5部分分别单独绘制spd原子轨道-atomic-orbital的部分态密度"><strong>第5部分：分别单独绘制s、p、d原子轨道 (atomic orbital)的部分态密度</strong></h3>
+<p>接下来，我说明如何分别单独绘制<em>s</em>、<em>p</em>、<em>d</em>原子轨道的部分态密度。重新启动Multiwfn，然后输入</p>
+<p><pre><code class="language-text">examples\N-phenylpyrrole.fch
+10  // Plot various kinds of DOS maps
+-1  // Define fragments
+1  // Define fragment 1
+l s  // Add basis functions with angular moment of s to the fragment
+q  // Save fragment
+2  // Define fragment 2
+l p  // Add basis functions with angular moment of p to the fragment
+q  // Save fragment
+3  // Define fragment 3
+l d  // Add basis functions with angular moment of d to the fragment
+q  // Save fragment
+0  // Return to last menu
+0  // Draw TDOS+PDOS+OPDOS</code></pre></p>
+<p>然后关闭图形，并输入以下命令以改善图形效果</p>
+<p><pre><code class="language-text">9  // Disable showing OPDOS curves
+10  // Disable showing OPDOS lines
+4  // Set range of Y axis
+0,10,1  // Lower and upper limits are set to 0 and 10 with label interval of 1.0
+16  // Set legends
+1  // Set legend of PDOS corresponding to fragment 1
+s
+2  // Set legend of PDOS corresponding to fragment 2
+p
+3  // Set legend of PDOS corresponding to fragment 3
+d
+0  // Exit the interface for setting legends
+22  // Toggle drawing lines at bottom of curves,
+1  // Replot the map</code></pre></p>
+<p>现在可以看到如下的图 (map)</p>
+<p><img src="assets/figures/ch4/image1014.png" alt="N-苯基吡咯的总态密度以及s、p和d原子轨道的部分态密度"></p>
+<p>从该图中可以清楚看出，被占据的前线分子轨道（即靠近虚线的那些）仅由<em>p</em>轨道贡献。</p>
+<p>如果要为特定原子 (atoms)的特定角动量 (angular moment)的轨道绘制部分态密度，也非常容易。例如，通过在碎片定义界面中输入以下命令，可以定义一个对应于吡咯部分 (pyrrole moiety)中四个碳的全部<em>p</em>轨道的碎片。</p>
+<p><pre><code class="language-text">cond  // Use conditions to select basis functions
+1-4  // Atoms 1~4
+[Press ENTER button]  // No requirement on basis function index
+P  // Basis function of P angular moment</code></pre></p>
+<h3 id="第6部分基于由hirshfeld方法-hirshfeld-method得到的轨道组成-orbital-compositions绘制部分态密度"><strong>第6部分：基于由Hirshfeld方法 (Hirshfeld method)得到的轨道组成 (orbital compositions)绘制部分态密度</strong></h3>
+<p>绘制部分态密度需要轨道组成。在上面的例子中，组成是使用默认的Mulliken方法 (Mulliken method)计算的。该方法速度非常快，然而，它不是很稳健（特别是对于非占据轨道 (unoccupied orbitals)），并且当使用了弥散函数 (diffuse functions)时结果完全无用。在此我还说明如何基于由Hirshfeld方法得到的轨道组成绘制部分态密度，该方法更稳健，且与弥散函数完全兼容。缺点是Hirshfeld方法开销更大，并且它只能评估原子的贡献，即碎片只能定义为原子的集合。</p>
+<p>这里我们重复“第2部分”中的例子，但使用由Hirshfeld方法得到的组成。启动Multiwfn并输入以下命令：</p>
+<p><pre><code class="language-text">examples\N-phenylpyrrole.fch
+10  // Plotting DOS
+7  // Change the method for calculating orbital compositions
+3  // Hirshfeld method. Then Multiwfn calculates orbital compositions for all atoms in all orbitals, for large system you need to wait for a while
+-1  // Define fragments
+1   // Define fragment 1
+1-5  // Set carbons and nitrogen of pyrrole moiety (atoms 1~5) as the fragment
+2  // Define fragment 2
+10-13,15,17  // Set phenyl moiety (atoms 10~13, 15 and 17) as the fragment
+3  // Define fragment 3
+6-9,14,16,18-20  // Set all hydrogens as the fragment
+0  // Return to last menu
+2  // Set X-axis
+-1.1,-0.1,0.1
+0  // Draw TDOS+PDOS</code></pre>
+所得图 (graph)与基于默认Mulliken方法 (default Mulliken method)得到的组成绘制的图几乎完全一致（然而，对于由未占据分子轨道 (unoccupied MOs)组成的能量范围，差异通常很明显，显然基于Hirshfeld的部分态密度 (PDOS)更可靠）。注意，当采用Hirshfeld方法计算轨道组成 (orbital composition)时，无法绘制重叠态密度 (OPDOS)。</p>
+<h2 id="4102-绘制13-丁二烯-13-butadiene的局域态密度-local-dos"><strong>4.10.2 绘制1,3-丁二烯 (1,3-butadiene)的局域态密度 (local DOS)</strong></h2>
+<p>如果你不知道局域态密度 (local DOS, LDOS)是什么，请先查看第<a href="sec-3-12-plotting-density-of-states-pes-and-cohp.html#3124-%E5%B1%80%E5%9F%9F%E6%80%81%E5%AF%86%E5%BA%A6local-dos">3.12.4</a>节。简而言之，总态密度 (total DOS, TDOS)表示整个体系的态密度 (DOS)曲线，部分态密度描述一个原子（或碎片）的态密度曲线，而局域态密度给出一个点的态密度曲线（<em>即</em>空间分辨的）。此外，我们可以将构成一条线的一组点的局域态密度绘制为颜色填充图 (color-filled map)，X轴对应能量，而Y轴表示在线中的位置。局域态密度在解释来自扫描隧道显微镜 (scanning tunneling microscope, STM)的数据时很有用，你可以在<em>例如</em> <em>J. Phys. Chem. Lett.</em>, <strong>5</strong>, 3701 (2014)中找到相关实验数据。</p>
+<p>在本例中，我们绘制丁二烯在选定点的局域态密度。首先，我们绘制丁二烯端碳上方1.5 Bohr处的点的局域态密度。启动Multiwfn并输入以下命令：</p>
+<p><pre><code class="language-text">examples\butadiene.fch
+0  // Visualize molecular structure</code></pre></p>
+<p>从命令行窗口中的输出可以发现，目标点应为1.137 3.308 1.5（C1上方1.5 Bohr处）。关闭GUI窗口并输入</p>
+<p><pre><code class="language-text">10  // DOS plotting module
+10  // Draw local DOS for a point
+1.137,3.308,1.5</code></pre></p>
+<p>然后你将看到（你可以将其与总态密度图进行比较）</p>
+<p><img src="assets/figures/ch4/image1015.png" alt="基于Hirshfeld轨道组成得到的DOS曲线"></p>
+<p>关闭图形并选择0返回上一级菜单。</p>
+<p>接下来，我们绘制沿连接两个端碳（C1和C8）上方1.5 Bohr处的两点的直线的颜色填充图，输入以下命令</p>
+<p><pre><code class="language-text">11  // Draw local DOS along a line
+1.137,3.308,1.5
+-1.137,-3.308,1.5
+200  // Evenly taking 200 points along line</code></pre></p>
+<p>然后关闭弹出的图形并输入</p>
+<p><pre><code class="language-text">4  // Modify the ratio between Y and X axes
+0.5  // The length of Y-axis will be half of X-axis
+1  // Replot</code></pre></p>
+<p>然后你可以看到</p>
+<p><img src="assets/figures/ch4/image1016.png" alt="沿一条直线的1,3-丁二烯局域态密度图"></p>
+<p>该图中的颜色表示不同三维空间位置（Y轴）和不同能量（X轴）处的状态密度。粉色箭头突出了三个不同空间位置处的能隙。</p>
+<p>如果你在理解该图的含义时仍感到困难，请查看下图，其中明确标注了一些重要信息。</p>
+<p><img src="assets/figures/ch4/image1017.png" alt="标注了HOMO、HOMO-1和LUMO能级以及分子轴的局域态密度图"></p>
+<p>很容易理解，上图中最下面的水平线（<em>即</em>Y=0处的绿色虚线）对应于C1上方1.5 Bohr处的局域态密度曲线图，这正是我们之前绘制的。</p>
+<h2 id="4103-绘制非限制开壳体系的dos图na₃osi₁₂c₁₂"><strong>4.10.3 绘制非限制开壳体系的DOS图：Na₃O@Si₁₂C₁₂</strong></h2>
+<p>在第<a href="#4101-%E7%BB%98%E5%88%B6-n-phenylpyrrole-%E7%9A%84%E6%80%BB%E6%80%81%E5%AF%86%E5%BA%A6%E5%81%8F%E6%80%81%E5%AF%86%E5%BA%A6%E5%92%8C%E9%87%8D%E5%8F%A0%E6%80%81%E5%AF%86%E5%BA%A6-total-partial-and-overlap-dos">4.10.1</a>节中，我们绘制了一个闭壳体系 (closed-shell system)，而在本节中，我将说明如何为典型的开壳体系 (open-shell system)Na₃O@Si₁₂C₁₂绘制DOS，该体系在我发表于<em>J. Comput. Chem.</em>, <strong>38</strong>, 1574 (2017)的工作中研究过，且为二重态 (doublet)。对于以非限制形式 (unrestricted formalism)计算的开壳情形，存在两种自旋 (spin)，必须同时考虑。.fchk文件可在此处下载：<a href="http://sobereva.com/multiwfn/extrafiles/Na3O-Si12C12.rar">http://sobereva.com/multiwfn/extrafiles/Na3O-Si12C12.rar</a>，其对应于优化几何结构下的UM06-2X/6-311G*波函数。
+首先，我们绘制α自旋 (alpha spin)的总态密度 (TDOS)+部分态密度 (PDOS)图，PDOS将对应于Na₃O。启动Multiwfn并输入</p>
+<p><pre><code class="language-text">Na3O-Si12C12.fchk
+10  // DOS plotting module
+-1  // Define fragments
+1  // Define fragment 1
+a 1,4,27,28  // These four atoms correspond to the Na_3O moiety
+q  // Save fragment
+0  // Return
+0  // Plot TDOS+PDOS</code></pre></p>
+<p>关闭弹出的图形</p>
+<p><pre><code class="language-text">22  // Enable drawing lines at bottom of curves
+1  // Replot</code></pre></p>
+<p>你将看到下图。默认情况下，对于非限制性波函数 (unrestricted wavefunction)，只考虑α分子轨道 (MOs)，因此下图即为α自旋的态密度 (DOS)图。</p>
+<p><img src="assets/figures/ch4/image1018.png" alt="Na3O@Si12C12的α自旋的总态密度以及Na3O碎片 (fragment)的部分态密度"></p>
+<p>选择选项0返回上一级菜单。如果你想绘制β自旋 (beta spin)的态密度图，应选择“6 Choose orbital spin”，然后选择“2 Beta spin”。如果你不想区分自旋而是想考虑所有分子轨道，应选择“3 Both spins”。请选择β自旋并再次通过选项0重绘该图，你会发现该图与α自旋的图相似，表明在此体系中自旋极化 (spin polarization)并不明显。</p>
+<p>为了使α和β态密度图的比较直观，我们可以尝试制作一幅图，其上半部分和下半部分分别对应α自旋和β自旋。这样的图不能由Multiwfn直接生成，但可以通过Multiwfn结合第三方可视化软件（如Origin）轻松制备，如下所示。我使用的Origin版本是9.0</p>
+<p>我们首先用Multiwfn以上述方式绘制α总态密度+部分态密度图，在后处理菜单中，选择“3 Export curve and line data to plain text file in current folder”。将<em>DOS_curve.txt</em>重命名为<em>alpha.txt</em>。返回态密度绘制界面，切换为β自旋，绘制该图，然后再次导出数据集，将<em>DOS_curve.txt</em>重命名为<em>beta.txt</em>。<em>DOS_line.txt</em>可以删除，因为我们不会使用它。</p>
+<p>启动Origin，将<em>alpha.txt</em>和<em>beta.txt</em>都拖入其中以导入它们。当前，在对应于β自旋的工作簿中，B列和C列分别对应总态密度和部分态密度曲线数据。我们对D列（目前为空）选择“Set Column Values”选项，将D的内容设为*-Col(B)<em>；类似地，我们将E列设为</em>-Col(C)*。</p>
+<p>接下来，我们选择适当的选项以绘制线图。在对应于α自旋的工作表中，我们将A列添加为X数据，将B列和C列添加为两组Y数据。在对应于β自旋的工作表中，我们将A列添加为X数据，而将D列和E列添加为Y数据。经过一些调整后，你将得到下图，它分别很好地展示了α和β自旋的态密度和部分态密度。</p>
+<p><img src="assets/figures/ch4/image1019.png" alt="α和β总态密度以及Na3O碎片的部分态密度的线图"></p>
+<p>注意，为了绘制对应于DOS=0的水平线以及突出α和β自旋的最高占据分子轨道 (HOMO)水平的 highlights 的两条垂直线，我还创建了第三个工作表并适当地填充了内容。α和β HOMO的值可以直接从在DOS模块中选择选项0绘制该图时的提示中找到，即</p>
+<p><pre><code class="language-text">Note: The vertical dash line corresponds to HOMO level at    -0.171 a.u.</code></pre></p>
+<p>和</p>
+<p><pre><code class="language-text">Note: The vertical dash line corresponds to HOMO level at    -0.221 a.u.</code></pre></p>
+<p>上述<em>alpha.txt</em>、<em>beta.txt</em>以及该图的Origin .opj文件已提供在&quot;examples\DOS\&quot;文件夹中。</p>
+<h2 id="4104-绘制cr₃si₁₂团簇的光电子谱-photoelectron-spectrum-pes"><strong>4.10.4 绘制Cr₃Si₁₂⁻团簇的光电子谱 (photoelectron spectrum, PES)</strong></h2>
+<blockquote>
+<p><strong>注</strong></p>
+<p>本节的中文版是我的博客文章 “Using Multiwfn to plot photoelectron spectrum” (<a href="http://sobereva.com/478">http://sobereva.com/478</a>)。</p>
+</blockquote>
+<p>在<a href="sec-3-12-plotting-density-of-states-pes-and-cohp.html#3125-%E5%85%89%E7%94%B5%E5%AD%90%E8%83%BD%E8%B0%B1photoelectron-spectrum">3.12.5</a>节中，已介绍了光电子谱的理论和绘制光电子谱的界面，若尚未阅读请先阅读。本节将以Cr₃Si₁₂⁻为例说明如何非常容易地绘制光电子谱，我们将采用广义Koopmans定理 (generalized Koopmans&#39; theorem)绘制光电子谱。该体系已在<em>J. Phys. Chem. A</em>, <strong>122</strong>, 9886 (2018)中在PBE/6-311+G*水平下被研究，值得注意的是该体系计算的第一垂直电离能 (vertical ionization potential, VIP)为2.56 eV。</p>
+<p>使用JPCA论文补充材料 (supplemental material)中提供的该体系的优化结构 (optimized structure)，我用Gaussian 16在与论文相同的水平下做了单点任务 (single point task)，所得的<em>Cr3Si12-.fchk</em>文件可在此下载：<a href="http://sobereva.com/multiwfn/extrafiles/Cr3Si12-.rar">http://sobereva.com/multiwfn/extrafiles/Cr3Si12-.rar</a>。</p>
+<p>启动Multiwfn并输入</p>
+<p><pre><code class="language-text">Cr3Si12-.fchk
+10  // DOS module
+12  // Interface for plotting PES. You will find HOMO level has been shown on the screen, namely -0.77 eV, which is the highest one among alpha HOMO and beta HOMO
+3  // Set shift value to meet generalized Koopmans' theorem
+1.79  // Should be 1st VIP + E(HOMO). For present case the value is -0.77+2.56=1.79 eV
+4  // Set X-axis
+1,4.5,0.5  // The energy span is 1.0~4.5 eV, with label step of 0.5 eV
+9  // Set width of curve
+10  // Make the curve thicker than default
+1  // Plot the spectrum</code></pre></p>
+<p>所得谱图如下所示。注意Y轴 (Y-axis)的绝对值实际上是没有意义的，你可以选择选项&quot;13 Toggle showing labels and ticks on Y-axis&quot;一次，将其状态切换为&quot;No&quot;，以去掉Y轴上的标签和刻度。</p>
+<p><img src="assets/figures/ch4/image1020.png" alt="Cr3Si12团簇的模拟光电子谱"></p>
+<p><em>J. Phys. Chem. A</em>论文中给出的实验谱图如下所示</p>
+<p><img src="assets/figures/ch4/image1021.png" alt="Cr3Si12-的实验光电子谱"></p>
+<p>显然，我们模拟的谱图与实验谱图符合得非常好，表明我们的绘图过程和方法是完全合理的。</p>
+<h2 id="4105-绘制cyclo18carbon的mo-pdos图-mo-pdos-map以揭示由不同分子轨道-molecular-orbitals-mos贡献的投影态密度-projected-density-of-states-pdos"><strong>4.10.5 绘制cyclo[18]carbon的MO-PDOS图 (MO-PDOS map)以揭示由不同分子轨道 (molecular orbitals, MOs)贡献的投影态密度 (projected density of states, PDOS)</strong></h2>
+<blockquote>
+<p><strong>注</strong></p>
+<p>首次提出MO-PDOS图思想的已发表论文是我的工作：<em>Carbon</em>, <strong>165</strong> 461 (2020)，见Fig. 2。如果你的工作中使用了MO-PDOS图，请引用该论文。</p>
+</blockquote>
+<p>本节说明如何绘制和分析MO-PDOS图。所谓“MO-PDOS”指一种特殊的投影态密度，用于揭示由不同组分子轨道贡献的态密度 (density of states, DOS)（而不是像通常意义上的投影态密度那样由原子或基函数贡献），对应于不同组分子轨道的投影态密度曲线和分立线用不同颜色显示。如果需要，分立线的高度可用于反映轨道能级的简并度。</p>
+<p>我们将为cyclo[18]carbon绘制MO-PDOS图，其在ωB97XD/def2-TZVP水平下优化的结构如下所示，它是一个具有D$_{9h}$点群的完全平面体系。该体系在极小点结构处的ωB97XD/def2-TZVP波函数对应的.fchk文件可在此下载：<a href="http://sobereva.com/multiwfn/extrafiles/C18.zip">http://sobereva.com/multiwfn/extrafiles/C18.zip</a>。</p>
+<p><img src="assets/figures/ch4/image1022.png" alt="cyclo[18]carbon的结构"></p>
+<p>该体系的占据价分子轨道由三种类型组成，你可以通过主功能 (main function) 0查看轨道来确定它们的序号：</p>
+<ul>
+<li><p>(1) σ 分子轨道 (σ MOs)：19-36</p>
+</li>
+<li><p>(2) 面内 π 分子轨道 (in-plane π MOs)：37,39,40,45,46,49,50,53,54</p>
+</li>
+<li><p>(3) 面外 π 分子轨道 (out-plane π MOs)：38,41,42,43,44,47,48,51,52</p>
+</li>
+</ul>
+<p>在要绘制的 MO 分态密度图 (MO-PDOS map)中，我们将使用不同颜色分别揭示这些轨道能级的位置及其对总态密度 (total DOS)的贡献。</p>
+<p>启动 Multiwfn 并输入</p>
+<p><pre><code class="language-text">C18.fchk
+10  // Plot DOS
+-2  // Enter the interface for defining MO fragments of MO-PDOS
+1  // Define 1st fragment
+19-36  // σ MOs
+2  // Define 2nd fragment
+37,39,40,45,46,49,50,53,54  // in-plane π MOs
+3  // Define 3rd fragment
+38,41,42,43,44,47,48,51,52  // out-of-plane π MOs
+0  // Return
+0  // Plot DOS map</code></pre></p>
+<p>我们立即看到如下的图</p>
+<p><img src="assets/figures/ch4/image1023.png" alt="环[18]碳三个碎片的总态密度 (TDOS)和分态密度 (PDOS)"></p>
+<p>在此图中，红色、蓝色和紫色分立线分别表示 σ 分子轨道、面内 π 分子轨道和面外 π 分子轨道的能级位置。σ 分子轨道的能量明显低于 π 分子轨道，而两种 π 分子轨道具有相似的能量分布。从展宽曲线可以识别三类分子轨道各自的贡献，彩色曲线的高度之和正好等于黑色曲线，黑色曲线描述的是总态密度。由于定义的碎片仅由占据分子轨道组成，该图的非占据区与常规总态密度图完全相同。</p>
+<p>我们可以进一步改进 MO 分态密度图的设置。关闭图形后，我们输入</p>
+<p><pre><code class="language-text">0  // Return to last menu from the post-processing menu
+8  // Switch the energy unit to eV
+2  // Set energy range and step
+-28,1,3  // Set lower and upper limits of plotting region to -28~1 eV with step of 3 eV, so that all occupied valence MOs and a few lowest-lying virtual MOs could be displayed in the map
+9  // Enabling using height of discrete lines to indicate orbital degeneracy
+[Press ENTER button directly]  // Use default threshold to determine degeneracy
+0  // Plot DOS map</code></pre></p>
+<p>关闭该图，然后在后处理菜单 (post-processing menu)中我们输入</p>
+<p><pre><code class="language-text">16  // Set the texts in the legends
+1  // Set legend for PDOS 1
+sigma MOs
+2  // Set legend for PDOS 2
+in-plane pi MOs
+3  // Set legend for PDOS 3
+out-of-plane pi MOs
+0  // Return to post-processing menu
+6  // Disable showing TDOS discrete lines
+1  // Redraw the graph</code></pre></p>
+<p>你应该能看到下图，该图相当令人满意</p>
+<p><img src="assets/figures/ch4/image1024.png" alt="环[18]碳σ、面内π和面外π分子轨道的总态密度和分态密度"></p>
+<p>从彩色分立线的高度，你可以清楚地发现大多数占据价轨道都是双重简并的。</p>
+<h3 id="提示保存和加载状态"><strong>提示：保存和加载状态</strong></h3>
+<p>如果你想把上面图的当前状态 (status)（绘图设置、碎片定义和轨道信息）保存到文件中，以便下次快速恢复该图，现在你可以输入 <em>0</em> 退出后处理菜单，然后输入 <em>s</em>，然后输入要保存状态的文件路径。</p>
+<p>上面图对应的状态文件 (status file)为 <em>examples\DOS\C18_MO_PDOS.dat</em>，因此如果你想直接重绘上面的图，在启动 Multiwfn 并加载 <em>C18.fchk</em> 后，你应该输入</p>
+<p><pre><code class="language-text">10  // DOS plotting module
+l  // Load status file
+examples\DOS\C18_MO_PDOS.dat
+0  // Plot the map</code></pre></p>
+<h2 id="4106-计算过渡金属团簇的-d-带中心-d-band-center"><strong>4.10.6 计算过渡金属团簇的 <em>d</em> 带中心 (<em>d</em>-band center)</strong></h2>
+<blockquote>
+<p><strong>注</strong></p>
+<p>本节中文版及更多讨论见我的博客文章“使用 Multiwfn 计算过渡金属 <em>d</em> 带中心”（<a href="http://sobereva.com/582">http://sobereva.com/582</a>，中文）
+<em>d</em>-带中心 (<em>d</em>-band center)是指与<em>d</em>-轨道 (<em>d</em>-orbitals)相对应的分态密度 (PDOS)的中心位置。过渡金属 (transition metals)的<em>d</em>-带中心是解释和预测小分子在过渡金属体系上化学吸附 (chemisorption)强度差异的重要量，它也与表面催化 (surface catalysis)的活性密切相关，更多信息见<em>PNAS</em>, <strong>108</strong>, 937 (2011)和<em>Sci. Rep.</em>, <strong>6</strong>, 35916 (2016)。</p>
+</blockquote>
+<p>Multiwfn的态密度 (DOS)作图模块可用于计算<em>d</em>-带中心。由于Multiwfn在绘制DOS图时会自动计算并打印每条分态密度曲线的中心，通过将所关心的过渡金属的所有D型基函数 (basis functions)定义为一个碎片 (fragment)，即可直接获得<em>d</em>-带中心。在本节中，我将以Cu₁₃ (二重态 (doublet))为例说明计算。该体系的<em>d</em>-带中心也已在<em>J. Clust. Sci.</em>, <strong>29</strong>, 867 (2018)中报道。该体系在UPBE/Lanl2DZ水平下通过优化任务生成的Gaussian .fchk文件可在此处直接下载：<a href="http://sobereva.com/multiwfn/extrafiles/Cu13.zip">http://sobereva.com/multiwfn/extrafiles/Cu13.zip</a>。该计算水平与*J. Clust. Sci.*论文相同。</p>
+<p>启动Multiwfn并输入</p>
+<p><pre><code class="language-text">Cu13.fchk
+10  // Plot DOS map
+-1  // Define fragment
+1  // Define fragment 1
+cond  // Define the fragment using conditions
+[Press ENTER button]  // No requirement on atomic indices
+[Press ENTER button]  // No requirement on basis function indices
+D  // The basis functions must be D-type
+q  // Save current fragment
+q  // Return to DOS plotting interface
+8  // Switch the energy unit from a.u. to eV
+2  // Set range of X-axis
+-13,0,2  // Lower limit, upper limit and spacing between ticks
+0  // Plot DOS map</code></pre></p>
+<p>现在你可以看到如下的图。红色曲线对应于<em>d</em>-带的分态密度</p>
+<p><img src="assets/figures/ch4/image1025.png" alt="总态密度 (TDOS)与过渡金属碎片的分态密度"></p>
+<p>在命令行窗口中，你可以看到</p>
+<p><pre><code class="language-text">Center of TDOS:   -5.732445 eV
+Center of PDOS  1:   -6.510656 eV
+
+Note: The vertical dash line corresponds to HOMO level at  -4.16932 eV</code></pre></p>
+<p>通常<em>d</em>-带中心是相对于费米能级 (Fermi energy level) ( $E_{\mathrm{f}}$ )报道的。然而，对于分子和团簇 (clusters)等孤立体系， $E_{\mathrm{f}}$ 没有明确定义，但按惯例可将其视为HOMO能级 (HOMO level)。因此，Cu₁₃的<em>d</em>-带中心为-6.510656-(-4.16932) = -2.34 eV，与<em>J. Clust. Sci.</em>, <strong>29</strong>, 867 (2018)表3中报道的-2.33 eV非常吻合。</p>
+<p>注意，对于像本例这样的非限制性开壳层波函数 (unrestricted open-shell wavefunction)，alpha自旋和beta自旋的<em>d</em>-带中心是不同的。默认只考虑alpha轨道，如果需要计算beta轨道的情况，应选择选项&quot;6 Choose orbital spin&quot;并选择beta。</p>
+<p>X轴范围的选择值得关注。计算分态密度中心的公式可在<a href="sec-3-21-electron-excitation-analysis.html#3211-%E5%88%86%E6%9E%90%E5%B9%B6%E5%8F%AF%E8%A7%86%E5%8C%96%E7%A9%BA%E7%A9%B4%E7%94%B5%E5%AD%90%E5%88%86%E5%B8%83%E8%B7%83%E8%BF%81%E5%AF%86%E5%BA%A6%E5%92%8C%E8%B7%83%E8%BF%81%E7%94%B5%E7%A3%81%E5%81%B6%E6%9E%81%E7%9F%A9%E5%AF%86%E5%BA%A6-1">3.21.1</a>节中找到，可以看出只有当前能量范围 (X轴范围)内的分态密度片段被纳入考虑，即-13至0 eV之间的分态密度参与了<em>d</em>-带中心的计算。显然，能量范围的不同选择可能导致不同的<em>d</em>-带中心值。你必须保证当前能量范围完全包围<em>d</em>-带的实际分态密度区域。下限相对任意，因为在-13 eV以下分态密度恰好为零，降低下限不会影响中心位置。上限的选择更为关键，如无特殊情况，我建议像本例一样简单地将其设为零。上限不应设为过高的值，否则缺乏化学意义的分态密度将被包含进计算中。例如，如果你将下限和上限分别设为-20和60 eV，分态密度将为
+<img src="assets/figures/ch4/image1026.png" alt="用于d带中心 (d-band centre)分析的宽能量范围内的总态密度 (TDOS)和过渡金属片段的分态密度 (PDOS)"></p>
+<p>可以看到，对应于D型基函数的片段的分态密度在15~40 eV之间也非常大，所报道的中心位置甚至是一个非物理的正值。该现象源于Lanl2DZ是一个扩展基组，Cu的每个<em>d</em>原子轨道由两个基函数表示。分态密度的高能部分本质上对应于与约-13~0 eV范围内的价<em>d</em>轨道正交的分子轨道 (MOs)。</p>
+<p>类似地，<em>p</em>带中心 (p-band center)也可以用类似的方式计算。</p>
+<h2 id="4107-为c₆₀富勒烯-fullerene和n-phenylpyrrole绘制晶体轨道哈密顿布居-cohp"><strong>4.10.7 为C₆₀富勒烯 (fullerene)和N-phenylpyrrole绘制晶体轨道哈密顿布居 (COHP)</strong></h2>
+<p>如果您对晶体轨道哈密顿布居不熟悉，请先阅读<a href="sec-3-12-plotting-density-of-states-pes-and-cohp.html#3126-cohp">3.12.6</a>节。在本节中，我们首先为C₆₀富勒烯绘制最近原子间的晶体轨道哈密顿布居，然后为N-phenylpyrrole的两个基团间绘制晶体轨道哈密顿布居。</p>
+<h3 id="例1c₆₀富勒烯"><strong>例1：C₆₀富勒烯</strong></h3>
+<p>所用的在B3LYP/6-31G*水平下产生的波函数文件<em>C60.fch</em>可在<a href="http://sobereva.com/multiwfn/extrafiles/C60.zip">http://sobereva.com/multiwfn/extrafiles/C60.zip</a>下载。</p>
+<p>启动Multiwfn并输入</p>
+<p><pre><code class="language-text">C60.fch
+10  // DOS, PES and COHP plotting function
+-7  // Change to COHP plotting mode
+1  // Generate Kohn-Sham matrix based on wavefunction information
+2  // Set energy range for plotting COHP
+-20,2,2  // Lower and upper limits as well as stepsize of X-axis
+0  // Draw COHP between nearest atoms</code></pre></p>
+<p>现在将在屏幕上看到晶体轨道哈密顿布居图。关闭该图，在后处理菜单中分别用选项4和-4调整左、右Y轴，然后重绘，您将看到如下图所示，该图对应于Multiwfn原论文<em>J. Chem. Phys.</em>，<strong>161</strong>，082503 (2024)中的图S17。</p>
+<p><img src="assets/figures/ch4/image1027.png" alt="C60富勒烯的晶体轨道哈密顿布居曲线"></p>
+<p>右Y轴对应于尖峰的高度，左轴对应于由尖峰展宽得到的曲线。注意，两个Y轴对应的是晶体轨道哈密顿布居的负值 (-COHP)，而不是晶体轨道哈密顿布居本身。在该图中，所有对曲线贡献为正的分子轨道即所谓成键态 (bonding states)，其占据使体系稳定。相反，所有对曲线贡献为负的分子轨道为反键态 (antibonding states)，其占据会降低总体成键效应，从而使C₆₀不稳定。图中的虚线标出了最高占据分子轨道 (HOMO)，可以看到大多数占据分子轨道属于成键态，C₆₀当然可以稳定存在。</p>
+<h3 id="例2n-phenylpyrrole"><strong>例2：N-phenylpyrrole</strong></h3>
+<p>在<a href="#4101-%E7%BB%98%E5%88%B6-n-phenylpyrrole-%E7%9A%84%E6%80%BB%E6%80%81%E5%AF%86%E5%BA%A6%E5%81%8F%E6%80%81%E5%AF%86%E5%BA%A6%E5%92%8C%E9%87%8D%E5%8F%A0%E6%80%81%E5%AF%86%E5%BA%A6-total-partial-and-overlap-dos">4.10.1</a>节第4部分中，我们已绘制了重叠布居态密度 (OPDOS)以研究N-phenylpyrrole中吡咯与苯基基团之间的π相互作用。在本节中，采用完全相同的片段定义，我们绘制片段间的晶体轨道哈密顿布居图。</p>
+<p>启动Multiwfn并输入</p>
+<p><pre><code class="language-text">examples\N-phenylpyrrole.fch
+10  // DOS, PES and COHP plotting function
+-7  // Change to COHP plotting mode
+1  // Generate Kohn-Sham matrix based on wavefunction information
+-1  // Define fragments for plotting COHP between fragments
+1  // Define fragment 1
+cond  // Use conditions to add basis functions to fragment 1
+1-5  // The first condition is that the basis functions must belong to the heavy atoms in pyrrole moiety (atoms 1-5)
+[Press ENTER button]  // The second condition. Index of basis function is arbitrary
+X  // The third condition, the type of the basis functions must be PX (note that the current molecule is in YZ plane. So adding PX basis functions is equivalent to adding the p atomic orbitals directly contributing to the π-interaction)
+q  // Save fragment 1
+2  // Define fragment 2
+cond  // Use conditions to add basis functions to the fragment 2
+10-13,15,17  // Atom index of the carbons in the phenyl moiety</code></pre></p>
+<p>现在您可以看到如下图所示，它与在<a href="#4101-%E7%BB%98%E5%88%B6-n-phenylpyrrole-%E7%9A%84%E6%80%BB%E6%80%81%E5%AF%86%E5%BA%A6%E5%81%8F%E6%80%81%E5%AF%86%E5%BA%A6%E5%92%8C%E9%87%8D%E5%8F%A0%E6%80%81%E5%AF%86%E5%BA%A6-total-partial-and-overlap-dos">4.10.1</a>节第4部分中绘制的相应重叠布居态密度曲线非常相似。该例表明晶体轨道哈密顿布居通常传达与重叠布居态密度类似的信息。</p>
+<p><img src="assets/figures/ch4/image1028.png" alt="N-phenylpyrrole的晶体轨道哈密顿布居曲线"></p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-4-10-plot-density-of-states-dos-maps";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script>
+<script src="app.js"></script></body></html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4.16 电荷分解分析与绘制轨道相互作用图 · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="416-电荷分解分析与绘制轨道相互作用图"><strong>4.16 电荷分解分析与绘制轨道相互作用图</strong></h1>
+<blockquote>
+<p><strong>注</strong></p>
+<p>本节的中文是我的博文“使用 Multiwfn 做电荷分解分析 (CDA) 和绘制轨道相互作用图”（<a href="http://sobereva.com/166">http://sobereva.com/166</a>，中文），其中还有更多讨论。</p>
+</blockquote>
+<p>电荷分解分析 (charge decomposition analysis, CDA)、扩展 CDA (ECDA) 和广义 CDA (GCDA, <em>J. Adv. Phys. Chem.</em>, <strong>4</strong>, 111-124 (2015) DOI: <a href="http://dx.doi.org/10.12677/JAPC.2015.44013">10.12677/JAPC.2015.44013</a>) 的理论以及 CDA 模块的用法，已在<a href="sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram.html">3.19 节</a>详细介绍。本节给出几个实际例子。</p>
+<p>CDA 模块支持 .fch、.mwfn、.molden、GAMESS-US 输出文件 (.gms) 和 Gaussian 输出文件做输入。下面几节只用 Gaussian .fch 文件示例 CDA 模块的用法。</p>
+<h2 id="4161-闭壳层相互作用情形cobh₃"><strong>4.16.1 闭壳层相互作用情形：COBH₃</strong></h2>
+<p>COBH₃ 中，CO 用其孤对与缺电子体系 BH₃（Lewis 酸）形成配位键。因此，配合物形成过程中电子从 CO 转移到 BH₃。本例用 CDA 方案深入考察电子转移。</p>
+<p>首先，为 CO（片段 1）、BH₃（片段 2）和 COBH₃（配合物）产生 Gaussian 输出文件。.fch 文件和相应输入文件已在 &quot;examples\CDA\COBH3&quot; 文件夹中提供。计算在 HF/6-31G* 水平进行。CDA 输入文件的准备方法见<a href="sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram.html#3192-%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6">3.19.2 节</a>。</p>
+<p>现在启动 Multiwfn 并输入以下内容：</p>
+<p><pre><code class="language-text">examples\CDA\COBH3\COBH3.fch  // Gaussian .fch file of the complex
+16  // Enter CDA module
+2  // We define two fragments
+examples\CDA\COBH3\CO.fch  // Gaussian .fch file of fragment 1
+examples\CDA\COBH3\BH3.fch  // Gaussian .fch file of fragment 2</code></pre></p>
+<p>屏幕上立刻输出以下 CDA 结果：</p>
+<p><pre><code class="language-text">   Orb.      Occ.          d           b        d - b          r
+      1    2.000000   -0.000004   -0.000000   -0.000004   -0.000001
+      2    2.000000    0.001119   -0.000023    0.001141    0.000326
+      3    2.000000   -0.000002   -0.000471    0.000469    0.000313
+      4    2.000000   -0.013250   -0.000704   -0.012546   -0.005676
+      5    2.000000    0.041648   -0.003309    0.044957    0.232262
+      6    2.000000    0.037385   -0.020136    0.057521    0.212422
+      7    2.000000   -0.000543    0.000647   -0.001190    0.022166
+      8    2.000000   -0.000543    0.000647   -0.001190    0.022166
+      9    2.000000    0.171353    0.026952    0.144401   -0.741381
+     10    2.000000   -0.000569    0.043713   -0.044281   -0.038916
+     11    2.000000   -0.000569    0.043713   -0.044282   -0.038916
+     12    0.000000    0.000000    0.000000    0.000000    0.000000
+     13    0.000000    0.000000    0.000000    0.000000    0.000000
+     14    0.000000    0.000000    0.000000    0.000000    0.000000
+     15    0.000000    0.000000    0.000000    0.000000    0.000000
+ ......
+-------------------------------------------------------------------
+Sum:      22.000000    0.236023    0.091027    0.144996   -0.335233</code></pre></p>
+<p>&quot;Orb.&quot; 指配合物轨道的序号；&quot;occ.&quot; 为相应占据数。&quot;d(i)&quot; 代表经相应配合物轨道从片段 1 施舍 (donate) 到片段 2 的电子量，&quot;b(i)&quot; 代表经相应配合物轨道从片段 2 反施舍 (back donate) 到片段 1 的电子量。&quot;r(i)&quot; 对应相应配合物轨道中两片段占据片段轨道 (FO) 之间的交叠布居；其正负号分别意味着，在此配合物轨道中，占据 FO 的电子累积到两片段之间的交叠区和从交叠区耗散（主要因 Pauli 排斥）。r(i) 之和即 -0.335，表明排斥效应在占据 FO 之间的总相互作用中占主导，致使相应电子从交叠区移向非交叠区。</p>
+<p>d(i) 与 b(i) 之差在一定程度上可视为因相应配合物轨道形成而从片段 1 向片段 2 净转移的电子数。但注意，此值还包含电子极化效应的贡献。</p>
+<p>从数据可见，前三个配合物轨道的 <em>b</em>、<em>d</em> 和 <em>r</em> 值几乎为零，因为它们分别是 O、C 和 B 的核轨道，预期不参与成键。虚配合物轨道的 <em>b、d</em> 和 <em>r</em> 项恰为零，因为其占据数恰为零。轨道 9 使 0.171 个电子从 CO 施舍到 BH₃，是施主-受主成键的主要来源，并导致高达 0.741 个电子从 CO 与 BH₃ 之间的交叠区移出，因减小电子排斥而稳定了配合物。轨道 5 和 6 对电子施舍有小贡献，同时使各自占据 FO 的电子明显累积到交叠区，必然有利于两片段间的成键。轨道 10 和 11 是 π 轨道且能量简并，呈现 π 反施舍特征。</p>
+<p>轨道 9、5 和 6 的等值面如下所示。可见，轨道 9 在 CO 与 BH₃ 之间的交叠区出现节面，而轨道 5 和 6 的等值面均匀覆盖交叠区。这些现象很大程度上解释了为何 r(9) 是大的负值，而 r(5) 和 r(6) 是明显的正值。</p>
+<p><img src="assets/figures/ch4/image1140.png" alt="COBH3 的配合物轨道 5、6 和 9 的等值面"></p>
+<p>注意 Multiwfn 用的 CDA 定义是我提出的广义版本，使 CDA 也适用于后 HF 和开壳层情形，细节见<a href="sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram.html#3191-%E7%90%86%E8%AE%BA">3.19.1 节</a>相应部分。对原始 CDA 适用的情形（即配合物轨道用 MO 或自然轨道、FO 用 MO），广义 CDA 给出的 <em>d</em> 和 <em>b</em> 项与原始定义完全相同，而 <em>r</em> 项恰为原始定义的两倍。</p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>COBH₃ 的例子在 CDA 原始论文中也给出，其中 <em>d</em>、<em>b</em> 和 <em>r</em> 公式虽正确，但例子中的数据都不对：所有数据都应除以二。我还发现 Dapprich 和 Frenking 写的 CDA 程序以及 AOMix 程序的结果都应除以二。所以，若要把 Multiwfn 算的 CDA 结果与它们比较，应先把 d 和 b 项乘以二。但 r 项不要这样做，因为 Multiwfn 算的 r 项相对原始定义已被加倍。</p>
+</blockquote>
+<p>两片段间的净电子转移量可用 <em>b</em>-<em>d</em> 项表征，但有人认为 ECDA 是计算净电子转移量更合理的方法，因为电子极化效应 (PL) 的贡献被完全排除。CDA 结果之后输出 ECDA 结果：</p>
+<p><pre><code class="language-text">     ========== Extended Charge decomposition analysis (ECDA) ==========
+  Contribution to all occupied complex orbital:
+Occupied, virtual orbitals of fragment  1:     680.4194%         8.0593%
+Occupied, virtual orbitals of fragment  2:     390.3988%        21.1226%
+  Contribution to all virtual complex orbital:
+Occupied, virtual orbitals of fragment  1:      19.5806%      2291.9407%
+Occupied, virtual orbitals of fragment  2:       9.6012%      1678.8774%
+PL( 1) + CT( 1-&gt; 2) =    0.3916      PL( 1) + CT( 2-&gt; 1) =    0.1612
+PL( 2) + CT( 1-&gt; 2) =    0.4225      PL( 2) + CT( 2-&gt; 1) =    0.1920
+The net electrons obtained by frag. 2 = CT( 1-&gt; 2) - CT( 2-&gt; 1) =    0.2304</code></pre></p>
+<p>通常只需关注最后一行。数据显示，从片段 1 向片段 2 净转移的电子数为 0.2304。</p>
+<p>在屏幕出现的菜单中，用选项 2 可输出特定配合物轨道中 FO 的组成。这里选此选项并输入 <em>9</em>，配合物轨道 9 的组成如下所示：</p>
+<p><pre><code class="language-text">Occupation number of orbital     9 of the complex:  2.00000000
+Orbital     7 of fragment  1, Occ: 2.00000    Contribution:   25.8560%
+Orbital    13 of fragment  1, Occ: 0.00000    Contribution:    1.0798%
+Orbital     2 of fragment  2, Occ: 2.00000    Contribution:   57.2921%
+Orbital     5 of fragment  2, Occ: 0.00000    Contribution:   14.5640%</code></pre></p>
+<p>只显示对该配合物轨道贡献不小于 1% 的 FO（阈值可用 <em>settings.ini</em> 中的 &quot;compthresCDA&quot; 修改）。如前所述，从 CO 到 BH₃ 的电子转移主要源于配合物轨道 9，故从上数据可推断，CO→BH₃ 电子转移的本质很大程度上可解释为 CO 的 FO 7（占据轨道）与 BH₃ 的 FO 5（虚轨道）之间的混合。对比这两个 FO 的形状（见下）与上图配合物轨道 9 的形状，也可印证此观点。</p>
+<p><img src="assets/figures/ch4/image1141.png" alt="对 COBH3 某配合物轨道贡献大于 1% 的片段轨道"></p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>有时少数 FO 的贡献可能为负，这是 Mulliken 分析（CDA 模块计算配合物轨道组成所用方法）众所周知的缺点。由于负值的幅度通常很小，可直接忽略。</p>
+</blockquote>
+<p>也可把某配合物轨道的 <em>d</em>、<em>b</em>、<em>r</em> 项直接分解为 FO 对的贡献，以配合物轨道 9 为例。现在输入 <em>0</em> 回到上一级菜单，选选项 6 并输入 <em>9</em>，再输入阈值如 <em>0.005</em>，则对 d、b、r 任一项贡献大于 0.005 的 FO 对都打印出来：</p>
+<p><pre><code class="language-text">FragA Orb(Occ.)  FragB Orb(Occ.)      d           b        d - b          r
+   4( 2.0000)       2( 2.0000)    0.000000    0.000000    0.000000   -0.009969
+   7( 2.0000)       1( 2.0000)    0.000000    0.000000    0.000000   -0.005759
+   7( 2.0000)       2( 2.0000)    0.000000    0.000000    0.000000   -0.723845
+   7( 2.0000)       5( 0.0000)    0.176503    0.000000    0.176503    0.000000
+   7( 2.0000)       8( 0.0000)    0.006221    0.000000    0.006221    0.000000
+   7( 2.0000)      11( 0.0000)    0.005846    0.000000    0.005846    0.000000
+   7( 2.0000)      12( 0.0000)   -0.023941    0.000000   -0.023941    0.000000
+  13( 0.0000)       2( 2.0000)    0.000000    0.021958   -0.021958    0.000000</code></pre></p>
+<p>从输出清楚看到，CO 的 FO 7 与 BH₃ 的 FO 5 之间的混合贡献了配合物轨道 9 的绝大部分 d 项。</p>
+<p>最后绘制轨道相互作用图。输入 <em>0</em> 回到上一级菜单，再选 5 进入绘制轨道相互作用图的菜单。选选项 3 并输入 -30,10，把图的能量下限和上限分别设为 -30eV 和 10eV。再选选项 1 以默认设置绘图，屏幕弹出图形：</p>
+<p><img src="assets/figures/ch4/image1142.png" alt="COBH3 的轨道相互作用图"></p>
+<p>上图中，占据和虚轨道分别用实线和虚线短棒表示。轨道序号用蓝色文字标注。若同一短棒出现两个或更多标注，如 7 和 8，即这些轨道能量简并。若某 FO 在配合物轨道中的组成大于 10%，则相应两短棒用红线连接，组成标注在线上。只看此图即可直接理解 COBH₃ 的分子轨道如何由 CO 和 BH₃ 的 FO 构成。例如，配合物轨道 7 和 8 在图中只连到 CO 的 FO 5 和 6，故立刻知道这两个轨道在配合物形成过程中基本未受扰动。事实上，它们是 CO 的 π 轨道，当然不能参与 CO 与 BH₃ 之间的 σ 型施主-受主相互作用。</p>
+<p>有很多选项可调绘图参数（如标签大小、短棒绘制和连接规则、组成标签位置、能量范围），请自行尝试，重新绘图查看效果。</p>
+<h2 id="4162-开壳层相互作用情形ch₃nh₂"><strong>4.16.2 开壳层相互作用情形：CH₃NH₂</strong></h2>
+<p>本例用 CH₃NH₂ 说明如何对两片段以共价方式（开壳层相互作用）结合的配合物做 CDA。</p>
+<p>首先，为 CH₃（片段 1）、NH₂（片段 2）和 CH₃NH₂（配合物）产生 Gaussian 输出文件。片段 1 和 2 在本例用非限制 B3LYP 方法；配合物是闭壳层体系，用限制 B3LYP 方法（也可用非限制 B3LYP，CDA 结果相同）。.fch 文件和相应输入文件在 &quot;examples\CDA\CH3NH2&quot; 文件夹中，几何已在 B3LYP/6-31G** 水平预优化。</p>
+<p>注意 CH₃ 和 NH₂ 都有 5 个 alpha 和 4 个 beta 电子，而 CH₃NH₂ 有 9 个 alpha 和 9 个 beta 电子。显然，两片段的 alpha 和 beta 电子总数即 5+5 和 4+4，与配合物的不符。所以，必须把一个片段（CH₃ 或 NH₂）的电子自旋翻转。本例翻转 NH₂ 的电子自旋，即交换其 alpha 和 beta 电子的全部信息。</p>
+<p>启动 Multiwfn 并输入以下内容：</p>
+<p><pre><code class="language-text">examples\CDA\CH3NH2\CH3NH2.fch  // Gaussian output file of the complex
+16  // Enter CDA module
+2  // We define two fragments
+examples\CDA\CH3NH2\CH3.fch  // Gaussian output file of fragment 1
+examples\CDA\CH3NH2\NH2.fch  // Gaussian output file of fragment 2
+n  // Do not flip electron spin of fragment 1
+y  // Flip electron spin of fragment 2, then NH_2 will have 4 alpha and 5 beta electrons.</code></pre></p>
+<p>屏幕分别对 alpha 电子和 beta 电子计算并打印 CDA 和 ECDA 结果。可见，对 alpha (beta) 部分，d - b 和 CT(1-&gt;2) - CT(2-&gt;1) 项都为正（负），表明 alpha (beta) 电子从 CH₃ 转移到 NH₂（从 NH₂ 转移到 CH₃）。这主要是因为 CH₃ 的 alpha 电子 (5) 多于 beta 电子 (4)，而翻转电子自旋后 NH₂ 的 beta 电子 (5) 多于 alpha 电子 (4)，故二者结合成 CH₃NH₂ 时，CH₃ 倾向于把 alpha 电子施舍给 NH₂ 并从 NH₂ 接受 beta 电子。</p>
+<p>总电子的结果即 alpha 和 beta 结果之和也被输出。下面分别是 CDA 和 ECDA 的总结果：</p>
+<p><pre><code class="language-text">d=  0.044335  b=  0.145181  d - b = -0.100847  r= -0.172318
+CT( 1-&gt; 2) - CT( 2-&gt; 1) for all electrons:    0.1252</code></pre></p>
+<p>显然电子应从 CH₃ 转移到 NH₂，因为氮的电负性明显更大。总的 ECDA 结果符合预期，表明从 CH₃ 向 NH₂ 转移的电子量为 0.1249。但 d - b 项与预期矛盾，转移方向完全反了。此例说明，对开壳层相互作用，d - b 项不如 ECDA 可靠，不能很好反映净电子转移总量，尽管 d 和 b 项对把电子转移分解为轨道贡献仍很有用。</p>
+<p>若载入两片段的 Gaussian 输出文件时选择翻转 CH₃ 而非 NH₂ 的电子自旋，可见 CDA 和 ECDA 的 alpha 和 beta 结果互换，但总电子的结果不变。</p>
+<p>现在选 2 并输入 <em>6</em>，可看到配合物的第 6 个 alpha 轨道和第 6 个 beta 轨道的组成都打印到屏幕。配合物是闭壳层体系，故两轨道实质相同，但因两片段中的 alpha 和 beta FO 不等价，打印的组成略有差别。再输入 <em>0</em> 返回。</p>
+<p>选选项 5 进入绘制轨道相互作用图的菜单。用此菜单的选项 5 可切换作图所用的轨道自旋。选一次切换状态为 &quot;Beta&quot;，再选选项 3 并输入 -30,10，把图的下限和上限改为 -30 和 10 eV。再选选项 1 绘制轨道相互作用图。从图中非常清楚看到，CH₃NH₂ 的 beta 轨道 3 和 4 由 CH₃ 的 beta FO 2 与 NH₂ 的 beta FO 2 混合而成。为更直观说明此点，从整图中截取相应部分并附上轨道等值面，见下：</p>
+<p><img src="assets/figures/ch4/image1143.png" alt="开壳层 CH3NH2 体系 beta 自旋轨道的轨道相互作用图"></p>
+<p>可见 beta 配合物轨道 3 呈成键特征（这就是 r(3) 为正值即 0.103 的原因），由 CH₃ 的 beta FO 2 以相同波函数相位少量混入 NH₂ 的 beta FO 2 构成。Beta 配合物轨道 4 是反键轨道（解释了为何 r(4) 为负值即 -0.056），源于 NH₂ 的 beta FO 2 以不同相位混入 CH₃ 的 beta FO 2。</p>
+<h2 id="4163-多于两个片段的情形ptnh₃₂cl₂"><strong>4.16.3 多于两个片段的情形：Pt(NH₃)₂Cl₂</strong></h2>
+<p>本节以顺铂（见下）为例，展示如何对多于两个片段的体系做 CDA 分析。</p>
+<p><img src="assets/figures/ch4/image1144.png" alt="顺铂的结构"></p>
+<p>我们把 Pt²⁺ 阳离子、(Cl₂)²⁻ 阴离子和 (NH₃)₂ 分别定义为片段 1、2 和 3。此片段定义对当前体系是最佳选择。注意 Pt²⁺ 阳离子是 3d⁸ 低自旋组态，故所有片段都是闭壳层状态，无需分 alpha、beta 自旋分析。</p>
+<p>相关的 Gaussian 输入文件和所得 .fch 文件已在 <em>examples\CDA\Pt(NH3)2Cl2</em> 文件夹中提供。Pt 用 Lanl2DZ 赝势基组，其他原子用 cc-pVDZ。理论方法选 B3LYP。配合物的几何已优化。在 Pt²⁺ 的输入文件中用了 &quot;scf=xqc&quot; 关键词解决不收敛问题，但一般不需要。</p>
+<blockquote>
+<p><strong>注 1</strong></p>
+<p>对某些基组，如 Pople 系列基组（如 6-31G*），Gaussian 默认用笛卡尔型而非球谐型基函数，可能导致配合物与片段计算之间的基组不一致问题。若对 Gaussian 不很熟悉，强烈建议在配合物计算用混合基组时，在所有 Gaussian 输入文件中都加 <em>5d</em> 关键词。</p>
+</blockquote>
+<blockquote>
+<p><strong>注 2</strong></p>
+<p>片段的顺序至关重要。因为配合物输入文件中的原子顺序是 Pt--Cl₂--(NH₃)₂，就不应把 Pt²⁺、(NH₃)₂ 和 (Cl₂)²⁻ 分别定义为片段 1、2 和 3。</p>
+</blockquote>
+<p>现在启动 Multiwfn 并输入：</p>
+<p><pre><code class="language-text">examples\CDA\Pt(NH3)2Cl2\Pt(NH3)2Cl2.fch  // Complex
+16  // CDA module
+3  // Define three fragments
+examples\CDA\Pt(NH3)2Cl2\Pt.fch  // Fragment 1
+examples\CDA\Pt(NH3)2Cl2\Cl2.fch  // Fragment 2
+examples\CDA\Pt(NH3)2Cl2(NH3)2.fch  // Fragment 3</code></pre></p>
+<p>然后选选项 0 并输入 <em>1,2</em>，输出片段对 1-2 的 CDA 分析结果。同样得到片段对 1-3 和 2-3 的 CDA 结果。当前体系得不到 ECDA 结果，因为 ECDA 只适用于两片段情形。总的 CDA 结果汇总如下：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>1-2</th>
+<th>1-3</th>
+<th>2-3</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><em>d</em></td>
+<td>0.0017</td>
+<td>0.0077</td>
+<td>0.0538</td>
+</tr>
+<tr>
+<td><em>b</em></td>
+<td>0.5156</td>
+<td>0.0368</td>
+<td>0.0071</td>
+</tr>
+<tr>
+<td><em>d</em>-<em>b</em></td>
+<td>-0.5139</td>
+<td>-0.0291</td>
+<td>0.0467</td>
+</tr>
+<tr>
+<td><em>r</em></td>
+<td>0.0581</td>
+<td>-0.0579</td>
+<td>-0.1415</td>
+</tr>
+</tbody></table>
+<p>表格表明，分别有 0.5156 和 0.0368 个净电子从 (Cl₂)²⁻ 和 (NH₃)₂ 转移到 Pt²⁺。Pt²⁺ 基本不向配体施舍电子。此结果符合化学直觉，因为按经典理论，配位键的电子纯粹由配体贡献。(Cl₂)²⁻ 与 (NH₃)₂ 之间的电荷转移微不足道，主要因二者没有直接化学相互作用。注意片段 2 和 3 之间的 <em>r</em> 项是小但不可忽略的负值，表明配体间有可察觉的电子排斥效应。</p>
+<p>对此体系的更深入分析留给你。可基于 CDA 分析的详细输出讨论电荷转移的轨道贡献，用选项 2 研究配合物轨道在片段轨道基下的组成，用选项 5 绘制轨道相互作用图。</p>
+<h2 id="4164-基于限制性开壳层波函数的-cda-分析乙烷"><strong>4.16.4 基于限制性开壳层波函数的 CDA 分析：乙烷</strong></h2>
+<p>通常 CDA 分析中对开壳层体系（配合物和/或片段）用非限制 (U) 形式，因为 U 比限制性开壳层 (RO) 形式便宜、快。但用 RO 波函数做 CDA 分析的优点是无需显式区分 alpha 和 beta 轨道，因为 RO 只产生一套轨道；换言之，alpha 和 beta 轨道形状相同。本节以乙烷为例说明如何正确地基于 RO 波函数做 CDA 分析，两个甲基选为两个片段。</p>
+<p>首先在 (R)B3LYP/6-31G* 水平优化乙烷，相应的 Gaussian 输入文件为 <em>examples\CDA\CH3CH3\ethane.gjf</em>，输出文件也已提供，相应的 .fch 文件（经 formchk 转换）为同一文件夹下的 <em>ethane.fch</em>。从优化的乙烷中取出两个甲基的坐标，分别存为 Gaussian 输入文件，即“examples\CDA\CH3CH3\”文件夹下的 <em>CH3_1.gjf</em> 和 <em>CH3_2.gjf</em>；可见其计算水平为 ROB3LYP/6-31G*。运行这两个 .gjf 文件并经 formchk 转换 .chk 文件，得到 <em>CH3_1.fch</em> 和 <em>CH3_2.fch</em>。</p>
+<p>虽然可直接用 <em>ethane.fch</em>、<em>CH3_1.fch</em> 和 <em>CH3_2.fch</em> 像往常一样做 CDA 分析（因为都不是非限制波函数，CDA 以闭壳层形式进行），但会发现 CDA 结果不正确，因为两个甲基片段都被视为有 5 个 alpha 和 4 个 beta 电子。</p>
+<p>为正确地基于 RO 波函数做 CDA 分析，应手动把 RO 波函数转为 U 波函数；换言之，把 RO 轨道拆为 alpha 和 beta 轨道。以 <em>CH3_1.fch</em> 为例做此转换。启动 Multiwfn 并输入：</p>
+<p><pre><code class="language-text">examples\CDA\CH3CH3\CH3_1.fch
+6  // Modify wavefunction
+37  // Split spatial orbitals (RO orbitals in the current context) as alpha and beta spin orbitals
+-1  // Return
+100  // Other functions (Part 1)
+2  // Export current wavefunction to a file
+7  // Export to .fch file
+CH3_1_UKS.fch  // Name of new file</code></pre></p>
+<p><em>CH3_1_UKS.fch</em> 记录 UKS 波函数，包含形状和能量相同但占据不同的 alpha 和 beta 轨道。同样，请把 <em>CH3_2.fch</em> 转为 <em>CH3_2_UKS.fch</em>。</p>
+<p>现在可做 CDA 分析了。启动 Multiwfn 并输入：</p>
+<p><pre><code class="language-text">examples\CDA\CH3CH3\ethane.fch
+16  // CDA
+2  // Two fragments
+examples\CDA\CH3CH3\CH3_1_UKS.fch
+examples\CDA\CH3CH3\CH3_2_UKS.fch
+n  // Do not flip spin of fragment 1
+y  // Flip spin of fragment 2</code></pre></p>
+<p>结果为：</p>
+<p><pre><code class="language-text">                     **** Result for alpha electrons ****
+
+    Orb.      Occ.          d           b        d - b          r
+       1    1.000000   -0.000018   -0.000036    0.000018   -0.000201
+       2    1.000000    0.000406    0.000237    0.000169    0.000750
+[ignored]
+      13    0.000000    0.000000    0.000000    0.000000    0.000000
+  ......
+ -------------------------------------------------------------------
+ Sum:       9.000000    0.154365   -0.001225    0.155589   -0.137034
+
+                     **** Result for beta electrons ****
+
+    Orb.      Occ.          d           b        d - b          r
+       1    1.000000   -0.000036   -0.000018   -0.000018   -0.000201
+       2    1.000000    0.000237    0.000406   -0.000169    0.000750
+[ignored]
+      13    0.000000    0.000000    0.000000    0.000000    0.000000
+  ......
+ -------------------------------------------------------------------
+ Sum:       9.000000   -0.001225    0.154365   -0.155589   -0.137034</code></pre></p>
+<p>按关于化学键的常识，第一个 CH₃ 用其 alpha 单电子与另一个 CH₃ 的 beta 单电子形成 C-C 键。从 CDA 角度看，如上所示，C-C 键形成过程中，第一个 CH₃ 向第二个 CH₃ 的空 alpha 轨道转移了 0.155 个 alpha 电子，而第二个 CH₃ 向第一个 CH₃ 的空 beta 轨道转移了 0.155 个 beta 电子。此结果合理，符合化学直觉。</p>
+<p>再绘制轨道相互作用图，输入以下命令：</p>
+<p><pre><code class="language-text">5  // Plot orbital interaction diagram
+3  // Set the energy range to be plotted
+-25,10  // From -25 to 10 eV, which was found to be suitable for present case
+1  // Plot the diagram now</code></pre></p>
+<p>此时可看到（还附了部分分子轨道图）：</p>
+<p><img src="assets/figures/ch4/image1145.png" alt="附有分子轨道图的顺铂轨道相互作用图"></p>
+<p>从上图可清楚辨认成键轨道如何由两片段的分子轨道混合产生。此图当前是对 alpha 自旋绘制的，而由于当前 alpha 和 beta 分子轨道实质相同（片段的两套自旋轨道如前所述由 ROKS 轨道等同拆分，配合物的两套自旋轨道在 CDA 分析中自动由 RKS 轨道等同拆分产生），对 beta 自旋绘制的图与上图相同；唯一的细微差别是，在 beta 自旋的图中，可发现片段 1 的轨道 5 的短棒是虚线（未占据）而片段 2 的是实线（占据）。事实上，无需把 alpha 和 beta 轨道相互作用图看作两幅不同的图，可认为实际只有一幅轨道相互作用图，其中片段 1 和 2 的轨道 1~4 双占据，而片段 1 的轨道 5 是单占据 alpha 电子轨道，片段 2 的轨道 5 是单占据 beta 电子轨道。</p>
+<p>值得一提的是，若基于 ROKS 片段轨道绘制此轨道相互作用图，会发现对每种自旋，尽管两个甲基化学等价，配合物轨道并不总是被两片段的片段轨道同等贡献，因为 alpha 和 beta ROKS 轨道的能量和形状不相同。显然，基于 ROKS 轨道的分析比基于 UKS 轨道的讨论明显更容易，后者必须分别研究 alpha 和 beta 自旋的相互作用图。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script>
+<script src="app.js"></script></body></html>

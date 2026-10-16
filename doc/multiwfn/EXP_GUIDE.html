@@ -1,0 +1,472 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>实验-计算对照指南 · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="实验-计算对照指南">实验-计算对照指南</h1>
+<blockquote>
+<p>实验测到数据后，用 Multiwfn 算什么、按什么判据对照。</p>
+</blockquote>
+<h2 id="一光谱-vs-实验">一、光谱 vs 实验</h2>
+<blockquote>
+<p>素材：manual_md_zh 全库 + menu/func-*.md；只收文档真实出现过的对照做法，参数照搬原文。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>实验技术/数据</th>
+<th>计算对应量</th>
+<th>对照方法与判据（含关键参数）</th>
+<th>实例出处</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>IR 吸收光谱峰位</td>
+<td>谐振子近似下振动频率 + IR 强度（km/mol）</td>
+<td>振动频率整体乘基频比例因子后再展宽对照峰位；B3LYP/6-31G* 取 0.9614（主功能 11 → 选项 14，先回车选全部模式，再回车采用拟合值）；展宽用洛伦兹函数</td>
+<td>sec-4-11-plot-various-kinds-of-spectra.md（4.11.1 NH3BF3）；sec-3-13-plotting-spectra.md（3.13.1/3.13.3 选项 14）</td>
+</tr>
+<tr>
+<td>IR 透射率谱（非吸收谱）</td>
+<td>同上（IR 强度展宽曲线）</td>
+<td>判据是曲线形状而非纵轴绝对值；对照透射率实验谱时把左 Y 轴反转：选项 4 输入下限高于上限（如 6000,0,400），再输入 y 按比例联动右 Y 轴使零点对齐</td>
+<td>sec-4-11-plot-various-kinds-of-spectra.md（4.11.1 注）</td>
+</tr>
+<tr>
+<td>IR/Raman/VCD 非谐峰位与泛频/合频</td>
+<td>Gaussian freq=anharm 输出的非谐频率 + 非谐强度</td>
+<td>载入输出文件时按提示选非谐频率和强度代替简谐量；IR 用 freq，Raman 用 freq=raman，VCD 用 freq=VCD，Raman 非谐用 freq(raman,anharm)，VCD 非谐（G16 起）用 freq(VCD,anharm)；可只载入基频或同时载入泛频/合频</td>
+<td>sec-3-13-plotting-spectra.md（3.13.2 Gaussian 输入文件）</td>
+</tr>
+<tr>
+<td>普通 Raman 光谱形状/峰位</td>
+<td>各振动模式 Raman 活性 Si（Å⁴/amu）或换算后的 Raman 强度 Ii</td>
+<td>严格对照必须先经选项 19 把活性换算为强度再展宽，换算式 Ii=C(ν0−νi)⁴Si/(νiBi)，Bi=1−exp(−hcνi/kT)，C=10⁻¹²，ν0 与 T 按实验条件输入（如 15000 cm⁻¹、298.15 K）；只看峰位时直接展宽活性亦可</td>
+<td>sec-3-13-plotting-spectra.md（3.13.1 Raman）；sec-4-11-plot-various-kinds-of-spectra.md（4.11.5 2-methyloxirane，B3LYP/6-31G* 频率标度 0.9614）</td>
+</tr>
+<tr>
+<td>预共振 Raman 光谱</td>
+<td>特定入射波长下的 Raman 活性（Gaussian CPHF=rdfreq 指定波长）</td>
+<td>入射波长取接近 TDDFT 激发能的值（如 150/140 nm 对应 S0→S1/S0→S2 的 147.36/138.81 nm，TD-B3LYP/6-31G*）；载入时选择对应入射频率的数据分支，选 1（0.0，静态极限）即退回普通 Raman</td>
+<td>sec-4-11-plot-various-kinds-of-spectra.md（4.11.5 预共振部分）</td>
+</tr>
+<tr>
+<td>UV-Vis 吸收峰归属（峰来自哪个跃迁）</td>
+<td>各激发态激发能 + 振子强度 f</td>
+<td>设强度阈值输出单个跃迁贡献曲线（如选项 15 取 f&gt;0.01），对照总谱峰包内各跃迁分量；乙酸例中 S0→S3（146.28 nm，f=0.036）无独立峰，其分量并入 S0→S5 主峰；选项 0 后控制台打印极值辅助定峰位</td>
+<td>sec-4-11-plot-various-kinds-of-spectra.md（4.11.2 乙酸）</td>
+</tr>
+<tr>
+<td>UV-Vis/ECD 与实验曲线的整体对齐</td>
+<td>振子强度 f（UV-Vis）、旋光强度 R（ECD）展宽曲线</td>
+<td>经选项 7 缩放（UV-Vis 在 eV/nm 下经验值 28700.0）与选项 12 X 方向平移对齐实验峰；ECD 只看形状、Y 轴记 arb.；ECD 推荐速度表象 R(velocity)，基组完备时与长度表象收敛一致</td>
+<td>sec-3-13-plotting-spectra.md（3.13.1 ECD、3.13.3 选项 7/12）</td>
+</tr>
+<tr>
+<td>柔性分子 UV-Vis/ECD（多构象平均谱）</td>
+<td>各构象 TDDFT 输出 + Boltzmann 权重</td>
+<td>multiple.txt 每行写“构象输出路径 权重”（如 a 0.6046、b 0.1950、c 0.1686、d 0.0317），载入后粗红曲线即加权谱；判据是加权谱而非单构象谱与实验比：plumericin 例构象 a 占 60.5% 主导轮廓，但约 180 nm 处 ECD 峰只来自构象 c，缺之则丢失</td>
+<td>sec-4-11-plot-various-kinds-of-spectra.md（4.11.4 plumericin）；sec-3-13-plotting-spectra.md（3.13.4，Gibbs 能用 B3LYP/6-31G* 优化+频率、零点能标度 0.9806，M06-2X/def2-TZVP 单点 + Gibbs 热校正定权重）</td>
+</tr>
+<tr>
+<td>UV-Vis 方法/基组差异 aromatripper</td>
+<td>同一分子不同水平（ZINDO、TD-PBE0/6-31G*、TD-PBE0/def-TZVP）</td>
+<td>multiple.txt 第二列写图例（非数字）同图绘制，曲线经选项 2 导出 curveall.txt 后外部重绘比较；判据：基组影响小（两种 TD-PBE0 轮廓相近），ZINDO 轮廓显著不同；靛蓝例</td>
+<td>sec-4-11-plot-various-kinds-of-spectra.md（4.11.6 靛蓝多体系比较）</td>
+</tr>
+<tr>
+<td>含重元素 UV-Vis（SOC 影响）</td>
+<td>ORCA SOC-TDDFT 输出（%tddft 中 dosoc true，如 nroots=40 TDA false dosoc true）</td>
+<td>同一 .out 文件载入两次，第一次选 y 载入 SOC 修正数据、第二次选 n 载入未修正数据（multiple.txt 第一行必须对应 SOC 情形）；判据是两曲线差异不可忽略时必须用 SOC 谱对照实验；Ir(ppy)3 例；SOC 把每个三重态劈裂为三个子能级（如 50 单重 + 50 三重 → 200 个态）</td>
+<td>sec-4-11-plot-various-kinds-of-spectra.md（4.11.6 SOC 比较）；sec-3-13-plotting-spectra.md（3.13.2 ORCA SOC）</td>
+</tr>
+<tr>
+<td>手性分子绝对构型：VCD 符号序列</td>
+<td>各振动模式旋光强度（Δε=εL−εR 展宽，单位 arb.）</td>
+<td>Gaussian freq=VCD 输出作输入（B3LYP/6-31G* 例对全部频率乘 0.9614）；洛伦兹展宽后只看曲线形状/符号序列与实验比，绝对值无意义；S-methyloxirane 例</td>
+<td>sec-4-11-plot-various-kinds-of-spectra.md（4.11.7 VCD）；sec-3-13-plotting-spectra.md（3.13.1 VCD、3.13.2 输入）</td>
+</tr>
+<tr>
+<td>手性分子绝对构型：ROA 符号序列</td>
+<td>Gaussian freq=ROA 输出的 Ai 项（ROA）与伴生 Ri 项（Raman），B3LYP/aug-cc-pVDZ（含弥散函数）</td>
+<td>对全部频率乘标度因子（该水平取 0.97），再经选项 19 按 (ν0−νi)⁴Ai/(νiBi) 换算为真实 ROA 强度（入射波长须与实验一致，如 532 nm，G16 例含 500/532/600 nm 三个频率）；选 ROA SCP(180) 背散射；只看形状，出版时可经选项 17 去掉纵轴标签</td>
+<td>sec-4-11-plot-various-kinds-of-spectra.md（4.11.7 ROA）；sec-3-13-plotting-spectra.md（3.13.1 ROA）</td>
+</tr>
+<tr>
+<td>手性判据量化：ECD/CPL 不对称因子 g</td>
+<td>跃迁电/磁偶极矩及旋光强度 R、偶极强度 D</td>
+<td>g=R/D 相关量直接与文献值比：(P)-[6]螺烯 S3（CAM-B3LYP/def2-SV(P)，CH2Cl2 下 IEFPCM，30 个态）g_CD=0.0091，与 Chem. Sci. 12, 5522 (2021) 图 3(f) 的 0.85×10⁻² 符合；S1/S2 的 R 与 D 可忽略，S3 为最低可观测激发</td>
+<td>sec-4-18-electron-excitation-analysis.md（4.18.18）</td>
+</tr>
+<tr>
+<td>¹H/¹³C NMR 化学位移（参比法）</td>
+<td>各核各向同性磁屏蔽 σiso（Gaussian/ORCA/BDF NMR 输出，或 CP2K .data）</td>
+<td>δ≈σref−σ，σref 与样品必须同一水平（含溶剂模型）；乙醛例几何 B3LYP/def2-SVP 真空优化、屏蔽 B97-2/def2-TZVP + SMD 氯仿，¹³C 的 TMS 参比 186.8707（内置数据输 a 即可），得 29.657 ppm（C1）与 208.011 ppm（C5)；¹H 用内置同水平 TMS 数据；甲基三氢 δ 取平均（2.070 ppm）</td>
+<td>sec-4-11-plot-various-kinds-of-spectra.md（4.11.10.1 乙醛）；sec-3-13-plotting-spectra.md（3.13.5 理论/用法选项 7/10）</td>
+</tr>
+<tr>
+<td>¹H/¹³C NMR 化学位移（缩放法，低成本水平）</td>
+<td>同上 σiso</td>
+<td>δ=aσ+b，用预拟合斜率截距（B3LYP/6-31G* 真空优化 + B3LYP/6-31G* SMD 氯仿算屏蔽：¹H 取 a=−1.0157、b=32.2109；¹³C 取 a=−0.9449、b=188.4418，NMR 界面选项 7→2，输 a 调用内置）；无需另算参比，系统误差已被拟合吸收；吡啶例</td>
+<td>sec-4-11-plot-various-kinds-of-spectra.md（4.11.10.2 吡啶）；sec-3-13-plotting-spectra.md（3.13.5）</td>
+</tr>
+<tr>
+<td>水溶液 ¹H NMR（含可互变构象，与 D2O 实验谱比）</td>
+<td>两构象屏蔽值按权重平均 δ̄ᴬ=Σipiδiᴬ</td>
+<td>valine_multiple.txt 写 conf1.out 0.825、conf2.out 0.175（B97-2/def2-TZVP 屏蔽，几何 B3LYP-D3(BJ)/6-311G** 优化，均用 IEFPCM 水；TMS 参比 31.8294 同水平另算）；每个甲基三氢平均；在 D2O 中氨基三氢被氘代，经选项 11 置零剔除；加权谱与 hmdb D2O 实验谱比涵盖全部主要峰</td>
+<td>sec-4-11-plot-various-kinds-of-spectra.md（4.11.10.3 缬氨酸）</td>
+</tr>
+<tr>
+<td>PES 峰位/相对间距（价带区）</td>
+<td>占据轨道能取负（电子结合能）展宽的 TDOS（主功能 10 → 选项 12 PES 界面，只能用 eV + 高斯展宽，默认各轨道强度 1.0、FWHM 0.2 eV）</td>
+<td>Koopmans 定理仅近似（忽略相关与弛豫，DFT 下偏差大，QTP17 例外）；定量对照用广义 Koopmans：全部结合能加 shift=第 1 VIP+E(HOMO)（选项 3），使第一峰恰对第 1 VIP；Cr3Si12⁻ 例 PBE/6-311+G* 下 HOMO −0.77 eV、VIP 2.56 eV、shift=1.79 eV，X 轴取 1~4.5 eV，模拟谱与 J. Phys. Chem. A 122, 9886 (2018) 实验谱符合很好；Y 绝对值无意义（选项 13 可隐藏 Y 轴）</td>
+<td>sec-3-12-plotting-density-of-states-pes-and-cohp.md（3.12.5）；sec-4-10-plot-density-of-states-dos-maps.md（4.10.4 Cr3Si12⁻）</td>
+</tr>
+<tr>
+<td>荧光发射峰位</td>
+<td>S1 几何下 S1→S0 的激发能 + 振子强度 f</td>
+<td>画法与 UV-Vis 相同，区别两点：(1) 用发射态优化几何（Kasha 规则下为 S1；BODIPY 例 TD-B3LYP/6-311G* 优化 S1 并做频率确认无虚频）；(2) 经选项 20 把 S2、S3 的 f 置零；BODIPY 模拟峰 510.7 nm 对实验 512 nm；磷光（T1→S0）须用计入 SOC 的 f（如 Dalton SOC-TDDFT 基于 T1 几何），Gaussian 无 SOC 给出严格零 f</td>
+<td>sec-4-11-plot-various-kinds-of-spectra.md（4.11.11 BODIPY）；sec-3-13-plotting-spectra.md（3.13.1 UV-Vis/荧光、3.13.3 选项 20）</td>
+</tr>
+<tr>
+<td>溶液/染料颜色预测</td>
+<td>可见区（360~830 nm）UV-Vis 谱 → CIE1931 2° 三刺激函数 → XYZ → sRGB（无 Gamma 校正），超界缩放到 [0,1]，取互补色 (1−R,1−G,1−B)，再把吸收色与互补色最大分量移到 1.0 得最大亮度色</td>
+<td>判据是右下角最大亮度互补色即呈现色：靛蓝（理论谱，主功能 11 → 25）呈深蓝；Allura Red（实验谱文本两列：nm 波长 + 吸光度，例 examples/spectra/Allura_red_UV-Vis.txt）呈红、吸收青色；荧光色预测时先按荧光画法置零再取 color 标签色（互补色此时无用）；多构象可见吸收差异大时须用 multiple.txt 加权谱</td>
+<td>sec-3-13-plotting-spectra.md（3.13.7）；sec-4-11-plot-various-kinds-of-spectra.md（4.11.14）</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>说明：自旋–自旋耦合（J 耦合）与芯电子 XPS 在手册光谱模块中无对照做法（NMR 模块只处理磁屏蔽/化学位移，PES 只处理价带占据轨道展宽），故未立条目，不编造。</p>
+</blockquote>
+<h2 id="二晶体结构-vs-计算">二、晶体结构 vs 计算</h2>
+<table>
+<thead>
+<tr>
+<th>实验技术/数据</th>
+<th>计算对应量</th>
+<th>对照方法与判据（含关键参数）</th>
+<th>实例出处</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>XRD晶体结构（.cif）作计算起点，团簇模型</td>
+<td>团簇或超胞模型单点或优化波函数</td>
+<td>.cif直接载入；原胞扩展为大超胞再截取团簇，团簇足够大并做尺寸收敛测试，不讨论边界原子电子结构；X射线衍射实验定结构须始终优化H位置；原子位置已由实验以满意分辨率确定则略去重原子几何优化；研究表面反应或吸附或晶体内部反应时固定边界重原子模拟体相环境、只优化团簇中心区；共价晶体用氢饱和边界原子并优化所加氢位置；离子或半离子晶体用嵌入团簇模型（QM区周围加许多层点电荷，点电荷取氧化态，最近一层环境原子加capped ECP作缓冲层）</td>
+<td>sec-2-9-analysis-of-periodic-systems.md；sec-4-12-quantitative-analysis-of-molecular-surface.md；examples\Urea_crystal.pdb</td>
+</tr>
+<tr>
+<td>XRD键长、键角、二面角 vs 优化几何</td>
+<td>Multiwfn内坐标测量值</td>
+<td>主功能0 Tools Measure geometry：输入2、3、4个原子序号回车，返回键长、键角、二面角；Export all internal coordinates导出全部内坐标到int_coord.txt；无GUI版主菜单输入geomparm导出到指定文件；逐项对比计算值与晶体值偏差；Print XYZ coordinates in Angstrom与Print fractional coordinates（仅有晶胞信息时可用）辅助核对坐标</td>
+<td>sec-3-2-showing-molecular-structure.md</td>
+</tr>
+<tr>
+<td>分子晶体中分子间弱相互作用位置（氢键与紧密接触区）</td>
+<td>Hirshfeld或Becke表面加映射函数d_norm或电子密度或sign(λ2)ρ</td>
+<td>主功能12选项1选Hirshfeld（输入中心分子原子序号）或Becke（只需几何结构和原子共价半径，电子密度消失远区仍可构建，轮廓与Hirshfeld相当，大体系Hirshfeld更快），选项0开始计算，默认映射函数d_norm（选项2可切换电子密度或sign(λ2)ρ）；d_norm公式为$d_{\mathrm{norm}}=\frac{d_{\mathrm{i}}-r_{\mathrm{i}}^{\mathrm{vdW}}}{r_{\mathrm{i}}^{\mathrm{vdW}}}+\frac{d_{\mathrm{e}}-r_{\mathrm{e}}^{\mathrm{vdW}}}{r_{\mathrm{e}}^{\mathrm{vdW}}}$，其中$d_i$与$d_e$为表面点到内外最近核距离；Hirshfeld表面即片段权重$w_P^{\mathrm{Hirsh}}=0.5$等值面，$w_P^{\mathrm{Hirsh}}(\mathbf{r})=\sum_{A\in P}w_A^{\mathrm{Hirsh}}(\mathbf{r})$，$w_A^{\mathrm{Hirsh}}(\mathbf{r})=\frac{\rho_A^0(\mathbf{r})}{\sum_B\rho_B^0(\mathbf{r})}$；判据为d_norm小（红色区）即接触紧密、相互作用显著，电子密度大区同理</td>
+<td>sec-3-15-quantitative-analysis-of-molecular-surface.md；sec-4-12-quantitative-analysis-of-molecular-surface.md</td>
+</tr>
+<tr>
+<td>晶体中H键供体与受体类型及作用强度</td>
+<td>Hirshfeld指纹图（X为$d_i$，Y为$d_e$）</td>
+<td>后处理菜单20 Fingerprint plot and local contact analyses，选项0启动整体指纹图，选项1存图为.pdf；判据为左下两尖峰即同时作供体（左侧尖峰，$d_i<d_e$）与受体（底部尖峰，$d_i>d_e$），单侧一尖峰即纯供体或纯受体，尖峰越尖锐、分布越窄则H键特征越强；黄、绿、紫分别表示点密度高、中、低；尿素中心分子序号如16,36,58,2,77,55,34,13</td>
+<td>sec-3-15-quantitative-analysis-of-molecular-surface.md；sec-4-12-quantitative-analysis-of-molecular-surface.md；examples\Urea_crystal.pdb</td>
+</tr>
+<tr>
+<td>特定接触（某H对某O）对总堆积的贡献</td>
+<td>局域接触面指纹图加接触面积</td>
+<td>指纹菜单选项1与选项2分别定义inside atoms与outside atoms（各取序号范围与元素两条件之交集，inside须属当前片段，outside须属片段外），选项0重算后屏幕输出局域面积、总面积与占比；选项3 Calculate contact area between different elements一次输出每对元素接触面积与百分比；选项4导出局域点到finger.pqr与全表面finger_all.pqr（Charge列为映射函数值，VMD按Points加Charge着色），选项5导出di_de.txt与di_de_all.txt；实例数为中央尿素四氢局域面65.639 Å²占总面94.511 Å²的69.45%，某H对特定O局域面6.8 Å²占7.2%，H-O与O-H合计32.355 Å²占34.234%</td>
+<td>sec-4-12-quantitative-analysis-of-molecular-surface.md；examples\Urea_crystal.pdb</td>
+</tr>
+<tr>
+<td>分子与晶体空腔直径、环内径 vs 主客体或包合物空腔尺寸</td>
+<td>空腔直径cav</td>
+<td>主菜单或100/21下输入cav：选定空腔周围原子、定球心（常用所选原子几何中心，选项1），算与最近vdW球相切半径，最速上升法迭代调球心使半径最大（每步球心最大变化0.3 Å，位移小于0.01 Å收敛），直径即空腔直径；vdW半径取Bondi定义；多空腔靠原子选择加初始球心定位到最近空腔；也适用于周期晶体不规则空腔与环体系内径；实例为开口富勒烯examples\open_fullerene.pdb（原子1,12-20,23-67,101），初球心半径1.677 Å经5次迭代终半径1.707 Å，直径3.414 Å，VMD载入结构后粘贴屏显四条tcl命令显示黄色空腔球</td>
+<td>sec-3-100-other-functions-part-1.md；sec-4-100-other-functions-part-1.md；examples\open_fullerene.pdb</td>
+</tr>
+<tr>
+<td>分子尺寸（直径、长宽高 vs 晶体堆积与孔径匹配）</td>
+<td>几何直径与包围盒三边</td>
+<td>100/21下输入size：旋转使三主轴平行笛卡尔轴、几何中心置原点，按边界原子坐标加Bondi vdW半径得长宽高；直径为最远原子对距离加两端vdW半径；实例为alpha-cyclodextrin的examples/alpha-cyclodextrin.pdb：最远44(H)对123(H)为14.027 Å加2×1.2得直径16.427 Å，半径8.213 Å，三边15.341、14.714、9.511 Å；后处理选项1图形窗看包围盒（Ratio of atomic size设4.0即vdW球），选项2导出旋转平移后new.pdb（含CRYST1，VMD中pbc box显示盒子），另可载入examples\principal_axes.tcl显示三主轴</td>
+<td>sec-3-100-other-functions-part-1.md；sec-4-100-other-functions-part-1.md；examples/alpha-cyclodextrin.pdb</td>
+</tr>
+<tr>
+<td>共轭与稠环体系平面性 vs XRD褶皱</td>
+<td>分子平面性参数MPP与偏离跨度SDP</td>
+<td>100/21（或主菜单）输入MPP，输入所考原子序号：拟合平面后$MPP = \sqrt{\frac{1}{N_{\mathrm{atom}}} \sum_i d_i^2}$，$d_i^{\mathrm{s}} = \frac{Ax_i + By_i + Cz_i + D}{\sqrt{A^2 + B^2 + C^2}}$，$SDP={d}_{\mathrm{max}}^{\mathrm{s}}-{d}_{\mathrm{min}}^{\mathrm{s}}$；MPP为总体偏离，SDP为偏离跨度，二者互补；导出.pqr（电荷列为$d^s$，VMD按Charge着色，红蓝分居平面两侧）；多帧.xyz可选全部帧，输出MPP_SDP.txt（三列为帧号、MPP、SDP）与ds.pqr（配examples\scripts\ds.tcl在VMD动态着色）；实例为[14]annulene全碳MPP为0.127145 Å、SDP为0.435354 Å，平面性有限，C18 MD轨迹examples\C18_MD_500.xyz看MPP与SDP演化</td>
+<td>sec-3-100-other-functions-part-1.md；sec-4-100-other-functions-part-1.md</td>
+</tr>
+<tr>
+<td>晶体配位环境（配位数 vs XRD配位）</td>
+<td>DFT-D3形式原子间连接性与配位数</td>
+<td>100/9：$CN_{A} = \sum_{B \neq A} \frac{1}{1 + \exp\{-16 \times [(4/3)(R_{A} + R_{B}) / r_{AB} - 1]\}}$，其中$R$为Pyykkö共价半径，$r_{AB}$为核间距；$I_{AB}$取同式，Sum of connectivity为粗配位，Sum of integer connectivity（nint求和）为实际配位，可导出connmat.txt矩阵；判据为整数和对照晶体第一配位壳原子数；$I$接近1.0视为成键、接近0.0视为无键，但$I$不作键级用</td>
+<td>sec-3-100-other-functions-part-1.md</td>
+</tr>
+<tr>
+<td>多孔体系与实验晶体自由区域及自由体积 vs 孔隙发育</td>
+<td>原始与平滑格点数据的自由体积及占比</td>
+<td>主功能300子功能1：输入含胞信息文件（.cif、.gro、带CRYST1的.pdb等，否则假设正交胞），选项1设格点（原点、盒长、间距如0.25 Å）启动；原始格点为任一格点到原子距离小于Bondi vdW半径记占据，自由体积按占据格点数乘格点体积，占比为自由体积除以整盒体积；平滑格点为初值1.0减各原子开关函数、负值置零（高斯、Becke、误差函数三选，默认缩放1.0误差函数，等值面通常取0.5）；选项2开关周期镜像、选项4选平滑函数、选项5设边界闭合、选项6设vdW半径缩放；实例为煤examples\coal.pdb（整盒30038.649 Å³，自由14783.074 Å³占49.21%，高斯FWHM取1.8倍vdW半径）与COF的examples\COF_12000N2.cif（非正交胞，整盒2996.151 Å³，自由1953.217 Å³占65.19%，导出free_smooth.cub经VMD或VESTA渲染）</td>
+<td>sec-3-300-other-functions-part-3.md；sec-4-300-other-functions-part-3.md；examples\coal.pdb；examples\COF_12000N2.cif</td>
+</tr>
+<tr>
+<td>周期体系波函数分析路线（晶体直接计算）</td>
+<td>CP2K周期波函数.molden与可用分析清单</td>
+<td>CP2K输入DFT段PRINT段MO_MOLDEN段加NDIGITS 9；周期体系加WRITE_CELL T写[Cell]原胞信息，赝势加WRITE_PSEUDO T写[Pseudo]价电子数，或用[Nval]为特定元素指定价电子；CP2K低于2026.2手动加[Cell]三行原胞矢量（Å）或晶胞参数行，或当前目录放[Cell].txt；Multiwfn不考虑k点采样故CP2K只用gamma点，原胞须足够大，小原胞（如金刚石常规原胞约3.5 Å）把PBCnxnynz设2,2,2；弥散不兼容方法（Mayer键级、Mulliken布居）须用MOLOPT-SR-GTH而不用DZVP-GTH；ESP分析尚不支持；实例输入为examples\PBC\CP2K_diamond_2x2_DZVP-MOLOPT.inp</td>
+<td>sec-2-9-analysis-of-periodic-systems.md；examples\PBC\CP2K_diamond_2x2_DZVP-MOLOPT.inp</td>
+</tr>
+<tr>
+<td>晶体结构输入、超胞与团簇构建及PBC几何分析开关</td>
+<td>原胞信息文件、超胞与团簇操作、PBC参数</td>
+<td>可提供原胞信息文件为.cif、CP2K改后.molden、含Ndim字段且Ndim大于0的.mwfn、含CRYST1的.pdb与.pqr、.gro、含特定CRYSIN字段的.mol2、含Tv的Gaussian输入、Gaussian PBC的.fch与fchk、CP2K输入或restart、VASP的POSCAR与CHGCAR与CHG与ELFCAR与LOCPOT、第二行加Tv_1与Tv_2与Tv_3或Lattice标签的.xyz、末尾加[Cell]的.wfn；.cif经300/7选项19建超胞、选项25提分子团簇（以原子1所在分子为中心分子，接触判据取推荐值1.2，勿手动预扩超胞）；明确支持PBC的功能为主功能0显示、主功能13格点处理、promolecular RDG与NCI及IGM与mIGM与aIGM与amIGM、主功能20子功能6 vdW势、色散原子贡献、100/9配位数、cav空腔直径、300/1自由体积、300/8表面距离投影、200/14 Domain、200/9 BLA与BOA；settings.ini中ifdoPBCxyz开关各方向周期、PBCnxnynz控制各方向相邻镜像数（默认1,1,1）、expcutoff_PBC控制指数求值截断，二维平行XY取1,1,0，一维沿Z取0,0,1</td>
+<td>sec-2-9-analysis-of-periodic-systems.md；menu/func-300.md</td>
+</tr>
+</tbody></table>
+<h2 id="三反应性-vs-实验">三、反应性 vs 实验</h2>
+<table>
+<thead>
+<tr>
+<th>实验技术/数据</th>
+<th>计算对应量</th>
+<th>对照方法与判据（含关键参数）</th>
+<th>实例出处</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>亲电取代选择性（苯酚邻/对位活化，取代基效应）</td>
+<td>Fukui 函数 f⁻ 实空间函数等值面</td>
+<td>主功能 <code>5</code> 自定义操作（ρN−ρN−1）或主功能 <code>22</code> 选项 <code>3</code> 算格点后看等值面。B3LYP/6-31G* 是有意义结果最低可接受水平；N−1 态必须用中性态几何做单点、绝不能重优化（Fukui 偏导数中外势 ν 即核坐标恒定）。判据：f⁻ 大正值区 = 亲核性位点 = 易受亲电攻击。等值面取 0.007 a.u.（绿/蓝 = 正/负）：f⁻ 最正定域在 O12、C1、C3、C5，即只有对位和邻位被羟基活化，与羟基邻对位定位常识一致</td>
+<td>sec-4-5-generate-grid-data-and-view-isosurface-map.md</td>
+</tr>
+<tr>
+<td>亲电取代选择性（苯酚邻/对位活化，取代基效应）</td>
+<td>对偶描述符 Δf（精确式 vs 自旋密度近似式）</td>
+<td>基于 N−1 与 N+1 态自旋密度求 Δf，等值面 0.02 a.u.：环内除不能反应的 C4 外，对位碳有明显 Δf 负值、两邻位碳不如两间位碳正，即只有对位和邻位碳被羟基活化，结论与 f⁻ 完全相同。基于电子密度精确式等值面取 0.01 a.u.，虽定性一致但邻位与间位差别不显著、辨别优先位点能力不好：用精确式求 Δf 不一定比自旋密度近似式得到更好结果</td>
+<td>sec-4-5-generate-grid-data-and-view-isosurface-map.md</td>
+</tr>
+<tr>
+<td>亲电/亲核位点定量排序（取代基活化强弱比较）</td>
+<td>凝聚 Fukui 函数 f_A⁺/f_A⁻/f_A⁰、凝聚对偶描述符 Δf_A（Hirshfeld 电荷）</td>
+<td>公式原样：f_A⁺=q_N^A−q_{N+1}^A；f_A⁻=q_{N−1}^A−q_N^A；f_A⁰=(q_{N−1}^A−q_{N+1}^A)/2；Δf_A=f_A⁺−f_A⁻=2q_N^A−q_{N+1}^A−q_{N−1}^A。做法：同一几何下算 N、N+1、N−1 三态 Hirshfeld 电荷再代入；日常直接用主功能 <code>22</code> 选项 <code>2</code> 自动算并导出 CDFT.txt（与手算完全一致）。判据：原子间直接比 f_A⁻（亲电）/f_A⁺（亲核）/Δf_A 数值。Hirshfeld 电荷已被证实为合适选择。苯酚例：C1(p) f⁻=0.144、CDD=−0.084；C3(o) f⁻=0.092；C2(m) f⁻=0.066</td>
+<td>sec-4-7-population-analysis-and-atomic-charge-calculation.md</td>
+</tr>
+<tr>
+<td>高对称/简并体系反应位点（C60 [6,6] 键）</td>
+<td>轨道加权 Fukui 函数 f_w⁺/f_w⁻/f_w⁰、轨道加权对偶描述符 Δf_w</td>
+<td>主功能 <code>22</code> 选项 <code>4</code> 设 Δ（默认 0.1 Hartree，不满意再调）→ 选项 <code>5</code> 看前 10 权重 → 选项 <code>7</code> 算格点。只收闭壳层单行列式输入（.mwfn/.fch/.molden/.gms）。C60 例（B3LYP/6-31G* .fch）：等值面 0.0003 a.u.，过大则完全不可见；分布服从分子点群对称性（而 HOMO 密度或有限差分 ρN−ρN−1 反直觉地破缺对称、在揭示位点时毫无用处）。判据：[6,6] 键上方 Δf_w 比其它区域明显更负 = 最高亲电反应活性；五元环中心上方表面极小略为正、无参与亲电反应的明显倾向</td>
+<td>sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis.md</td>
+</tr>
+<tr>
+<td>高对称/简并体系反应位点（环[18]碳长短键选择性）</td>
+<td>轨道加权对偶描述符 Δf_w</td>
+<td>输入 ωB97XD/def2-TZVP 水平 .fchk；Δf_w 等值面 0.0008 a.u.。判据：短键被 Δf_w 负值包围易亲电、长键被正值包围易亲核；环内侧绝对值更大、更活泼</td>
+<td>sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis.md</td>
+</tr>
+<tr>
+<td>亲电/亲核位点（CH3Cl 的 SN2 碳端与 σ-hole 氯端）</td>
+<td>轨道加权对偶描述符 Δf_w</td>
+<td>输入 <code>CH3Cl.fch</code>，同 C60 流程算格点后导出 OW_DD.cub 用 VMD 渲染。判据：Cl 周围环形负区呈 Lewis 碱特征；C−Cl 键两端 Δf_w 明显为正，碳端对应 SN2 位点、氯端表现为 Lewis 酸，与存在 σ-hole 区域的事实一致</td>
+<td>sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis.md</td>
+</tr>
+<tr>
+<td>简并 HOMO/LUMO 体系（苯）位点分析</td>
+<td>基于电子密度的 f_Q/Δf_Q：f_Q⁺=(ρ_{N+p}−ρ_N)/p；f_Q⁻=(ρ_N−ρ_{N−q})/q；f_Q⁰=(f_Q⁺+f_Q⁻)/2；Δf_Q=f_Q⁺−f_Q⁻</td>
+<td>主功能 <code>22</code> 选项 <code>−3</code> 设前线轨道简并度 p、q（看最低 10 虚/最高 10 占据轨道能量，能差很小如小于 0.01 eV 视为简并；Multiwfn 按与 LUMO 差小于 0.01 eV 自动判 LUMO 简并度；无严格阈值，结合带隙与轨道形状判断）。苯例 p=q=2，选项 <code>1</code> 生成 N、N+2、N−2 单点输入，电荷/多重度取 (0 1)、(−2 3)、(2 3)；N+1/N−1 只为算 I1/A 才需另行定义。考虑 HOMO 简并的 f⁻=(ρN−ρN−2)/2 完全服从对称、正区在碳上下平面两侧（π 电子易亲电）；常规 ρN−ρN−1 违背对称、误导位点。B3LYP 加弥散基组（如 6-311+G*）因自相互作用误差致 N+2 电子过度弥散（强 Rydberg 特征）且破缺对称，不可用；推荐长程校正泛函（如 ωB97XD）配无弥散 3-zeta 基组（如 6-311G*）</td>
+<td>sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis.md</td>
+</tr>
+<tr>
+<td>亲电取代选择性（苯酚，ESP 视角与方法局限）</td>
+<td>vdW 表面 ESP 极值</td>
+<td>主功能 <code>12</code> 定量表面分析。全局最小 −0.041203 a.u.（近 O12）、全局最大 0.085761 a.u.；局域极小 1、2 均为 −19.11 kcal/mol（环上方/下方 π 电子），故 C1 为亲电理想位点、与羟基邻对位定位部分一致。然而全局最小点最靠近 O12，O12 却不是亲电位点：此矛盾揭示 ESP 方法的内在局限。警示：ESP 通常不是预测反应位点的可靠性质（见 Acta Phys.-Chim. Sin. 30, 628 (2014) 对比结论）</td>
+<td>sec-4-12-quantitative-analysis-of-molecular-surface.md</td>
+</tr>
+<tr>
+<td>亲电/自由基进攻位点（苯酚 ALIE 视角）</td>
+<td>平均局域电离能 ALIE（Ī）表面极小</td>
+<td>主功能 <code>12</code> 映射函数选 ALIE。表面取 ρ=0.0005 a.u. 等值面（用 0.001 则 Ī 分布几乎不可分）；色标默认 0.32~0.36 a.u.。判据：Ī 越低电子束缚越松，表面极小即亲电/自由基有利位。极小 8、9 对应 O12 孤对（10.59 eV）；极小 4、5、11 与 3、7、10 对应 π 电子（约 8.9 eV）。ALIE 只对亲电/自由基进攻有指示意义，对亲核进攻完全无用（亲核位点看 ESP 或局域表面平均；LEA 为自定义函数 27，见 4.12.13）</td>
+<td>sec-4-12-quantitative-analysis-of-molecular-surface.md</td>
+</tr>
+<tr>
+<td>亲电取代选择性（苯酚 f⁻ 表面定量）</td>
+<td>vdW 表面上 f⁻ 极值与原子局域表面平均</td>
+<td>主功能 <code>12</code>，表面取 ρ=0.01 a.u.（f⁻ 在默认 0.001 面上太小）。双 Multiwfn 流程：A 生成面顶点存 surfptpos.txt；B 主功能 <code>5</code> 自定义操作（<code>-,phenol_N-1.wfn</code>）+ 选项 <code>100</code> 载入顶点坐标算 f⁻ 存 t.txt；回 A 载入。得 16 极小/12 极大（极大 0.0015<del>0.0024 a.u.）。后处理选项 <code>11</code>：邻位（C3/C5）与对位（C1）局域表面 f⁻ 平均大于间位（C2/C6），正确反映羟基邻对位导向。选项 <code>2</code> 导出 surfanalysis.pdb，备 density.cub/mapped.cub，用脚本 molsurfmap.vmd 在 VMD 画 f⁻ 映射表面（色标 0.0</del>0.002）</td>
+<td>sec-4-12-quantitative-analysis-of-molecular-surface.md</td>
+</tr>
+<tr>
+<td>亲核位点选择性（丙烯醛羰基碳 vs β 碳）</td>
+<td>原子局域 vdW 表面 ESP 平均值</td>
+<td>已知丙烯醛倾向在羰基碳和 β 碳发生亲核进攻，硬亲核试剂主攻前者（硬 = 电子云难极化，选择性由 ESP 主导）。α 碳边界有 ESP 表面最小且近 β 碳 → α 碳核电荷被屏蔽更重、非亲核位点；但全表面定量分析在两候选碳上无表面极大、给不出直接解释，故后处理选项 <code>11</code> 输出每原子局域表面性质（可存 locsurf.pqr 按 ResID 可视化划分）。判据：原子局域表面 ESP 平均值比全表面极值更可靠稳健</td>
+<td>sec-4-12-quantitative-analysis-of-molecular-surface.md</td>
+</tr>
+<tr>
+<td>σ-hole/π-hole/孤对电子强度定量（ClPO2）</td>
+<td>表面极值周围区域面积与平均 ESP、表面盆贡献</td>
+<td>后处理选项 <code>14</code>：π-hole 判据取 0.04 a.u.（小于极大 0.0756 a.u.）；σ-hole 极大仅 0.0425 a.u.故试取 0.03 a.u.（面积 4.88 Å²、区域平均 0.03617 a.u.，明显小于 π-hole）。经验：判据取极大值约 60%，或比极大低约 10 kcal/mol；无唯一完美判据。选项 <code>15</code> 类盆分割：氯 σ-hole 致极大 2 对正表面区贡献 21.539/(16.689+21.539+16.040)×100%；对称等价极值（极小 1/2、极大 1/3）报告取平均（每侧 π-hole (16.040+16.689)/2=16.4 Å²）</td>
+<td>sec-4-12-quantitative-analysis-of-molecular-surface.md</td>
+</tr>
+<tr>
+<td>亲电/亲核优先原子（取代基效应初筛）</td>
+<td>前线轨道组成（HOMO/LUMO 原子贡献百分比）与轨道等值面</td>
+<td>主功能 <code>8</code> 定量各基函数/壳层/原子/片段百分比组成，或主功能 <code>0</code> 直接看轨道等值面。判据：对 HOMO 贡献大的原子更可能是亲电进攻优先位点，对 LUMO 贡献大的原子更可能是亲核进攻优先位点。方法选择：推荐 Becke 或 Hirshfeld；无弥散函数时 Mulliken 同样好；NAO 不错但不适合虚轨道</td>
+<td>sec-4-A-special-topics-and-advanced-tutorials.md</td>
+</tr>
+<tr>
+<td>反应活性排序（亲电性/亲核性/软硬匹配讨论）</td>
+<td>局域软度 s⁺/s⁻/s⁰、局域超软度 s^(2)、局域亲电/亲核指数、相对亲电/亲核性</td>
+<td>定义原样：s⁺=S f⁺、s⁻=S f⁻、s⁰=S f⁰；s^(2)≈S²Δf；ω_loc=ω f⁺；N_Nu,loc=N_Nu f⁻；凝聚版 s_A⁺=S f_A⁺、s_A⁻=S f_A⁻、ω^A=ω f_A⁺、N_Nu^A=N_Nu f_A⁻、s_A^(2)≈S²Δf_A；相对亲电 s_A⁺/s_A⁻、相对亲核 s_A⁻/s_A⁺。主功能 <code>22</code> 选项 <code>−1</code> 设缩放因子后用选项 <code>3</code> 导出格点：苯酚例缩放因子取 CDFT.txt 中全局亲电指数 0.4309（eV，即 ω）得局域亲电指数（eV/Bohr³），取 softness²=6.828998（Hartree⁻²）乘 Δf 得局域超软度。全局量：ω=μ²/(2η)；N_Nu=E_HOMO(Nu)−E_HOMO(TCE)，模块内 TCE 的 E_HOMO 取 B3LYP/6-31G* 下 −0.335198 Hartree（非此级别自算再手动修正）；ω_cubic 需选项 <code>−1</code> 切 Yes 并备 N−2 态（I2=E(N−2)−E(N−1)），卤键二聚体 R−X···NH₃ 中卤素 ω_cubic^A 与结合能极好相关</td>
+<td>sec-3-25-conceptual-density-functional-theory-analysis.md</td>
+</tr>
+<tr>
+<td>亲电位点（马来酸酐 D-A 加成）与键的亲电/亲核性（丙烯腈）</td>
+<td>Fukui 势 V_f、对偶描述符势 DDP；键对偶描述符 BDD</td>
+<td>主功能 <code>22</code> 选项 <code>9</code> 算 V_f/DDP 格点：V_{f⁺} 越正越易亲核、V_{f⁻} 越正越易亲电；DDP=V_{f⁺}−V_{f⁻}，越正/越负分别越易亲核/亲电；DDP 分布比 Δf 平滑得多、更易辨认优先位点，但每带电态都要算 ESP 格点故宜用稀疏格点。马来酸酐例（M062X/6-311++G(d,p)）：DDP 绿色部分表明 C4、C5 最易亲电攻击，与实验已知其与亲核的顺式丁二烯发生 D-A 加成一致。选项 <code>10</code> 算 BDD（依次载入 N/N−1/N+1 .wfn 算模糊键级再有限差分；负为亲核键、正为亲电键；可导出 BDD.txt/BDD_sorted.txt）：丙烯腈例最负 1(C)−3(C) −0.562、6(C)−7(N) −0.365，最正 1(C)−6(C) 0.312、1(C)−7(N) 0.166</td>
+<td>sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis.md</td>
+</tr>
+<tr>
+<td>UV-Vis 吸收光谱（峰位/峰形对照）</td>
+<td>TDDFT 激发能 + 振子强度展宽曲线（f_ij=2/3(E_j−E_i)|μ_ij|²）</td>
+<td>主功能 <code>11</code> 选 UV-Vis。输入：Gaussian 输出 route 须加 IOp(9/40=4)（至少 9/40=3）使 |系数|&gt;0.0001 全打印；ORCA CIS/TDA 在 %cis/%tddft 加 TPrint 1E-8（等价）；ORCA 标准 TDDFT 须同名 .json（orca_2json 由 .gbw 生成，配 CIS:true、CISNRoots:true）；sTDA/sTDDFT 只打印三个最大系数（TPrint 对其无效）、归一化常被破坏，看 Deviation to expected normalization value。展宽：选项 <code>6</code> 选 Gaussian/Lorentzian/Pseudo-Voigt；能量 eV 或 nm 时曲线缩放比经验值 28700.0（1000 cm⁻¹ 时 1/(4.32×10⁻⁶)）；选项 <code>10</code> 切 eV/nm/1000cm⁻¹、选项 <code>12</code> 整体 X 平移、选项 <code>14</code> 能量缩放、选项 <code>15</code> 输出各跃迁贡献；柔性分子多构象用 multiple.txt 加权平均（例 0.6046/0.1950/0.1686/0.0317）</td>
+<td>sec-3-13-plotting-spectra.md</td>
+</tr>
+<tr>
+<td>荧光发射光谱（发射峰波长对照）</td>
+<td>S1 优化几何下的 S1→S0 跃迁（Kasha 规则）</td>
+<td>与吸收两点区别：用发射态优化几何；把除发射态外所有激发态振子强度置零（主功能 <code>11</code> 选项 <code>20</code>）。BODIPY 例：TD-B3LYP/6-311G* 优化 S1 + 频率检查无虚频（默认求 S1、S2、S3 三个最低激发态即可）；载入 S1 终点几何的激发数据后选项 <code>20</code> 选 2,3 置 0（只留 S1）；X 轴 300,750,50（nm），左 Y 0,1100,100 并 y 联动右 Y；选项 <code>0</code> 绘图。判据：模拟发射峰 510.7 nm vs 实验 512 nm</td>
+<td>sec-4-11-plot-various-kinds-of-spectra.md</td>
+</tr>
+<tr>
+<td>磷光发射光谱（T1→S0，自旋禁阻）</td>
+<td>T1 优化几何 + 计入 SOC 的 T1 激发能与振子强度</td>
+<td>Gaussian 路线不可行：不计 SOC 时 T1→S0 振子强度严格为零，而 Gaussian TDDFT 不能计 SOC。文档步骤：(1) 优化 T1 几何；(2) 基于 T1 几何用 Dalton 计 SOC 的 TDDFT 算 T1 振子强度与激发能；(3) 手抄为纯文本输入（UV-Vis 能量单位 eV，跃迁按能量升序）；(4) 载入后主功能 <code>11</code> 选 UV-Vis 直接选项 <code>0</code> 绘图即磷光谱。ORCA 可在 %tddft 设 dosoc true 直接得 SOC 前后两套激发能/振子强度对照画图（Ir(ppy)3 例；SOC 把每三重态劈为三个子能级，50 单重 + 50 三重 → 200 态）；CP2K 在 &amp;TDDFPT 加 &amp;SOC 段亦可画 SOC 修正 UV-Vis</td>
+<td>sec-4-11-plot-various-kinds-of-spectra.md</td>
+</tr>
+<tr>
+<td>电荷转移动力学/激发定性（LE vs CT vs Rydberg，给体→受体指认）</td>
+<td>空穴−电子分析全套指数：D、Sr（Sm）、t、Δσ、H_CT、HDI/EDI + hole&amp;electron/CDD/Sr 等值面 + 片段贡献</td>
+<td>主功能 <code>18</code> 选项 <code>1</code>。输入同样要求 IOp(9/40=4)/TPrint 1E-8；Rydberg 增大延展距离；hole/electron 全空间积分原则为 1.0（明显偏离则不可靠）；组态系数乘积 |w·w|&lt;0.001 项忽略；Mulliken 划分遇弥散函数或明显负原子贡献时换 Hirshfeld。判据经验表原样：LE = D 小、Sr 中~大、t&lt;0、Δσ 小；单方向 CT = D 大；中心对称 CT = D 小、t&lt;0、Δσ 大；Rydberg = D 小、Sr 小、t&lt;0、Δσ 大；t=D−H_CT，t&lt;0 即无实质分离。D−π−A 例（NH2-biphenyl-NO2，CAM-B3LYP/6-31G*，因忠实描述 CT；联苯为 π 桥，硝基/氨基分任受体/给体）：S0→S1 得 D=0.522 Å、Sr=0.519、t=−0.998，hole/electron 等值面 0.005 皆局域于硝基（空穴氧孤对瓣、电子沿硝基节面 π*），判 n→π* 型 LE；CDD 只看差值会抵消重叠区，不如 hole&amp;electron 图忠实</td>
+<td>sec-3-21-electron-excitation-analysis.md</td>
+</tr>
+<tr>
+<td>片段间电荷转移定量（4-硝基苯胺氨基→硝基）</td>
+<td>IFCT 片段间转移矩阵、CT%/LE%、电荷转移矩阵热图</td>
+<td>主功能 <code>18</code> 选项 <code>8</code>。4-硝基苯胺例（PBE0/6-311G* TDDFT + IOp(9/40=4)，片段 −NO₂/−NH₂/苯桥）：S0→S2 硝基自氨基接受 0.19001 e⁻、给出 0.00179 e⁻，净得 0.18821 e⁻，计入苯片段共增 0.61519；CT(%)=75.688%；突出项 benzene→nitro、amino→nitro、amino→benzene 皆自氨基指向硝基；hole&amp;electron 图一致（空穴在氨基+苯、电子在苯桥+硝基）。Mulliken 划分快但与弥散函数不兼容、有明显负贡献警告时换 Hirshfeld（输 <code>2</code>）；N-苯基吡咯例（CAM-B3LYP/6-31+G(d)，用弥散函数）须用 Hirshfeld 划分</td>
+<td>sec-4-18-electron-excitation-analysis.md</td>
+</tr>
+<tr>
+<td>长程 CT 预警与伪 CT 态甄别</td>
+<td>Δr 电荷转移长度指数、Λ 指数、ghost-hunter（MAC）指数</td>
+<td>主功能 <code>18</code> 选项 <code>4</code> 算 Δr（大值警示纯泛函可能失效）、选项 <code>14</code> 算 Λ（较贵，无特殊原因优先用 D/Sr 指数）、选项 <code>7</code> 算 ghost-hunter（判据常过严，只作必要非充分条件）。N-苯基吡咯例：CAM-B3LYP/6-31+G(d) TD(nstates=5) IOp(9/40=4)，用优化基态几何（对应垂直吸收过程）</td>
+<td>sec-3-21-electron-excitation-analysis.md</td>
+</tr>
+<tr>
+<td>形式氧化态（与化学直觉/配体无辜性争议对照）</td>
+<td>LOBA/mLOBA 氧化态（基于定域轨道成分）</td>
+<td>定义原样：核电荷 Z 的原子在 N 个占据 LMO 中成分大于阈值（如 50%，双占据计两次）则氧化态 Z−N；片段类推。流程：主功能 <code>19</code> 选项 <code>1</code> 只定域占据轨道 → 主功能 <code>8</code> 选项 <code>100</code> 输入阈值（如 50）得 LOBA，输入 m 得 mLOBA（强烈推荐，无阈值任意性、氧化态之和严格等于净电荷；成分用 Hirshfeld，比原文 Mulliken 稳健）。输入亦可用 Gaussian pop=saveNBO/saveNLMO 的 .fch（NBO/NLMO）。判据与实例：Fe(CN)6³⁻（<code>Fe(CN)6_3-.gjf</code>→.fch）Fe +3、C +2、N −3，加和 −3 合理；但阈值改 60 则碳/氧变 +4/−1、加和变 21，过渡金属 50~60% 最合适且 Fe 始终 +3；二茂铁 Fe +2、C5H5 片段（原子 1-5,7-11 经 −1 定义）−1，单碳 LOBA 全 +2 不合理；对称下 mLOBA 给 4/2/−2 不平衡，正确做法是把等价原子并为一片段求片段氧化态再平均（乙烷两碳一片段得 −6、每碳 −3；二茂铁 10 个等价碳一片段得 −12、每碳 −1.2，取整数 −1）</td>
+<td>sec-3-10-orbital-composition-analysis.md</td>
+</tr>
+</tbody></table>
+<h2 id="四物性-vs-实验">四、物性 vs 实验</h2>
+<table>
+<thead>
+<tr>
+<th>实验技术/数据</th>
+<th>计算对应量</th>
+<th>对照方法与判据（含关键参数）</th>
+<th>实例出处</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>溶液 ¹H/¹³C NMR 化学位移 δ（参比差值法）</td>
+<td>磁屏蔽张量对角项平均 σ_iso → δ，<code>δ=(σ^ref−σ)/(1−σ^ref)≈σ^ref−σ</code></td>
+<td>参比（¹H/¹³C 用 TMS）与样品必须完全相同计算设置（方法/基组/溶剂模型）；甲基三氢 δ 取平均；多构象按 <code>δ̄^A=Σᵢpᵢδᵢ^A</code> 加权；简并度规则：N 个位移最大间隔小于阈值（如 0.05 ppm）则简并度为 N，否则 1.0；洛伦兹展宽画谱。菜单：载入 Gaussian/ORCA/BDF NMR 输出（或 CP2K <code>.data</code>、或 <code>general.txt</code> 格式纯文本屏蔽文件）→ 主功能 <code>11</code> → <code>7 NMR</code> → 选项 <code>6</code> 选元素 → 选项 <code>7</code> 定化学位移（TMS 参考/斜率截距定标）→ <code>0</code> 绘图</td>
+<td>sec-3-13-plotting-spectra.md</td>
+</tr>
+<tr>
+<td>溶液 ¹H/¹³C NMR 化学位移 δ（线性缩放送法）</td>
+<td>同上，<code>δ=a×σ+b</code></td>
+<td>系数照搬原文、与级别绑定：B3LYP/6-31G* 真空优化 + B3LYP/6-31G* SMD(氯仿)算屏蔽时，¹H 用 a=-1.0157、b=32.2109，¹³C 用 a=-0.9449、b=188.4418；乙醛例几何 B3LYP/def2-SVP 真空优化、NMR 用 B97-2/def2-TZVP + SMD(氯仿)，¹³C 内置参考值 186.8707、¹H 为 31.5143（内置数据可直接输 <code>a</code> 调用）</td>
+<td>sec-3-13-plotting-spectra.md</td>
+</tr>
+<tr>
+<td>芳香体系环电流的 NMR 认知（屏蔽/去屏蔽分区）</td>
+<td>ICSS（NICS 负值的等值面）；各向同性 ICSS、各向异性 ICSS、ICSS_XX/YY/ZZ 分别对应 NICS、NICS_ani、NICS_XX/YY/ZZ 负值等值面；NICS_ani 定义为 ε₃−(ε₁+ε₂)/2（ε 为屏蔽张量本征值从小到大排序）；平面体系优先看 ICSS_ZZ/NICS_ZZ</td>
+<td>Multiwfn 自身不能算屏蔽张量，须 Gaussian 做 NMR 任务（每个 Bq 对应一格点；每文件 Bq 点数上限由 settings.ini <code>NICSnptlim</code> 控制；G09 D.01/E.01 遇内存分配 bug 时模板 route 加 <code>guess=huckel</code>，Link401 报错改 <code>guess=core</code>，G16 不需要）；平面在 XY 面时 ZZ 即法向。苯例：绿色等值面（Z 屏蔽为正）覆盖环上下 = 环电流屏蔽 = 强芳香，外侧蓝色（Z 屏蔽为负）= 去屏蔽。实例：<code>benzene.gjf</code> 低质量格点（130910 点；中质量更光滑但贵得多；默认外延 12 Bohr）；另有过环中心 ±8 Bohr 磁屏蔽曲线</td>
+<td>sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses.md</td>
+</tr>
+<tr>
+<td>芳香体系 NICS-1D 扫描曲线、积分 INICS、FiPC-NICS</td>
+<td>沿过环中心法线的扫描线上各点 NICS 分量 → NICS 曲线、积分值 INICS、FiPC-NICS（NICS_in 消失处的 NICS_out）</td>
+<td>主功能 <code>25</code> → <code>13</code>：定义扫描线（端点在拟合平面上下、垂直过中心；中心可用几何中心/质心/AIM 环临界点 RCP）→ 生成 Gaussian NMR 输入 → 载入输出选分量绘图/积分；FiPC-NICS 要求扫描线平行笛卡尔轴。实例：infinitene NICS_ZZ 曲线（拟合平面原子 35-37,68-69,71）；苯 FiPC-NICS 为 -9.332247 ppm（1.179 Å 处）vs 原始文献 -9.59 ppm（1.18 Å 处，PBE0/6-311++G**）；<code>nmr=csgt iop(10/93=2)</code> 可分解 NICS_σ,zz 等贡献</td>
+<td>sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses.md</td>
+</tr>
+<tr>
+<td>芳香体系 NICS-2D 平面图</td>
+<td>平面上各点 NICS 值颜色填充图（NICS 与 ICSS 仅差一个符号）</td>
+<td>主功能 <code>25</code> → <code>14</code>：定义平面 → 生成 <code>NICS_2D.gjf</code> → Gaussian 跑 NMR → 载入显示平面图；只关心平面图时优先用此功能（比三维 ICSS 格点便宜得多）。实例：coronene 默认 100×100 格点、外延距离可设、Z=1 Å 平面，模板 <code>template_NMR.gjf</code>（B3LYP/6-31+G*），输出 <code>coronene_NICS_2D.out</code></td>
+<td>sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses.md</td>
+</tr>
+<tr>
+<td>非平面/倾斜环芳香性（NMR 法向分量）</td>
+<td>法向磁屏蔽分量 σ⊥=uᵀσu（u 为环法向单位向量），其负值即 NICS_ZZ</td>
+<td>主功能 <code>25</code> → <code>4</code>：输入环中心（RCP 或几何中心）+ 拟合平面原子 + 磁屏蔽张量；法向分量负值即 NICS_ZZ；平面体系退化为通常 NICS(0)_ZZ、NICS(1)_ZZ（优于原始 NICS 定义）</td>
+<td>menu/func-25.md</td>
+</tr>
+<tr>
+<td>STM 谱学数据（针尖位置单点态密度）</td>
+<td>单点 LDOS 曲线 <code>LDOS(r,E)=Σᵢφᵢ²(r)f(E−εᵢ)</code>，与 TDOS 画在一起对比</td>
+<td>主功能 <code>10</code> → <code>10</code>，输入点坐标（可先经主功能 <code>0</code> 查坐标）。实例：丁二烯端碳上方 1.5 Bohr 点（1.137,3.308,1.5，C1 上方 1.5 Bohr），输入 <code>butadiene.fch</code>；判据：单点 LDOS 与 TDOS 对比，解释 STM 针尖位置的谱贡献。相关实验数据见 J. Phys. Chem. Lett., 5, 3701 (2014)</td>
+<td>sec-4-10-plot-density-of-states-dos-maps.md</td>
+</tr>
+<tr>
+<td>STM 谱学数据（沿线空间–能量分布）</td>
+<td>沿线各点 LDOS 颜色填充图（X 轴能量，Y 轴线上相对起点坐标）</td>
+<td>主功能 <code>10</code> → <code>11</code>，输入直线起终点与点数。实例：丁二烯两端碳（C1 和 C8）上方 1.5 Bohr 处两点连线，均匀取 200 点；后处理选项 <code>4</code> 可调 Y/X 轴比例（如 0.5 后 <code>1</code> 重画）；颜色表示不同空间位置（Y 轴）和不同能量（X 轴）处的状态密度</td>
+<td>sec-4-10-plot-density-of-states-dos-maps.md</td>
+</tr>
+<tr>
+<td>实测汽化热/升华热</td>
+<td>vdW 表面（ρ=0.001 a.u. 等值面）ESP 统计量：面积 A、方差 σ₊²/σ₋²/σ_tot²、平衡度 ν=σ₊²σ₋²/(σ_tot²)²、νσ_tot²；GIPF 拟合公式</td>
+<td>公式与系数严格绑定计算级别，不可跨级别套用；仅适用于 C/H/N/O（扩展式含 F/Cl/S）小有机物。照搬原文：ΔH_vap=a√A+b√(νσ_tot²)+c（a=2.130、b=0.930、c=−17.844）；ΔH_sub=aA²+b√(νσ_tot²)+c（a=0.000267、b=1.650087、c=2.966078），A/Å²、ΔH/kcal·mol⁻¹、σ_tot²/(kcal·mol⁻¹)²，几何 B3LYP/6-31G* 优化、ESP B3LYP/6-311++G(2df,2p)；另一套（B3PW91/6-31G**）：ΔH_vap=1.3556√A+1.1760√(νσ_tot²)−10.4331、ΔH_sub=4.4307×10⁻⁴A²+2.0599√(νσ_tot²)−2.4825，平均绝对误差 2.0/2.8 kcal·mol⁻¹</td>
+<td>sec-3-15-quantitative-analysis-of-molecular-surface.md</td>
+</tr>
+<tr>
+<td>实测分子晶体密度（中性有机物）</td>
+<td>同上表面 ESP 统计量；ρ=α(M/V_m)+β(νσ_tot²)+γ，V_m 为 0.001 a.u. 面内 vdW 体积</td>
+<td>B3PW91/6-31G** 下 α=0.9183、β=0.0028、γ=0.0443；ρ=M/V_m 对大多数中性物种已有效，引入 νσ_tot² 后精度提高（分子间静电相互作用被有效计入）；仅适用于 C/H/N/O 小有机物。实例：<code>FOX-7.wfn</code>（B3PW91/6-31G** 优化），主功能 <code>12</code> → <code>0</code>，得 M/V_m=1.7606 g/cm³、νσ_tot²=79.40119 (kcal/mol)²，预测 ρ=0.9183×1.7606+0.0028×79.40119+0.0443=1.883 g/cm³ vs 实验 1.885 g/cm³（RMS 误差约 0.047 g/cm³，如此吻合很大程度是偶然）</td>
+<td>sec-4-12-quantitative-analysis-of-molecular-surface.md</td>
+</tr>
+<tr>
+<td>实测离子晶体密度</td>
+<td>同上；ρ=α(M/V_m)+β(V̄_S(cation)⁺/A_cation⁺)+γ(V̄_S(anion)⁻/A_anion⁻)+δ，M/V_m 取一化学式单元阴阳离子质量与体积之和</td>
+<td>B3PW91/6-31G** 下 α=1.0260、β=0.0514、γ=0.0419、δ=0.0227；30 个测试案例平均绝对误差仅 0.033 g/cm³；对离子物种明显优于简单的 ρ=M/V_m</td>
+<td>sec-3-15-quantitative-analysis-of-molecular-surface.md</td>
+</tr>
+<tr>
+<td>实测沸点/溶剂化自由能/pK_b/熔化热/表面张力/晶格能</td>
+<td>同上表面 ESP 统计量（面积 A、均值 V̄_S⁺/V̄_S⁻、平均偏差 Π、MPI=(1/N)Σ|V|、V_min、V_S,max/V_S,min 等）；GIPF 拟合公式</td>
+<td>照搬原文：沸点 T_bp=αA+β√(νσ_tot²)+γ（α=2.736、β=33.31、γ=−72.05，拟合自 HF/STO-5G*//HF/STO-3G*；该文另有临界温度/体积/压力方程）；溶剂化自由能 ΔG_solv(kJ/mol)=0.17201V_min−2.6412×10⁻⁵(V_S,max−V_S,min)³+0.051892A⁻V̄_S⁻+9704.2/(A⁻V̄_S⁻)+46.827（V_min 为全空间 ESP 全局最小）；伯胺 pK_b=0.4952×V_S,min+24.5880（V_S,min 以 kcal/mol 计，ωB97XD/cc-pVDZ 下，R²=0.9519、平均绝对误差 0.12；仲/叔胺另有方程）；熔化热/表面张力/晶体-液体密度、含 NH₄⁺/K⁺/Na⁺ 离子晶体晶格能方程另见 J. Phys. Chem. 99, 12081 (1995)、J. Phys. Chem. A 102, 1018 (1998)</td>
+<td>sec-3-15-quantitative-analysis-of-molecular-surface.md</td>
+</tr>
+<tr>
+<td>实测偶极矩/ESP 对电荷模型的反向检验</td>
+<td>Hirshfeld / ADCH / CM5 / ESP 拟合（CHELPG/MK/RESP）电荷对 μ 与 ESP 的复现能力（RMSE/RRMSE）</td>
+<td>Hirshfeld 电荷总是偏小、复现 μ 与 ESP 差（完全忽略原子偶极矩；积分精度看电荷和是否接近整数，否则调大 radpot/sphpot，默认 75/434、可试 100/590）；ADCH（Hirshfeld+原子偶极展开校正）精确复现当前水平偶极（末尾 Error≈0，如乙酰胺 ADCH 偶极 1.4368 a.u. 与实际一致、Hirshfeld 只 1.0738 a.u.；用归一化 Final 电荷发表）；CM5（Hirshfeld+键级经验校正，α=2.474 Å⁻¹）复现的是真实偶极而非当前水平偶极（低水平如 B3LYP/6-31G* 仍可用；1.2×CM5 供 OPLS-AA 力场 MD）；ESP 拟合电荷看 RMSE/RRMSE 越小越好，选项 <code>8</code> 加约束可精确复现波函数偶极（通常不必要）。菜单：主功能 <code>7</code> → <code>1</code> Hirshfeld / <code>11</code> ADCH / <code>16</code> CM5 / <code>12</code> CHELPG / <code>18</code> RESP</td>
+<td>sec-3-9-population-analysis-and-calculation-of-atomic-charges.md</td>
+</tr>
+<tr>
+<td>（超）极化率/EFISHG/HRS 非线性光学实验、实测偶极矩</td>
+<td>永久偶极矩 μ₀、极化率 α（μ₁=α·F）、第一超极化率 β（β_prj、β∥、β_tot）、第二超极化率 γ、HRS 量（β_HRS、退偏比 DR、J=1/3 分量）</td>
+<td>Gaussian <code>polar</code> 任务输出须带 <code>#P</code> 才可被解析；弥散函数对合理（超）极化率绝对不可少。菜单：主功能 <code>24</code> → <code>1</code> 解析；动态任务先选 <code>-1</code> 载入频率相关量再选 β(−ω;ω,0)/β(−2ω;ω,ω) 类型。判据：β_prj（β 在 μ 上投影）可被 EFISHG 实验测定，HRS 可测所有分子（含非极性）的 β（β_HRS(−2ω;ω,ω)=√(&lt;β_ZZZ²&gt;+&lt;β_XZZ²&gt;)）；Gaussian 09/16 输出的超极化率分量符号为错，Multiwfn 已自动取反。实例：NH₃（PBE0/aug-cc-pVTZ，<code>NH3_polar_static.out</code>）：静态 α XX=13.6927、YY=13.6933、ZZ=15.3236，各向同性平均 14.236533、体积 2.109636 Å³、各向异性 1.6306；动态（<code>NH3_polar_dynamic.out</code>，<code>polar=DCSHG</code>）β_HRS=30.954、DR=5.594；结果可扫 I(ΨV) 存 <code>HRS_angle.txt</code> 作极坐标图</td>
+<td>sec-4-24-examples-of-hyperpolarizability-analyses.md</td>
+</tr>
+<tr>
+<td>自由基/开壳层/反铁磁体系电子结构认知（未成对电子在哪里）</td>
+<td>原子自旋布居 = α布居 − β布居（可分解到基函数/壳层/角动量/原子/片段）</td>
+<td>只做相对分布讨论，不直接等于实验可观测量。方法选择：要壳层/角动量细节用 Mulliken/Löwdin（主功能 <code>7</code>；SCPA 只给原子级；基组禁弥散函数，否则不可靠）；只要原子自旋布居优先用模糊空间积分自旋密度（主功能 <code>15</code> 选自旋密度；默认 Becke，可切 Hirshfeld/Hirshfeld-I，三者都可靠；先选项 <code>−5</code> 定片段得片段自旋）；AIM 盆积分（主功能 <code>17</code>）一般不推荐（贵）。实例：三重态乙醇 <code>ethanol_triplet.fch</code>（UB3LYP/6-31G**，基于单重态优化几何）：O8 P 壳自旋 0.648、未成对电子主要在羟基，三重态 O 微带正电，总自旋电子数 2.0。菜单：主功能 <code>7</code>（Mulliken/Löwdin/SCPA）/ 主功能 <code>15</code>（Becke/Hirshfeld/Hirshfeld-I 自旋）/ 主功能 <code>17</code>（AIM 自旋）</td>
+<td>sec-4-7-population-analysis-and-atomic-charge-calculation.md</td>
+</tr>
+</tbody></table>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="EXP_GUIDE";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script>
+<script src="app.js"></script></body></html>

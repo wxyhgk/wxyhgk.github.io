@@ -1,0 +1,528 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>主功能4：在平面内输出并绘制特定性质 · Multiwfn中文手册</title><link rel="stylesheet" href="../style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="主功能4在平面内输出并绘制特定性质">主功能4：在平面内输出并绘制特定性质</h1>
+<p>功能概述：主功能4用于把任一实空间函数绘制为平面图，是 Multiwfn 最常用的可视化入口之一。基本流程固定为六步：选实空间函数、选图类别、设格点数、定义平面、查看图形、后处理微调。支持填充色图、等值线图、浮雕图、梯度线图、矢量场图等七类图，平面定义有 8 种模式，并可在图上叠加临界点、键径与盆间路径。</p>
+<h2 id="基本流程">基本流程</h2>
+<p>说明：进入主功能4后的标准六步，程序全程给出提示，只有少数关键点需要人工判断。</p>
+<p>菜单路径：主菜单 → <code>4</code></p>
+<p>输入要求：GTFs（依所选实空间函数而定）＋原子坐标。<code>settings.ini</code> 中 <code>iplaneextdata=1</code> 时平面数据改从外部纯文本文件载入（各点坐标会自动输出到当前文件夹，可用 Gaussian 的 cubegen 等第三方工具在这些点上算函数值）。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">1.  选择一个实空间函数
+2.  选择图的类别
+3.  设定两个维度上的格点数
+4.  定义一个平面
+5.  查看图形
+6.  后处理（调整作图参数、保存图形、将数据导出为纯文本文件等）</code></pre></p>
+<p>产出：平面图图形文件、平面数据文本（<code>plane.txt</code>）。</p>
+<p>来源：<a href="../sec-3-5-outputting-and-plotting-specific-property-in-a-plane.html">3.5</a>；<a href="../MENU_INDEX.html">MENU_INDEX.md</a>；实例见 <a href="../sec-4-4-output-and-plot-various-properties-in-a-plane.html">4.4</a>。</p>
+<h2 id="图的类别共7种">图的类别（共7种）</h2>
+<p>说明：Multiwfn 支持七种展示平面内数据的图类别，特点与后处理选项如下。</p>
+<p>菜单路径：主功能4 → 选实空间函数 → 选图类别编号</p>
+<p>输入要求：同上。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">1 填充色图 (Color-filled map)：不同颜色表示不同区域的函数值。默认 "Rainbow" 颜色过渡，
+   低于色标下限填黑色、高于上限填白色；后处理 "Set color transition" 可换颜色过渡；
+   "Enable showing contour lines" 可叠加等值线；可控制原子标签与成键显示。
+2 等值线图 (Contour line map)：实线表正值区、虚线表负值区。"2 Enable showing isovalue
+   on contour lines" 在等值线上标数值；"9 Enable filling colors for contour lines"
+   在等值线间填色（再选一次可调填充效果）。仅对轨道波函数可一次输入两个轨道序号
+   （如 3,5）同时绘制两个轨道。
+3 浮雕图 (Relief map)：高度表数值；数值太大被截断时可乘因子缩放；交互界面可旋转/放大缩小。
+4 阴影浮雕图 (Shaded relief map) / 5 带投影的阴影浮雕图 (Shaded relief map with projection)：
+   带阴影，后者另加一幅填充色图作投影；表面网格线可在后处理关闭。
+6 带/不带等值线的梯度线图 (Gradient line map with/without contour lines)：表函数梯度方向，
+   可决定是否同时显示等值线；计算与作图代价明显高于其它类别。后处理
+   "11 Set detailed parameters of plotting gradient line" 设参数：
+   子选项1梯度线积分步长（越小越精细）、子选项2梯度线间隔（越小越密）、
+   子选项3绘制新梯度线判据、子选项4积分方法（RK4最稳健但最耗时，默认RK2兼顾精度速度）、
+   子选项5和6梯度线颜色和宽度。
+7 带/不带等值线的矢量场图 (Vector field map with/without contour lines)：梯度线换成均匀
+   分布的箭头；可设箭头颜色、按函数值着色、反转箭头方向。选项10设缩放上限 x，
+   梯度矢量模超 x 时被缩放为 x。</code></pre></p>
+<p>产出：各类平面图。</p>
+<p>来源：<a href="../sec-3-5-outputting-and-plotting-specific-property-in-a-plane.html#351-%E5%9B%BE%E7%9A%84%E7%B1%BB%E5%88%AB">3.5.1</a>。</p>
+<h2 id="格点数与8种平面定义模式">格点数与8种平面定义模式</h2>
+<p>说明：格点数如 <code>100,150</code> 表示两维度格点数，总数均匀分布在作图区域。浮雕类推荐 <code>100,100</code>（再密则线太挤），其它类别推荐 <code>200,200</code>；越大越光滑但等待越久。总 ESP 计算非常耗时，宜用较少格点。</p>
+<p>菜单路径：主功能4 → 选函数 → 选图类别 → 输入格点数 → 选平面模式</p>
+<p>输入要求：同上。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">1.  XY 平面：输入 Z 值唯一确定。
+2.  XZ 平面：输入 Y 值唯一确定。
+3.  YZ 平面：输入 X 值唯一确定。
+4.  由三个原子定义：输入三个原子序号，用原子核坐标定义平面。
+5.  由三个点定义：输入三个点坐标定义平面。
+6.  输入原点和平移矢量（只适合专家，两个平移矢量必须正交）。
+7.  定义一个平行于某化学键、同时垂直于由三个原子定义的平面的平面。
+    先输入如 3,5 以定义所平行于的轴，再输入如 2,3,10 以定义所垂直于的平面，
+    再输入 X、Y 轴长度（如 10 和 7 Bohr）。
+8.  在特定原子组成的上方或下方（局域平面，常用于研究环上/下方分布）：
+    输入原子序号定义拟合平面（作图平面平行于它）和几何中心，再输入作图平面与
+    几何中心间的垂直距离 d（正负对应上/下方），再输入作图平面边长（正方形，
+    几何中心投影点为平面中心）。
+模式 1~5：作图区域自动包住整个分子（模式1、2、3）或覆盖输入的三原子核/点
+    （模式4、5），再向外扩展（默认 4.5 Bohr，选项 "0 Set extension distance
+    for plane type 1~5" 可改，或改 settings.ini 的 "Aug2D"）。
+模式 4、5、8 的平移旋转：在选模式前先选 "-1: Set translation and rotation of
+    the map for plane types 4, 5 and 8"，如先输入 -3,1.5 再输入 35 表示
+    平移 (-3,1.5) Bohr 再旋转 35°。</code></pre></p>
+<p>产出：确定作图平面与区域；模式8会在命令行给出三条命令，复制到 VMD 控制台可画出作图平面以核对定义。</p>
+<p>来源：<a href="../sec-3-5-outputting-and-plotting-specific-property-in-a-plane.html#352-%E6%A0%BC%E7%82%B9%E5%B9%B3%E9%9D%A2%E5%92%8C%E4%BD%9C%E5%9B%BE%E5%8C%BA%E5%9F%9F%E7%9A%84%E8%AE%BE%E7%BD%AE">3.5.2</a>。</p>
+<h2 id="后处理常用选项">后处理常用选项</h2>
+<p>说明：图形弹出后出现的后处理菜单选项，多数自明，这里列出关键项原文。</p>
+<p>菜单路径：主功能4 → 绘图完成后后处理菜单</p>
+<p>输入要求：同上。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">-9 Only plot the data around certain atoms：只绘制关注区域。如输入 2,4,8-10，
+   则只绘制原子 2,4,8,9,10 周围的实空间函数（原平面数据乘以输入片段的 Hirshfeld
+   权重）。下次再选此选项恢复原数据。
+-7 Multiply data by a factor：缩放平面数据范围。
+-6 Export the current plane data to plane.txt in current folder：导出平面数据，
+   可用 Sigmaplot 等第三方软件重绘。
+-2 Set label interval in X, Y (and color scale) axes：设坐标轴标签间隔；
+   图上无坐标轴标签说明当前间隔太大。
+-1 Show the graph again：调参后重绘。
+0 Save the graph to a file：导出图形文件（格式尺寸见 2.8 节）。
+19 Enable showing extrema of a function on a contour line：在电子密度等值线上
+   绘如静电势的极大极小值（见 4.4.12 节）。
+4 是否显示原子标签/参考点：标签大小与形式由 settings.ini 的 "pleatmlabsize" 和
+   "iatmlabtype" 定；参考点为蓝色星号；默认仅原子到平面距离小于 "disshowlabel"
+   才显示标签；选项 17 可改阈值。
+8 是否显示成键：两原子都离平面足够近（小于 "disshowlabel"）且间距小于成键阈值
+   （主功能0 GUI 滑块可调）才显示。
+15 绘制 vdW 表面等值线（电子密度=0.001 a.u.，Bader 定义），有助于分析 vdW 表面
+   ESP 分布；梯度线图/矢量场图同样可用；选项 16 调其颜色、标签大小和线型。</code></pre></p>
+<p>产出：微调后的图形、<code>plane.txt</code>。</p>
+<p>来源：<a href="../sec-3-5-outputting-and-plotting-specific-property-in-a-plane.html#351-%E5%9B%BE%E7%9A%84%E7%B1%BB%E5%88%AB">3.5.1</a>、<a href="../sec-3-5-outputting-and-plotting-specific-property-in-a-plane.html#353-%E5%90%8E%E5%A4%84%E7%90%86%E7%95%8C%E9%9D%A2%E4%B8%AD%E7%9A%84%E9%80%89%E9%A1%B9">3.5.3</a>。</p>
+<h2 id="等值线设置">等值线设置</h2>
+<p>说明：对图类别 1、2、6、7 可绘制等值线（未显示时选 &quot;2 Enable showing contour lines&quot;）。&quot;Change setting of contour lines&quot; 界面先列当前等值线值，子选项如下。</p>
+<p>菜单路径：后处理 → Change setting of contour lines</p>
+<p>输入要求：同上。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">选项 1：保存当前设置并返回上级菜单；再选 "Show the graph again" 即用新设置作图。
+选项 2：输入新值替换某条等值线旧值。
+选项 3：新增一条等值线并输入等值。
+选项 4：删除某些等值线。
+选项 6：将当前等值线设置导出为纯文本文件（可为不同体系/函数存多套常用设置）。
+选项 7：从外部文件载入等值线设置（格式与子功能 6 输出相同）。
+选项 8：按等差数列生成等值线，输入初值、步长和总数。绘 ELF/LOL 建议输入
+   0,0.05,21（0.0~1.0 步长 0.05）；可选是否清除已有等值线，选 n 则追加。
+选项 9：与 8 类似，按等比数列生成。
+选项 10：加粗某些等值线：先输入加粗几条，再依次输入序号；已有加粗时再选则取消全部加粗。
+选项 11：设正等值线颜色（输入颜色序号）。
+选项 12：设正等值线线型（输入两个整数：线段长度、空隙长度。如 10,15 表长度10线段与长度15空隙交替）。
+选项 13、14：与 11、12 类似，针对负值部分。
+选项 15：正负线分别设为"深红、宽度=6、实线"和"蓝色、宽度=6、长虚线"，所得图适合发表。</code></pre></p>
+<p>产出：自定义等值线图形（建议等值线图存为 <code>.pdf</code> 矢量格式：<code>settings.ini</code> 的 <code>graphformat</code> 改为 <code>pdf</code>）。</p>
+<p>来源：<a href="../sec-3-5-outputting-and-plotting-specific-property-in-a-plane.html#354-%E7%AD%89%E5%80%BC%E7%BA%BF%E7%9A%84%E8%AE%BE%E7%BD%AE">3.5.4</a>。</p>
+<h2 id="隐藏选项beckehirshfeld-权重平面图">隐藏选项：Becke/Hirshfeld 权重平面图</h2>
+<p>说明：实空间函数选择菜单中的两个隐藏选项，直接绘制原子空间权重函数。</p>
+<p>菜单路径：主功能4 → 隐藏选项 <code>111</code> / <code>112</code></p>
+<p>输入要求：原子坐标。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">111：待绘制函数为某个原子的 Becke 权重或两个原子间的 Becke 交叠权重。
+112：绘制给定原子或片段的 Hirshfeld 权重。</code></pre></p>
+<p>产出：权重函数平面图。</p>
+<p>来源：<a href="../sec-3-5-outputting-and-plotting-specific-property-in-a-plane.html">3.5</a> 注；<a href="../MENU_INDEX.html">MENU_INDEX.md</a>。</p>
+<h2 id="在平面图上叠加临界点拓扑路径与盆间路径">在平面图上叠加临界点、拓扑路径与盆间路径</h2>
+<p>说明：临界点与路径可绘制在填充色图、等值线图、梯度线图和矢量场图上。棕、蓝、橙、绿圆点分别表示 (3,-3)、(3,-1)、(3,+1)、(3,+3) 临界点，深棕粗线为键路径，深蓝线为盆间路径。</p>
+<p>菜单路径：先主功能2搜 CP 并生成路径 → 主功能4 常规绘图 → 后处理选项 <code>4</code> / <code>Generate interbasin paths</code></p>
+<p>输入要求：GTFs ＋原子坐标；盆间路径要求拓扑模块已找到至少一个离平面足够近（小于 <code>disshowlabel</code>）的 (3,-1) CP。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">1. 进入拓扑分析模块（主功能 2），搜索 CP 并生成路径（键径）。
+2. 返回主菜单，按常规用主功能 4 绘制平面图，CP 和路径已出现在图上。
+3. 后处理选项 "4 Set details of plotting critical points and paths"：选允许显示
+   哪些类别 CP，设标记大小、粗细、距离阈值和路径线颜色。默认 CP 或路径点与平面
+   垂直距离超 0.5 Bohr 则不显示；"8 Set distance threshold for showing CPs" 和
+   "9 Set distance threshold for showing paths" 可改阈值。
+4. 盆间路径：后处理选 "Generate and show interbasin paths"，等生成完重绘平面图
+   即呈现。想改变长度，先选 "Set stepsize and maximal iteration for interbasin
+   path generation" 输入步长和迭代数（最大长度=两者乘积）；路径点与平面距离超
+   "disshowlabel" 的部分不显示。</code></pre></p>
+<p>产出：含 CP/键径/盆间路径的平面图（临界点颜色可用 <code>settings.ini</code> 的 <code>CP_RGB_2D</code> 改）。</p>
+<p>来源：<a href="../sec-3-5-outputting-and-plotting-specific-property-in-a-plane.html#355-%E5%9C%A8%E5%B9%B3%E9%9D%A2%E5%9B%BE%E4%B8%8A%E7%BB%98%E5%88%B6%E4%B8%B4%E7%95%8C%E7%82%B9%E8%B7%AF%E5%BE%84%E5%92%8C%E7%9B%86%E9%97%B4%E8%B7%AF%E5%BE%84">3.5.5</a>；实例 <a href="../sec-4-4-output-and-plot-various-properties-in-a-plane.html#446-%E8%BF%87%E6%B0%A7%E5%8C%96%E6%B0%A2%E7%94%B5%E5%AD%90%E5%AF%86%E5%BA%A6%E7%9A%84%E6%A2%AF%E5%BA%A6%E7%AD%89%E5%80%BC%E7%BA%BF%E5%9B%BE%E5%8F%8A%E6%8B%93%E6%89%91%E8%B7%AF%E5%BE%84">4.4.6</a>。</p>
+<h2 id="实例hcn-电子密度填充色图与等值线图">实例：HCN 电子密度填充色图与等值线图</h2>
+<p>说明：最基础的平面图例子。Z 轴为 HCN 分子轴，先画 XZ 面填充色图，再微调标签与键，最后换等值线图。</p>
+<p>菜单路径：主功能4 → <code>1</code> 电子密度 → <code>1</code> 填充色图 / <code>2</code> 等值线图</p>
+<p>输入要求：<code>examples\HCN.wfn</code>。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\HCN.wfn
+4  // Plot graph in a plane
+1  // Electron density
+1  // Color-filled map
+[Press ENTER button directly]  // Use the recommended grid setting, namely 200,200
+2  // XZ plane (Z-axis is the molecular axis)
+0  // The XY plane with Y=0 Bohr</code></pre></p>
+<p>后处理美化（原始格式）：</p>
+<p><pre><code class="language-text">-8  // Change length unit of the graph to Å
+-2  // Set label interval in X, Y and color scale axes
+1,1,0.1
+4  // Enable showing atom labels
+1  // Red labels
+8  // Enable showing bonds
+3  // Blue color for bonds
+-1  // Redraw the graph</code></pre></p>
+<p>产出：HCN 电子密度填充色图（C、N 中心白色区表示密度超色标上限 0.65）与等值线图；数据可导出用 Origin/Sigmaplot 重绘。</p>
+<p>来源：<a href="../sec-4-4-output-and-plot-various-properties-in-a-plane.html#4411-%E7%BB%98%E5%88%B6%E6%B0%B0%E5%8C%96%E6%B0%A2%E7%9A%84%E7%94%B5%E5%AD%90%E5%AF%86%E5%BA%A6">4.4.1.1</a>。</p>
+<h2 id="实例fox-7-的-lol-填充色图">实例：FOX-7 的 LOL 填充色图</h2>
+<p>说明：由 N9、C2、N12 三原子定面画 LOL；演示标签阈值、颜色过渡与叠加等值线。</p>
+<p>菜单路径：主功能4 → <code>10</code> LOL → <code>1</code> 填充色图 → 模式 <code>4</code> 三原子定面</p>
+<p>输入要求：<code>examples\FOX-7.wfn</code>。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\FOX-7.wfn
+4  // Plot plane map
+10  // Localized orbital locator (LOL)
+1  // Color-filled map
+[Press ENTER button directly]
+4  // Define the plane by three atoms
+9,2,12  // Use nuclear position of the three atoms to define the plane</code></pre></p>
+<p>后处理（原始格式）：</p>
+<p><pre><code class="language-text">8  // Enable showing bonds
+14  // Brown color
+4  // Enable showing atom labels
+1  // Red color
+18  // Change style of atomic labels
+3  // Plot both element symbol and atomic index
+-1  // Show the graph again</code></pre></p>
+<p>标签缺失时（原子离平面距离大于 <code>disshowlabel</code>）（原始格式）：</p>
+<p><pre><code class="language-text">17  // Set distance threshold for showing atom labels
+10  // Enlarge the threshold to 10 Bohr
+y  // 超阈值的原子标签仍显示但用细体
+-1  // Plot the map again to check effect</code></pre></p>
+<p>换颜色过渡示例（原始格式）：</p>
+<p><pre><code class="language-text">19  // Set color transition
+17  // Black-Blue-Cyan
+1  // Set lower&amp;upper limit of color scale
+0,0.7
+-1  // Replot</code></pre></p>
+<p>叠等值线示例（原始格式）：</p>
+<p><pre><code class="language-text">19  // Set color transition
+8  // Blue-White-Red
+2  // Enable showing contour lines
+1  // Set lower&amp;upper limit of color scale
+0,1
+-2  // Set label interval in X, Y and color scale axes
+2,2,0.1
+-1  // Replot</code></pre></p>
+<p>产出：FOX-7 LOL 平面图；红色区揭示成键区高定域，N–O 间定域弱于 C–N/C–C（电荷移键特征）。</p>
+<p>来源：<a href="../sec-4-4-output-and-plot-various-properties-in-a-plane.html#4412-%E7%BB%98%E5%88%B6-fox-7-%E7%9A%84%E5%AE%9A%E5%9F%9F%E8%BD%A8%E9%81%93%E5%AE%9A%E4%BD%8D%E5%87%BD%E6%95%B0lol">4.4.1.2</a>。</p>
+<h2 id="实例一氟乙烷-elf-带投影阴影浮雕图">实例：一氟乙烷 ELF 带投影阴影浮雕图</h2>
+<p>说明：画 C–C–F 面（原子 1,5,8）的带投影阴影浮雕图；注意手动加大扩展距离防边界截断。</p>
+<p>菜单路径：主功能4 → <code>9</code> ELF → <code>5</code> 带投影阴影浮雕图 → 模式 <code>4</code></p>
+<p>输入要求：<code>examples\C2H5F.wfn</code>（先用主功能0确认 C–C–F 平面原子序号 1,5,8）。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\C2H5F.wfn
+0  // View the molecular structure first to find the plane we are interested in
+4  // Plot graph in a plane
+9  // Electron localization function (ELF)
+5  // Shaded relief map with projection effect
+[Press ENTER button]  // Use recommended grid setting, namely 100,100
+0  // Manually set extension distance
+6  // Set extension distance to 6 Bohr
+4  // Define the plotting plane by three atoms
+1,5,8  // Indices of the three atoms</code></pre></p>
+<p>产出：ELF 浮雕图；C–C/C–F 键区高值表定域强，原子核周围蓝色环为价层–内层低定域区分隔，箭头处为 F 孤对；选项 <code>0</code> 存图（边缘截断时先 <code>-1</code> 回界面缩小再导出）。</p>
+<p>来源：<a href="../sec-4-4-output-and-plot-various-properties-in-a-plane.html#442-%E4%B8%80%E6%B0%9F%E4%B9%99%E7%83%B7%E7%94%B5%E5%AD%90%E5%AE%9A%E5%9F%9F%E5%87%BD%E6%95%B0elf%E5%B8%A6%E6%8A%95%E5%BD%B1%E6%95%88%E6%9E%9C%E7%9A%84%E9%98%B4%E5%BD%B1%E6%B5%AE%E9%9B%95%E5%9B%BE">4.4.2</a>。</p>
+<h2 id="实例不含某些原子贡献的平面图两种做法">实例：不含某些原子贡献的平面图（两种做法）</h2>
+<p>说明：做法一经主功能6子功能-3/-4删 GTF（不可逆但省后续计算量）；做法二经后处理-9乘 Hirshfeld 权重（只影响当前图，可恢复）。</p>
+<p>菜单路径：做法一：主功能6 → <code>-4</code> → 主功能4；做法二：主功能4 绘图后 → 后处理 <code>-9</code></p>
+<p>输入要求：<code>examples\uracil.wfn</code>。</p>
+<p>操作步骤（例1，去掉原子3、4贡献的拉普拉斯等值线图，原始格式）：</p>
+<p><pre><code class="language-text">examples\uracil.wfn
+6  // Modify wavefunction
+-4  // Discard contribution of some atoms
+3,4  // All GTFs centered on atoms 3 and 4 will be discarded
+-1  // Return to main menu
+4  // Plot graph in a plane
+3  // Laplacian function
+2  // Contour line map
+[Press ENTER button to use default grid setting]
+1  // XY plane will be plotted
+0  // The Z-position of the XY plane is zero, that is molecular plane</code></pre></p>
+<p>操作步骤（例2，只留环内六原子贡献的 LOL 图，原始格式）：</p>
+<p><pre><code class="language-text">examples\uracil.wfn
+4  // Plane map
+10  // LOL
+1  // Color-filled map
+[Press ENTER button to use default grid setting]
+1  // XY plane will be plotted
+0  // Z=0</code></pre></p>
+<p>后处理（原始格式）：</p>
+<p><pre><code class="language-text">-9  // Only plot the data around certain atoms
+1-6  // The index of the six atoms in the uracil ring
+8  // Enable showing bonds
+14  // Brown
+-1  // Replot</code></pre></p>
+<p>产出：去贡献平面图；做法二再选 <code>-9 Recovery original plane data</code> 可恢复原图。</p>
+<p>来源：<a href="../sec-4-4-output-and-plot-various-properties-in-a-plane.html#443-%E7%BB%98%E5%88%B6%E4%B8%8D%E5%90%AB%E6%9F%90%E4%BA%9B%E5%8E%9F%E5%AD%90%E8%B4%A1%E7%8C%AE%E7%9A%84%E5%B9%B3%E9%9D%A2%E5%9B%BE">4.4.3</a>。</p>
+<h2 id="实例clf₃-静电势等值线图叠-vdw-表面">实例：ClF₃ 静电势等值线图叠 vdW 表面</h2>
+<p>说明：ESP 计算耗时，需等待；画完后叠 <code>ρ=0.001</code> 的 vdW 线（实/虚线区分正负），判断亲核亲电区。也可用 <code>.chg</code> 画原子电荷 ESP。</p>
+<p>菜单路径：主功能4 → <code>12</code> 总 ESP → <code>2</code> 等值线图 → 后处理 <code>15</code></p>
+<p>输入要求：<code>examples\ClF3.wfn</code>（B3LYP/6-31G*）。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\ClF3.wfn  // Generated at B3LYP/6-31G* level
+4  // Plot graph in a plane
+12  // Total electrostatic potential
+2  // Draw contour line map
+120,120  // Number of grids in each direction
+3  // YZ plane
+0  // Set X coordinate of the YZ plane to 0</code></pre></p>
+<p>后处理：关闭图形 → 后处理选 <code>15</code> → <code>-1</code> 重绘。</p>
+<p><code>.chg</code> 输入格式示例（第一列元素名，2–4 列 XYZ/Å，末列电荷；此时选函数 <code>8</code> 原子电荷 ESP）：</p>
+<p><pre><code class="language-text">  Cl    0.000000    0.000000    0.359408    0.529971
+  F     0.000000    1.726507    0.294501   -0.228394
+  F     0.000000    0.000000   -1.267884   -0.073185
+  F     0.000000   -1.726507    0.294501   -0.228394</code></pre></p>
+<p>产出：ClF₃ ESP 等值线图；近 Cl 的 vdW 面多与实线相交（Cl 整体带正电），平伏 F 电子少于轴向 F（与 4.7.1 电荷结论一致）。</p>
+<p>来源：<a href="../sec-4-4-output-and-plot-various-properties-in-a-plane.html#444-%E4%B8%89%E6%B0%9F%E5%8C%96%E6%B0%AF%E9%9D%99%E7%94%B5%E5%8A%BF%E7%9A%84%E7%AD%89%E5%80%BC%E7%BA%BF%E5%9B%BE">4.4.4</a>。</p>
+<h2 id="实例两个轨道波函数的等值线图">实例：两个轨道波函数的等值线图</h2>
+<p>说明：同时画 NH₂COH 的 NBO 12 与 NBO 56；用模式7定义平行 C1–N4 且垂直 O3–C1–N4 面的平面；删小值等值线去噪并设发表风格。</p>
+<p>菜单路径：主功能4 → <code>4</code> 轨道波函数 → 输入 <code>12,56</code> → 模式 <code>7</code></p>
+<p>输入要求：<code>examples\NH2COH.31</code>（再载入 <code>NH2COH.37</code>）。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\NH2COH.31
+37  // Load NH2COH.37
+4  // Plot plane graph
+4  // Orbital wavefunction
+12,56  // The two orbital indices
+[Press ENTER button to use default grid setting]
+7  // Define a plotting plane parallel to a bond and meantime normal to a plane defined by three atoms
+1,4  // The plotting plane is parallel to C1-N4
+3,1,4  // The plotting plane is perpendicular to the plane defined by O3-C1-N4
+10  // The length of X-axis of the resulting map is 10 Bohr
+10  // The length of Y-axis of the resulting map is 10 Bohr</code></pre></p>
+<p>后处理去噪并设发表风格（原始格式）：</p>
+<p><pre><code class="language-text">3  // Change contour line setting
+4  // Delete some contour lines
+1-4  // Delete contour lines 1~4 (0.001, 0.002, 0.004, 0.008)
+4  // Delete some contour lines
+28-31  // Delete -0.001, -0.002, -0.004, -0.008
+15  // Set the drawing style suitable for publication (positive: red solid, negative: blue dashed)
+1  // Save setting and return to the upper menu
+-8  // Change length unit of the graph to Å
+-2  // Set label interval in X and Y axes
+1,1
+-1  // Replot the contour map
+2  // Enable showing isovalue on contour lines
+30  // Use label size of 30</code></pre></p>
+<p>产出：双轨道等值线图，同相重叠区清晰；选项 <code>6</code> 可导出等值线设置供下次选项 <code>7</code> 载入。</p>
+<p>来源：<a href="../sec-4-4-output-and-plot-various-properties-in-a-plane.html#445-%E4%B8%A4%E4%B8%AA%E8%BD%A8%E9%81%93%E6%B3%A2%E5%87%BD%E6%95%B0%E7%9A%84%E7%AD%89%E5%80%BC%E7%BA%BF%E5%9B%BE">4.4.5</a>。</p>
+<h2 id="实例h₂o₂-梯度图叠-cp键径盆间路径">实例：H₂O₂ 梯度图叠 CP/键径/盆间路径</h2>
+<p>说明：先画普通电子密度梯度图；再经主功能2（<code>2</code> 核位置初猜 → <code>3</code> 原子对中点初猜 → <code>8</code> 生成键径）产生 CP 与路径后重画，自动叠加；后处理 <code>4</code> 调显示，<code>Generate and show interbasin paths</code> 加盆间路径。</p>
+<p>菜单路径：主功能4 → <code>1</code> 电子密度 → <code>6</code> 梯度线图；叠加前先主功能2 → <code>2</code> → <code>3</code> → <code>8</code></p>
+<p>输入要求：<code>examples\H2O2.fch</code>。</p>
+<p>操作步骤（梯度图，原始格式）：</p>
+<p><pre><code class="language-text">examples\H2O2.fch
+4  // Plotting plane map
+1  // Electron density
+6  // Gradient line with/without contour line map
+[Press ENTER button to use default grid setting]
+4  // Use three atoms to define the plotting plane
+2,1,3  // Define the plane by nuclear positions of atoms 2, 1 and 3</code></pre></p>
+<p>操作步骤（拓扑分析产生 CP 与键径，原始格式）：</p>
+<p><pre><code class="language-text">-5  // Return to main menu
+2  // Topology analysis
+2  // Search CPs from nuclear positions
+3  // Search CPs from midpoint of atomic pairs
+8  // Generating the paths connecting (3,-3) and (3,-1) CPs, namely bond paths
+0  // Visually check (optional)
+-10  // Return to main menu</code></pre></p>
+<p>再按上法重画梯度图即叠加 CP/键径。拉普拉斯等值线叠加版（原始格式）：</p>
+<p><pre><code class="language-text">4  // Plotting plane map
+3  // Laplacian of electron density
+2  // Contour line map
+[Press ENTER button to use default grid setting]
+4  // Use three atoms to define the plotting plane
+2,1,3</code></pre></p>
+<p>产出：棕/蓝/橙圈为 (3,-3)/(3,-1)/(3,+1) CP，深棕粗线为键径，深蓝线为盆间路径；后处理选项 11–14 调梯度线光滑度/密度/颜色，选项 <code>7</code> 设盆间路径步长与迭代数。</p>
+<p>来源：<a href="../sec-4-4-output-and-plot-various-properties-in-a-plane.html#446-%E8%BF%87%E6%B0%A7%E5%8C%96%E6%B0%A2%E7%94%B5%E5%AD%90%E5%AF%86%E5%BA%A6%E7%9A%84%E6%A2%AF%E5%BA%A6%E7%AD%89%E5%80%BC%E7%BA%BF%E5%9B%BE%E5%8F%8A%E6%8B%93%E6%89%91%E8%B7%AF%E5%BE%84">4.4.6</a>；视频 <a href="https://youtu.be/gv5FkiFWUY0">https://youtu.be/gv5FkiFWUY0</a>。</p>
+<h2 id="实例乙酰氯电子密度变形图">实例：乙酰氯电子密度变形图</h2>
+<p>说明：变形图＝实际密度 − 自由原子密度之和；选 <code>-2</code> 后 Multiwfn 自动调 Gaussian 算原子波函数并球化，存 <code>wfntmp</code> 文件夹（可复用；<code>examples\atomwfn</code> 有前四周期 6-31G* 原子波函数，直接复制到当前目录可免调 Gaussian；重于 Kr 的元素须手算原子 <code>.wfn</code> 入 <code>atomwfn</code>）。</p>
+<p>菜单路径：主功能4 → <code>-2</code> 变形图</p>
+<p>输入要求：<code>examples\CH3COCl.wfn</code> ＋ Gaussian 可用（<code>settings.ini</code> 的 <code>gaupath</code> 设好则不每次询问）。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\CH3COCl.wfn
+4  // Plot plane map
+-2  // Tell Multiwfn you want to draw deformation map
+B3LYP/6-31G*  // The level used to generate atomic wavefunction files by Gaussian
+D:\study\g09w\g09.exe  // Path of Gaussian executable (skip if gaupath set)
+1  // Electron density function
+2  // Contour map
+[Press ENTER button to use default grid setting]
+1
+0  // The XY plane with Z=0 is the plane of acyl chloride</code></pre></p>
+<p>产出：变形等值线图；密度向成键区集中，Cl 周围明显偏离球形（sp³ 杂化特征）。</p>
+<p>来源：<a href="../sec-4-4-output-and-plot-various-properties-in-a-plane.html#447-%E4%B9%99%E9%85%B0%E6%B0%AF%E7%94%B5%E5%AD%90%E5%AF%86%E5%BA%A6%E7%9A%84%E5%8F%98%E5%BD%A2%E5%9B%BE">4.4.7</a>；原子波函数生成见 <a href="../sec-3-7-custom-operation-promolecular-and-deformation-properties.html">3.7.3</a>。</p>
+<h2 id="实例水四聚体相对单体的密度elf-差值图">实例：水四聚体相对单体的密度/ELF 差值图</h2>
+<p>说明：配合物减四个单体；单体坐标取自配合物且均用 <code>nosymm</code>，否则差值无意义。</p>
+<p>菜单路径：主功能4 → <code>0</code> 自定义操作 → 输入四个 <code>-</code> 文件</p>
+<p>输入要求：<code>examples\water_tetramer\wfn\complex.wfn</code> ＋ <code>water1/2/3/4.wfn</code>。</p>
+<p>操作步骤（密度差等值线图，原始格式）：</p>
+<p><pre><code class="language-text">examples\water_tetramer\wfn\complex.wfn
+4  // Plot plane map
+0  // Custom operation
+4  // Four files will be operated on the firstly loaded system
+-,examples\water_tetramer\wfn\water1.wfn
+-,examples\water_tetramer\wfn\water2.wfn
+-,examples\water_tetramer\wfn\water3.wfn
+-,examples\water_tetramer\wfn\water4.wfn
+1  // Electron density
+2  // Contour map
+[Press ENTER to use default grid setting]
+4  // Define plane by three atoms
+7,10,1</code></pre></p>
+<p>后处理发表风格（原始格式）：</p>
+<p><pre><code class="language-text">3  // Change contour line settings
+15  // Set line style and width suitable for publication
+1  // Save and return
+17  // Set distance threshold for showing atom labels
+0.2
+y
+0  // Save the plot as graphic file in current folder</code></pre></p>
+<p>操作步骤（ELF 差填充色图，原始格式）：</p>
+<p><pre><code class="language-text">-5  // Return to main menu
+4  // Plot plane map
+0  // Custom operation
+4
+-,examples\water_tetramer\wfn\water1.wfn
+-,examples\water_tetramer\wfn\water2.wfn
+-,examples\water_tetramer\wfn\water3.wfn
+-,examples\water_tetramer\wfn\water4.wfn
+9  // ELF
+1  // Color-filled map
+[Press ENTER button]
+4  // Define plane by three atoms
+7,10,1</code></pre></p>
+<p>后处理改色标（原始格式）：</p>
+<p><pre><code class="language-text">1  // Set lower&amp;upper limit of color scale
+-1.5,0.1
+4  // Disable showing atomic labels
+4  // Enable showing atomic labels again
+3  // Blue labels
+-1  // Show the graph again</code></pre></p>
+<p>产出：密度差图红实/蓝虚线表密度增减；ELF 差图深蓝区表分子间区定域降低（Pauli 排斥）。</p>
+<p>来源：<a href="../sec-4-4-output-and-plot-various-properties-in-a-plane.html#448-%E7%BB%98%E5%88%B6%E6%B0%B4%E5%9B%9B%E8%81%9A%E4%BD%93%E7%9B%B8%E5%AF%B9%E5%85%B6%E7%BB%84%E6%88%90%E5%8D%95%E4%BD%93%E7%9A%84%E7%94%B5%E5%AD%90%E5%AF%86%E5%BA%A6%E5%92%8C-elf-%E5%B7%AE%E5%80%BC%E5%9B%BE">4.4.8</a>。</p>
+<h2 id="实例卟啉-lol-π-图">实例：卟啉 LOL-π 图</h2>
+<p>说明：先经主功能100子功能22自动识别 π 轨道并清零其余占据，再在分子平面上 1.2 Bohr 处作图。</p>
+<p>菜单路径：主功能100 → <code>22</code> → 主功能4 → <code>10</code> LOL</p>
+<p>输入要求：卟啉 <code>.fch</code>（B3LYP/6-31G*，下载 <a href="http://sobereva.com/multiwfn/extrafiles/porphyrin.rar">http://sobereva.com/multiwfn/extrafiles/porphyrin.rar</a>）。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">100  // Other functions
+22  // Detect π orbitals
+0  // Detect π orbitals for delocalized orbitals of exactly planar system
+2  // Set occupation number of all other orbitals to zero
+0  // Return to main menu
+4  // Plot plane map
+10  // LOL
+1  // Color-filled map
+[Press ENTER button]  // Use default grids
+3  // Plot YZ plane
+1.2  // X=1.2 Bohr</code></pre></p>
+<p>后处理（原始格式）：</p>
+<p><pre><code class="language-text">1  // Set lower&amp;upper limit of color scale
+0,0.66
+4  // Enable showing atom labels
+7  // Cyan color
+17  // Set distance threshold for showing atom labels
+2
+y
+8  // Enable showing bonds
+14  // Brown color
+-1  // Replot</code></pre></p>
+<p>产出：LOL-π 填充色图；高值（红/橙）区即优势离域路径，与诱导电流路径一致；另有等值线间填色＋Viridis＋pdf 矢量导出做法，输入序列见 4.4.9 后半。</p>
+<p>来源：<a href="../sec-4-4-output-and-plot-various-properties-in-a-plane.html#449-%E7%BB%98%E5%88%B6%E5%8D%9F%E5%95%89%E7%9A%84-lol-%CF%80-%E5%9B%BE%E4%BB%A5%E6%8F%AD%E7%A4%BA%E6%9C%89%E5%88%A9%E7%9A%84%E7%94%B5%E5%AD%90%E7%A6%BB%E5%9F%9F%E8%B7%AF%E5%BE%84">4.4.9</a>。</p>
+<h2 id="实例lif-电场梯度线图与矢量场图">实例：LiF 电场梯度线图与矢量场图</h2>
+<p>说明：电场为 ESP 负梯度；梯度线图箭头实际应反向理解，矢量场图用选项13反转箭头使其指向电场方向。</p>
+<p>菜单路径：主功能4 → <code>12</code> ESP → <code>6</code> 梯度线图 / <code>7</code> 矢量场图</p>
+<p>输入要求：<code>examples\LiF.wfn</code>。</p>
+<p>操作步骤（梯度线图，原始格式）：</p>
+<p><pre><code class="language-text">examples\LiF.wfn  // Generated at B3LYP/6-31G* level
+4  // Plot plane map
+12  // ESP
+6  // Gradient line map
+[Press ENTER button to use default grid setting]
+0  // Modify extension distance
+6  // 6 Bohr
+3  // YZ plane
+0  // X=0</code></pre></p>
+<p>后处理（原始格式）：</p>
+<p><pre><code class="language-text">15  // Show a contour line to reveal van der Waals surface
+10  // Show arrow on the gradient lines</code></pre></p>
+<p>操作步骤（矢量场图，原始格式）：</p>
+<p><pre><code class="language-text">-5  // Return to main menu
+4  // Plot plane map
+12  // ESP
+7  // Vector field map
+50,50  // Number of grids in the two dimensions
+3  // YZ plane
+0  // X=0</code></pre></p>
+<p>后处理（原始格式）：</p>
+<p><pre><code class="language-text">11  // Map color to arrows
+10  // Set upper limit of absolute value for scaling arrows
+0.05
+15  // Show a contour line to reveal van der Waals surface
+13  // Invert gradient vectors, so that the arrows will correspond to direction of electric field
+1  // Disable showing atom labels and reference point
+1  // Enable showing atom labels and reference point
+3  // Use blue label color</code></pre></p>
+<p>产出：电场方向图；箭头越红场强越大，顶部半圆小场区为 ESP 最负区（电场终点）。</p>
+<p>来源：<a href="../sec-4-4-output-and-plot-various-properties-in-a-plane.html#4410-%E7%BB%98%E5%88%B6%E9%9D%99%E7%94%B5%E5%8A%BF%E7%9A%84%E6%A2%AF%E5%BA%A6%E7%BA%BF%E5%92%8C%E7%9F%A2%E9%87%8F%E5%9C%BA%E5%9B%BE%E4%BB%A5%E6%8F%AD%E7%A4%BA-lif-%E7%9A%84%E7%94%B5%E5%9C%BA">4.4.10</a>。</p>
+<h2 id="实例kr-原子-4p-轨道图">实例：Kr 原子 4p 轨道图</h2>
+<p>说明：用内置轨道波函数等值线档（<code>±0.01×2^(i-1)</code>）＋等值线间填色＋pdf 导出，得出版级轨道图。</p>
+<p>菜单路径：主功能4 → <code>4</code> 轨道波函数 → <code>2</code> 等值线图</p>
+<p>输入要求：<code>examples\atomwfn\Kr.wfn</code>（先用主功能0确认 4p_z 为轨道 17）。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\atomwfn\Kr.wfn
+4  // Output and plot specific property in a plane
+4  // Value of orbital wavefunction
+17  // The orbital corresponding to 4p_z
+2  // Contour line map
+[Press ENTER button]  // Use default number of grids
+0  // Modify extension distance
+5  // 5 Bohr
+2  // XZ plane
+0  // Y=0</code></pre></p>
+<p>后处理（原始格式）：</p>
+<p><pre><code class="language-text">9  // Enable filling colors for contour lines
+9  // Set status of filling colors between the contour lines
+3  // Set color transition
+8  // Blue-White-Red
+0  // Return
+3  // Change setting of contour lines
+5  // Use built-in contour values suitable for special purpose
+3  // Suitable for plotting orbital wavefunction (namely ±0.01*2^(i-1), i = 1-28)
+1  // Save setting and return</code></pre></p>
+<p>改 pdf 导出（原始格式）：</p>
+<p><pre><code class="language-text">-3  // Change other plotting settings
+10  // Set format of exporting image file
+7  // pdf
+0  // Return</code></pre></p>
+<p>最后选 <code>0</code> 保存图形。</p>
+<p>产出：Kr 4p 填充色等值线图（pdf 矢量）。</p>
+<p>来源：<a href="../sec-4-4-output-and-plot-various-properties-in-a-plane.html#4411-%E7%BB%98%E5%88%B6%E6%BC%82%E4%BA%AE%E7%9A%84-kr-%E5%8E%9F%E5%AD%90-4p-%E8%BD%A8%E9%81%93">4.4.11</a>。</p>
+<h2 id="实例等值线上的函数极值点">实例：等值线上的函数极值点</h2>
+<p>说明：在电子密度等值线（<code>ρ=0.001</code>）上标 ESP 极大（红球）极小（蓝球），并输出坐标与数值。</p>
+<p>菜单路径：主功能4 → <code>1</code> 电子密度 → <code>2</code> 等值线图 → 后处理 <code>19</code></p>
+<p>输入要求：<code>examples\phenol.wfn</code>。</p>
+<p>操作步骤（原始格式）：</p>
+<p><pre><code class="language-text">examples\phenol.wfn
+4  // Plot plane map
+1  // Electron density
+2  // Contour line map
+[Press ENTER button]  // Use default number of grids
+1  // XY plane
+0  // Z=0</code></pre></p>
+<p>后处理（原始格式）：</p>
+<p><pre><code class="language-text">19  // Enable showing extrema of a function on a contour line
+0.001  // Isovalue of present function (i.e. electron density)
+12  // ESP
+-1  // Replot plane map</code></pre></p>
+<p>产出：极值点图＋控制台极值表（示例输出 <code>Minimum found at -2.757166 -6.243420 Value: 0.0124521154</code> 等，共 5 极大 5 极小）；三维分子表面极值用主功能12（见 4.12.1）。</p>
+<p>来源：<a href="../sec-4-4-output-and-plot-various-properties-in-a-plane.html#4412-%E5%9C%A8%E7%AD%89%E5%80%BC%E7%BA%BF%E4%B8%8A%E6%98%BE%E7%A4%BA%E5%87%BD%E6%95%B0%E7%9A%84%E6%9E%81%E5%80%BC%E7%82%B9">4.4.12</a>。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="menu/func-04";const ROOT="../";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script>
+<script src="../app.js"></script></body></html>

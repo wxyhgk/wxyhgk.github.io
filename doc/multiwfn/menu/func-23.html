@@ -1,0 +1,181 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>主功能23：ETS-NOCV 分析 · Multiwfn中文手册</title><link rel="stylesheet" href="../style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="主功能23ets-nocv-分析">主功能23：ETS-NOCV 分析</h1>
+<p>功能概述：主功能 23 实现扩展过渡态–化学价自然轨道（ETS-NOCV）分析：对密度差矩阵 $\Delta\mathbf{P}^{\mathrm{orb}} = \mathbf{P}[\Psi_{AB}]-\mathbf{P}[\Psi_{AB}^0]$ 对角化得 NOCV 轨道/能量/对密度，把轨道相互作用能分解到各 NOCV 对。支持任意片段数；仅 HF/KS-DFT、限制性闭壳层或非限制性开壳层（禁 ROHF、多组态、双杂化）。NOCV 能量用实际 Fock/KS 矩阵近似（非严格过渡态矩阵），弱相互作用下接近严格值。输入文件禁 .wfn/.wfx（无基函数信息）。</p>
+<h2 id="通用流程载入片段并求-nocv">通用流程：载入片段并求 NOCV</h2>
+<p>说明：片段几何须与复合物一致（从复合物优化几何抽取坐标做单点，Gaussian 加 nosymm 防重取向；水平与复合物完全相同；勿用弥散函数、勿用隐式溶剂；3-zeta 如 def2-TZVP 足够）；片段原子在复合物中须连续、顺序与载入顺序一致；开壳层时按提示翻转自旋使 α/β 电子数之和与复合物一致。</p>
+<p>菜单路径：主功能 23 → 输入片段数 → 依次载入各片段波函数文件。</p>
+<p>输入要求：复合物波函数文件 + 各片段波函数文件（.fch/.mwfn/.molden 等含基函数文件；Fock 矩阵文件另按附录 7 提供，或由选项 −2 生成）。</p>
+<p>操作步骤（闭壳层 CO–BH₃，两片段）：</p>
+<p><pre><code class="language-text">examples\ETS-NOCV\COBH3\COBH3.fch  // Complex wavefunction file
+23  // ETS-NOCV analysis
+2  // Two fragments
+examples\ETS-NOCV\COBH3\CO.fch  // Wavefunction file of fragment 1. Note that loading order of the fragment wavefunction files must be in line with occurrence order of fragments in the complex
+examples\ETS-NOCV\COBH3\BH3.fch  // Wavefunction file of fragment 2</code></pre></p>
+<p>即得 NOCV 轨道波函数、本征值与自动配对：</p>
+<p><pre><code class="language-text">       --------------- Pair and NOCV orbital information --------------
+There are totally   26 NOCV pairs and    51 NOCV orbitals
+NOCV orbitals whose eigenvalues are smaller than 1.0E-03 are not shown
+Note: Energies of NOCV orbitals have not been evaluated, so they are all zero
+
+ Pair  Energy | Orbital  Eigenvalue    Energy  | Orbital  Eigenvalue    Energy
+    1    0.00       1      0.56514       0.00       51     -0.56514       0.00
+    2    0.00       2      0.40205       0.00       50     -0.40205       0.00
+    3    0.00       3      0.40204       0.00       49     -0.40204       0.00
+    4    0.00       4      0.13007       0.00       48     -0.13007       0.00
+    5    0.00       5      0.03704       0.00       47     -0.03704       0.00
+    6    0.00       6      0.03703       0.00       46     -0.03703       0.00
+    7    0.00       7      0.03419       0.00       45     -0.03419       0.00
+    8    0.00       8      0.00834       0.00       44     -0.00834       0.00
+    9    0.00       9      0.00273       0.00       43     -0.00273       0.00
+Sum of NOCV eigenvalues:   0.00000</code></pre></p>
+<p>操作步骤（开壳层乙烷 2×CH₃，注意自旋翻转）：</p>
+<p><pre><code class="language-text">examples\ETS-NOCV\ethane\ethane.fch  // Wavefunction file of the whole system
+23  // ETS-NOCV analysis
+2  // Two fragments
+examples\ETS-NOCV\ethane\CH3_1.fch  // Wavefunction file of the first ⋅CH_3 radical
+examples\ETS-NOCV\ethane\CH3_2.fch  // Wavefunction file of the second ⋅CH_3 radical
+n  // Do not flip spin of the first ⋅CH_3 radical
+y  // Flip spin of the second ⋅CH_3 radical</code></pre></p>
+<p>操作步骤（乙烯 2×CH₂，三重态自旋相反 + 直接求能量）：</p>
+<p><pre><code class="language-text">examples\ETS-NOCV\ethene\ethene.fch  // Wavefunction file of the ethene
+23  // ETS-NOCV analysis
+2  // Two fragments
+examples\ETS-NOCV\ethene\CH2_1.fch  // Wavefunction file of the first CH_2 fragment
+examples\ETS-NOCV\ethene\CH2_2.fch  // Wavefunction file of the second CH_2 fragment
+n  // Do not flip spin of the first CH_2 fragment
+y  // Flip spin of the second CH_2 fragment
+-2  // Generate Fock/KS matrix and evaluate NOCV orbital energies</code></pre></p>
+<p>操作步骤（三片段，乙炔三聚过渡态）：</p>
+<p><pre><code class="language-text">examples\ETS-NOCV\C2H2_trimerization_TS\TS.fch
+23  // ETS-NOCV analysis
+3  // Three fragments
+examples\ETS-NOCV\C2H2_trimerization_TS\1.fch  // Fragment 1
+examples\ETS-NOCV\C2H2_trimerization_TS\2.fch  // Fragment 2
+examples\ETS-NOCV\C2H2_trimerization_TS\3.fch  // Fragment 3
+-2  // Generate Fock/KS matrix and evaluate NOCV orbital energies</code></pre></p>
+<p>操作步骤（过渡金属 (CO)₅Cr=CH₂，CH₂ 取单重态参考态）：</p>
+<p><pre><code class="language-text">examples\ETS-NOCV(CO)5CrCH2(CO)5CrCH2.fch
+23  // ETS-NOCV analysis
+2  // Two fragments
+examples\ETS-NOCV(CO)5CrCH2(CO)5Cr.fch  // Fragment 1
+examples\ETS-NOCV(CO)5CrCH2\CH2.fch  // Fragment 2
+-2  // Generate Fock/KS matrix and evaluate NOCV orbital energies</code></pre></p>
+<p>操作步骤（弱相互作用 A–T 碱基对，ORCA .molden）：</p>
+<p><pre><code class="language-text">AT.molden  // Wavefunction file of A-T base pair
+23  // ETS-NOCV analysis
+2  // Two fragments
+A.molden  // Wavefunction file of adenine (A) fragment
+T.molden  // Wavefunction file of thymine (T) fragment
+-2  // Generate Fock/KS matrix and re-evaluate NOCV orbital energies</code></pre></p>
+<p>产出：NOCV 轨道、本征值、自动配对信息（本征值和为零）。</p>
+<p>来源链接：<a href="../sec-3-26-ets-nocv-analysis.html">3.26.2</a>、<a href="../sec-3-26-ets-nocv-analysis.html">3.26.3</a>、<a href="../sec-4-23-examples-of-ets-nocv-analysis.html">4.23.1</a>。</p>
+<h2 id="后处理nocv-能量选项-1--2">后处理：NOCV 能量（选项 −1 / −2）</h2>
+<p>说明：−1 载入量子化学程序输出的复合物实际 Fock/KS 矩阵（细节见附录 7）；−2 由复合物波函数轨道能量与系数经 F=SC EC⁻¹ 生成。之后显示带能量的 NOCV 信息，各对能量之和≈ΔE_orb（近似值）。</p>
+<p>菜单路径：后处理菜单 → −1 / −2。</p>
+<p>输入要求：Fock/KS 矩阵文件（−1），或直接用复合物波函数（−2，无弥散函数时才可直接生成）。</p>
+<p>操作步骤：后处理菜单选 <code>-2 Generate Fock/KS matrix and evaluate NOCV orbital energies</code>，CO–BH₃ 得：</p>
+<p><pre><code class="language-text">Pair  Energy | Orbital  Eigenvalue    Energy  | Orbital  Eigenvalue    Energy
+    1  -77.88       1      0.56514    -120.88       51     -0.56514      16.93
+    2  -15.83       2      0.40205    -139.60       50     -0.40205    -100.22
+    3  -15.84       3      0.40204    -139.62       49     -0.40204    -100.23
+    4   -5.53       4      0.13007     -44.60       48     -0.13007      -2.06
+    5   -0.41       5      0.03704     -18.25       47     -0.03704      -7.19
+    6   -0.41       6      0.03703     -18.19       46     -0.03703      -7.13
+    7   -0.65       7      0.03419      21.33       45     -0.03419      40.48
+    8   -0.06       8      0.00834    -308.53       44     -0.00834    -301.42
+    9   -0.02       9      0.00273   -1661.86       43     -0.00273   -1655.69
+Sum of NOCV eigenvalues:   0.00000
+Sum of pair energies:    -116.63 kcal/mol</code></pre></p>
+<p>对 1 能量 −77.88 kcal/mol = −120.88×0.5651 + 16.93×(−0.5651)；乙烷开壳层 α/β 各 −98.93、总 −197.86 kcal/mol；乙烯 α/β 各 −169.05、总 −338.09 kcal/mol。</p>
+<p>产出：各 NOCV 轨道/对能量与总和。</p>
+<p>来源链接：<a href="../sec-3-26-ets-nocv-analysis.html">3.26.3</a>、<a href="../sec-4-23-examples-of-ets-nocv-analysis.html">4.23.1</a>。</p>
+<h2 id="后处理nocv-轨道与对密度等值面选项-1--2">后处理：NOCV 轨道与对密度等值面（选项 1 / 2）</h2>
+<p>说明：选项 1 看 NOCV 轨道等值面（GUI 右下列表选轨道或输序号，功能同主功能 0）；选项 2 看 NOCV 对密度 ${v}_{i}[\varphi_i^2-\varphi_{-i}^2]$，可输串（如 2,4-6,9 求和；1-50 即 Δρ^orb；开壳层 α/β 对序号不同，可混合求和）。</p>
+<p>菜单路径：后处理菜单 → 1（轨道）/ 2（对密度）。</p>
+<p>输入要求：已算 NOCV（选项 2 可视化前若未设格点，用 −5 设置；选项 −5 可随时更改）。</p>
+<p>操作步骤（CO–BH₃ 对 1，Medium 格点，等值面 0.005 a.u. 蓝减绿增，CO→BH₃ 给体 0.565 e，能量 −77.9）：选项 2 → 2 → 输 1。对 2（等值面 0.002 a.u.，BH₃ σ(B–H)→CO π* 反馈 −15.8）；其余对 4–26 输 4-26（等值面 0.001 a.u.，能量和 −7.09，极化为主）。</p>
+<p>操作步骤（乙烷 α 对 1 + β 对 22，等值面 0.01 a.u.，两者之和为 C–C 成键电子集中）：</p>
+<p><pre><code class="language-text">2  // Show isosurface of NOCV pair density
+2  // Medium-quality grid
+1  // Check NOCV pair 1, which is the dominant pair of alpha spin</code></pre></p>
+<p>后输 22 看 β 主导对，输 1,22 看两者之和。</p>
+<p>产出：NOCV 轨道/对密度等值面图。</p>
+<p>来源链接：<a href="../sec-4-23-examples-of-ets-nocv-analysis.html">4.23.1</a>、<a href="../sec-4-23-examples-of-ets-nocv-analysis.html">4.23.2</a>。</p>
+<h2 id="后处理pauli--轨道--总形变密度选项-35">后处理：Pauli / 轨道 / 总形变密度（选项 3–5）</h2>
+<p>说明：$\Delta\rho^{\mathrm{Pauli}} = \rho^0-(\rho_A+\rho_B)$（Pauli 排斥致片段间电子减少）、$\Delta\rho^{\mathrm{orb}} = \rho-\rho^0$（= 全部 NOCV 对密度之和，成键区电子累积）、$\Delta\rho = \Delta\rho^{\mathrm{orb}}+\Delta\rho^{\mathrm{Pauli}}$（亦可用主功能 5 自定义操作算）。</p>
+<p>菜单路径：后处理菜单 → 3（Pauli）/ 4（轨道）/ 5（总）。</p>
+<p>输入要求：已算 NOCV。</p>
+<p>操作步骤：分别选 3 / 4 / 5 显示等值面（CO–BH₃ 例：Pauli 图片段间电子减少、轨道图成键区累积、总图净增加）。</p>
+<p>产出：三种形变密度等值面图。</p>
+<p>来源链接：<a href="../sec-3-26-ets-nocv-analysis.html">3.26.1</a>、<a href="../sec-4-23-examples-of-ets-nocv-analysis.html">4.23.1</a>。</p>
+<h2 id="后处理cube-导出选项-610">后处理：cube 导出（选项 6–10）</h2>
+<p>说明：把 NOCV 轨道、NOCV 对、Δρ^Pauli、Δρ^orb、Δρ 格点导出为 .cub 供第三方软件渲染。</p>
+<p>菜单路径：后处理菜单 → 6–10 中相应项。</p>
+<p>输入要求：已算 NOCV（格点设置同选项 1/2，经 −5 定义）。</p>
+<p>操作步骤：选 6–10 中对应项导出 .cub。</p>
+<p>产出：.cub 文件。</p>
+<p>来源链接：<a href="../sec-3-26-ets-nocv-analysis.html">3.26.3</a>。</p>
+<h2 id="后处理前分子--冻结--实际轨道选项-1113">后处理：前分子 / 冻结 / 实际轨道（选项 11–13）</h2>
+<p>说明：11 看前分子态轨道（片段 MO 并集）；12 看冻结态轨道（占据片段 MO 经 Löwdin 正交化，空轨道与前分子态相同；小等值面下可见正交化引入的额外节面）；13 看复合物实际轨道。</p>
+<p>菜单路径：后处理菜单 → 11 / 12 / 13。</p>
+<p>输入要求：已算 NOCV。</p>
+<p>操作步骤：选 11 / 12 / 13，屏幕列占据轨道信息如：</p>
+<p><pre><code class="language-text">Orb:     1 Ene(au/eV):     0.000000       0.0000 Occ: 2.000000 Type:A+B
+Orb:     2 Ene(au/eV):     0.000000       0.0000 Occ: 2.000000 Type:A+B
+Orb:     3 Ene(au/eV):     0.000000       0.0000 Occ: 2.000000 Type:A+B
+Orb:     4 Ene(au/eV):     0.000000       0.0000 Occ: 2.000000 Type:A+B
+Orb:     5 Ene(au/eV):     0.000000       0.0000 Occ: 2.000000 Type:A+B
+Orb:     6 Ene(au/eV):     0.000000       0.0000 Occ: 2.000000 Type:A+B
+Orb:     7 Ene(au/eV):     0.000000       0.0000 Occ: 2.000000 Type:A+B
+Orb:    31 Ene(au/eV):     0.000000       0.0000 Occ: 2.000000 Type:A+B
+Orb:    32 Ene(au/eV):     0.000000       0.0000 Occ: 2.000000 Type:A+B
+Orb:    33 Ene(au/eV):     0.000000       0.0000 Occ: 2.000000 Type:A+B
+Orb:    34 Ene(au/eV):     0.000000       0.0000 Occ: 2.000000 Type:A+B</code></pre></p>
+<p>CO 的 HOMO（MO 7）冻结态在 BH₃ 区多一节面（等值面 0.02）。</p>
+<p>产出：三态轨道等值面图。</p>
+<p>来源链接：<a href="../sec-4-23-examples-of-ets-nocv-analysis.html">4.23.1</a>。</p>
+<h2 id="后处理scpa-组成选项-14">后处理：SCPA 组成（选项 14）</h2>
+<p>说明：NOCV 轨道组成用 SCPA 法（禁弥散函数；确需弥散函数时回主菜单用主功能 8 的 Hirshfeld/Becke 法），对组成按 ${v}_{i}\Theta_{i}+{v}_{j}\Theta_{j}$（${v}_{j}=-{v}_{i}$）；正值=得电子、负值=失电子（如 A 得 0.3412 e、B 失 0.2053 e）；对组成之和恒为零。</p>
+<p>菜单路径：后处理菜单 → 14 → 输入 NOCV 对序号。</p>
+<p>输入要求：已算 NOCV；不用弥散函数。</p>
+<p>操作步骤：选 14，输 1（研究 NOCV 对 1），输出基函数/壳层/角动量/原子贡献表（略，见 <a href="../sec-4-23-examples-of-ets-nocv-analysis.html">4.23.1</a>）；如硼 2p_z 对 NOCV 对 1 贡献 18.27%+1.77%=20.04%（正部主导），碳 2s 贡献 −1.72%−19.17%=−20.89%（负部主导）。</p>
+<p>产出：NOCV 对/轨道组成表。</p>
+<p>来源链接：<a href="../sec-3-26-ets-nocv-analysis.html">3.26.3</a>、<a href="../sec-4-23-examples-of-ets-nocv-analysis.html">4.23.1</a>。</p>
+<h2 id="后处理显示与格点控制选项-0--3--5--6">后处理：显示与格点控制（选项 0 / −3 / −5 / −6）</h2>
+<p>说明：0 重打印 NOCV 信息；−3 设本征值打印阈值（默认 0.001）；−5 设各类密度格点；−6 手工重定义简并体系 NOCV 对–轨道对应关系（可多次使用）。</p>
+<p>菜单路径：后处理菜单 → 0 / −3 / −5 / −6。</p>
+<p>输入要求：已算 NOCV。</p>
+<p>操作步骤（A–T 碱基对，328 对太多，提高阈值到 0.02 再打印）：</p>
+<p><pre><code class="language-text">-3  // Set printing threshold of NOCV eigenvalues
+0.02
+0  // Print NOCV information again</code></pre></p>
+<p>得：</p>
+<p><pre><code class="language-text">       --------------- Pair and NOCV orbital information --------------
+There are totally  328 NOCV pairs and   655 NOCV orbitals
+NOCV orbitals with absolute eigenvalues smaller than 2.0E-02 are not shown
+Note: All energies are given in kcal/mol
+
+ Pair  Energy | Orbital  Eigenvalue    Energy  | Orbital  Eigenvalue    Energy
+    1  -11.20       1      0.20598     -15.91      655     -0.20598      38.45
+    2   -4.05       2      0.11820     -18.61      654     -0.11820      15.66
+    3   -0.79       3      0.07198     -91.72      653     -0.07198     -80.71
+    4   -0.79       4      0.07066     -77.74      652     -0.07066     -66.59
+    5   -0.59       5      0.04312     -29.08      651     -0.04312     -15.45
+    6   -0.34       6      0.03551     -40.19      650     -0.03551     -30.49
+    7   -0.27       7      0.02859     -24.18      649     -0.02859     -14.72
+    8   -0.15       8      0.02619     -56.34      648     -0.02619     -50.77
+    9   -0.15       9      0.02032     -16.97      647     -0.02032      -9.45
+Sum of NOCV eigenvalues:  -0.00000
+Sum of pair energies:     -18.33 kcal/mol</code></pre></p>
+<p>对 1/2（−11.20/−4.05 kcal/mol）分别对应 N20–H26⋯N1 与 O23⋯H14–N10 氢键（等值面 0.002 a.u.，弱相互作用取值远小于化学键）。</p>
+<p>产出：筛选后的 NOCV 信息表。</p>
+<p>来源链接：<a href="../sec-4-23-examples-of-ets-nocv-analysis.html">4.23.4</a>。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="menu/func-23";const ROOT="../";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script>
+<script src="../app.js"></script></body></html>

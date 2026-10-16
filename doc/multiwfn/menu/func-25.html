@@ -1,0 +1,346 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>主功能25：电子离域与芳香性分析 · Multiwfn中文手册</title><link rel="stylesheet" href="../style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="主功能25电子离域与芳香性分析">主功能25：电子离域与芳香性分析</h1>
+<p>本主功能汇集若干芳香性分析方法：等化学屏蔽表面（ICSS）三维格点生成、非平面/倾斜体系 NICS_ZZ 求值、HOMA/Bird/HOMAc/HOMER 几何指数、NICS-1D 扫描曲线与 INICS/FiPC-NICS 积分、一维/二维 NICS 平面图。Multiwfn 自身不能算磁屏蔽张量，凡涉及 NICS/ICSS 都需 Gaussian 做 NMR 任务。本功能只要求原子坐标的那些子功能（HOMA/Bird 等）用任意含坐标文件即可。</p>
+<p>Multiwfn 中大多数电子离域与芳香性分析在其它章节，概述见 <a href="../sec-4-A-special-topics-and-advanced-tutorials.html#4a3-%E8%8A%B3%E9%A6%99%E6%80%A7%E7%A0%94%E7%A9%B6%E6%96%B9%E6%B3%95%E6%A6%82%E8%BF%B0">4.A.3</a>。理论与实例来源：<a href="../sec-3-28-electron-delocalization-and-aromaticity-analyses.html">3.28</a>、<a href="../sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses.html">4.25</a>。相关博文：<a href="http://sobereva.com/216">http://sobereva.com/216</a>（ICSS）、<a href="http://sobereva.com/261">http://sobereva.com/261</a>（倾斜/扭曲环 NICS_ZZ）、<a href="http://sobereva.com/681">http://sobereva.com/681</a>（一维 NICS）、<a href="http://sobereva.com/682">http://sobereva.com/682</a>（二维 NICS）、<a href="http://sobereva.com/724">http://sobereva.com/724</a>（FiPC-NICS）。</p>
+<h2 id="子功能3生成等化学屏蔽表面icss及相关量">子功能3：生成等化学屏蔽表面（ICSS）及相关量</h2>
+<h3 id="说明">说明</h3>
+<p>等化学屏蔽表面（ICSS）即 NICS 负值的等值面，展示 NICS 三维分布，给出直观芳香性图像。本功能生成各向同性 ICSS、各向异性 ICSS、ICSS_XX、ICSS_YY、ICSS_ZZ 格点，分别对应 NICS、NICS_ani、NICS_XX、NICS_YY、NICS_ZZ 负值的等值面。NICS_ani 定义为 <em>ε</em>₃ − (<em>ε</em>₁ + <em>ε</em>₂)/2（<em>ε</em> 为磁屏蔽张量本征值从小到大排序）。ICSS 原始论文 <em>J. Chem. Soc. Perkin Trans.</em> 2, <strong>2001</strong>, 1893；ICSS_ani/XX/YY/ZZ 由开发者提出，用到请引用 <em>Carbon</em>, <strong>165</strong>, 468 (2020)。对平面体系分量形式（尤其 ICSS_ZZ）比总 ICSS 更有意义，正如 NICS_ZZ 优于 NICS。</p>
+<h3 id="菜单路径">菜单路径</h3>
+<p>主功能25 → 子功能3。</p>
+<h3 id="输入要求">输入要求</h3>
+<p>Gaussian 输入模板 .gjf（几何已优化，必须显式指定 %chk；其中的关键词将用于 NMR 任务，如 <em>examples\ICSS\anthracene.gjf</em>）＋ 运行所得 NMR 输出文件。</p>
+<h3 id="操作步骤">操作步骤</h3>
+<ul>
+<li>(1) 为所研究体系准备 Gaussian 输入文件，必须显式指定 %chk，几何结构应已优化好。</li>
+<li>(2) 启动 Multiwfn 后载入 .gjf 文件，然后进入主功能 25 的子功能 3。</li>
+<li>(3) 按提示设置格点。注意，即使中等质量格点也可能相当耗时，对中等大小体系一般推荐低质量格点。</li>
+<li>(4) 输入 <code>n</code>，即不跳过第 5 步。</li>
+<li>(5) 在当前文件夹生成许多 Gaussian NMR 输入文件（<em>NICS0001.gjf</em>、<em>NICS0002.gjf</em>……），建议手动检查一个确保格式关键词正确。每个 Bq 对应一个格点；默认每个文件 8000 原子（真实+Bq），可调 <em>settings.ini</em> 中 <code>NICSnptlim</code>。Bq 太多 Gaussian 会因内存过大失败且有原子总数上限；内存大可调大 <code>NICSnptlim</code> 以降低总代价。G09 D.01/E.01 须在模板 route 加 <code>guess=huckel</code>（Link401 报错改 <code>guess=core</code>），否则 NICSnptlim 须很小（如 1000）；G16 不需要 guess。</li>
+<li>(6) 运行所有输入文件得输出（<em>NICS0001.gjf</em> 必须先运行；可用 <em>examples\runall.sh</em> / <em>runall.bat</em> 批量跑，生成同名 .out）。最好保持 Multiwfn 运行（若退出，用完全相同设置重复 2、3 步，第 4 步输入 <code>y</code>）。</li>
+<li>(7) 输入输出文件所在文件夹路径，Multiwfn 从 <em>NICS0001.out</em>、<em>NICS0002.out</em>……载入磁屏蔽张量。</li>
+<li>(8) 选择感兴趣的性质。</li>
+<li>(9) 可视化等值面或导出 cube（如第 8 步选 ZZ 则对应 ICSS_ZZ；选 <code>-1 Load another ICSS form</code> 可研究其它形式）。</li>
+</ul>
+<p>若已有该体系 NMR 输出：从第 2 步开始，第 4 步输入 <code>y</code> 跳过 5、6 步，但第 3 步格点必须与当初完全一致。</p>
+<h3 id="实例苯的-icss_zz-与磁屏蔽分布4253">实例：苯的 ICSS_ZZ 与磁屏蔽分布（4.25.3）</h3>
+<p>苯平面在 XY 面。模板 <em>examples\ICSS\benzene.gjf</em>（几何已优化）。启动 Multiwfn：</p>
+<p><pre><code class="language-text">examples\ICSS\benzene.gjf  // Note that molecular plane is in XY plane
+25  // Electron delocalization and aromaticity analyses
+3  // Generate grid data of ICSS or related quantities
+1  // Low-quality grid, magnetic shielding tensor at 130910 points will be calculated by Gaussian later. Using "medium-quality grid" could result in smoother maps, but the calculation will be much more expensive. Note that the default extension distance is 12 Bohr, which is usually large enough
+n  // Do not skip the step of generating Gaussian input file, because this is the first time we carry out analysis and thus currently we do not have Gaussian input/output files in hand</code></pre></p>
+<p>生成 <em>NICS0001.gjf</em>~<em>NICS0017.gjf</em>，用 Gaussian 运行（<em>NICS0001.gjf</em> 先跑；输出可下载 <a href="http://sobereva.com/multiwfn/extrafiles/benzene_ICSS.rar">http://sobereva.com/multiwfn/extrafiles/benzene_ICSS.rar</a>）。常见失败原因：(1) %mem 太小；(2) <code>NICSnptlim</code> 太大。</p>
+<p>假设输出在 <code>C:\benzene</code>，输入 <code>C:\benzene\NICS</code>，选 <code>5: ZZ component</code>，得 ICSS_ZZ 格点。选项 1 可视化（ICSS_ZZ = 2.0 ppm：绿色等值面覆盖环上下区域 → 强芳香性；蓝色在外侧 → 退屏蔽；C-H 键也被绿面覆盖 → σ 局域环电流）；选项 2 导出 <em>ICSSZZ.cub</em>；选项 -1 换其它形式。</p>
+<p>已有输出时直接研究：</p>
+<p><pre><code class="language-text">examples\ICSS\benzene.gjf
+25  // Electron delocalization and aromaticity analyses
+3  // Generate grid data of ICSS or related quantities
+1  // Low-quality grid
+y  // Skip generating Gaussian input files and thus directly load Gaussian output files
+C:\benzene\NICS
+5  // Study ICSS_ZZ</code></pre></p>
+<p>格点设置必须与生成时完全一致，否则加载失败。</p>
+<p>绘制 YZ 平面（X=0，穿过 C4-H10 和 C1-H7）填色图：设 <em>settings.ini</em> 中 <code>iuserfunc</code> = -3（B 样条插值 cube 格点），新开 Multiwfn：</p>
+<p><pre><code class="language-text">ICSSZZ.cub
+4  // Plot plane map
+100  //User-defined function, which now corresponds to the function interpolated by the grid data of ICSSZZ.cub via B-spline algorithm
+1  // Color-filled map
+[Press Enter button]
+0  // Set extension distance of the plot
+8  // 8 Bohr
+3  // YZ plane
+0  // X=0</code></pre></p>
+<p>关图后微调：</p>
+<p><pre><code class="language-text">4  // Show atom labels
+3  // Blue
+1  // Change lower and upper limit of color scale
+-60,60
+2  // Enable showing contour lines
+-2  // Set label interval in X, Y and color scale axes
+3,3,10
+19  // Set color transition
+8  // Blue-White-Red
+-1  // Replot the map</code></pre></p>
+<p>环中心屏蔽 Z 分量为正但远小于环上下（只有 π 芳香性、无 σ 全局离域）。</p>
+<p>磁屏蔽曲线（垂直环穿过环中心、±8 Bohr）：选 -5 回主菜单后输入：</p>
+<p><pre><code class="language-text">3  // Plot curve map
+100  // User-defined function
+2  // Input coordinate of two points to define a line
+0,0,-8,0,0,8  // The line starts from 8 Bohr below and above the ring center</code></pre></p>
+<p>选 <code>6</code> 找极值：</p>
+<p><pre><code class="language-text">Maximum X (Bohr):    6.122667  Value:    0.28936394E+02
+Minimum X (Bohr):    8.000000  Value:    0.13254245E+02
+Maximum X (Bohr):    9.882667  Value:    0.28937419E+02</code></pre></p>
+<p>ICSS_ZZ 最大 28.9 ppm 在环上下 1.88 Bohr（0.995 Å）；环中心仅 13.2 ppm。注意格点延伸仅 12 Bohr，插值作图范围不宜太大，超出点值为 0。</p>
+<p>由 ICSS_ZZ 直接得 NICS(0)_ZZ/NICS(1)_ZZ（NICS = −ICSS）：确保 <code>iuserfunc</code> = -3，启动：</p>
+<p><pre><code class="language-text">ICSSZZ.cub
+1  // Calculate function values at a point
+0,0,1  // The point 1 Å above the ring center
+2  // The inputted position is in Å</code></pre></p>
+<p>自定义函数值 28.9 → NICS(1)_ZZ = −28.9 ppm。</p>
+<p>练习体系在 <em>examples\ICSS</em>（azulene、cyclobutadiene、cycloheptatriene、porphyrin、propane、pyracylene），详见博文 <a href="http://sobereva.com/216">http://sobereva.com/216</a>。</p>
+<h3 id="产出">产出</h3>
+<p>ICSS 各形式格点（等值面可视化 / 导出 .cub）；基于插值可进一步画平面图、曲线图、求 NICS(0/1)_ZZ。</p>
+<h3 id="来源">来源</h3>
+<p><a href="../sec-3-28-electron-delocalization-and-aromaticity-analyses.html#3283-%E7%94%9F%E6%88%90%E7%AD%89%E5%8C%96%E5%AD%A6%E5%B1%8F%E8%94%BD%E8%A1%A8%E9%9D%A2-icss-%E5%8F%8A%E7%9B%B8%E5%85%B3%E9%87%8F">3.28.3</a>、<a href="../sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses.html#4253-%E7%A0%94%E7%A9%B6%E8%8B%AF%E7%9A%84%E7%AD%89%E5%8C%96%E5%AD%A6%E5%B1%8F%E8%94%BD%E9%9D%A2-icss-%E5%92%8C%E7%A3%81%E5%B1%8F%E8%94%BD%E5%88%86%E5%B8%83">4.25.3</a>。</p>
+<h2 id="子功能4求非平面或倾斜体系的-nics_zz-值">子功能4：求非平面或倾斜体系的 NICS_ZZ 值</h2>
+<h3 id="说明">说明</h3>
+<p>NICS(0)_ZZ 或 NICS(1)_ZZ 比原始 NICS 更好（<em>Org. Lett.</em>, <strong>8</strong>, 863 (2006)）。平面体系 NICS(0)_ZZ 即环中心磁屏蔽 ZZ 分量（平面平行 XY 时）；NICS(1)_ZZ 为环中心上/下方平面外 1 Å 处的值。环中心可用几何中心、质心，推荐 AIM 环临界点（RCP）（<em>WIREs Comput. Mol. Sci.</em>, <strong>3</strong>, 105 (2013)）。</p>
+<p>扭曲/倾斜环无法直接从程序输出得法向分量，本功能按 <em>σ</em>⊥=<strong>u</strong>ᵀ<strong>σu</strong>（<strong>u</strong> 为环法向单位列向量）计算，并给出 NICS(1) 所需的 1 Å 上下方点坐标。</p>
+<h3 id="菜单路径">菜单路径</h3>
+<p>主功能25 → 子功能4。</p>
+<h3 id="输入要求">输入要求</h3>
+<p>含原子坐标的文件（.xyz/.pdb/.mol/.wfn/.mwfn/.fch/.molden 等）＋ 环中心（可由主功能 2 的 RCP 或主功能 100 子功能 21 的几何中心/质心得到）＋ 量子化学程序算得的磁屏蔽张量。</p>
+<h3 id="操作步骤nics1_zz">操作步骤（NICS(1)_ZZ）</h3>
+<ul>
+<li>(1) 用 Multiwfn 打开含坐标的文件。</li>
+<li>(2) 确定环中心（拓扑模块主功能 2 定 RCP，或主功能 100 子功能 21 得几何中心/质心）。</li>
+<li>(3) 进主功能 25 子功能 4，输入环中心，再输入拟合环平面的原子序号（通常为该环全部原子）。输出环平面上下 1 Å 两点坐标（还输出法向量，可推 NICS(2)、NICS(3.5)…位置；若只要几何中心且用环全部原子拟合，第 2 步可跳过——被问环中心时直接回车即自动用拟合原子的几何中心）。</li>
+<li>(4) 用上步两点之一，以量子化学程序计算该处磁屏蔽张量。</li>
+<li>(5) 按程序输出输入磁屏蔽张量全部分量。输出的 <code>The shielding value normal to the plane</code> 的负值即 NICS(1)_ZZ（体系相对平面不对称时 NICS(1)_ZZ ≠ NICS(−1)_ZZ，可取平均）。</li>
+</ul>
+<p>NICS(0)_ZZ 更简单：(1)(2) 同上；(3) 直接用环中心算磁屏蔽张量；(4) 进子功能 4 输入环中心 + 拟合原子 + 张量分量，法向屏蔽值负值即 NICS(0)_ZZ。</p>
+<h3 id="产出">产出</h3>
+<p>环平面法向量、1 Å 上下方点坐标、法向屏蔽值（负值即 NICS_ZZ）。</p>
+<h3 id="来源">来源</h3>
+<p><a href="../sec-3-28-electron-delocalization-and-aromaticity-analyses.html#3284-%E6%B1%82%E9%9D%9E%E5%B9%B3%E9%9D%A2%E6%88%96%E5%80%BE%E6%96%9C%E4%BD%93%E7%B3%BB%E7%9A%84-nics_zz-%E5%80%BC">3.28.4</a>。另见博客“使用 Multiwfn 计算倾斜和扭曲环的 NICS_ZZ”<a href="http://sobereva.com/261">http://sobereva.com/261</a>。</p>
+<h2 id="子功能6计算-homa-和-bird-芳香性指数">子功能6：计算 HOMA 和 Bird 芳香性指数</h2>
+<h3 id="说明">说明</h3>
+<p>HOMA（<em>Tetrahedron Lett.</em>, <strong>13</strong>, 3839 (1972)；推广形式 <em>J. Chem. Inf. Comput. Sci.</em>, <strong>33</strong>, 70 (1993)，注意众多论文误引公式）：</p>
+<p><div class="mathdisp" data-mi="0" title="点击复制 TeX">$$
+\mathrm{HOMA}=1-\sum_i\frac{\alpha_{i,j}}{N}(R_{\mathrm{ref}}-R_{i,j})^2
+$$</div></p>
+<p><div class="mathdisp" data-mi="1" title="点击复制 TeX">$$
+\begin{gathered}R_{\mathrm{ref}}=(R_{\mathrm{s}}+wR_{\mathrm{d}})/(1+w)\\\alpha=\frac{2}{(R_{\mathrm{s}}-R_{\mathrm{ref}})^2+(R_{\mathrm{d}}-R_{\mathrm{ref}})^2}\end{gathered}
+$$</div></p>
+<p>$N$ 为环原子总数，$j$ 为原子 $i$ 的下一原子；$R_s$、$R_d$ 为单/双键实验键长，$w=k_d/k_s$（通常 2.0，BN 键 4.2）。HOMA=1 完全芳香，0 完全非芳香，显著负值反芳香。内置参数：CC、CN、CO、CP、CS、NN、NO（<em>Chem. Inf. Comput. Sci.</em>, <strong>33</strong>, 70 (1993)）；BN（<em>Tetrahedron</em>, <strong>54</strong>, 14913 (1998)）；BC（<em>Struct. Chem.</em>, <strong>23</strong>, 595 (2012)），可经选项 1 修改/补充。</p>
+<p>Bird 指数（<em>Tetrahedron</em>, <strong>41</strong>, 1409 (1985)）：</p>
+<p><div class="mathdisp" data-mi="2" title="点击复制 TeX">$$
+\begin{gathered}I=100[1-(V/V_{\mathrm{K}})]\end{gathered}
+$$</div></p>
+<p><div class="mathdisp" data-mi="3" title="点击复制 TeX">$$
+V=\frac{100}{\overline{N}}\sqrt{\frac{\sum_i(N_{i,j}-\overline{N})^2}{n}}\quad\quad N_{i,j}=\frac{a}{R_{i,j}}-b
+$$</div></p>
+<p>$i$ 遍历环键，$n$ 为键总数，$N$ 为 Gordy 键级，$V_K$ 五/六元环分别为 35/33.2。越接近 100 芳香性越强。$a$、$b$ 参数：C-C、C-N、C-O、C-S、N-O、N-N（<em>Tetrahedron</em>, <strong>57</strong>, 5715 (2001)），B-N（<em>Tetrahedron</em>, <strong>54</strong>, 14913 (1998)），其它键经选项 3 提供，$V_K$ 经选项 4 调整/增加。</p>
+<h3 id="菜单路径">菜单路径</h3>
+<p>主功能25 → 子功能6。选项 0 算 HOMA（选项 1 改参数），选项 2 算 Bird（选项 3/4 提供键参数/调 VK）。</p>
+<h3 id="输入要求">输入要求</h3>
+<p>仅原子坐标（任意含坐标文件）。</p>
+<h3 id="操作步骤">操作步骤</h3>
+<p>进入子功能 6，选 0（HOMA）或 2（Bird），按连接顺序输入环原子序号（如 <code>2,3,4,5,6,7</code>），即得指数与每对原子贡献。MP2/6-311+G** 噻吩示例输出：</p>
+<p><pre><code class="language-text">        Atom pair         Contribution  Bond length(Angstrom)
+   1(C )  --    2(C ):      -0.001852        1.382006
+   2(C )  --    3(C ):      -0.056708        1.421170
+   3(C )  --    4(C ):      -0.001852        1.382006
+   4(C )  --    5(S ):      -0.023886        1.712627
+   5(S )  --    1(C ):      -0.023886        1.712627
+HOMA value is    0.891817</code></pre></p>
+<p>0.891817 接近 1 → 突出芳香性。</p>
+<h3 id="实例菲的-homa-和-bird4256">实例：菲的 HOMA 和 Bird（4.25.6）</h3>
+<p>几何 B3LYP/6-31G* 优化。启动：</p>
+<p><pre><code class="language-text">examples/phenanthrene.pdb
+25  // Electron delocalization and aromaticity analyses
+6  // Calculate HOMA and Bird aromaticity index
+0  // Start the calculation</code></pre></p>
+<p>先看默认参数（<em>J. Chem. Inf. Comput. Sci.</em>, <strong>33</strong>, 70 (1993)），可选项 1 修改。输入中间环 <code>3,4,8,9,10,7</code>（须按连接顺序）：</p>
+<p><pre><code class="language-text">        Atom pair         Contribution  Bond length(Angstrom)
+   3(C )  --    4(C ):      -0.065698        1.427111
+   4(C )  --    8(C ):      -0.210455        1.458000
+   8(C )  --    9(C ):      -0.065698        1.427111
+   9(C )  --   10(C ):      -0.096016        1.435282
+  10(C )  --    7(C ):      -0.033673        1.360000
+   7(C )  --    3(C ):      -0.096016        1.435282
+HOMA value is    0.432442</code></pre></p>
+<p>C4-C8 偏离理想键长 1.388 最显著。边缘环 <code>8,15,14,13,11,9</code> 得 0.855126 → 边缘环芳香性更强。选项 2 算 Bird 同样边缘环更接近 100。</p>
+<h3 id="产出">产出</h3>
+<p>HOMA 值（越近 1 越芳香）与每键贡献；Bird 指数（越近 100 越芳香）。</p>
+<h3 id="来源">来源</h3>
+<p><a href="../sec-3-28-electron-delocalization-and-aromaticity-analyses.html#3286-%E8%AE%A1%E7%AE%97-homa-%E5%92%8C-bird-%E8%8A%B3%E9%A6%99%E6%80%A7%E6%8C%87%E6%95%B0">3.28.6</a>、<a href="../sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses.html#4256-%E8%AE%A1%E7%AE%97%E8%8F%B2%E7%9A%84-homa-%E5%92%8C-bird-%E8%8A%B3%E9%A6%99%E6%80%A7%E6%8C%87%E6%A0%87">4.25.6</a>。</p>
+<h2 id="子功能6a6bhomac-和-homer">子功能6a/6b：HOMAc 和 HOMER</h2>
+<h3 id="说明">说明</h3>
+<p>HOMER（<em>Phys. Chem. Chem. Phys.</em>, <strong>25</strong>, 16763 (2023)）针对 T₁ 态重新参数化 $R_{\mathrm{ref}}$ 和 <em>α</em>（仅 CC、CN、CO、NN 键），与 T₁ 的 NICS(1)_zz 合理相关（HOMA 几乎无相关）；无法表征 Franck-Condon 点 T₁（几何与 S₀ 相同）。HOMAc（<em>J. Org. Chem.</em>, <strong>90</strong>, 1297 (2025)）改善 S₀ 基态判断，推荐代替 HOMA。参数由 CASPT2/cc-pVQZ 优化几何导出，但对 DFT 几何也适用。</p>
+<h3 id="菜单路径">菜单路径</h3>
+<p>主功能25 → 子功能 6a（HOMAc）/ 6b（HOMER），用法与 HOMA 完全相同。</p>
+<h3 id="输入要求">输入要求</h3>
+<p>仅原子坐标。</p>
+<h3 id="产出">产出</h3>
+<p>HOMAc/HOMER 指数（判读同 HOMA）。</p>
+<h3 id="来源">来源</h3>
+<p><a href="../sec-3-28-electron-delocalization-and-aromaticity-analyses.html#3287-homac-%E5%92%8C-homer">3.28.7</a>。</p>
+<h2 id="子功能13nics-1d-扫描曲线图积分-nicsinics与-fipc-nics">子功能13：NICS-1D 扫描曲线图、积分 NICS（INICS）与 FiPC-NICS</h2>
+<h3 id="说明">说明</h3>
+<p>沿垂直于环的线扫描 NICS 比单点含信息得多。对 NICS 曲线积分（INICS，<em>J. Phys. Chem. A</em>, <strong>123</strong>, 3922 (2019)）比单点更可靠。FiPC-NICS（<em>Inorg. Chem.</em>, <strong>53</strong>, 3579 (2014)）：任一点 NICS = 面内 NICS_in=(NICS_XX+NICS_YY)/3 + 面外 NICS_out=NICS_ZZ/3；扫描线上 NICS_in=0 处的 NICS_out 即 FiPC-NICS（不受面内污染，比 NICS(1)_ZZ 更严格；常用 NICS(1)_ZZ 是其可接受近似）。</p>
+<h3 id="菜单路径">菜单路径</h3>
+<p>主功能25 → 子功能13。</p>
+<h3 id="输入要求">输入要求</h3>
+<p>含结构信息的文件 ＋ Gaussian NMR 模板文件（坐标处替换为 <code>[geometry]</code>，如 <em>examples\NICS_scan\template_NMR.gjf</em>）。</p>
+<h3 id="操作步骤">操作步骤</h3>
+<ul>
+<li>(1) 启动 Multiwfn 并载入结构文件。</li>
+<li>(2) 进主功能 25 子功能 13。</li>
+<li>(3) 定义扫描线 + 线上均匀扫描点数。两种定线方式：① 手动指定两端点坐标；② 输入原子序号拟合平面，再指定相对几何中心在平面上下方距离。</li>
+<li>(4) 选选项 1，输入 Gaussian 模板路径（标准 NMR 任务，坐标为 <code>[geometry]</code>），当前文件夹生成 <em>NICS_1D.gjf</em>（可按需改关键词）。</li>
+<li>(5) 手动用 Gaussian 运行。</li>
+<li>(6) 选选项 2，输入输出路径载入。</li>
+<li>(7) 选感兴趣分量（默认磁屏蔽张量投影到扫描线方向分量的负值；可选各向同性/各向异性/XX/YY/ZZ/特定矢量方向）。</li>
+<li>(8) 新界面绘 NICS 曲线（可存图/导出 .txt），或算 INICS、FiPC-NICS（FiPC-NICS 要求扫描线平行于笛卡尔轴）。恰当设置模板（如 <code>nmr=csgt iop(10/93=2)</code> 指定 MO）可画特定轨道贡献曲线（如 NICS_σ,zz、NICS_π,zz）。</li>
+</ul>
+<h3 id="实例-1infinitene-的-nics_zz-曲线425131">实例 1：infinitene 的 NICS_ZZ 曲线（4.25.13.1）</h3>
+<p><em>examples\NICS_scan\infinitene.pdb</em>（PBE0/6-31G* 优化），扫描高亮环：垂直拟合平面、从几何中心指向外侧：</p>
+<p><pre><code class="language-text">examples\NICS_scan\infinitene.pdb  //You can also use any other file format containing structure information, similarly hereinafter
+25  //Electron delocalization and aromaticity analyses
+13  //NICS-1D scan curve map, integral NICS (INICS) and FiPC-NICS
+2  //The two end points of scanning line are above and below the center of a plane fitted for specific atoms, and the line perpendicularly passes through their center
+35-37,68-69,71  //Using these atoms (highlighted in the map above) to define a fitting plane
+[Press ENTER button directly]  //The center is chosen as geometric center of the selected atoms (in this step you may also input coordinate of other type of center, such as the ring critical point obtained by topology analysis module of Multiwfn)
+10  //An end point of the scanning line is above 10 Å of the fitting plane from the center
+0  //Another end point is below 0 Å of the fitting plane from the center, namely the scan will start from the ring center</code></pre></p>
+<p>得 <em>NICS_1D.gjf</em>（GaussView 可见 Bq 均匀分布扫描线上）。改基组 6-31G* 后运行（输入输出见 <em>examples\NICS_1D\infinitene_NICS_1D.gjf/.out</em>）。载入：</p>
+<p><pre><code class="language-text">2  //Load Gaussian output file of NICS-1D scanning
+examples\NICS_scan\infinitene_NICS_1D.out  //Gaussian output file</code></pre></p>
+<p>选项 -1 可选分量（默认垂直拟合平面分量 = NICS_ZZ）。选 1 绘曲线（选 -3 可水平翻转）：环芳香（1 Å 处明显为负）。屏幕积分：</p>
+<p><pre><code class="language-text">Integral of NICS component:    -96.19 ppm*Angstrom</code></pre></p>
+<p>选项 5 求极值：</p>
+<p><pre><code class="language-text">Minimum X (Angstrom):    1.111111  Value:   -0.29469963E+02
+Totally found    1 minima,    0 maxima</code></pre></p>
+<h3 id="实例-2苯的-nics_σzz-与-nics_πzz-曲线425132">实例 2：苯的 NICS_σ,ZZ 与 NICS_π,ZZ 曲线（4.25.13.2）</h3>
+<p><em>examples\NICS_scan\benzene.pdb</em>（B3LYP/6-31G*，XY 平面 Z=0）：</p>
+<p><pre><code class="language-text">examples\NICS_scan\benzene.pdb  //Benzene optimized at B3LYP/6-31G* level, the molecule is lying at XY plane of Z=0
+25  //Electron delocalization and aromaticity analyses
+13  //NICS-1D scan curve map, integral NICS (INICS) and FiPC-NICS
+2  //The two end points of scanning line are above and below the center of a plane fitted for specific atoms, and the line perpendicularly passes through their center
+1-6  //Using all carbon atoms in this system to define a fitting plane
+[Press ENTER button directly]  //The center is chosen as geometric center of the selected atoms
+10  //An end point of the scanning line is above 10 Å of the fitting plane from the center
+10  //Another end point is below 10 Å of the fitting plane from the center</code></pre></p>
+<p>模板要求只算 MO 17,20,21（π-MO）贡献，须 <code>nmr=csgt iop(10/93=2)</code>：</p>
+<p><pre><code class="language-text">#p b3lyp/6-31+G* nmr=csgt iop(10/93=2)
+
+template file
+
+  0  1
+[geometry]
+
+AICD.txt
+
+17,20,21
+
+　</code></pre></p>
+<p>运行 <em>NICS_1D.gjf</em>（输出 <em>examples\NICS_scan\benzene-pi_NICS_1D.out</em>；<em>AICD.txt</em> 无用可删）。载入：</p>
+<p><pre><code class="language-text">2  //Load Gaussian output file of NICS-1D scanning
+examples\NICS_scan\benzene-pi_NICS_1D.out  //Gaussian output file
+1  //Plot NICS curve map, which corresponds to NICS_π,ZZ in present case</code></pre></p>
+<p>X=0 为环中心。NICS_σ,ZZ 同法（模板指定 σ MO，见 <em>examples\NICS_scan\template_NMR_benzene-sigma.gjf</em>）。<em>C5H5-.pdb</em>、<em>C7H7+.pdb</em> 同法；界面选项 <code>3</code> 导出曲线数据，Origin 合画。σ 电子只影响环中心附近；NICS_π,ZZ 积分：苯 −142.45、C₅H₅⁻ −134.85、C₇H₇⁺ −145.02 ppm⋅Å → π 芳香性 C₇H₇⁺ ≥ 苯 &gt; C₅H₅⁻。</p>
+<h3 id="实例-3苯的-fipc-nics425133">实例 3：苯的 FiPC-NICS（4.25.13.3）</h3>
+<p><pre><code class="language-text">examples\NICS_scan\benzene.pdb  //Benzene optimized at B3LYP/6-31G* level, the molecule is lying at XY plane of Z=0
+25  //Electron delocalization and aromaticity analyses
+13  //NICS-1D scan curve map, integral NICS (INICS) and FiPC-NICS
+2  //The two end points of scanning line are above and below the center of a plane fitted for specific atoms, and the line perpendicularly passes through their center
+1-6  //Using all carbon atoms in this system to define a fitting plane
+[Press ENTER button directly]  //The center is chosen as geometric center of the selected atoms
+0  //An end point of the scanning line is 0 Å from the center
+10  //Another end point is 10 Å from the center
+200  //200 points used in NICS scan
+1  // Generate Gaussian input file for NICS-1D scanning
+examples\NICS_scan\template_NMR.gjf  //Gaussian template file corresponding NMR calculation at B3LYP/6-31+G* level</code></pre></p>
+<p><em>NICS_1D.gjf</em> 改名 <em>benzene_NICS_1D_0to10.gjf</em> 运行（输出已提供），载入：</p>
+<p><pre><code class="language-text">2  // Load Gaussian output file of NICS-1D scanning
+examples\NICS_scan\benzene_NICS_1D_0to10.out  //Gaussian output file
+6  //Calculate FiPC-NICS</code></pre></p>
+<p><pre><code class="language-text">FiPC-NICS is   -9.332247 ppm, at   1.179 Angstrom</code></pre></p>
+<p>环上 1.179 Å 处 NICS_in 消失，NICS_out = −9.33 ppm（原文献 PBE0/6-311++G** 为 −9.59 ppm @1.18 Å）。同时导出 <em>FiPC-NICS.txt</em>（取最后两列 NICS_in/NICS_out 作 X/Y 散点连线图，与原文图 1 一致）。</p>
+<h3 id="产出">产出</h3>
+<p>NICS 曲线（存图/导出 .txt）、INICS 积分、FiPC-NICS 值与 <em>FiPC-NICS.txt</em>。</p>
+<h3 id="来源">来源</h3>
+<p><a href="../sec-3-28-electron-delocalization-and-aromaticity-analyses.html#32813-nics-1d-%E6%89%AB%E6%8F%8F%E6%9B%B2%E7%BA%BF%E5%9B%BE%E7%A7%AF%E5%88%86-nics-inics-%E5%92%8C-fipc-nics">3.28.13</a>、<a href="../sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses.html#42513-%E7%BB%98%E5%88%B6%E4%B8%80%E7%BB%B4-nics-%E6%9B%B2%E7%BA%BF%E8%AE%A1%E7%AE%97%E7%A7%AF%E5%88%86-inics-%E5%92%8C-fipc-nics-%E7%9A%84%E4%BE%8B%E5%AD%90">4.25.13</a>。</p>
+<h2 id="子功能14nics-2d-扫描平面图">子功能14：NICS-2D 扫描平面图</h2>
+<h3 id="说明">说明</h3>
+<p>绘制漂亮的 NICS 平面图。只关心平面/曲线时优先用子功能 13/14，比三维 ICSS 便宜得多。注意 NICS 与 ICSS 仅差一个符号；此处 NICS_ZZ 指垂直于所关注平面的分量，Z 不总对应 Z 轴。</p>
+<h3 id="菜单路径">菜单路径</h3>
+<p>主功能25 → 子功能14。</p>
+<h3 id="输入要求">输入要求</h3>
+<p>结构文件 ＋ Gaussian NMR 模板（含 <code>[geometry]</code> 占位）。</p>
+<h3 id="操作步骤">操作步骤</h3>
+<ul>
+<li>(1) 启动载入结构文件；(2) 进主功能 25 子功能 14；(3) 定义作图平面（与主功能 4 完全相同）；(4) 选 1，输入模板路径，生成 <em>NICS_2D.gjf</em>（按需改关键词）；(5) Gaussian 运行；(6) 选 2 载入输出；(7) 选 NICS 分量；(8) 图自动显示，关闭后可在后处理菜单调设置重绘。</li>
+</ul>
+<h3 id="实例-1coronene-上方-1-å-的-nics_zz-平面图425141">实例 1：coronene 上方 1 Å 的 NICS_ZZ 平面图（4.25.14.1）</h3>
+<p><em>examples\NICS_scan\coronene.pdb</em>（B3LYP/6-31G*，XY 平面 Z=0）：</p>
+<p><pre><code class="language-text">examples\NICS_scan\coronene.pdb
+25  //Electron delocalization and aromaticity analyses
+14  //NICS-2D scan plane map
+1  //Color-filled map
+[Press ENTER button directly]  //Using default number of grid points (100*100)
+0  //Set extension distance
+1  // 1 Bohr
+1  //XY plane
+1a  //Z = 1Å
+1  //Gaussian input file for NICS-2D scanning
+examples\NICS_scan\template_NMR.gjf  //Template input file of NMR task of Gaussian, which is used to generate Gaussian input file for NICS-2D scan. [geometry] line in this file will be replaced with coordinates of scanning points, while other parts are kept unchanged
+NICS_2D.gjf has been generated in current folder, you can properly modify it according to actual situation. Run it by Gaussian, the output file is examples\NICS_scan\coronene_NICS_2D.out.</code></pre></p>
+<p>载入：</p>
+<p><pre><code class="language-text">2  //Load Gaussian output file of NICS-2D scanning
+examples\NICS_scan\coronene_NICS_2D.out
+5  //Taking ZZ Cartesian component. Since the molecule is exactly in XY plane, the resulting NICS will correspond to NICS_ZZ in common sense (i.e. the component normal to ring plane)</code></pre></p>
+<p>屏幕最小/最大值：</p>
+<p><pre><code class="language-text">The minimum of data:  -43.3034000000000
+The maximum of data:   11.3487000000000</code></pre></p>
+<p>关图后微调：</p>
+<p><pre><code class="language-text">4  //Enable showing atom labels
+1  //Red
+8  //Enable showing bonds
+14  //Brown
+17  //Set distance threshold for showing atom labels
+5  //5 Bohr
+y  //Show labels of the atoms that beyond the threshold by light font
+1  //Set lower&amp;upper limit of color scale
+-45,45
+-8  //Change length unit of the graph to Angstrom
+-2  //Set label intervals in X, Y, and color scale axes
+2,2,10
+2  //Enable showing contour lines
+3  //Change contour line setting
+8  //Generate contour value by arithmetic progression
+-50,5,21  //Starting value, step, and total number
+y  //Removing existing contour lines. Then the contour values will be -50,-45,-40...40,45,50
+1  //Save setting and return
+-1  //Replot</code></pre></p>
+<p>外圈 1 Å 上方 NICS_ZZ 更负 → 外圈芳香性强于内环。</p>
+<h3 id="实例-2nphenyl₃-苯环上方-1-å-平面图425142倾斜环">实例 2：N(phenyl)₃ 苯环上方 1 Å 平面图（4.25.14.2，倾斜环）</h3>
+<p><pre><code class="language-text">examples\NICS_scan\N(phenyl)3.pdb  //Structure optimized at B3LYP/6-31G* level
+25  //Electron delocalization and aromaticity analyses
+14  //NICS-2D scan plane map
+1  //Color-filled map
+[Press ENTER button directly]  //Using default number of grid points (100*100)
+8  //The plotting plane is above or below the plane consisting of specific atoms
+23,24,26,30,28,25  //Atoms in the ring of interest</code></pre></p>
+<p>记下拟合平面单位法向量：</p>
+<p><pre><code class="language-text">The unit normal vector is    0.33076524    0.57300118    0.74984265</code></pre></p>
+<p><pre><code class="language-text">1  //The plotting plane is parallel to the fitting plane and at 1 Å above it. Negative value means below it
+6  //Length of the plotting plane (a square region) is set to 6 Å</code></pre></p>
+<p>屏幕给出 VMD 绘图平面验证命令：</p>
+<p><pre><code class="language-tcl">draw triangle {   2.495   2.581  -1.739} {  -1.211  -0.235   2.047} {   6.776  -1.451  -0.547}
+draw triangle {  -1.211  -0.235   2.047} {   6.776  -1.451  -0.547} {   3.070  -4.266   3.239}
+draw material Transparent</code></pre></p>
+<p>载入 pdb 到 VMD 运行上三条命令即见绘图区域。然后：</p>
+<p><pre><code class="language-text">1  //Generate Gaussian input file for NICS-2D scanning
+examples\NICS_scan\template_NMR.gjf  //Template file of Gaussian for NMR task</code></pre></p>
+<p>改基组 6-31G* 运行（输出 <em>examples\NICS_scan\N(phenyl)3_NICS_2D.out</em>），载入：</p>
+<p><pre><code class="language-text">2  //Load Gaussian output file of NICS-2D scanning
+examples\NICS_scan\N(phenyl)3_NICS_2D.out
+0  //Take the NICS component along specific direction
+0.33076524    0.57300118    0.74984265  //The unit normal vector shown by Multiwfn earlier</code></pre></p>
+<p>调绘图设置（参考主功能 4 例子；颜色 Yellow-Orange-Black，范围 [−34,0]）即得漂亮平面图：环上方 1 Å NICS_ZZ 明显为负 → 芳香；环内侧屏蔽略强于中心。</p>
+<h3 id="产出">产出</h3>
+<p>NICS 平面填色图（自动显示，后处理菜单可重调重绘）。</p>
+<h3 id="来源">来源</h3>
+<p><a href="../sec-3-28-electron-delocalization-and-aromaticity-analyses.html#32814-nics-2d-%E6%89%AB%E6%8F%8F%E5%B9%B3%E9%9D%A2%E5%9B%BE">3.28.14</a>、<a href="../sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses.html#42514-%E7%BB%98%E5%88%B6%E4%BA%8C%E7%BB%B4-nics-%E5%B9%B3%E9%9D%A2%E5%9B%BE%E7%9A%84%E4%BE%8B%E5%AD%90">4.25.14</a>。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="menu/func-25";const ROOT="../";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script><script>const MATHS=["\\mathrm{HOMA}=1-\\sum_i\\frac{\\alpha_{i,j}}{N}(R_{\\mathrm{ref}}-R_{i,j})^2","\\begin{gathered}R_{\\mathrm{ref}}=(R_{\\mathrm{s}}+wR_{\\mathrm{d}})/(1+w)\\\\\\alpha=\\frac{2}{(R_{\\mathrm{s}}-R_{\\mathrm{ref}})^2+(R_{\\mathrm{d}}-R_{\\mathrm{ref}})^2}\\end{gathered}","\\begin{gathered}I=100[1-(V/V_{\\mathrm{K}})]\\end{gathered}","V=\\frac{100}{\\overline{N}}\\sqrt{\\frac{\\sum_i(N_{i,j}-\\overline{N})^2}{n}}\\quad\\quad N_{i,j}=\\frac{a}{R_{i,j}}-b"];</script>
+<script src="../app.js"></script></body></html>

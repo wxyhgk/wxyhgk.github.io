@@ -1,0 +1,461 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.27 （超）极化率分析 (24) · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="327-超极化率分析-24"><strong>3.27 （超）极化率分析 (24)</strong></h1>
+<p>本主功能是研究极化率 (polarizability)与超极化率 (hyperpolarizability)的一系列子功能的集合。各子功能在本节介绍。值得注意的是，原子极化率可通过模糊空间分析模块计算，见第 <a href="sec-3-18-fuzzy-atomic-space-analysis.html#31812-%E5%8E%9F%E5%AD%90%E6%9C%89%E6%95%88%E4%BD%93%E7%A7%AF%E8%87%AA%E7%94%B1%E4%BD%93%E7%A7%AF%E6%9E%81%E5%8C%96%E7%8E%87%E4%B8%8E-c%E2%82%86-%E7%B3%BB%E6%95%B0-13">3.18.12</a> 节。</p>
+<h2 id="3271-解析-gaussian-的超极化率任务输出并计算相关量"><strong>3.27.1 解析 Gaussian 的（超）极化率任务输出并计算相关量</strong></h2>
+<p>Gaussian 的（超）极化率任务（<em>polar</em> 关键词）输出难以理解，至少对初学者如此。本功能用于解析这些输出，并以更易读的格式打印，同时输出一些与（超）极化率相关的量。目前本功能正式兼容 Gaussian 09 与 16。</p>
+<h3 id="基本概念与理论背景"><strong>基本概念与理论背景</strong></h3>
+<p>体系能量可写成对均匀外电场 <strong>F</strong> 的 Taylor 展开：</p>
+<p><div class="mathdisp" data-mi="0" title="点击复制 TeX">$$
+\begin{gathered} E(\mathbf{F}) = E(\mathbf{0}) + \left.\frac{\partial E}{\partial \mathbf{F}}\right|_{\mathbf{F} = 0} \mathbf{F} + \frac{1}{2}\left.\frac{\partial^2 E}{\partial \mathbf{F}^2}\right|_{\mathbf{F} = 0} \mathbf{F}^2 + \frac{1}{6}\left.\frac{\partial^3 E}{\partial \mathbf{F}^3}\right|_{\mathbf{F} = 0} \mathbf{F}^3 + \frac{1}{24}\left.\frac{\partial^4 E}{\partial \mathbf{F}^4}\right|_{\mathbf{F} = 0} \mathbf{F}^4 + \dots \\ \equiv E(\mathbf{0}) - \boldsymbol{\mu}_0 \mathbf{F} - \frac{1}{2}\boldsymbol{\alpha}\mathbf{F}^2 - \frac{1}{6}\boldsymbol{\beta}\mathbf{F}^3 - \frac{1}{24}\boldsymbol{\gamma}\mathbf{F}^4 - \frac{1}{120}\boldsymbol{\delta}\mathbf{F}^5 - \frac{1}{720}\boldsymbol{\epsilon}\mathbf{F}^6 \dots \end{gathered}
+$$</div></p>
+<p><div class="mathdisp" data-mi="1" title="点击复制 TeX">$$
+\boldsymbol{\mu}_0 = -\left.\frac{\partial E}{\partial \mathbf{F}}\right|_{\mathbf{F} = 0} \quad\quad \boldsymbol{\alpha} = -\left.\frac{\partial^2 E}{\partial \mathbf{F}^2}\right|_{\mathbf{F} = 0} \quad\quad \boldsymbol{\beta} = -\left.\frac{\partial^3 E}{\partial \mathbf{F}^3}\right|_{\mathbf{F} = 0} \quad\quad \boldsymbol{\gamma} = -\left.\frac{\partial^4 E}{\partial \mathbf{F}^4}\right|_{\mathbf{F} = 0}
+$$</div></p>
+<p>其中 <strong>µ</strong>₀ 为永久偶极矩，是矢量；<strong>α</strong> 为极化率，是矩阵（二阶张量）；<strong>β</strong> 为第一超极化率，是三阶张量，也称为二阶非线性光学响应（NLO）系数；<strong>γ</strong> 为第二超极化率，是四阶张量，也称为三阶 NLO 系数。更高阶项如 <strong>δ</strong> 与 <strong>ε</strong> 非常不重要，因此很少讨论。（超）极化率张量与外电场 <strong>F</strong> 的频率直接相关。若 <strong>F</strong> 为零频率（静电场），则（超）极化率称为静态或与频率无关的（超）极化率。动态或与频率相关的（超）极化率对应于非零频率外电磁场下的情形。</p>
+<h4 id="极化率-α"><strong>极化率 (α)</strong></h4>
+<p>均匀电场中体系的偶极矩可写为</p>
+<p><div class="mathdisp" data-mi="2" title="点击复制 TeX">$$
+\boldsymbol{\mu} = -\frac{\partial E}{\partial \mathbf{F}} = \boldsymbol{\mu}_0 + \underbrace{\boldsymbol{\alpha}\mathbf{F}}_{\boldsymbol{\mu}_1} + \underbrace{(1/2)\boldsymbol{\beta}\mathbf{F}^2}_{\boldsymbol{\mu}_2} + \underbrace{(1/6)\boldsymbol{\gamma}\mathbf{F}^3}_{\boldsymbol{\mu}_3} + \dots
+$$</div></p>
+<p>偶极矩对 <strong>F</strong> 的线性响应，即 <strong>µ</strong>₁ 项，可明确写为</p>
+<p><div class="mathdisp" data-mi="3" title="点击复制 TeX">$$
+\boldsymbol{\mu}_1 = \boldsymbol{\alpha} \cdot \mathbf{F} \Rightarrow \begin{bmatrix} \mu_x \\ \mu_y \\ \mu_z \end{bmatrix} = \begin{bmatrix} \alpha_{xx} & \alpha_{xy} & \alpha_{xz} \\ \alpha_{yx} & \alpha_{yy} & \alpha_{yz} \\ \alpha_{zx} & \alpha_{zy} & \alpha_{zz} \end{bmatrix}\begin{bmatrix} F_x \\ F_y \\ F_z \end{bmatrix}
+$$</div></p>
+<p>极化率 <strong>α</strong> 是对称矩阵而非标量，意味着不同方向极化率不同。为了便于比较不同体系的总体极化率，方便起见定义各向同性平均极化率</p>
+<p><div class="mathdisp" data-mi="4" title="点击复制 TeX">$$
+\langle \alpha \rangle = \mathrm{Tr}(\boldsymbol{\alpha})/3 = (\alpha_{xx} + \alpha_{yy} + \alpha_{zz})/3
+$$</div></p>
+<p>极化率各向异性有多种定义方式：</p>
+<ul>
+<li>定义 1：见 <em>Chem. Phys.</em>, <strong>410</strong>, 90 (2013)</li>
+</ul>
+<p><div class="mathdisp" data-mi="5" title="点击复制 TeX">$$
+\Delta\alpha = \sqrt{[(\alpha_{xx} - \alpha_{yy})^2 + (\alpha_{xx} - \alpha_{zz})^2 + (\alpha_{yy} - \alpha_{zz})^2 + 6(\alpha_{xy}^2 + \alpha_{xz}^2 + \alpha_{yz}^2)]/2}
+$$</div></p>
+<ul>
+<li>定义 2：这是最常用的定义，见 <em>J. Chem. Phys.</em>, <strong>98</strong>, 3022 (1993)</li>
+</ul>
+<p><div class="mathdisp" data-mi="6" title="点击复制 TeX">$$
+\Delta\alpha = \sqrt{[(\alpha_{xx} - \alpha_{yy})^2 + (\alpha_{xx} - \alpha_{zz})^2 + (\alpha_{yy} - \alpha_{zz})^2]/2}
+$$</div></p>
+<ul>
+<li>定义 3：{<em>ε</em>} 代表 <strong>α</strong> 的本征值，按从小到大排列</li>
+</ul>
+<p><div class="mathdisp" data-mi="7" title="点击复制 TeX">$$
+\Delta\alpha = \varepsilon_3 - (\varepsilon_1 + \varepsilon_2)/2
+$$</div></p>
+<p>沿三个笛卡尔轴的 <strong>α</strong> 值可定义为</p>
+<p><div class="mathdisp" data-mi="8" title="点击复制 TeX">$$
+\begin{gathered} \alpha_x = \alpha_{xx} + \alpha_{xy} + \alpha_{xz} \\ \alpha_y = \alpha_{yx} + \alpha_{yy} + \alpha_{yz} \\ \alpha_z = \alpha_{zx} + \alpha_{zy} + \alpha_{zz} \end{gathered}
+$$</div></p>
+<h4 id="第一超极化率-β"><strong>第一超极化率 (β)</strong></h4>
+<p>第一超极化率 <strong>β</strong> 是三阶张量，可用 3×3×3 矩阵描述。Gaussian 既能计算静态 <strong>β</strong>，也能计算动态 <strong>β</strong>。对后者，可计算 dc-Pockels 形式 <strong>β</strong>(-ω;ω,0)与 SHG 形式 <strong>β</strong>(-2ω;ω,ω)。</p>
+<p>值得注意的是，对 $β_{i,j,k}$(-ω;ω,0)，$i$ 与 $j$ 指标可自由交换，而对 $β_{i,j,k}$(-2ω;ω,ω)，$j$ 与 $k$ 指标可自由交换，因此 3*3*3=27 个分量可化简为 18 个独立分量。对静态情形，即 $β_{i,j,k}$(0;0,0)，由于三个指标均可交换（称为 Kleinman 对称性，例如 <em>β</em>$_{xyy}$=<em>β</em>$_{yxy}$=<em>β</em>$_{yyx}$……），只有 10 个分量是独立的。Kleinman 对称性仅近似适用于低频外电场下的动态 <strong>β</strong>。</p>
+<p>沿三个笛卡尔轴之一的 <strong>β</strong> 值可用一般公式计算</p>
+<p><div class="mathdisp" data-mi="9" title="点击复制 TeX">$$
+\beta_i = (1/3)\sum_j (\beta_{iij} + \beta_{jii} + \beta_{jij}) \quad\quad i, j = \{x, y, z\}
+$$</div></p>
+<p><strong>β</strong> 的大小定义为</p>
+<p><div class="mathdisp" data-mi="10" title="点击复制 TeX">$$
+\beta_{\mathrm{tot}} = \sqrt{\beta_x^2 + \beta_y^2 + \beta_z^2}
+$$</div></p>
+<p><em>β</em>$_{prj}$（也称为 <em>β</em>$_{vec}$）是 <strong>β</strong> 在偶极矩矢量 <strong>µ</strong> 上的投影，可通过实验测定（电场诱导二次谐波 (EFISHG) 实验）。<em>β</em>$_{||}$ 是沿 <strong>µ</strong> 方向的 <strong>β</strong> 分量</p>
+<p><div class="mathdisp" data-mi="11" title="点击复制 TeX">$$
+\beta_{\mathrm{prj}} = \sum_i \frac{\mu_i\beta_i}{|\boldsymbol{\mu}|} \quad\quad \beta_{\parallel} = (3/5)\beta_{\mathrm{prj}}
+$$</div></p>
+<p>有人更愿意讨论 <strong>β</strong> 相对 Z 轴的垂直与平行分量，分别定义为</p>
+<p><div class="mathdisp" data-mi="12" title="点击复制 TeX">$$
+\beta_{\perp(Z)} = (1/5)\sum_j (2\beta_{zjj} - 3\beta_{jzj} + 2\beta_{jjz}) \quad\quad \beta_{\parallel(Z)} = (3/5)\beta_z
+$$</div></p>
+<p>对静态情形，可将 x、y、z 方向的 <strong>β</strong> 明确写为</p>
+<p><div class="mathdisp" data-mi="13" title="点击复制 TeX">$$
+\begin{gathered} \beta_x = \beta_{xxx} + \beta_{xyy} + \beta_{xzz} \\ \beta_y = \beta_{yxx} + \beta_{yyy} + \beta_{yzz} \\ \beta_z = \beta_{zxx} + \beta_{zyy} + \beta_{zzz} \end{gathered}
+$$</div></p>
+<p>而 $\beta_{\perp(Z)} = (1/5)\beta_z$。</p>
+<h4 id="第二超极化率-γ"><strong>第二超极化率 (γ)</strong></h4>
+<p>第二超极化率 <strong>γ</strong> 是 3×3×3×3 形式的四阶张量。Gaussian 可计算其静态极限形式 <strong>γ</strong>(0;0,0,0)；对动态情形，Gaussian 能计算其 EOKO（电光 Kerr 效应）形式 <strong>γ</strong>(-ω;ω,0,0)与 SHG 形式 <strong>γ</strong>(-2ω;ω,ω,0)。</p>
+<p><strong>γ</strong> 的 $i$ 分量定义为</p>
+<p><div class="mathdisp" data-mi="14" title="点击复制 TeX">$$
+\gamma_i = (1/15)\sum_j (\gamma_{ijji} + \gamma_{ijij} + \gamma_{iijj}) \quad\quad i, j = \{x, y, z\}
+$$</div></p>
+<p>γ 的总大小用 $\gamma_{\mathrm{tot}} = \sqrt{\gamma_x^2 + \gamma_y^2 + \gamma_z^2}$ 度量。</p>
+<p><strong>γ</strong> 的平均值有两种定义，如下所示。定义 1 更常用，它等价于 γ$_{||}$</p>
+<p><div class="mathdisp" data-mi="15" title="点击复制 TeX">$$
+\begin{aligned}\mathrm{def\ 1:} \quad \langle \gamma \rangle &= \gamma_x + \gamma_y + \gamma_z\\\mathrm{def\ 2:} \quad \langle \gamma \rangle &= (1/5)(\gamma_{xxxx} + \gamma_{yyyy} + \gamma_{zzzz} + \gamma_{xxyy} + \gamma_{xxzz} + \gamma_{yyzz} + \gamma_{yyxx} + \gamma_{zzxx} + \gamma_{zzyy})\end{aligned}
+$$</div></p>
+<p>$\gamma_{\perp}$ 定义为</p>
+<p><div class="mathdisp" data-mi="16" title="点击复制 TeX">$$
+\gamma_{\perp} = (1/15)\sum_i\sum_j (2\gamma_{ijji} - \gamma_{iijj}) \quad\quad i, j = \{x, y, z\}
+$$</div></p>
+<p>上述关于 γ 的多数方程可见 <em>Reviews in Computational Chemistry</em> 第 12 卷（1998）第 5 章。</p>
+<h4 id="超-rayleigh-散射-hrs与退偏比-dr"><strong>超 Rayleigh 散射 (HRS)与退偏比 (DR)</strong></h4>
+<p>超 Rayleigh 散射 (Hyper-Rayleigh Scattering, HRS) 技术是作为 EFISHG 测量分子超极化率的替代方法发展起来的。HRS 可直接测量所有分子的 <em>β</em>，包括不能用 EFISHG 研究的非极性分子。见 <em>Acc. Chem. Res.</em>, <strong>31</strong>, 675 (1998) 中的介绍。</p>
+<p>根据给定频率 (ω) 入射光强度与在 90° 角探测到的倍频 (2ω)散射光强度，可确定 <em>β</em>$_{HRS}$，它与与频率相关的 <strong>β</strong> 张量分量的关系如下。更多细节见 <em>Phys. Chem. Chem. Phys.</em>, <strong>10</strong>, 6223 (2008)。</p>
+<p><div class="mathdisp" data-mi="17" title="点击复制 TeX">$$
+\beta_{\mathrm{HRS}}(-2\omega; \omega, \omega) = \sqrt{\left\langle \beta_{ZZZ}^2 \right\rangle + \left\langle \beta_{XZZ}^2 \right\rangle}
+$$</div></p>
+<p>其中（指标 <em>ζ</em> 依次循环 { $x$ , $y$ , $z$ }，<em>η</em> 与 <em>ξ</em> 类似）</p>
+<p><div class="mathdisp" data-mi="18" title="点击复制 TeX">$$
+\begin{aligned}\left\langle \beta_{ZZZ}^2 \right\rangle &= \frac{1}{7}\sum_\zeta \beta_{\zeta\zeta\zeta}^2 + \frac{4}{35}\sum_{\zeta \neq \eta} \beta_{\zeta\zeta\eta}^2 + \frac{2}{35}\sum_{\zeta \neq \eta} \beta_{\zeta\zeta\zeta}\beta_{\zeta\eta\eta} + \frac{4}{35}\sum_{\zeta \neq \eta} \beta_{\eta\zeta\zeta}\beta_{\zeta\zeta\eta}\\&+ \frac{4}{35}\sum_{\zeta \neq \eta} \beta_{\zeta\zeta\zeta}\beta_{\eta\eta\zeta} + \frac{1}{35}\sum_{\zeta \neq \eta} \beta_{\eta\zeta\zeta}^2 + \frac{4}{105}\sum_{\zeta \neq \eta \neq \xi} \beta_{\zeta\zeta\eta}\beta_{\eta\xi\xi} + \frac{1}{105}\sum_{\zeta \neq \eta \neq \xi} \beta_{\eta\zeta\zeta}\beta_{\eta\xi\xi}\\&+ \frac{4}{105}\sum_{\zeta \neq \eta \neq \xi} \beta_{\zeta\zeta\eta}\beta_{\xi\xi\eta} + \frac{2}{105}\sum_{\zeta \neq \eta \neq \xi} \beta_{\zeta\eta\xi}^2 + \frac{4}{105}\sum_{\zeta \neq \eta \neq \xi} \beta_{\zeta\eta\xi}\beta_{\eta\xi\zeta}\end{aligned}
+$$</div></p>
+<p><div class="mathdisp" data-mi="19" title="点击复制 TeX">$$
+\begin{aligned}\left\langle \beta_{XZZ}^2 \right\rangle &= \frac{1}{35}\sum_\zeta \beta_{\zeta\zeta\zeta}^2 + \frac{4}{105}\sum_{\zeta \neq \eta} \beta_{\zeta\zeta\zeta}\beta_{\zeta\eta\eta} - \frac{2}{35}\sum_{\zeta \neq \eta} \beta_{\zeta\zeta\zeta}\beta_{\eta\eta\zeta} + \frac{8}{105}\sum_{\zeta \neq \eta} \beta_{\zeta\zeta\eta}^2\\&+ \frac{3}{35}\sum_{\zeta \neq \eta} \beta_{\zeta\eta\eta}^2 - \frac{2}{35}\sum_{\zeta \neq \eta} \beta_{\zeta\zeta\eta}\beta_{\eta\xi\xi} + \frac{1}{35}\sum_{\zeta \neq \eta \neq \xi} \beta_{\zeta\eta\eta}\beta_{\zeta\xi\xi} - \frac{2}{105}\sum_{\zeta \neq \eta \neq \xi} \beta_{\zeta\zeta\zeta}\beta_{\eta\eta\xi}\\&- \frac{2}{105}\sum_{\zeta \neq \eta \neq \xi} \beta_{\zeta\zeta\eta}\beta_{\eta\xi\xi} + \frac{2}{35}\sum_{\zeta \neq \eta \neq \xi} \beta_{\zeta\eta\xi}^2 - \frac{2}{105}\sum_{\zeta \neq \eta \neq \xi} \beta_{\zeta\eta\xi}\beta_{\eta\xi\zeta}\end{aligned}
+$$</div></p>
+<p><em>ζ</em>≠<em>η</em>≠<em>ξ</em> 指 <em>ζ</em>≠<em>η</em> 且同时 <em>η</em>≠<em>ξ</em>。尖括号表示对所有可能</p>
+<p>分子取向的平均。若假设 Kleinman 对称性近似成立，上述方程可化简为更简单的形式，见 <em>J. Chem. Phys.</em>, <strong>136</strong>, 024506 (2012) 的 Eq. 6。</p>
+<p>相关的退偏比 (DR) 定义为</p>
+<p><div class="mathdisp" data-mi="20" title="点击复制 TeX">$$
+\mathrm{DR} = \frac{\left\langle \beta_{ZZZ}^2 \right\rangle}{\left\langle \beta_{XZZ}^2 \right\rangle}
+$$</div></p>
+<p>具有 T$_{d}$ 点群的分子 DR 恰好等于 1.5。若入射光波长之半接近用 TDDFT 在同样水平下算得的当前体系吸收带，由于 SHG 共振，打印的 DR 可能低于 1.5。</p>
+<p>还有一些与 HRS 相关的量可供研究，如下所示，更多信息见 <em>J. Chem. Phys.</em>, <strong>136</strong>, 024506 (2012)。注意为一致起见，该文方程中的 <em>ZXX</em> 已替换为 <em>XZZ</em>，在当前语境下二者数值相同。</p>
+<p>$\left\langle {\beta}_{ZZZ}^{2} \right\rangle$ 与 $\left\langle {\beta}_{XZZ}^{2} \right\rangle$ 可看作由偶极（$J$=1）与八极（$J$=3）两个分量贡献：</p>
+<p><div class="mathdisp" data-mi="21" title="点击复制 TeX">$$
+\begin{aligned}\left\langle \beta_{ZZZ}^2 \right\rangle &= \frac{9}{45}\left| \beta_{J = 1} \right|^2 + \frac{6}{105}\left| \beta_{J = 3} \right|^2\\\left\langle \beta_{XZZ}^2 \right\rangle &= \frac{1}{45}\left| \beta_{J = 1} \right|^2 + \frac{4}{105}\left| \beta_{J = 3} \right|^2\end{aligned}
+$$</div></p>
+<p>显然两分量可如下求得</p>
+<p><div class="mathdisp" data-mi="22" title="点击复制 TeX">$$
+\begin{aligned}\left| \beta_{J = 1} \right| &= \sqrt{6\left\langle \beta_{ZZZ}^2 \right\rangle - 9\left\langle \beta_{XZZ}^2 \right\rangle}\\\left| \beta_{J = 3} \right| &= \sqrt{\frac{1}{2}\left( -7\left\langle \beta_{ZZZ}^2 \right\rangle + 63\left\langle \beta_{XZZ}^2 \right\rangle \right)}\end{aligned}
+$$</div></p>
+<p>非线性各向异性参数为 <em>ρ</em> = $\left|\beta_{J=3}\right|$ / $\left|\beta_{J=1}\right|$。</p>
+<p>偶极相对贡献，即 Φ($β_{J} PH24 _{=3}$)，定义如下。显然 Φ($β_{J} PH25 _{=3}$)=1</p>
+<p><div class="mathdisp" data-mi="25" title="点击复制 TeX">$$
+\begin{gathered} \Phi(\beta_{J = 1}) = 1/(1 + \rho) \\ \Phi(\beta_{J = 3}) = \rho/(1 + \rho) \end{gathered}
+$$</div></p>
+<p>对小分子，偶极矩越大的往往 Φ($β_{J} PH27 _{=3}$) 越大、DR 越低而 <em>ρ</em> 越高。</p>
+<p>假设沿 X 方向传播的一般椭圆偏振入射光，其偏振态由两角度 (Ψ, <em>δ</em>) 表征，则沿 Y 方向在 90° 处散射的、沿 Z 轴垂直 (V) 偏振的倍频光强度由 Bersohn 公式给出（假设相位延迟 <em>δ</em> 为 π/2）</p>
+<p><div class="mathdisp" data-mi="27" title="点击复制 TeX">$$
+\mathrm{I}_{\Psi\mathrm{V}}^{2\omega} \propto \left\langle \beta_{XZZ}^2 \right\rangle \cos^4 \Psi + \left\langle \beta_{ZZZ}^2 \right\rangle \sin^4 \Psi + \sin^2 \Psi \cos^2 \Psi \left\langle (\beta_{ZXZ} + \beta_{ZZX})^2 - 2\beta_{ZZZ}\beta_{XZZ} \right\rangle
+$$</div></p>
+<p>其中 $\left\langle (\beta_{ZXZ} + \beta_{ZZX})^2 - 2\beta_{ZZZ}\beta_{XZZ} \right\rangle = 7\left\langle \beta_{XZZ}^2 \right\rangle - \left\langle \beta_{ZZZ}^2 \right\rangle$ ，Ψ 为入射光束的偏振角。</p>
+<p>根据理论计算的 SHG 形式 <strong>β</strong> 张量，上述所有量都可直接预测。可扫描 ${I}_{\Psi V}^{2\omega}$ 随 Ψ 的变化并绘制为曲线图。</p>
+<h3 id="输入文件与用法"><strong>输入文件与用法</strong></h3>
+<p>在本功能中，Multiwfn 输出偶极矩、极化率与第一/第二超极化率（如有）的带明确标记的所有分量，以及上文介绍的所有相关量，如各向同性极化率、极化率各向异性、三个轴向的超极化率（$β_{x}$、$β_{y}$、$β_{z}$）、超极化率大小（<em>β</em>$_{tot}$）等。Multiwfn 打印的 <strong>α</strong> 与 <strong>β</strong> 分量对应标准取向，而打印的 <strong>γ</strong> 分量对应输入取向。</p>
+<p>Gaussian 中的 <em>polar</em> 关键词专用于基于解析导数（通过耦合微扰 SCF 方程）或数值导数（通过有限场处理）计算 <strong>α</strong>、<strong>β</strong> 与 <strong>γ</strong>。注意 Gaussian 输入文件中必须指定 <strong>#P</strong>，否则 Multiwfn 无法正确解析相关信息。</p>
+<p>进入 Multiwfn 的本功能后，应选择你的 Gaussian（超）极化率计算的实际情况，以便 Multiwfn 成功解析输出信息并为你展示有价值的数据。如菜单所见，有七个选项对应不同情形：</p>
+<ul>
+<li><p>(1) <em>polar</em> 关键词 + 支持解析三阶导数的方法（HF/DFT/半经验方法）</p>
+</li>
+<li><p>(2) <em>polar</em> 关键词 + 支持解析二阶导数的方法（例如 MP2）</p>
+</li>
+<li><p>(3) <em>polar=Cubic</em> 关键词 + 支持解析二阶导数的方法</p>
+</li>
+<li><p>(4) <em>polar</em> 关键词 + 支持解析一阶导数的方法（CISD、QCISD、CCSD、MP3、MP4(SDQ) 等）</p>
+</li>
+<li><p>(5) <em>polar=DoubleNumer</em>（等价于 <em>Polar=EnOnly</em>）关键词 + 支持解析一阶导数的方法</p>
+</li>
+<li><p>(6) <em>polar</em> 关键词 + 仅支持能量计算的方法（CCSD(T)、QCISD(T)、MP4(SDTQ)、MP5 等）</p>
+</li>
+<li><p>(7) <em>polar=gamma</em> 关键词 + 支持解析三阶导数的方法（HF/DFT/半经验方法）</p>
+</li>
+</ul>
+<p>所有选项都打印极化率及相关数据，只有选项 (1)、(3) 与 (5) 还打印第一超极化率，只有 (7) 还打印第二超极化率。</p>
+<p>对情形 (1)，若随 <em>polar</em> 指定了 <em>CPHF=RdFreq</em>，或用了 <em>polar=DCSHG</em>，且同时在分子几何之后空一行给出外电场频率（例如 <em>0.05 0.07 0.1</em> 或 <em>532 nm 680 nm</em>），Gaussian 将连同静态（超）极化率一起计算并输出与频率相关的（超）极化率。<em>CPHF=RdFreq polar</em> 情形只计算 <strong>β</strong>(-ω;ω,0) 值，而 <em>polar=DCSHG</em> 情形同时计算 <strong>β</strong>(-ω;ω,0) 与 <strong>β</strong>(-2ω;ω,ω) 值。对情形 (7)，Gaussian 计算 <strong>γ</strong>(0;0,0,0)、<strong>γ</strong>(-ω;ω,0,0) 与 <strong>γ</strong>(-2ω;ω,ω,0)，你必须在输入文件末尾提供外电场频率。</p>
+<p>对情形 (1) 与 (7)，默认 Multiwfn 只解析静态（超）极化率。若希望解析与频率相关的量而非静态量，在选择选项 1 或 7 开始解析之前，应先选择选项“-1 Toggle loading frequency-dependent result for options 1 and 7”。然后开始解析后，用户可选择解析哪个频率处的结果。注意在情形 (1) 中若选择解析 <strong>β</strong>(-2ω;ω,ω)，必须在 Gaussian 输入文件中使用 <em>polar=DCSHG</em> 关键词。</p>
+<p>当你要求 Multiwfn 基于 <em>polar=DCSHG</em> 输出文件解析与频率相关的 <strong>β</strong>(-2ω;ω,ω) 时，上述与超 Rayleigh 散射 (HRS) 实验相关的量也会自动打印。之后，还可让 Multiwfn 扫描 ${I}_{\Psi V}^{2\omega}$ 随 Ψ 的变化，生成的 <em>HRS_angle.txt</em> 可用 Origin 等作图。</p>
+<p>值得注意的是，众所周知 Gaussian 输出的所有超极化率分量符号都是错的，应乘以 -1，Multiwfn 已自动处理此问题。</p>
+<p>在解析之前，通过本功能界面的选项 -3 可选择输出单位。可选原子单位、SI 单位与 esu 单位。换算因子为</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th>SI</th>
+<th>esu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><em>µ</em></td>
+<td>1 a.u.</td>
+<td>8.47835×10⁻³⁰ C m</td>
+<td>2.54175 ×10⁻¹⁸ esu</td>
+</tr>
+<tr>
+<td><em>α</em></td>
+<td>1 a.u.</td>
+<td>1.6488×10⁻⁴¹ C²m²J⁻¹</td>
+<td>1.4819×10⁻²⁵ esu</td>
+</tr>
+<tr>
+<td><em>β</em></td>
+<td>1 a.u.</td>
+<td>3.20636×10⁻⁵³ C³m³J⁻²</td>
+<td>8.63922×10⁻³³ esu</td>
+</tr>
+<tr>
+<td><em>γ</em></td>
+<td>1 a.u.</td>
+<td>6.23538×10⁻⁶⁵ C⁴m⁴J⁻³</td>
+<td>5.03670×10⁻⁴⁰ esu</td>
+</tr>
+</tbody></table>
+<p>极化率 <em>α</em> 常用“极化率体积”（<em>α</em>&#39;）表示，具有体积单位。<em>α</em> (1 a.u.)=<em>α</em>&#39; (0.14818470 Å³)。</p>
+<p>例子见第 <a href="sec-4-24-examples-of-hyperpolarizability-analyses.html#4241-%E8%A7%A3%E6%9E%90-gaussian-polar-%E4%BB%BB%E5%8A%A1%E7%9A%84%E8%BE%93%E5%87%BA%E6%96%87%E4%BB%B6%E5%BE%97%E5%88%B0-%E8%B6%85%E6%9E%81%E5%8C%96%E7%8E%87%E5%B9%B6%E8%AE%A1%E7%AE%97%E7%9B%B8%E5%85%B3%E9%87%8F">4.24.1</a> 节。关于本功能的更多讨论与例子见我的博客文章“Using Multiwfn to analyze polarizability and hyperpolarizability outputted by Gaussian”（<a href="http://sobereva.com/231">http://sobereva.com/231</a>，中文）。</p>
+<h2 id="3272-用态求和-sos-方法研究超极化率及两三能级模型分析"><strong>3.27.2 用态求和 (SOS) 方法研究（超）极化率及两/三能级模型分析</strong></h2>
+<p>本功能用于基于著名的态求和 (sum-over-states, SOS) 方法计算极化率、第一、第二与第三超极化率，如下所述。此外，本模块还可实现流行的第一超极化率两能级模型分析及其扩展（三能级模型），见第 <a href="#32722-%E8%B6%85%E6%9E%81%E5%8C%96%E7%8E%87%E7%9A%84%E4%B8%A4%E8%83%BD%E7%BA%A7%E4%B8%8E%E4%B8%89%E8%83%BD%E7%BA%A7%E6%A8%A1%E5%9E%8B%E5%88%86%E6%9E%90">3.27.2.2</a> 节。</p>
+<h3 id="32721-超极化率的计算"><strong>3.27.2.1 （超）极化率的计算</strong></h3>
+<h4 id="计算超极化率的理论简述"><strong>计算（超）极化率的理论简述</strong></h4>
+<p>（超）极化率的一些基本概念已在第 <a href="#3271-%E8%A7%A3%E6%9E%90-gaussian-%E7%9A%84%E8%B6%85%E6%9E%81%E5%8C%96%E7%8E%87%E4%BB%BB%E5%8A%A1%E8%BE%93%E5%87%BA%E5%B9%B6%E8%AE%A1%E7%AE%97%E7%9B%B8%E5%85%B3%E9%87%8F">3.27.1</a> 节介绍。计算（超）极化率有几种不同方法，包括导数法、态求和 (SOS) 法与响应法</p>
+<ul>
+<li><p>(1) 导数法：这是最直接、最常用的一种。静态（超）极化率所需的导数可通过耦合微扰 SCF (CPSCF) 方程解析求得；具体地，对 HF 为 CPHF，对 KS-DFT 为 CPKS。这些导数也可用有限差分技术数值求得，即所谓有限场 (FF) 方法。显然 FF 比 CPSCF 慢得多且精度不如，但仍有用，因为高阶解析导数、特别是在复杂 post-HF 水平下的解析导数，由于编码困难，许多量子化学程序并不广泛支持。当所有需要的导数都有解析形式时，导数法将非常高效。CPSCF 方程的与频率相关形式使导数法能计算动态（超）极化率，但 FF 处理无法计算动态（超）极化率。Gaussian 中的 <em>polar</em> 关键词，如第 <a href="#3271-%E8%A7%A3%E6%9E%90-gaussian-%E7%9A%84%E8%B6%85%E6%9E%81%E5%8C%96%E7%8E%87%E4%BB%BB%E5%8A%A1%E8%BE%93%E5%87%BA%E5%B9%B6%E8%AE%A1%E7%AE%97%E7%9B%B8%E5%85%B3%E9%87%8F">3.27.1</a> 节仔细讨论的，对应此导数法。</p>
+</li>
+<li><p>(2) SOS 方法：这种计算静态与动态（超）极化率的方法相对低效，因为原则上它涉及对所有激发态求和（实际应用中，考虑最低的 60-120 个态通常已足够），而确定大量激发态在 <em>ab initio</em> 情形（如 CIS 与 TDDFT）通常相当耗时，特别是对大体系（如大于 40 个原子）。由于计算成本高，当导数法可解析进行时，一般不推荐用 SOS 计算（超）极化率。SOS 唯一的优点可能是可分别给出不同态的贡献并分别讨论，而且当不同激发态间的跃迁偶极矩已在手边时，可相当快地计算不同频率处的（超）极化率。值得注意的是，基于便宜的半经验 ZINDO 计算的 SOS（SOS/ZINDO）在计算大体系（超）极化率时非常流行。</p>
+</li>
+<li><p>(3) 响应法：此方法专用于动态（超）极化率，也称为传播子方法。TDHF 与 TDDFT 是它的两种实际实现。此方法在主流量子化学程序中支持并不普遍。</p>
+</li>
+</ul>
+<h4 id="sos-方法的工作方程"><strong>SOS 方法的工作方程</strong></h4>
+<p>计算极化率与第一/第二/第三超极化率的显式 SOS 方程可见 <em>J. Chem. Phys.</em>, <strong>99</strong>, 3738 (1993)，其思想最初由 Orr 与 Ward 在 <em>Mol. Phys.</em>, <strong>20</strong>, 512 (1971) 中提出。</p>
+<p>极化率 <em>α</em> 与第一超极化率 <em>β</em> 的方程为（均为原子单位）</p>
+<p><div class="mathdisp" data-mi="28" title="点击复制 TeX">$$
+\begin{gathered}\alpha_{AB}(-\omega;\omega)=\sum_{i\ne 0}\left[\frac{\mu_{0i}^{A}\mu_{i0}^{B}}{\Delta_{i}-\omega}+\frac{\mu_{0i}^{B}\mu_{i0}^{A}}{\Delta_{i}+\omega}\right]=\hat{P}[A(-\omega),B(\omega)]\sum_{i\ne 0}\frac{\mu_{0i}^{A}\mu_{i0}^{B}}{\Delta_{i}-\omega}\end{gathered}
+$$</div></p>
+<p><div class="mathdisp" data-mi="29" title="点击复制 TeX">$$
+\begin{gathered}\beta_{ABC}(-\omega_{\sigma};\omega_{1},\omega_{2})=\hat{P}[A(-\omega_{\sigma}),B(\omega_{1}),C(\omega_{2})]\sum_{i\ne 0}\sum_{j\ne 0}\frac{\mu_{0i}^{A}\overline{\mu_{ij}^{B}}\mu_{j0}^{C}}{(\Delta_{i}-\omega_{\sigma})(\Delta_{j}-\omega_{2})}\end{gathered}
+$$</div></p>
+<p>其中</p>
+<p><div class="mathdisp" data-mi="30" title="点击复制 TeX">$$
+\begin{gathered}
+\mu_{ij}^{A}=\left\langle i\middle|\hat{\mu}^{A}\middle|j\right\rangle\\
+\overline{\mu_{ij}^{A}}=\mu_{ij}^{A}\\
+\omega_{\sigma}=\sum_{i}\omega_{i}
+\end{gathered}
+$$</div></p>
+<p><em>A、B、C……</em> 代表 {x,y,z} 之一方向；<em>ω</em> 为外电场能量，<em>ω</em>=0 对应静电场；Δ<em>$_{i}$</em> 代表激发态 $i$ 相对基态 0 的激发能。$\hat{P}$ 为置换算符，对 <em>α</em> 与 <em>β</em> 显然分别有 2!=2 与 3!=6 种置换。${\mu}_{ij}^{A}$ 为态 $i$ 与 $j$ 间跃迁偶极矩的 $A$ 分量；当 $i$ = $j$ 时该项即为态 $i$ 的电偶极矩。$\hat{\mu}$ 为偶极矩算符，例如 ${\hat{\mu}}^{x}\equiv -x$。</p>
+<p>第二超极化率 <em>γ</em> 的 SOS 方程为</p>
+<p><div class="mathdisp" data-mi="31" title="点击复制 TeX">$$
+\begin{gathered}\gamma_{ABCD}(-\omega_{\sigma};\omega_{1},\omega_{2},\omega_{3})=\hat{P}[A(-\omega_{\sigma}),B(\omega_{1}),C(\omega_{2}),D(\omega_{3})](\gamma^{\mathrm{I}}-\gamma^{\mathrm{II}})\\\gamma^{\mathrm{I}}=\sum_{i\ne 0}\sum_{j\ne 0}\sum_{k\ne 0}\frac{\mu_{0i}^{A}\overline{\mu_{ij}^{B}}\overline{\mu_{jk}^{C}}\mu_{k0}^{D}}{(\Delta_{i}-\omega_{\sigma})(\Delta_{j}-\omega_{2}-\omega_{3})(\Delta_{k}-\omega_{3})}\\\gamma^{\mathrm{II}}=\sum_{i\ne 0}\sum_{j\ne 0}\frac{\mu_{0i}^{A}\mu_{i0}^{B}\mu_{0j}^{C}\mu_{j0}^{D}}{(\Delta_{i}-\omega_{\sigma})(\Delta_{i}-\omega_{1})(\Delta_{j}-\omega_{3})}\end{gathered}
+$$</div></p>
+<p>第三超极化率 <em>δ</em> 的 SOS 方程为</p>
+<p><div class="mathdisp" data-mi="32" title="点击复制 TeX">$$
+\begin{gathered}\delta_{ABCDE}(-\omega_{\sigma};\omega_{1},\omega_{2},\omega_{3},\omega_{4})=\hat{P}[A(-\omega_{\sigma}),B(\omega_{1}),C(\omega_{2}),D(\omega_{3}),E(\omega_{4})](\delta^{\mathrm{I}}-\delta^{\mathrm{II}}-\delta^{\mathrm{III}})\\\delta^{\mathrm{I}}=\sum_{i,j,k,l\,(\ne 0)}\frac{\mu_{0i}^{A}\overline{\mu_{ij}^{B}}\overline{\mu_{jk}^{C}}\overline{\mu_{kl}^{D}}\mu_{l0}^{E}}{(\Delta_{i}-\omega_{\sigma})(\Delta_{j}-\omega_{\sigma}+\omega_{1})(\Delta_{k}-\omega_{3}-\omega_{4})(\Delta_{l}-\omega_{4})}\\\delta^{\mathrm{II}}=(1/2)\sum_{i,j,k\,(\ne 0)}\frac{\mu_{0i}^{A}\mu_{i0}^{B}\mu_{0j}^{C}\overline{\mu_{jk}^{D}}\mu_{k0}^{E}}{(\Delta_{j}+\omega_{2})(\Delta_{k}-\omega_{4})}\left(\frac{1}{\Delta_{i}-\omega_{\sigma}}+\frac{1}{\Delta_{i}-\omega_{1}}\right)\left(\frac{1}{\Delta_{j}-\omega_{3}-\omega_{4}}+\frac{1}{\Delta_{k}+\omega_{2}+\omega_{3}}\right)\\\delta^{\mathrm{III}}=(1/2)\sum_{i,j,k\,(\ne 0)}\frac{\mu_{0i}^{A}\mu_{i0}^{B}\mu_{0j}^{C}\overline{\mu_{jk}^{D}}\mu_{k0}^{E}}{(\Delta_{i}-\omega_{\sigma})(\Delta_{i}-\omega_{1})}\left[\frac{1}{(\Delta_{j}-\omega_{3}-\omega_{4})(\Delta_{k}-\omega_{4})}+\frac{1}{(\Delta_{j}+\omega_{2})(\Delta_{k}+\omega_{2}+\omega_{3})}\right]\end{gathered}
+$$</div></p>
+<h4 id="输入文件"><strong>输入文件</strong></h4>
+<p>可用两种输入文件：</p>
+<ul>
+<li><p>包含所有相关态的激发能与跃迁偶极矩的纯文本文件。此时可计算极化率、第一、第二与第三超极化率。应满足以下格式（假设非常简单情形，只有 2 个激发态）。</p>
+<pre><code class="language-text">2      // The number of excited states
+1  1.1        // Excited state 1, its index and excitation energy (eV)
+2  3.2
+0 0  0.845 0.2 0.4    // Electric dipole moment of ground in X,Y,Z (a.u.)
+0 1  0.231 0.3 0.7    // Transition dipole moment between ground and excited state 1
+0 2  0.112 0.564 0.21
+1 1  0.021 0.465 0.0    // Electric dipole moment of excited state 1
+1 2  0.001 0.3 0.11     // Transition dipole moment between excited states 1 and 2
+2 2  0.432 0.14 0.42
+</code></pre>
+<p>你可直接利用第 <a href="sec-3-21-electron-excitation-analysis.html#3215-%E8%AE%A1%E7%AE%97%E6%89%80%E6%9C%89%E6%80%81%E4%B9%8B%E9%97%B4%E7%9A%84%E8%B7%83%E8%BF%81%E7%94%B5%E7%A3%81%E5%81%B6%E6%9E%81%E7%9F%A9%E5%92%8C%E6%AF%8F%E4%B8%AA%E6%80%81%E7%9A%84%E5%81%B6%E6%9E%81%E7%9F%A9-5">3.21.5</a> 节介绍的功能，基于 Gaussian 或其他程序的电子激发任务输出文件生成这样的纯文本文件。</p>
+<p>若只关心极化率，只需提供 &quot;1 1&quot; 行之前的内容，其余内容均可省略；此时激发态数目应写成负数（上例中为 -2），以告诉 Multiwfn 不加载它们。</p>
+</li>
+<li><p>常见的 CIS、TDHF、TDDFT 或 ZINDO 任务的 Gaussian 输出文件。由于 Gaussian 不输出 SOS 超极化率计算所需的全部跃迁偶极矩，此时 Multiwfn 只计算极化率。为得到准确的极化率，计算的态数目应足够大。若 <em>nstates</em> 关键词指定为很大的值，例如 1000000，则计算所有态。建议使用 #P，因为此时激发能将以更高精度的格式打印。</p>
+</li>
+</ul>
+<h4 id="用法"><strong>用法</strong></h4>
+<p>进入本功能后将看到一个菜单，有三类功能：</p>
+<ul>
+<li><p>选项 1~4：分别用于计算给定频率处的 α、β、γ 与 δ。用户需输入每个外电场的频率。输入的频率可为负。例如，要计算超极化率 β(-(0.25-0.32);0.25,-0.32)，应在选项 2 中输入 <em>0.25,-0.32</em>。默认单位为原子单位，若想以 nm 输入频率，应加相应后缀，例如 <em>182.25,-142.385 nm</em>。</p>
+<p>由于 γ 特别是 δ 的计算常耗时，此时会提示用户输入考虑的态数目，数目越小成本越低，但太小可能导致结果差。</p>
+</li>
+<li><p>选项 5~7：用于研究 α、β 与 γ 随考虑的态数目的变化。用户需输入每个外电场的频率。对 α 与 β，考虑的态数目从 1 到加载的全部态，步长为 1。而对 γ，由于计算成本可能很高，允许用户定义终值与步长。结果将输出到当前目录的纯文本文件，各列含义在命令行窗口清楚标明。</p>
+</li>
+<li><p>选项 15~17：用于研究 α、β 与 γ 随外电场频率的变化。对 α，用户需输入外电场频率的初值、终值与步长。对 β 与 γ，用户应写一个纯文本文件，每行对应一对要计算的频率（原子单位）。Multiwfn 会提示用户输入文件路径。下面是研究 γ(-0;0,ω,-ω) 随 ω 从 0 到 0.2 a.u.（步长 0.02）变化的示例文件</p>
+<pre><code class="language-text">0.0  0.0  0.0
+0.0  0.02  -0.02
+0.0  0.04  -0.04
+...[ignored]
+0.0  0.2  -0.2
+</code></pre>
+<p>由于计算 γ 的成本可能很高，此时允许用户设置考虑的态数目。结果将输出到当前目录的纯文本文件，各列含义在命令行窗口清楚标明。</p>
+</li>
+<li><p>选项 19：此选项用于同时扫描 β(-(ω₁+ω₂);ω₁,ω₂) 的 ω₁ 与 ω₂。只需输入 ω₁ 与 ω₂ 的起始频率、终止频率与步数。然后过一会儿，不同 ω₁、ω₂ 频率处的 β 将输出到当前目录的纯文本文件，各列含义在命令行窗口清楚标明。然后可用第三方软件绘制“β 对 ω₁、ω₂”的 relief 图。</p>
+</li>
+</ul>
+<p>Multiwfn 不仅输出（超）极化率张量，还输出许多相关量，如各向异性、大小与沿 Z 轴分量。涉及 α、β 与 γ 的量已在第 <a href="#3271-%E8%A7%A3%E6%9E%90-gaussian-%E7%9A%84%E8%B6%85%E6%9E%81%E5%8C%96%E7%8E%87%E4%BB%BB%E5%8A%A1%E8%BE%93%E5%87%BA%E5%B9%B6%E8%AE%A1%E7%AE%97%E7%9B%B8%E5%85%B3%E9%87%8F">3.27.1</a> 节介绍。</p>
+<p>例子见第 <a href="sec-4-24-examples-of-hyperpolarizability-analyses.html#42421-%E8%AE%A1%E7%AE%97-nh%E2%82%83-%E7%9A%84%E6%9E%81%E5%8C%96%E7%8E%87%E5%92%8C%E8%B6%85%E6%9E%81%E5%8C%96%E7%8E%87">4.24.2.1</a> 节。关于本功能的更多讨论与例子见我的博客文章“Using Multiwfn to calculate polarizability and hyperpolarizability based on sum-over-states (SOS) method”（<a href="http://sobereva.com/232">http://sobereva.com/232</a>，中文）。</p>
+<h3 id="32722-超极化率的两能级与三能级模型分析"><strong>3.27.2.2 超极化率的两能级与三能级模型分析</strong></h3>
+<h4 id="理论"><strong>理论</strong></h4>
+<p>从 <em>β</em> 的 SOS 表达式可清楚看到，<em>β</em> 的大小完全由激发态性质决定。显然，从激发态角度解释不同体系间 <em>β</em> 差异的来源是很有用的想法。事实上，此分析在文献中已被广泛采用，如我的工作 <em>J. Comput. Chem.</em>, <strong>38</strong>, 1574 (2017) 与 <em>Phys. Chem. Chem. Phys.</em>, <strong>27</strong>, 11993 (2025)。下面看如何导出这样的分析模型。</p>
+<p>回顾 <em>β</em> 的 SOS 公式</p>
+<p><div class="mathdisp" data-mi="33" title="点击复制 TeX">$$
+\begin{gathered}\beta_{ABC}(-\omega_{\sigma};\omega_{1},\omega_{2})=\hat{P}[A(-\omega_{\sigma}),B(\omega_{1}),C(\omega_{2})]\sum_{i\ne 0}\sum_{j\ne 0}\frac{\mu_{0i}^{A}\overline{\mu_{ij}^{B}}\mu_{j0}^{C}}{(\Delta_{i}-\omega_{\sigma})(\Delta_{j}-\omega_{2})}\end{gathered}
+$$</div></p>
+<p>假设只关心 ZZZ 分量且只关注静态极限情形（<em>ω</em>=0），方程简化为</p>
+<p><div class="mathdisp" data-mi="34" title="点击复制 TeX">$$
+\beta_{ZZZ}^{\mathrm{SOS}}=6\sum_{i\ne 0}\sum_{j\ne 0}\frac{\mu_{0i}^{Z}\overline{\mu_{ij}^{Z}}\mu_{j0}^{Z}}{\Delta_{i}\Delta_{j}}
+$$</div></p>
+<p>已知 $\overline{\mu_{ij}^{A}}=\mu_{ij}^{A}-\mu_{00}^{A}\delta_{ij}$ ，当 $i$ = $j$ 时，此项对应激发态 $i$ 与基态间偶极矩的变化，即 $\overline{\mu_{ii}^{A}}=\mu_{ii}^{A}-\mu_{00}^{A}=\Delta\mu_{i}^{A}$ ；而若 $i$ ≠ $j$ ，此项 $\overline{\mu_{ij}^{A}}=\mu_{ij}^{A}$ 对应激发态 $i$ 与 $j$ 间的跃迁偶极矩。</p>
+<p>利用 ${\mu}_{ij}^{A}={\mu}_{ji}^{A}$ ，上示 ${\beta}_{ZZZ}^{\mathrm{SOS}}$ 可写成单个激发态贡献与不同激发态间交叉项贡献之和：</p>
+<p><div class="mathdisp" data-mi="35" title="点击复制 TeX">$$
+\beta_{ZZZ}^{\mathrm{SOS}}=\sum_{i}6\frac{(\mu_{0i}^{Z})^{2}\Delta\mu_{i}^{Z}}{\Delta_{i}^{2}}+\sum_{i}\sum_{j>i}12\frac{\mu_{0i}^{Z}\mu_{0j}^{Z}\mu_{ij}^{Z}}{\Delta_{i}\Delta_{j}}
+$$</div></p>
+<p><strong>两能级模型</strong>非常流行，它假设 <em>β</em>$_{ZZZ}$ 由基态与仅一个激发态主导：</p>
+<p><div class="mathdisp" data-mi="36" title="点击复制 TeX">$$
+\beta_{ZZZ}^{\mathrm{SOS}}\approx 6\frac{(\mu_{0i}^{Z})^{2}\Delta\mu_{i}^{Z}}{\Delta_{i}^{2}}
+$$</div></p>
+<p>激发态 $i$ 通常称为关键态，一般对应振子强度大的最低激发态（严格说，在当前语境下，关键态应指跃迁偶极矩 Z 分量大的最低激发态，但这样确定的关键态通常与按振子强度确定的相同）。</p>
+<p>两能级模型常用振子强度等价地表示为：</p>
+<p><div class="mathdisp" data-mi="37" title="点击复制 TeX">$$
+\beta_{ZZZ}^{\mathrm{SOS}}=9\Delta\mu_{i}^{Z}f_{i}^{Z}/\Delta_{i}^{3}
+$$</div></p>
+<p>其中 $f_{i}^{Z}=(2/3)\Delta_{i}(\mu_{0i}^{Z})^{2}$ 为振子强度的 Z 分量。进一步假设只有跃迁偶极矩与偶极矩变化的 Z 分量相对突出，则有 $\beta^{\mathrm{SOS}}\propto\Delta\mu_{i}f_{i}/\Delta_{i}^{3}$ 。显然，现在通过比较 $\Delta {\mu}_{i}^{Z}$ 、$f$ <em>$_{i}$</em> 与 Δ<em>$_{i}$</em> 项，可容易分析不同体系间 <em>β</em> 差异的来源。</p>
+<p>偶尔没有明确的关键态。例如，第 1 与第 2 激发态都有大的 ${\mu}_{0i}^{Z}$ ，而它们能量间隔很小（近简并），此时不应简单忽略任何一个，应同时考虑这两个激发态，我将此模型定义为<strong>三能级模型</strong>：</p>
+<p><div class="mathdisp" data-mi="38" title="点击复制 TeX">$$
+\beta_{ZZZ}^{\mathrm{SOS}}=6\frac{(\mu_{0i}^{Z})^{2}\Delta\mu_{i}^{Z}}{\Delta_{i}^{2}}+12\frac{\mu_{0i}^{Z}\mu_{0j}^{Z}\mu_{ij}^{Z}}{\Delta_{i}\Delta_{j}}+6\frac{(\mu_{0j}^{Z})^{2}\Delta\mu_{j}^{Z}}{\Delta_{j}^{2}}
+$$</div></p>
+<h4 id="用法"><strong>用法</strong></h4>
+<p>在 SOS 模块（主功能 24 的子功能 2）中，子选项 20 用于进行两能级与三能级模型分析，模型中涉及的所有项都会给出，以便你在不同体系间比较。本功能的输入文件与上一节 SOS 计算第一超极化率所用的完全相同。</p>
+<p>进入此选项后，若只输入一个激发态序号，则进行两能级模型分析，若输入两个激发态序号，则进行三能级模型分析。若输入一个范围，如 <em>1-20</em>，则对范围内每个激发态逐个进行两能级分析。</p>
+<p>例子见第 <a href="sec-4-24-examples-of-hyperpolarizability-analyses.html#42422-%E5%AF%B9-nh%E2%82%82-biphenyl-no%E2%82%82-%E7%9A%84%E7%AC%AC%E4%B8%80%E8%B6%85%E6%9E%81%E5%8C%96%E7%8E%87%E5%81%9A%E4%BA%8C%E8%83%BD%E7%BA%A7%E5%92%8C%E4%B8%89%E8%83%BD%E7%BA%A7%E6%A8%A1%E5%9E%8B%E5%88%86%E6%9E%90">4.24.2.2</a> 节。</p>
+<h2 id="3273-研究超极化率密度"><strong>3.27.3 研究（超）极化率密度</strong></h2>
+<blockquote>
+<p><strong>注</strong></p>
+<p>介绍（超）极化率密度的博客文章是“Using Multiwfn to calculate (hyper)polarizability density”（<a href="http://sobereva.com/305">http://sobereva.com/305</a>，中文）。</p>
+</blockquote>
+<p>（超）极化率密度可用 Multiwfn 很容易地绘制为平面图与等值面 (isosurface)图。此量在讨论给定分子（超）极化率本质时很有用。若在工作中用了此功能，建议引用我的论文 <em>J. Comput. Chem.</em>, <strong>38</strong>, 1574 (2017)，其中涉及（超）极化率密度分析并给出了简要介绍。我的其他发表工作也给出了此方法的示例性应用：<em>Carbon</em>, <strong>165</strong>, 461 (2020)、<em>J. Phys. Chem. C</em>, <strong>124</strong>, 7353 (2020)、<em>J. Phys. Chem. A</em>, <strong>124</strong>, 5563 (2020)、<em>J. Phys. Chem. C</em>, <strong>124</strong>, 845 (2020)。</p>
+<h3 id="超极化率密度理论与超极化率的空间贡献"><strong>（超）极化率密度理论与（超）极化率的空间贡献</strong></h3>
+<p>有一个著名的（电）偶极矩 Taylor 展开</p>
+<p><div class="mathdisp" data-mi="39" title="点击复制 TeX">$$
+\begin{gathered}\boldsymbol{\mu}(\mathbf{F})=- \frac{\partial E}{\partial \mathbf{F}}=\boldsymbol{\mu}_0+\boldsymbol{\alpha}\mathbf{F}+(1/2)\boldsymbol{\beta}\mathbf{F}^2+(1/6)\boldsymbol{\gamma}\mathbf{F}^3+\dots\\\boldsymbol{\mu}_0=-\left.\frac{\partial E}{\partial \mathbf{F}}\right|_{\mathbf{F}=0}\quad\quad\boldsymbol{\alpha}=-\left.\frac{\partial^2 E}{\partial \mathbf{F}^2}\right|_{\mathbf{F}=0}\quad\quad\boldsymbol{\beta}=-\left.\frac{\partial^3 E}{\partial \mathbf{F}^3}\right|_{\mathbf{F}=0}\quad\quad\boldsymbol{\gamma}=-\left.\frac{\partial^4 E}{\partial \mathbf{F}^4}\right|_{\mathbf{F}=0}\end{gathered}
+$$</div></p>
+<p>其中 <strong>F</strong> 为外电场矢量，$E$ 为体系总能量，<strong>µ</strong> 与 <strong>µ</strong>₀ 分别为当前电偶极矩与永久偶极矩。<strong>α</strong>、<strong>β</strong> 与 <strong>γ</strong> 分别为极化率、第一与第二超极化率张量。</p>
+<p>类似地，对电子密度可作对 <strong>F</strong> 的 Taylor 展开</p>
+<p><div class="mathdisp" data-mi="40" title="点击复制 TeX">$$
+\begin{gathered}\rho(\mathbf{r},\mathbf{F})=\rho^{(0)}(\mathbf{r})+\rho^{(1)}(\mathbf{r})\mathbf{F}+(1/2)\rho^{(2)}(\mathbf{r})\mathbf{F}^2+(1/6)\rho^{(3)}(\mathbf{r})\mathbf{F}^3+\dots\\\rho^{(1)}(\mathbf{r})=\left.\frac{\partial \rho(\mathbf{r})}{\partial \mathbf{F}}\right|_{\mathbf{F}=0}\quad\quad\rho^{(2)}(\mathbf{r})=\left.\frac{\partial^2 \rho(\mathbf{r})}{\partial \mathbf{F}^2}\right|_{\mathbf{F}=0}\quad\quad\rho^{(3)}(\mathbf{r})=\left.\frac{\partial^3 \rho(\mathbf{r})}{\partial \mathbf{F}^3}\right|_{\mathbf{F}=0}\end{gathered}
+$$</div></p>
+<p>由于 $\boldsymbol{\mu}(\mathbf{F})=\int-\rho(\mathbf{r},\mathbf{F})\mathbf{r}\,\mathrm{d}\mathbf{r}$ ，比较上述方程，可得</p>
+<p><div class="mathdisp" data-mi="41" title="点击复制 TeX">$$
+\begin{gathered}\boldsymbol{\mu}_0=\int-\rho^{(0)}(\mathbf{r})\mathbf{r}\,\mathrm{d}\mathbf{r}\quad\quad\boldsymbol{\alpha}=\int-\rho^{(1)}(\mathbf{r})\mathbf{r}\,\mathrm{d}\mathbf{r}\\\boldsymbol{\beta}=\int-\rho^{(2)}(\mathbf{r})\mathbf{r}\,\mathrm{d}\mathbf{r}\quad\quad\boldsymbol{\gamma}=\int-\rho^{(3)}(\mathbf{r})\mathbf{r}\,\mathrm{d}\mathbf{r}\end{gathered}
+$$</div></p>
+<p>其中 <strong>ρ</strong>$^{(1)}$ 称为极化率密度，而 <strong>ρ</strong>$^{(2)}$ 与 <strong>ρ</strong>$^{(3)}$ 分别称为第一与第二超极化率密度。利用（超）极化率密度，可容易考察各空间区域对分子总（超）极化率的贡献。</p>
+<p>第二超极化率密度 <strong>ρ</strong>$^{(3)}$ 是三阶张量函数，可明确表示为</p>
+<p><div class="mathdisp" data-mi="42" title="点击复制 TeX">$$
+\rho_{ijk}^{(3)}(\mathbf{r})=\left.\frac{\partial^3 \rho(\mathbf{r})}{\partial F_i\partial F_j\partial F_k}\right|_{\mathbf{F}=0}
+$$</div></p>
+<p>不可能讨论它的所有分量，因为多达 3×3×3=27 个分量。假设 <em>γ</em>$_{ZZZZ}$ 是 <strong>γ</strong> 中最关键的分量，可简单研究 <em>ρ</em>$_{ZZZ}$(<strong>r</strong>)：</p>
+<p><div class="mathdisp" data-mi="43" title="点击复制 TeX">$$
+\rho_{zzz}^{(3)}(\mathbf{r})=\left.\frac{\partial^3 \rho(\mathbf{r})}{\partial F_z^3}\right|_{F_z=0}
+$$</div></p>
+<p>它与 <em>γ</em>$_{ZZZZ}$ 的关系为</p>
+<p><div class="mathdisp" data-mi="44" title="点击复制 TeX">$$
+\boldsymbol{\gamma}_{zzzz}=\int-z\rho_{zzz}^{(3)}(\mathbf{r})\,\mathrm{d}\mathbf{r}
+$$</div></p>
+<p>显然，$-z{\rho}_{zzz}^{\left( 3 \right)}(\mathbf{r})$ 是点 <strong>r</strong> 对 <em>γ</em>$_{ZZZZ}$ 的贡献。若将其绘制为等值面图或平面图，可直观揭示 <em>γ</em>$_{ZZZZ}$ 的来源。但 $-z{\rho}_{zzz}^{\left( 3 \right)}(\mathbf{r})$ 的缺点是它依赖原点的选取，而原点选取有一定任意性，因此 ${\rho}_{zzz}^{\left( 3 \right)}$ 本身也有研究价值，因为它与原点无关。</p>
+<p>得到 ${\rho}_{zzz}^{(3)}$ 的最容易方法是用有限差分法（推导见我的文章 <a href="http://sobereva.com/305">http://sobereva.com/305</a>）</p>
+<p><div class="mathdisp" data-mi="45" title="点击复制 TeX">$$
+\rho_{zzz}^{(3)}=\frac{\rho(2F^z)-2\rho(F^z)+2\rho(-F^z)-\rho(-2F^z)}{2(F^z)^3}
+$$</div></p>
+<p>其中 $F$ <em>$^{z}$</em> 为沿 $Z$ 轴施加的外电场强度。<em>ρ</em>( $F$ <em>$^{z}$</em>) 与 <em>ρ</em>(- $F$ <em>$^{z}$</em>) 等函数分别代表沿 Z 轴正、负方向施加 $F$ <em>$^{z}$</em> 时得到的电子密度分布。此情形 $F$ <em>$^{z}$</em> 对应有限差分步长，不应太大或太小，否则数值误差显著。按我的经验，0.003 a.u. 是 $F$ <em>$^{z}$</em> 的好选择。</p>
+<p>类似地，可容易导出极化率密度的方程</p>
+<p><div class="mathdisp" data-mi="46" title="点击复制 TeX">$$
+\begin{gathered}\rho_z^{(1)}=\frac{\rho(F^z)-\rho(-F^z)}{2F^z}\\\boldsymbol{\gamma}_{zz}=\int-\rho_z^{(1)}(\mathbf{r})z\,\mathrm{d}\mathbf{r}\end{gathered}
+$$</div></p>
+<p>以及第一超极化率密度的方程</p>
+<p><div class="mathdisp" data-mi="47" title="点击复制 TeX">$$
+\begin{gathered}\rho_{zz}^{(2)}=\frac{\rho(F^z)-2\rho(0)+\rho(-F^z)}{(F^z)^2}\\\boldsymbol{\beta}_{zzz}=\int-\rho_{zz}^{(2)}(\mathbf{r})z\,\mathrm{d}\mathbf{r}\end{gathered}
+$$</div></p>
+<h3 id="用-multiwfn-研究超极化率密度"><strong>用 Multiwfn 研究（超）极化率密度</strong></h3>
+<p>通过主功能 24 的子功能 3，可非常方便地绘制任何（超）极化率密度以及（超）极化率空间贡献的平面图与等值面图。一旦 Multiwfn 生成后者的格点数据 (grid data)并导出为 .cub 文件，就可进一步计算原子或片段 (fragment)对（超）极化率的贡献，如第 <a href="sec-4-24-examples-of-hyperpolarizability-analyses.html#4243-%E7%A0%94%E7%A9%B6-%E8%B6%85%E6%9E%81%E5%8C%96%E7%8E%87%E5%AF%86%E5%BA%A6%E7%9A%84%E4%BE%8B%E5%AD%90">4.24.3</a> 节例子所示。</p>
+<p>本功能按以下步骤使用</p>
+<ul>
+<li><p>(1) 启动 Multiwfn 并加载含所研究体系原子信息的文件，如 .xyz、.pdb、.mwfn、.fch 等，见第 <a href="sec-2-5-input-files-and-wavefunction-types.html">2.5</a> 节。</p>
+</li>
+<li><p>(2) 进入主功能 24 的子功能 3。</p>
+</li>
+<li><p>(3) 选择希望研究的量</p>
+</li>
+<li><p>(4) 选择感兴趣的方向（X 或 Y 或 Z）</p>
+<p>假设你在步骤 (3) 选了“第二超极化率密度与第二超极化率的空间贡献”，在步骤 (4) 选了“Z”，则之后可研究 $-z{\rho}_{zzz}^{\left( 3 \right)}$ 与 ${\rho}_{zzz}^{\left( 3 \right)}$。</p>
+</li>
+<li><p>(5) 选选项 1 生成不同外电场下单点计算的 Gaussian 输入文件。可手动修改这些文件的默认关键词。默认在 PBE0/aug-cc-pVTZ 水平计算。</p>
+</li>
+<li><p>(6) 手动用 Gaussian 运行 .gjf 文件，然后生成 .wfx 文件</p>
+</li>
+<li><p>(7) 选选项 2 加载 .wfx 文件</p>
+</li>
+<li><p>(8) 现在可选择要做的事。若选择计算（超）极化率或（超）极化率空间贡献的格点数据，则可直接可视化其等值面图或将格点数据导出为 .cub 文件。也可选择绘制这些函数的平面图。</p>
+</li>
+</ul>
+<h3 id="关于分子取向"><strong>关于分子取向</strong></h3>
+<p>重要的是注意，实际中我们真正感兴趣的往往是沿分子偶极矩方向的分量，而偶极矩方向常不平行于任何笛卡尔轴。此时，在用本功能之前，应重取向体系使偶极矩恰平行于某笛卡尔轴，如 Z。Multiwfn 可通过第 <a href="sec-3-300-other-functions-part-3.html#33007-%E5%BD%93%E5%89%8D%E4%BD%93%E7%B3%BB%E7%9A%84%E5%87%A0%E4%BD%95%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C">3.300.7</a> 节所述功能容易实现重取向。即在启动 Multiwfn 后加载当前体系的波函数文件，然后输入</p>
+<p><pre><code class="language-text">300  //Other function (Part 3)
+7  //Geometry operation on the present system
+7  //Make electric dipole moment parallel to a vector or Cartesian axis
+3  //Parallel to Z axis
+-1  //Output system to .xyz file</code></pre></p>
+<p>然后可用导出的 .xyz 文件作为研究（超）极化率密度的输入文件。</p>
+<p>研究（超）极化率密度与（超）极化率空间贡献的例子见第 <a href="sec-4-24-examples-of-hyperpolarizability-analyses.html#4243-%E7%A0%94%E7%A9%B6-%E8%B6%85%E6%9E%81%E5%8C%96%E7%8E%87%E5%AF%86%E5%BA%A6%E7%9A%84%E4%BE%8B%E5%AD%90">4.24.3</a> 节。</p>
+<h2 id="3275-通过单位球与矢量表示可视化超极化率"><strong>3.27.5 通过单位球与矢量表示可视化（超）极化率</strong></h2>
+<p>若你不熟悉（超）极化率，请先看第 <a href="#3271-%E8%A7%A3%E6%9E%90-gaussian-%E7%9A%84%E8%B6%85%E6%9E%81%E5%8C%96%E7%8E%87%E4%BB%BB%E5%8A%A1%E8%BE%93%E5%87%BA%E5%B9%B6%E8%AE%A1%E7%AE%97%E7%9B%B8%E5%85%B3%E9%87%8F">3.27.1</a> 节掌握基础知识。本节介绍单位球表示 (unit sphere representation)，它在 <em>J. Comput. Chem.</em>, <strong>32</strong>, 1128 (2011) 中提出，用于直观表示一阶超极化率张量，而我还把此思想扩展到了极化率与二阶超极化率。</p>
+<h3 id="理论"><strong>理论</strong></h3>
+<p>回顾分子偶极矩与外电场的关系</p>
+<p><div class="mathdisp" data-mi="48" title="点击复制 TeX">$$
+\boldsymbol{\mu}=\boldsymbol{\mu}_0+\boldsymbol{\alpha}\cdot\mathbf{F}+(1/2)\boldsymbol{\beta}\cdot\mathbf{F}\cdot\mathbf{F}+(1/6)\boldsymbol{\gamma}\cdot\mathbf{F}\cdot\mathbf{F}\cdot\mathbf{F}+\dots
+$$</div></p>
+<p><strong>β</strong> 称为一阶超极化率张量，分量 $β_{ABC}$ 正比于分别沿 $B$ 与 $C$ 方向的两束入射电场组合在 $A$ 方向引起的诱导偶极矩大小。</p>
+<p>在单位球表示中，有效偶极矢量定义为</p>
+<p><div class="mathdisp" data-mi="49" title="点击复制 TeX">$$
+\boldsymbol{\beta}^{\mathrm{eff}}(\theta,\phi)=\boldsymbol{\beta}\cdot\mathbf{e}(\theta,\phi)\cdot\mathbf{e}(\theta,\phi)
+$$</div></p>
+<p>其中 <em>θ</em> 与 <em>φ</em> 为球极坐标角度，<strong>e</strong>(<em>θ</em>,<em>φ</em>) 为垂直于球面的单位矢量。更具体地，<strong>β</strong>$^{eff}$ 的分量可明确写为</p>
+<p><div class="mathdisp" data-mi="50" title="点击复制 TeX">$$
+\beta_i^{\mathrm{eff}}=\sum_j\sum_k\beta_{i,j,k}e_ke_j\quad\quad i,j,k=\{x,y,z\}
+$$</div></p>
+<p><strong>β</strong>$^{eff}$(<em>θ</em>,<em>φ</em>) 矢量的取向与长度分别反映沿 (<em>θ</em>,<em>φ</em>) 方向施加的两束入射电场组合引起的诱导偶极矩的方向与大小。若在包围分子的球面每个顶点处都计算 <strong>β</strong>$^{eff}$，就可清楚生动地理解分子偶极矩对沿各方向施加的外电场的响应。原文只把此表示用于二次谐波 (SHG) 型 <strong>β</strong>，实际上它也可用于其他 <strong>β</strong>，包括静态与动态（后者情形，随强度变化的外电场来自入射电磁波，其方向垂直于电磁波传播方向）。</p>
+<p>基于 <strong>β</strong>$^{eff}$ 的同样思想，我定义了以下量</p>
+<p><div class="mathdisp" data-mi="51" title="点击复制 TeX">$$
+\begin{gathered}\boldsymbol{\alpha}^{\mathrm{eff}}(\theta,\phi)=\boldsymbol{\alpha}\cdot\mathbf{e}(\theta,\phi)\\\boldsymbol{\gamma}^{\mathrm{eff}}(\theta,\phi)=\boldsymbol{\gamma}\cdot\mathbf{e}(\theta,\phi)\cdot\mathbf{e}(\theta,\phi)\cdot\mathbf{e}(\theta,\phi)\end{gathered}
+$$</div></p>
+<p><strong>α</strong>$^{eff}$(<em>θ</em>,<em>φ</em>) 矢量反映沿 (<em>θ</em>,<em>φ</em>) 方向施加的入射电场引起的诱导偶极矩的方向与大小，而 <strong>γ</strong>$^{eff}$(<em>θ</em>,<em>φ</em>) 矢量反映同时沿 (<em>θ</em>,<em>φ</em>) 方向施加的三束入射电场组合引起的诱导偶极矩的方向与大小。类似地，通过在球面每个顶点绘制 <strong>α</strong>$^{eff}$(<em>θ</em>,<em>φ</em>) 或 <strong>γ</strong>$^{eff}$(<em>θ</em>,<em>φ</em>)，分别得到 <strong>α</strong> 与 <strong>γ</strong> 的单位球表示图。</p>
+<p><strong>β</strong> 的所谓矢量表示对应把 (<em>β</em>$_{x}$, <em>β</em>$_{y}$, <em>β</em>$_{z}$) 矢量画成箭头，各分量定义为</p>
+<p><div class="mathdisp" data-mi="52" title="点击复制 TeX">$$
+\beta_i=(1/3)\sum_j(\beta_{ijj}+\beta_{jji}+\beta_{jij})\quad\quad i,j=\{x,y,z\}
+$$</div></p>
+<p>此表示很简单，可近似表示 <strong>β</strong> 的主要特征，但各向异性特征不能在此表示中明确展示。例如，<em>β</em>$_{x}$ 显示 <em>β</em>$_{xxx}$、<em>β</em>$_{xyy}$、<em>β</em>$_{xzz}$……分量的集体效应，其中 <em>β</em>$_{xyy}$ 与 <em>β</em>$_{xzz}$ 描述各向异性响应特征，因为所施加的两束电场与它们组合效应产生的诱导偶极矩不共线。</p>
+<p>我还提出了 <strong>α</strong> 的矢量表示，情形与 <strong>β</strong> 的矢量表示很不同。沿 X、Y、Z 轴画双向箭头，其长度分别代表相应方向 <strong>α</strong> 的大小，定义为</p>
+<p><div class="mathdisp" data-mi="53" title="点击复制 TeX">$$
+\begin{gathered} \alpha_x = \alpha_{xx} + \alpha_{xy} + \alpha_{xz} \\ \alpha_y = \alpha_{yx} + \alpha_{yy} + \alpha_{yz} \\ \alpha_z = \alpha_{zx} + \alpha_{zy} + \alpha_{zz} \end{gathered}
+$$</div></p>
+<p>类似地，γ 的矢量表示对应沿 X、Y、Z 轴画双向箭头，其长度分别代表相应方向 <strong>γ</strong> 的大小（$γ_{x}$、$γ_{y}$、$γ_{z}$），计算为</p>
+<p><div class="mathdisp" data-mi="54" title="点击复制 TeX">$$
+\gamma_i=(1/15)\sum_j(\gamma_{ijji}+\gamma_{ijij}+\gamma_{iijj})\quad\quad i,j=\{x,y,z\}
+$$</div></p>
+<h3 id="用法"><strong>用法</strong></h3>
+<p>Multiwfn 能对 <strong>α</strong>、<strong>β</strong> 与 <strong>γ</strong> 做单位球表示分析，即基于加载的（超）极化率张量生成 VMD 软件（<a href="http://www.ks.uiuc.edu/Research/vmd/">http://www.ks.uiuc.edu/Research/vmd/</a>）的绘图脚本。此外，还可为 <strong>β</strong> 生成对应矢量表示的绘图脚本。</p>
+<p>启动 Multiwfn 后，应加载含所研究分子原子信息的文件。例如，可用 .xyz、.pdb 与 .fch，见第 <a href="sec-2-5-input-files-and-wavefunction-types.html">2.5</a> 节。原子信息将用于确定单位球表示中球的合适半径。</p>
+<p>进入本模块（主功能 24 的子功能 5）后，可用许多选项调节单位球与矢量表示的参数，如箭头长度比例因子、箭头半径等，都是自明的。通过选选项 1 或 2 或 3，Multiwfn 将分别从特定文件（见下）加载 <strong>α</strong> 或 <strong>β</strong> 或 <strong>γ</strong> 张量，然后在当前目录生成对应单位球表示的 VMD 绘图脚本（分别为 <em>alpha.tcl</em>、<em>beta.tcl</em> 与 <em>gamma.tcl</em>），对应矢量表示的脚本也会生成（<em>alpha_vec.tcl</em>、<em>beta_vec.tcl</em> 与 <em>gamma_vec.tcl</em>）。然后用 VMD 运行脚本，即可立即得到相应图形。</p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>值得一提的是，有个选项“-8 Toggle making longest arrow on sphere has specific length”。若选一次将其状态切换为“Yes”，则在选选项 1 或 2 或 3 后，会要求输入球面上最长箭头的期望长度。通过此选项，可使 VMD 为（超）极化率大小很不同的体系绘制的图容易比较。</p>
+</blockquote>
+<h3 id="含超极化率张量的文件的准备"><strong>含（超）极化率张量的文件的准备</strong></h3>
+<p>含 <strong>α</strong> 或 <strong>β</strong> 或 <strong>γ</strong> 张量的文件可由主功能 24 的子功能 1 通过从 Gaussian 的“polar”任务输出文件中提取相应数据直接生成。在该功能中，应选一次选项“-4 Export (hyper)polarizability as .txt file after parsing”将其状态切换为“Yes”，然后通过相应选项解析数据后，<strong>α</strong> 将导出到当前目录的 <em>alpha.txt</em>，<strong>β</strong> 将导出到 <em>beta.txt</em>，<strong>γ</strong> 将导出到 <em>gamma.txt</em>，它们就是本功能所需的。</p>
+<p>含（超）极化率的文件也可手动准备，此时数据可由 Gaussian 之外的量子化学程序产生。文件格式自由，张量分量顺序如下（用 Fortran 语法表示）</p>
+<ul>
+<li><p>极化率：((<strong>α</strong>(i,j),j=1,3),i=1,3)</p>
+</li>
+<li><p>一阶超极化率：(((<strong>β</strong>(i,j,k),k=1,3),j=1,3),i=1,3)</p>
+</li>
+<li><p>二阶超极化率：((((<strong>γ</strong>(i,j,k,l),l=1,3),k=1,3),j=1,3),i=1,3)</p>
+<p>其中指标 $i$ 的循环最慢。例如，下面是记录 <strong>α</strong> 张量的文件（高亮文字为注释）：</p>
+<pre><code class="language-text"> 3.62370000E+001   XX
+-2.20999000E+000   XY
+ 0.00000000E+000   XZ
+-2.20999000E+000   YX
+ 3.91836000E+001   YY
+ 0.00000000E+000   YZ
+ 0.00000000E+000   ZX
+ 0.00000000E+000   ZY
+ 2.54054000E+001   ZZ
+</code></pre>
+</li>
+</ul>
+<p>用本功能研究实际分子的例子见第 <a href="sec-4-24-examples-of-hyperpolarizability-analyses.html#4245-%E7%94%A8%E5%8D%95%E4%BD%8D%E7%90%83%E8%A1%A8%E7%A4%BA%E7%9B%B4%E8%A7%82%E7%A0%94%E7%A9%B6-%E8%B6%85%E6%9E%81%E5%8C%96%E7%8E%87%E7%9A%84%E4%BE%8B%E5%AD%90">4.24.5</a> 节。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-3-27-hyperpolarizability-analysis";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script><script>const MATHS=["\\begin{gathered} E(\\mathbf{F}) = E(\\mathbf{0}) + \\left.\\frac{\\partial E}{\\partial \\mathbf{F}}\\right|_{\\mathbf{F} = 0} \\mathbf{F} + \\frac{1}{2}\\left.\\frac{\\partial^2 E}{\\partial \\mathbf{F}^2}\\right|_{\\mathbf{F} = 0} \\mathbf{F}^2 + \\frac{1}{6}\\left.\\frac{\\partial^3 E}{\\partial \\mathbf{F}^3}\\right|_{\\mathbf{F} = 0} \\mathbf{F}^3 + \\frac{1}{24}\\left.\\frac{\\partial^4 E}{\\partial \\mathbf{F}^4}\\right|_{\\mathbf{F} = 0} \\mathbf{F}^4 + \\dots \\\\ \\equiv E(\\mathbf{0}) - \\boldsymbol{\\mu}_0 \\mathbf{F} - \\frac{1}{2}\\boldsymbol{\\alpha}\\mathbf{F}^2 - \\frac{1}{6}\\boldsymbol{\\beta}\\mathbf{F}^3 - \\frac{1}{24}\\boldsymbol{\\gamma}\\mathbf{F}^4 - \\frac{1}{120}\\boldsymbol{\\delta}\\mathbf{F}^5 - \\frac{1}{720}\\boldsymbol{\\epsilon}\\mathbf{F}^6 \\dots \\end{gathered}","\\boldsymbol{\\mu}_0 = -\\left.\\frac{\\partial E}{\\partial \\mathbf{F}}\\right|_{\\mathbf{F} = 0} \\quad\\quad \\boldsymbol{\\alpha} = -\\left.\\frac{\\partial^2 E}{\\partial \\mathbf{F}^2}\\right|_{\\mathbf{F} = 0} \\quad\\quad \\boldsymbol{\\beta} = -\\left.\\frac{\\partial^3 E}{\\partial \\mathbf{F}^3}\\right|_{\\mathbf{F} = 0} \\quad\\quad \\boldsymbol{\\gamma} = -\\left.\\frac{\\partial^4 E}{\\partial \\mathbf{F}^4}\\right|_{\\mathbf{F} = 0}","\\boldsymbol{\\mu} = -\\frac{\\partial E}{\\partial \\mathbf{F}} = \\boldsymbol{\\mu}_0 + \\underbrace{\\boldsymbol{\\alpha}\\mathbf{F}}_{\\boldsymbol{\\mu}_1} + \\underbrace{(1/2)\\boldsymbol{\\beta}\\mathbf{F}^2}_{\\boldsymbol{\\mu}_2} + \\underbrace{(1/6)\\boldsymbol{\\gamma}\\mathbf{F}^3}_{\\boldsymbol{\\mu}_3} + \\dots","\\boldsymbol{\\mu}_1 = \\boldsymbol{\\alpha} \\cdot \\mathbf{F} \\Rightarrow \\begin{bmatrix} \\mu_x \\\\ \\mu_y \\\\ \\mu_z \\end{bmatrix} = \\begin{bmatrix} \\alpha_{xx} & \\alpha_{xy} & \\alpha_{xz} \\\\ \\alpha_{yx} & \\alpha_{yy} & \\alpha_{yz} \\\\ \\alpha_{zx} & \\alpha_{zy} & \\alpha_{zz} \\end{bmatrix}\\begin{bmatrix} F_x \\\\ F_y \\\\ F_z \\end{bmatrix}","\\langle \\alpha \\rangle = \\mathrm{Tr}(\\boldsymbol{\\alpha})/3 = (\\alpha_{xx} + \\alpha_{yy} + \\alpha_{zz})/3","\\Delta\\alpha = \\sqrt{[(\\alpha_{xx} - \\alpha_{yy})^2 + (\\alpha_{xx} - \\alpha_{zz})^2 + (\\alpha_{yy} - \\alpha_{zz})^2 + 6(\\alpha_{xy}^2 + \\alpha_{xz}^2 + \\alpha_{yz}^2)]/2}","\\Delta\\alpha = \\sqrt{[(\\alpha_{xx} - \\alpha_{yy})^2 + (\\alpha_{xx} - \\alpha_{zz})^2 + (\\alpha_{yy} - \\alpha_{zz})^2]/2}","\\Delta\\alpha = \\varepsilon_3 - (\\varepsilon_1 + \\varepsilon_2)/2","\\begin{gathered} \\alpha_x = \\alpha_{xx} + \\alpha_{xy} + \\alpha_{xz} \\\\ \\alpha_y = \\alpha_{yx} + \\alpha_{yy} + \\alpha_{yz} \\\\ \\alpha_z = \\alpha_{zx} + \\alpha_{zy} + \\alpha_{zz} \\end{gathered}","\\beta_i = (1/3)\\sum_j (\\beta_{iij} + \\beta_{jii} + \\beta_{jij}) \\quad\\quad i, j = \\{x, y, z\\}","\\beta_{\\mathrm{tot}} = \\sqrt{\\beta_x^2 + \\beta_y^2 + \\beta_z^2}","\\beta_{\\mathrm{prj}} = \\sum_i \\frac{\\mu_i\\beta_i}{|\\boldsymbol{\\mu}|} \\quad\\quad \\beta_{\\parallel} = (3/5)\\beta_{\\mathrm{prj}}","\\beta_{\\perp(Z)} = (1/5)\\sum_j (2\\beta_{zjj} - 3\\beta_{jzj} + 2\\beta_{jjz}) \\quad\\quad \\beta_{\\parallel(Z)} = (3/5)\\beta_z","\\begin{gathered} \\beta_x = \\beta_{xxx} + \\beta_{xyy} + \\beta_{xzz} \\\\ \\beta_y = \\beta_{yxx} + \\beta_{yyy} + \\beta_{yzz} \\\\ \\beta_z = \\beta_{zxx} + \\beta_{zyy} + \\beta_{zzz} \\end{gathered}","\\gamma_i = (1/15)\\sum_j (\\gamma_{ijji} + \\gamma_{ijij} + \\gamma_{iijj}) \\quad\\quad i, j = \\{x, y, z\\}","\\begin{aligned}\\mathrm{def\\ 1:} \\quad \\langle \\gamma \\rangle &= \\gamma_x + \\gamma_y + \\gamma_z\\\\\\mathrm{def\\ 2:} \\quad \\langle \\gamma \\rangle &= (1/5)(\\gamma_{xxxx} + \\gamma_{yyyy} + \\gamma_{zzzz} + \\gamma_{xxyy} + \\gamma_{xxzz} + \\gamma_{yyzz} + \\gamma_{yyxx} + \\gamma_{zzxx} + \\gamma_{zzyy})\\end{aligned}","\\gamma_{\\perp} = (1/15)\\sum_i\\sum_j (2\\gamma_{ijji} - \\gamma_{iijj}) \\quad\\quad i, j = \\{x, y, z\\}","\\beta_{\\mathrm{HRS}}(-2\\omega; \\omega, \\omega) = \\sqrt{\\left\\langle \\beta_{ZZZ}^2 \\right\\rangle + \\left\\langle \\beta_{XZZ}^2 \\right\\rangle}","\\begin{aligned}\\left\\langle \\beta_{ZZZ}^2 \\right\\rangle &= \\frac{1}{7}\\sum_\\zeta \\beta_{\\zeta\\zeta\\zeta}^2 + \\frac{4}{35}\\sum_{\\zeta \\neq \\eta} \\beta_{\\zeta\\zeta\\eta}^2 + \\frac{2}{35}\\sum_{\\zeta \\neq \\eta} \\beta_{\\zeta\\zeta\\zeta}\\beta_{\\zeta\\eta\\eta} + \\frac{4}{35}\\sum_{\\zeta \\neq \\eta} \\beta_{\\eta\\zeta\\zeta}\\beta_{\\zeta\\zeta\\eta}\\\\&+ \\frac{4}{35}\\sum_{\\zeta \\neq \\eta} \\beta_{\\zeta\\zeta\\zeta}\\beta_{\\eta\\eta\\zeta} + \\frac{1}{35}\\sum_{\\zeta \\neq \\eta} \\beta_{\\eta\\zeta\\zeta}^2 + \\frac{4}{105}\\sum_{\\zeta \\neq \\eta \\neq \\xi} \\beta_{\\zeta\\zeta\\eta}\\beta_{\\eta\\xi\\xi} + \\frac{1}{105}\\sum_{\\zeta \\neq \\eta \\neq \\xi} \\beta_{\\eta\\zeta\\zeta}\\beta_{\\eta\\xi\\xi}\\\\&+ \\frac{4}{105}\\sum_{\\zeta \\neq \\eta \\neq \\xi} \\beta_{\\zeta\\zeta\\eta}\\beta_{\\xi\\xi\\eta} + \\frac{2}{105}\\sum_{\\zeta \\neq \\eta \\neq \\xi} \\beta_{\\zeta\\eta\\xi}^2 + \\frac{4}{105}\\sum_{\\zeta \\neq \\eta \\neq \\xi} \\beta_{\\zeta\\eta\\xi}\\beta_{\\eta\\xi\\zeta}\\end{aligned}","\\begin{aligned}\\left\\langle \\beta_{XZZ}^2 \\right\\rangle &= \\frac{1}{35}\\sum_\\zeta \\beta_{\\zeta\\zeta\\zeta}^2 + \\frac{4}{105}\\sum_{\\zeta \\neq \\eta} \\beta_{\\zeta\\zeta\\zeta}\\beta_{\\zeta\\eta\\eta} - \\frac{2}{35}\\sum_{\\zeta \\neq \\eta} \\beta_{\\zeta\\zeta\\zeta}\\beta_{\\eta\\eta\\zeta} + \\frac{8}{105}\\sum_{\\zeta \\neq \\eta} \\beta_{\\zeta\\zeta\\eta}^2\\\\&+ \\frac{3}{35}\\sum_{\\zeta \\neq \\eta} \\beta_{\\zeta\\eta\\eta}^2 - \\frac{2}{35}\\sum_{\\zeta \\neq \\eta} \\beta_{\\zeta\\zeta\\eta}\\beta_{\\eta\\xi\\xi} + \\frac{1}{35}\\sum_{\\zeta \\neq \\eta \\neq \\xi} \\beta_{\\zeta\\eta\\eta}\\beta_{\\zeta\\xi\\xi} - \\frac{2}{105}\\sum_{\\zeta \\neq \\eta \\neq \\xi} \\beta_{\\zeta\\zeta\\zeta}\\beta_{\\eta\\eta\\xi}\\\\&- \\frac{2}{105}\\sum_{\\zeta \\neq \\eta \\neq \\xi} \\beta_{\\zeta\\zeta\\eta}\\beta_{\\eta\\xi\\xi} + \\frac{2}{35}\\sum_{\\zeta \\neq \\eta \\neq \\xi} \\beta_{\\zeta\\eta\\xi}^2 - \\frac{2}{105}\\sum_{\\zeta \\neq \\eta \\neq \\xi} \\beta_{\\zeta\\eta\\xi}\\beta_{\\eta\\xi\\zeta}\\end{aligned}","\\mathrm{DR} = \\frac{\\left\\langle \\beta_{ZZZ}^2 \\right\\rangle}{\\left\\langle \\beta_{XZZ}^2 \\right\\rangle}","\\begin{aligned}\\left\\langle \\beta_{ZZZ}^2 \\right\\rangle &= \\frac{9}{45}\\left| \\beta_{J = 1} \\right|^2 + \\frac{6}{105}\\left| \\beta_{J = 3} \\right|^2\\\\\\left\\langle \\beta_{XZZ}^2 \\right\\rangle &= \\frac{1}{45}\\left| \\beta_{J = 1} \\right|^2 + \\frac{4}{105}\\left| \\beta_{J = 3} \\right|^2\\end{aligned}","\\begin{aligned}\\left| \\beta_{J = 1} \\right| &= \\sqrt{6\\left\\langle \\beta_{ZZZ}^2 \\right\\rangle - 9\\left\\langle \\beta_{XZZ}^2 \\right\\rangle}\\\\\\left| \\beta_{J = 3} \\right| &= \\sqrt{\\frac{1}{2}\\left( -7\\left\\langle \\beta_{ZZZ}^2 \\right\\rangle + 63\\left\\langle \\beta_{XZZ}^2 \\right\\rangle \\right)}\\end{aligned}","_{=1}$)，与八极相对贡献，即 Φ($β_{J}","_{=1}$)+Φ($β_{J}","\\begin{gathered} \\Phi(\\beta_{J = 1}) = 1/(1 + \\rho) \\\\ \\Phi(\\beta_{J = 3}) = \\rho/(1 + \\rho) \\end{gathered}","_{=1}$) 越大、DR 越高而 *ρ* 越低，偶极矩越小的往往 Φ($β_{J}","\\mathrm{I}_{\\Psi\\mathrm{V}}^{2\\omega} \\propto \\left\\langle \\beta_{XZZ}^2 \\right\\rangle \\cos^4 \\Psi + \\left\\langle \\beta_{ZZZ}^2 \\right\\rangle \\sin^4 \\Psi + \\sin^2 \\Psi \\cos^2 \\Psi \\left\\langle (\\beta_{ZXZ} + \\beta_{ZZX})^2 - 2\\beta_{ZZZ}\\beta_{XZZ} \\right\\rangle","\\begin{gathered}\\alpha_{AB}(-\\omega;\\omega)=\\sum_{i\\ne 0}\\left[\\frac{\\mu_{0i}^{A}\\mu_{i0}^{B}}{\\Delta_{i}-\\omega}+\\frac{\\mu_{0i}^{B}\\mu_{i0}^{A}}{\\Delta_{i}+\\omega}\\right]=\\hat{P}[A(-\\omega),B(\\omega)]\\sum_{i\\ne 0}\\frac{\\mu_{0i}^{A}\\mu_{i0}^{B}}{\\Delta_{i}-\\omega}\\end{gathered}","\\begin{gathered}\\beta_{ABC}(-\\omega_{\\sigma};\\omega_{1},\\omega_{2})=\\hat{P}[A(-\\omega_{\\sigma}),B(\\omega_{1}),C(\\omega_{2})]\\sum_{i\\ne 0}\\sum_{j\\ne 0}\\frac{\\mu_{0i}^{A}\\overline{\\mu_{ij}^{B}}\\mu_{j0}^{C}}{(\\Delta_{i}-\\omega_{\\sigma})(\\Delta_{j}-\\omega_{2})}\\end{gathered}","\\begin{gathered}\n\\mu_{ij}^{A}=\\left\\langle i\\middle|\\hat{\\mu}^{A}\\middle|j\\right\\rangle\\\\\n\\overline{\\mu_{ij}^{A}}=\\mu_{ij}^{A}\\\\\n\\omega_{\\sigma}=\\sum_{i}\\omega_{i}\n\\end{gathered}","\\begin{gathered}\\gamma_{ABCD}(-\\omega_{\\sigma};\\omega_{1},\\omega_{2},\\omega_{3})=\\hat{P}[A(-\\omega_{\\sigma}),B(\\omega_{1}),C(\\omega_{2}),D(\\omega_{3})](\\gamma^{\\mathrm{I}}-\\gamma^{\\mathrm{II}})\\\\\\gamma^{\\mathrm{I}}=\\sum_{i\\ne 0}\\sum_{j\\ne 0}\\sum_{k\\ne 0}\\frac{\\mu_{0i}^{A}\\overline{\\mu_{ij}^{B}}\\overline{\\mu_{jk}^{C}}\\mu_{k0}^{D}}{(\\Delta_{i}-\\omega_{\\sigma})(\\Delta_{j}-\\omega_{2}-\\omega_{3})(\\Delta_{k}-\\omega_{3})}\\\\\\gamma^{\\mathrm{II}}=\\sum_{i\\ne 0}\\sum_{j\\ne 0}\\frac{\\mu_{0i}^{A}\\mu_{i0}^{B}\\mu_{0j}^{C}\\mu_{j0}^{D}}{(\\Delta_{i}-\\omega_{\\sigma})(\\Delta_{i}-\\omega_{1})(\\Delta_{j}-\\omega_{3})}\\end{gathered}","\\begin{gathered}\\delta_{ABCDE}(-\\omega_{\\sigma};\\omega_{1},\\omega_{2},\\omega_{3},\\omega_{4})=\\hat{P}[A(-\\omega_{\\sigma}),B(\\omega_{1}),C(\\omega_{2}),D(\\omega_{3}),E(\\omega_{4})](\\delta^{\\mathrm{I}}-\\delta^{\\mathrm{II}}-\\delta^{\\mathrm{III}})\\\\\\delta^{\\mathrm{I}}=\\sum_{i,j,k,l\\,(\\ne 0)}\\frac{\\mu_{0i}^{A}\\overline{\\mu_{ij}^{B}}\\overline{\\mu_{jk}^{C}}\\overline{\\mu_{kl}^{D}}\\mu_{l0}^{E}}{(\\Delta_{i}-\\omega_{\\sigma})(\\Delta_{j}-\\omega_{\\sigma}+\\omega_{1})(\\Delta_{k}-\\omega_{3}-\\omega_{4})(\\Delta_{l}-\\omega_{4})}\\\\\\delta^{\\mathrm{II}}=(1/2)\\sum_{i,j,k\\,(\\ne 0)}\\frac{\\mu_{0i}^{A}\\mu_{i0}^{B}\\mu_{0j}^{C}\\overline{\\mu_{jk}^{D}}\\mu_{k0}^{E}}{(\\Delta_{j}+\\omega_{2})(\\Delta_{k}-\\omega_{4})}\\left(\\frac{1}{\\Delta_{i}-\\omega_{\\sigma}}+\\frac{1}{\\Delta_{i}-\\omega_{1}}\\right)\\left(\\frac{1}{\\Delta_{j}-\\omega_{3}-\\omega_{4}}+\\frac{1}{\\Delta_{k}+\\omega_{2}+\\omega_{3}}\\right)\\\\\\delta^{\\mathrm{III}}=(1/2)\\sum_{i,j,k\\,(\\ne 0)}\\frac{\\mu_{0i}^{A}\\mu_{i0}^{B}\\mu_{0j}^{C}\\overline{\\mu_{jk}^{D}}\\mu_{k0}^{E}}{(\\Delta_{i}-\\omega_{\\sigma})(\\Delta_{i}-\\omega_{1})}\\left[\\frac{1}{(\\Delta_{j}-\\omega_{3}-\\omega_{4})(\\Delta_{k}-\\omega_{4})}+\\frac{1}{(\\Delta_{j}+\\omega_{2})(\\Delta_{k}+\\omega_{2}+\\omega_{3})}\\right]\\end{gathered}","\\begin{gathered}\\beta_{ABC}(-\\omega_{\\sigma};\\omega_{1},\\omega_{2})=\\hat{P}[A(-\\omega_{\\sigma}),B(\\omega_{1}),C(\\omega_{2})]\\sum_{i\\ne 0}\\sum_{j\\ne 0}\\frac{\\mu_{0i}^{A}\\overline{\\mu_{ij}^{B}}\\mu_{j0}^{C}}{(\\Delta_{i}-\\omega_{\\sigma})(\\Delta_{j}-\\omega_{2})}\\end{gathered}","\\beta_{ZZZ}^{\\mathrm{SOS}}=6\\sum_{i\\ne 0}\\sum_{j\\ne 0}\\frac{\\mu_{0i}^{Z}\\overline{\\mu_{ij}^{Z}}\\mu_{j0}^{Z}}{\\Delta_{i}\\Delta_{j}}","\\beta_{ZZZ}^{\\mathrm{SOS}}=\\sum_{i}6\\frac{(\\mu_{0i}^{Z})^{2}\\Delta\\mu_{i}^{Z}}{\\Delta_{i}^{2}}+\\sum_{i}\\sum_{j>i}12\\frac{\\mu_{0i}^{Z}\\mu_{0j}^{Z}\\mu_{ij}^{Z}}{\\Delta_{i}\\Delta_{j}}","\\beta_{ZZZ}^{\\mathrm{SOS}}\\approx 6\\frac{(\\mu_{0i}^{Z})^{2}\\Delta\\mu_{i}^{Z}}{\\Delta_{i}^{2}}","\\beta_{ZZZ}^{\\mathrm{SOS}}=9\\Delta\\mu_{i}^{Z}f_{i}^{Z}/\\Delta_{i}^{3}","\\beta_{ZZZ}^{\\mathrm{SOS}}=6\\frac{(\\mu_{0i}^{Z})^{2}\\Delta\\mu_{i}^{Z}}{\\Delta_{i}^{2}}+12\\frac{\\mu_{0i}^{Z}\\mu_{0j}^{Z}\\mu_{ij}^{Z}}{\\Delta_{i}\\Delta_{j}}+6\\frac{(\\mu_{0j}^{Z})^{2}\\Delta\\mu_{j}^{Z}}{\\Delta_{j}^{2}}","\\begin{gathered}\\boldsymbol{\\mu}(\\mathbf{F})=- \\frac{\\partial E}{\\partial \\mathbf{F}}=\\boldsymbol{\\mu}_0+\\boldsymbol{\\alpha}\\mathbf{F}+(1/2)\\boldsymbol{\\beta}\\mathbf{F}^2+(1/6)\\boldsymbol{\\gamma}\\mathbf{F}^3+\\dots\\\\\\boldsymbol{\\mu}_0=-\\left.\\frac{\\partial E}{\\partial \\mathbf{F}}\\right|_{\\mathbf{F}=0}\\quad\\quad\\boldsymbol{\\alpha}=-\\left.\\frac{\\partial^2 E}{\\partial \\mathbf{F}^2}\\right|_{\\mathbf{F}=0}\\quad\\quad\\boldsymbol{\\beta}=-\\left.\\frac{\\partial^3 E}{\\partial \\mathbf{F}^3}\\right|_{\\mathbf{F}=0}\\quad\\quad\\boldsymbol{\\gamma}=-\\left.\\frac{\\partial^4 E}{\\partial \\mathbf{F}^4}\\right|_{\\mathbf{F}=0}\\end{gathered}","\\begin{gathered}\\rho(\\mathbf{r},\\mathbf{F})=\\rho^{(0)}(\\mathbf{r})+\\rho^{(1)}(\\mathbf{r})\\mathbf{F}+(1/2)\\rho^{(2)}(\\mathbf{r})\\mathbf{F}^2+(1/6)\\rho^{(3)}(\\mathbf{r})\\mathbf{F}^3+\\dots\\\\\\rho^{(1)}(\\mathbf{r})=\\left.\\frac{\\partial \\rho(\\mathbf{r})}{\\partial \\mathbf{F}}\\right|_{\\mathbf{F}=0}\\quad\\quad\\rho^{(2)}(\\mathbf{r})=\\left.\\frac{\\partial^2 \\rho(\\mathbf{r})}{\\partial \\mathbf{F}^2}\\right|_{\\mathbf{F}=0}\\quad\\quad\\rho^{(3)}(\\mathbf{r})=\\left.\\frac{\\partial^3 \\rho(\\mathbf{r})}{\\partial \\mathbf{F}^3}\\right|_{\\mathbf{F}=0}\\end{gathered}","\\begin{gathered}\\boldsymbol{\\mu}_0=\\int-\\rho^{(0)}(\\mathbf{r})\\mathbf{r}\\,\\mathrm{d}\\mathbf{r}\\quad\\quad\\boldsymbol{\\alpha}=\\int-\\rho^{(1)}(\\mathbf{r})\\mathbf{r}\\,\\mathrm{d}\\mathbf{r}\\\\\\boldsymbol{\\beta}=\\int-\\rho^{(2)}(\\mathbf{r})\\mathbf{r}\\,\\mathrm{d}\\mathbf{r}\\quad\\quad\\boldsymbol{\\gamma}=\\int-\\rho^{(3)}(\\mathbf{r})\\mathbf{r}\\,\\mathrm{d}\\mathbf{r}\\end{gathered}","\\rho_{ijk}^{(3)}(\\mathbf{r})=\\left.\\frac{\\partial^3 \\rho(\\mathbf{r})}{\\partial F_i\\partial F_j\\partial F_k}\\right|_{\\mathbf{F}=0}","\\rho_{zzz}^{(3)}(\\mathbf{r})=\\left.\\frac{\\partial^3 \\rho(\\mathbf{r})}{\\partial F_z^3}\\right|_{F_z=0}","\\boldsymbol{\\gamma}_{zzzz}=\\int-z\\rho_{zzz}^{(3)}(\\mathbf{r})\\,\\mathrm{d}\\mathbf{r}","\\rho_{zzz}^{(3)}=\\frac{\\rho(2F^z)-2\\rho(F^z)+2\\rho(-F^z)-\\rho(-2F^z)}{2(F^z)^3}","\\begin{gathered}\\rho_z^{(1)}=\\frac{\\rho(F^z)-\\rho(-F^z)}{2F^z}\\\\\\boldsymbol{\\gamma}_{zz}=\\int-\\rho_z^{(1)}(\\mathbf{r})z\\,\\mathrm{d}\\mathbf{r}\\end{gathered}","\\begin{gathered}\\rho_{zz}^{(2)}=\\frac{\\rho(F^z)-2\\rho(0)+\\rho(-F^z)}{(F^z)^2}\\\\\\boldsymbol{\\beta}_{zzz}=\\int-\\rho_{zz}^{(2)}(\\mathbf{r})z\\,\\mathrm{d}\\mathbf{r}\\end{gathered}","\\boldsymbol{\\mu}=\\boldsymbol{\\mu}_0+\\boldsymbol{\\alpha}\\cdot\\mathbf{F}+(1/2)\\boldsymbol{\\beta}\\cdot\\mathbf{F}\\cdot\\mathbf{F}+(1/6)\\boldsymbol{\\gamma}\\cdot\\mathbf{F}\\cdot\\mathbf{F}\\cdot\\mathbf{F}+\\dots","\\boldsymbol{\\beta}^{\\mathrm{eff}}(\\theta,\\phi)=\\boldsymbol{\\beta}\\cdot\\mathbf{e}(\\theta,\\phi)\\cdot\\mathbf{e}(\\theta,\\phi)","\\beta_i^{\\mathrm{eff}}=\\sum_j\\sum_k\\beta_{i,j,k}e_ke_j\\quad\\quad i,j,k=\\{x,y,z\\}","\\begin{gathered}\\boldsymbol{\\alpha}^{\\mathrm{eff}}(\\theta,\\phi)=\\boldsymbol{\\alpha}\\cdot\\mathbf{e}(\\theta,\\phi)\\\\\\boldsymbol{\\gamma}^{\\mathrm{eff}}(\\theta,\\phi)=\\boldsymbol{\\gamma}\\cdot\\mathbf{e}(\\theta,\\phi)\\cdot\\mathbf{e}(\\theta,\\phi)\\cdot\\mathbf{e}(\\theta,\\phi)\\end{gathered}","\\beta_i=(1/3)\\sum_j(\\beta_{ijj}+\\beta_{jji}+\\beta_{jij})\\quad\\quad i,j=\\{x,y,z\\}","\\begin{gathered} \\alpha_x = \\alpha_{xx} + \\alpha_{xy} + \\alpha_{xz} \\\\ \\alpha_y = \\alpha_{yx} + \\alpha_{yy} + \\alpha_{yz} \\\\ \\alpha_z = \\alpha_{zx} + \\alpha_{zy} + \\alpha_{zz} \\end{gathered}","\\gamma_i=(1/15)\\sum_j(\\gamma_{ijji}+\\gamma_{ijij}+\\gamma_{iijj})\\quad\\quad i,j=\\{x,y,z\\}"];</script>
+<script src="app.js"></script></body></html>

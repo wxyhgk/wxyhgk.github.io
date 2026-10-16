@@ -1,0 +1,308 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4.21 能量分解分析 (Energy decomposition analysis) · Multiwfn中文手册</title><link rel="stylesheet" href="style.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script></head>
+<body><div class="layout"><aside id="side"><div class="brand"><b>∗</b> Multiwfn 中文手册</div><button id="kbtn">搜索文档 <kbd>⌘K</kbd></button><nav id="nav"></nav></aside>
+<main><article><h1 id="421-能量分解分析-energy-decomposition-analysis"><strong>4.21 能量分解分析 (Energy decomposition analysis)</strong></h1>
+<p>除本节给出的例子外，Multiwfn 还能进行所谓的简单能量分解，参见<a href="sec-4-100-other-functions-part-1.html#41008-%E4%BD%BF%E7%94%A8%E7%BB%84%E5%90%88%E7%9A%84%E7%A2%8E%E7%89%87%E6%B3%A2%E5%87%BD%E6%95%B0-fragment-wavefunction%E8%BF%9B%E8%A1%8C%E7%AE%80%E5%8D%95%E7%9A%84%E8%83%BD%E9%87%8F%E5%88%86%E8%A7%A3-energy-decomposition">4.100.8节</a>中的例子。</p>
+<h2 id="4211-基于力场的能量分解分析-eda-ff示例"><strong>4.21.1 基于力场的能量分解分析 (EDA-FF)示例</strong></h2>
+<p>本节将说明如何基于经典力场对特定片段之间进行能量分解分析，该方法将被称为 EDA-FF。请先仔细阅读<a href="sec-3-24-energy-decomposition-analysis.html#3241-%E5%9F%BA%E4%BA%8E%E5%88%86%E5%AD%90%E5%8A%9B%E5%9C%BA-force-field-ff-%E7%9A%84%E8%83%BD%E9%87%8F%E5%88%86%E8%A7%A3%E5%88%86%E6%9E%90-eda-ff">3.24.1节</a>，以掌握 EDA-FF 背后的基本思想与实现。若认真看完下面的例子，便应能轻松地将该方法应用于各种体系。</p>
+<p>更深入的讨论见我的博客文章&quot;使用 Multiwfn 做基于力场的能量分解分析&quot;（中文，<a href="http://sobereva.com/442">http://sobereva.com/442</a>）。</p>
+<p>若在工作中使用了 EDA-FF 分析，请引用这篇文章：<em>Mat. Sci. Eng. B</em>, <strong>273</strong>, 115425 (2021) DOI: <a href="https://doi.org/10.1016/j.mseb.2021.115425">10.1016/j.mseb.2021.115425</a>，我在该文中简要描述了 EDA-FF，并用它研究了环[18]碳与石墨烯之间的相互作用。</p>
+<h3 id="42111-例1水二聚体"><strong>4.21.1.1 例1：水二聚体</strong></h3>
+<p>作为第一个例子，我们基于 AMBER 力场对一个非常简单的体系——水二聚体做 EDA-FF，其最稳定几何构型如下所示</p>
+<p><img src="assets/figures/ch4/image1282.png" alt="The water dimer with the atom labels used in the EDA-FF analysis"></p>
+<h4 id="相关文件"><strong>相关文件</strong></h4>
+<p>相关文件已放在 &quot;examples\EDA\EDA_FF\waterdimer&quot; 文件夹中，如下所示：</p>
+<ul>
+<li><p><em>dimer.mol</em>：水二聚体的 .mol 文件，包含在 B3LYP-D3(BJ)/6-311G** 水平下优化的几何构型，该水平对优化分子簇非常可靠。注意此文件中原子顺序为 O1 H2 H3 O4 H5 H6</p>
+</li>
+<li><p><em>water.fchk</em>：水单体在 B3LYP-D3(BJ)/6-311G** 水平下做优化任务产生的 .fchk 文件</p>
+</li>
+<li><p><em>mollist.txt</em>：对应水二聚体的分子列表文件</p>
+</li>
+<li><p><em>water.txt</em>：水单体的分子类型文件</p>
+</li>
+</ul>
+<p>可见，<em>mollist.txt</em> 的内容很简单</p>
+<p><pre><code class="language-text">water.txt 2</code></pre></p>
+<p>对应水二聚体含有两个水分子这一事实，它们都由当前文件夹中的 <em>water.txt</em> 描述。</p>
+<p><em>water.txt</em> 的内容为</p>
+<p><pre><code class="language-text">OW  -0.737121
+HW  0.368560
+HW  0.368560</code></pre></p>
+<p>表明水中氧和氢的原子类型分别为 OW 和 HW，第二列是用 Merz-Kollman (MK) 方法计算的原子电荷。</p>
+<h4 id="分子类型文件的细节"><strong>分子类型文件的细节</strong></h4>
+<p>这里说明分子类型文件 <em>water.txt</em> 是如何构建的。原子类型可根据原子的实际化学环境以及力场原始文献中原子类型的定义手动指定，但若分子中原子很多，这一过程会很麻烦。因此，这里展示如何用流行的 GaussView 自动指定原子类型。将 <em>water.fchk</em> 载入 GaussView，点击粗体 <strong>A</strong> 字母图标进入 &quot;atom list editor&quot;，再点击粗体橙色 <strong>M</strong> 字母图标显示原子类型，然后双击 &quot;AMBER Type&quot; 列标题，此时窗口状态应为</p>
+<p><img src="assets/figures/ch4/image1283.png" alt="The Atom type dialog of Multiwfn used to define the molecular type file"></p>
+<p>然后点击 &quot;File&quot; - &quot;Export Data&quot;，将文件保存为 <em>water.txt</em>。接着，通过 Ultraedit 等高级文本编辑器的列模式，删除除 &quot;AMBER Type&quot; 列之外的所有列，再删除文件中的第一行。此时 <em>water.txt</em> 中只剩下所有原子的原子类型。之后，基于 <em>water.fchk</em> 用主功能 7 的子功能 13（或 12）计算 MK（或 CHELPG）电荷（可参考<a href="sec-4-7-population-analysis-and-atomic-charge-calculation.html#471-%E8%AE%A1%E7%AE%97%E4%B8%89%E6%B0%9F%E5%8C%96%E6%B0%AF%E7%9A%84hirshfeld%E5%92%8Cchelpg%E5%8E%9F%E5%AD%90%E7%94%B5%E8%8D%B7%E4%BB%A5%E5%8F%8A%E7%89%87%E6%AE%B5%E7%94%B5%E8%8D%B7">4.7.1节</a>中的例子），再把从屏幕输出（或导出的 .chg 文件）得到的电荷复制为 <em>water.txt</em> 的第二列。至此，<em>water.txt</em> 的准备工作完成。</p>
+<h4 id="进行分析"><strong>进行分析</strong></h4>
+<p>现在开始做 EDA-FF 分析。将 <em>water.txt</em> 复制到当前文件夹，然后启动 Multiwfn 并输入</p>
+<p><pre><code class="language-text">dimer.mol  // The file containing dimer structure information (you can also use other formats containing the geometry information as input file, such as the .fch file produced during optimization task of the dimer)
+21  // Energy decomposition analysis
+1  // Energy decomposition analysis based on forcefield
+3  // Load atom types and atomic charges
+mollist.txt  // The actual path of the molecular list file. At this point, the program read atom types and charges from the water.txt and assign them to the two water molecules in the current system
+2  // Define fragments
+2  // Two fragments will be defined
+1-3  // The atomic indices of the fragment 1
+4-6  // The atomic indices of the fragment 2</code></pre></p>
+<p>若想检查当前体系中所有原子的原子类型和电荷是否已正确设置，可选择选项 4，输出为</p>
+<p><pre><code class="language-text">*** Fragment   1:
+ Atom:    1(O )    Charge:   -0.737121    Type: OW
+ Atom:    2(H )    Charge:    0.368560    Type: HW
+ Atom:    3(H )    Charge:    0.368560    Type: HW
+ *** Fragment   2:
+ Atom:    4(O )    Charge:   -0.737121    Type: OW
+ Atom:    5(H )    Charge:    0.368560    Type: HW
+ Atom:    6(H )    Charge:    0.368560    Type: HW</code></pre></p>
+<p>可见原子类型和电荷都被正确指定了。</p>
+<p>现在选择选项 1 开始 EDA-FF 分析，结果会立即显示在屏幕上：</p>
+<p><pre><code class="language-text">Contribution of each atom in defined fragments to overall interfragment interac
+tion energies:
+ Atom    1(O )   Elec:   12.53  Rep:    3.85  Disp:   -2.21  Total:   14.17
+ Atom    2(H )   Elec:   -6.24  Rep:    0.00  Disp:    0.00  Total:   -6.24
+ Atom    3(H )   Elec:  -16.87  Rep:    0.00  Disp:    0.00  Total:  -16.87
+ Atom    4(O )   Elec:  -23.52  Rep:    3.85  Disp:   -2.21  Total:  -21.88
+ Atom    5(H )   Elec:    6.47  Rep:    0.00  Disp:    0.00  Total:    6.47
+ Atom    6(H )   Elec:    6.47  Rep:    0.00  Disp:    0.00  Total:    6.47
+
+ Interaction energy components between all fragments:
+                         Electrostatic   Repulsive   Dispersion     Total
+ Frag   1 -- Frag   2:       -21.15         7.71        -4.43       -17.87</code></pre></p>
+<p>输出中的单位均为 kJ/mol。以上信息表明两个水分子之间的总相互作用能为 -17.87 kJ/mol，与高精度水平 CCSD(T)/CBS 得到的结果 -20.58 kJ/mol 相近（见 S66 弱相互作用测试集的原始文献，<em>J. Chem. Theory Comput.</em>, <strong>7</strong>, 2427 (2011)）。尽管给定结果有一定误差，但至少足以用于定性讨论。以上数据还表明静电相互作用 (-21.15 kJ/mol) 对两个水之间的结合能有决定性贡献，显然一般氢键的主要本质是由静电相互作用主导的。色散 (dispersion) 相互作用对结合也有贡献，但量级相对较小。交换-排斥效应 (7.71 kJ/mol)在一定程度上抵消了由静电和色散效应引起的吸引相互作用。</p>
+<p>在 S66 测试集原文中，用非常理想的 DFT-SAPT 方法给出的水二聚体色散相互作用能与静电相互作用能之比为 0.29，与 EDA-FF 给出的值 (4.43/21.15=0.21) 定性一致。因此，以非常简单的水二聚体为例可以看出，只要力场和原子电荷的选择合适，EDA-FF 的结果一般是可靠的。对于某些体系，力场算出的总相互作用能与可靠量子化学方法算出的结果不太接近，但即便如此，一般而言 EDA-FF 给出的各种物理成分之间的比例仍是有意义的。依我之见，用量子化学方法得到的总相互作用能 (Δ $E^{\mathrm{tot}}$ ) 乘以合适力场算出的 Δ $E^{\mathrm{ele}}$ 与 Δ $E^{\mathrm{tot}}$ 之比来近似估计静电相互作用能 (Δ $E^{\mathrm{ele}}$ )，不是个坏主意。</p>
+<p>以上输出还给出了每个原子对所有已定义片段之间总相互作用的贡献，因此可以很容易地看出哪些原子对片段间相互作用有关键影响。所有原子贡献之和等于总相互作用能（若体系只有两个原子 <em>A</em> 和 <em>B</em>，且各自被定义为一个片段，则原子 <em>A</em> 的贡献为 <em>A</em>-<em>B</em> 相互作用能的一半）。从上面给出的数据可以看出，每个原子的影响都不容忽视，毕竟体系中原子之间的距离并不远。对吸引作用最重要的贡献是 O4 原子的静电相互作用 (-23.52 kJ/mol)，这一结果很容易理解，因为 O4 是氢键的受体原子。与 O4 直接作用形成氢键的 H3，由于显著的静电效应，对结合也有很大贡献 (-16.87 kJ/mol)。数据表明只有氧原子有非零的排斥和色散项，这是因为原子类型 HW 的范德华势参数为零，故 HW 原子只表现为点电荷，仅体现静电效应。</p>
+<h4 id="原子间相互作用"><strong>原子间相互作用</strong></h4>
+<p>若选择一次选项 -3，将其状态从默认的 &quot;No&quot; 切换为 &quot;Yes&quot;，则在经由选项 1 做 EDA-FF 分析时，程序还会把每个原子对的距离 (Å)、相互作用能 (kJ/mol) 及其成分输出到当前文件夹的 <em>interatm.txt</em> 中。本例的文件内容为</p>
+<p><pre><code class="language-text">******* Between fragment   1 and fragment   2:
+  Atom_i  Atom_j  Dist(Ang) Electrostatic   Repulsive    Dispersion     Total
+      1      4:     2.873       262.78         7.71        -4.43       266.05
+      1      5:     3.176      -118.86         0.00         0.00      -118.86
+      1      6:     3.176      -118.86         0.00         0.00      -118.86
+      2      4:     3.346      -112.79         0.00         0.00      -112.79
+      2      5:     3.762        50.16         0.00         0.00        50.16
+      2      6:     3.762        50.16         0.00         0.00        50.16
+      3      4:     1.916      -197.02         0.00         0.00      -197.02
+      3      5:     2.312        81.64         0.00         0.00        81.64
+      3      6:     2.312        81.64         0.00         0.00        81.64</code></pre></p>
+<p>从以上数据可以发现，每对原子之间的相互作用能都很大，主要来自静电相互作用。例如，由于两个氧原子 O1 和 O4 电荷较大且符号相同，静电互斥能高达 262.78 kJ/mol。片段之间的结合能看起来比上述数值小数量级，这是因为在计算片段间相互作用能时，原子对之间的静电相互作用大都正负抵消了。</p>
+<h3 id="42112-例2环晕苯-胞嘧啶-鸟嘌呤三聚体"><strong>4.21.1.2 例2：环晕苯-胞嘧啶-鸟嘌呤三聚体</strong></h3>
+<p>在 <em>J. Chem. Theory Comput.</em>, <strong>9</strong>, 3364 (2013) 给出的 L7 弱相互作用测试集中，一个体系 C3GC 是由环晕苯（以下简称 C3）、鸟嘌呤 (G) 和胞嘧啶 (C) 组成的三聚体。作者已在 TPSS-D/TZVP 水平下优化了其几何构型，如下所示。GC 碱基对形成了三重氢键，并经由 π-π 堆积相互作用物理吸附在 C3 上。</p>
+<p><img src="assets/figures/ch4/image1284.png" alt="The circumcoronene-cytosine-guanine trimer"></p>
+<p>本节我们将基于 AMBER 力场对该体系做 EDA-FF 分析。相关文件放在 &quot;examples\EDA\EDA-FF\C3GC&quot; 目录中。</p>
+<h4 id="准备工作"><strong>准备工作</strong></h4>
+<p>注意，只有当任一分子类型中的原子序号是连续的时，Multiwfn 才能做 EDA-FF，否则无法通过分子列表文件和分子类型文件为体系中每个原子设置原子电荷和类型。L7 测试集补充材料中给出的结构文件是 <em>C3GC.xyz</em>，该文件不能直接使用，因为每个单体中的原子序号不连续。判断原子序号是否连续的最简单方法之一如下：先把 <em>C3GC.xyz</em> 载入 Multiwfn，用主功能 100 的子功能 2 将其转换为 <em>C3GC.pdb</em>（做此转换是因为 GaussView 不支持 .xyz 格式），然后把此 pdb 文件载入 GaussView，在任一分子中的任意原子上（如原子 C5）右击，选择 &quot;Select Fragments of Atom C5&quot;（GaussView 6 起有此选项）。此时该分子中的所有原子都被选中显示为黄色，再点击 &quot;Tools&quot; - &quot;Atom Selection&quot;。如下方截图所示，文本框中显示的序号为 5-9、13-17、19、25-29，显然原子序号不连续，需要修正。</p>
+<p><img src="assets/figures/ch4/image1285.png" alt="The Atom selection dialog of VMD used to renumber the atoms"></p>
+<p>使每个分子中原子序号连续的最简便方法是在 GaussView 中进入 &quot;Atom list editor&quot;，然后选择 &quot;Edit&quot; - &quot;Reorder&quot; - &quot;All Atoms (Except the First) by Bonding&quot;，之后原子序号会按连接关系重排，可见每个单体中的原子序号都已变为连续，如下所示。现在把该结构保存为 <em>C3GC.pdb</em> 以替换旧文件。</p>
+<p><img src="assets/figures/ch4/image1286.png" alt="The renumbered system with the atom indices shown">
+然后我们把三聚体中的每个单体复制到各自的 GaussView 窗口中，分别保存为 .gjf 文件，把关键词改为 &quot;B3LYP/6-311G**&quot; 并用 Gaussian 运行，再基于产生的 .fch 文件用 Multiwfn 计算 MK 电荷。同时，利用 GaussView 确定每个单体的原子类型。最后，把原子类型和电荷合并为每个单体的单个文件，于是得到 <em>C.txt</em>、<em>G.txt</em> 和 <em>C3.txt</em>，它们已放在 &quot;examples\EDA\EDA-FF\C3GC&quot; 目录中。</p>
+<p>最后，创建一个分子列表文件 <em>mollist.txt</em>（用别的名字也可以），内容为 <em>C.txt</em>、<em>G.txt</em> 和 <em>C3.txt</em> 的实际路径以及相应分子的数目，注意文件路径的顺序必须与 <em>G3GC.pdb</em> 中给出的分子顺序严格一致。显然，<em>mollist.txt</em> 的内容应为（假设所有分子类型文件都放在 C:）</p>
+<p><pre><code class="language-text">C:\C.txt 1
+C:\G.txt 1
+C:\C3.txt 1</code></pre></p>
+<h4 id="开始分析"><strong>开始分析</strong></h4>
+<p>所有准备工作都已完成，现在开始 EDA-FF 分析。启动 Multiwfn 并输入</p>
+<p><pre><code class="language-text">C3GC.pdb
+21  // Energy decomposition analysis
+1  // EDA-FF
+3  // Load atom types and charges
+mollist.txt  // Input actual path of mollist.txt
+2  // Define fragments
+3  // Three fragments will be defined
+1-13  // Atom indices in fragment 1, namely cytosine (C)
+14-29  // Atom indices in fragment 2, namely guanine (G)
+30-101  // Atom indices in fragment 3, namely C3</code></pre></p>
+<p>选择选项 1 进行 EDA-FF 计算，结果如下（忽略了原子贡献部分）</p>
+<p><pre><code class="language-text">                         Electrostatic   Repulsion   Dispersion     Total
+ Frag   1 -- Frag   2:      -120.98        60.26       -45.54      -106.27
+ Frag   1 -- Frag   3:         1.88        44.86       -94.69       -47.95
+ Frag   2 -- Frag   3:         0.71        62.08      -132.62       -69.84</code></pre></p>
+<p>数据表明 G-C 结合非常强，高达 -106.27 kJ/mol，主要是因为静电成分很大 (-120.98 kJ/mol)，这是 G 与 C 之间形成了三对氢键的结果。C3 与 G 之间 (-47.95 kJ/mol)以及 C3 与 C 之间 (-69.84 kJ/mol) 的总相互作用能也不小，主要源于它们之间显著的 π-π 堆积。由于 π-π 堆积的本质纯粹是色散效应，可见 C3-C 与 C3-G 的色散相互作用很强（分别为 -94.69 和 -132.62 kJ/mol），远高于 G-C 之间的色散 (-45.54 kJ/mol)。由于 C3 本质上是有限的石墨烯片，它与 G 和 C 的相互作用区域显然是非极性的（即原子电荷很小），故 C3-C 与 C3-G 相互作用中的静电成分可忽略不计（分别仅为 0.71 和 1.88 kJ/mol）。</p>
+<p>我还用对评估弱相互作用非常稳健的 B3LYP-D3(BJ)/6-311+G** 水平，基于二聚体模型计算了 G-C、C3-G 与 C3-C 的结合能，结果为</p>
+<p><pre><code class="language-text">G-C (Frag 1 - Frag 2)：-143.97 kJ/mol
+C3-C (Frag 1 - Frag 3)：-56.69 kJ/mol
+C3-G (Frag 2 - Frag 3)：-76.27 kJ/mol</code></pre></p>
+<p>对 C3-C 和 C3-G 可见，AMBER 力场算出的结果与量子化学方法算出的结果非常接近，但对 G-C 定量差别相当显著。该现象说明力场用于强度很大的弱相互作用时定量精度有限。不过在这种情形下，若只关注各种物理成分之间的比例，EDA-FF 的结果仍是有用的，不会导致明显的误导性结论。</p>
+<h4 id="按对相互作用能的贡献给原子着色"><strong>按对相互作用能的贡献给原子着色</strong></h4>
+<p>利用 .pqr 文件格式，在 VMD 可视化程序中按不同颜色给原子着色可方便地可视化原子性质，这一策略在<a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a10-%E9%80%9A%E8%BF%87%E7%BB%99%E5%8E%9F%E5%AD%90%E7%9D%80%E8%89%B2%E7%9B%B4%E8%A7%82%E5%B1%95%E7%A4%BA%E5%8E%9F%E5%AD%90%E6%80%A7%E8%B4%A8">4.A.10节</a>中有详细介绍。显然，若把原子对片段间相互作用能的贡献存入 .pqr 文件，就能在图中生动地展示每个原子的重要性和作用。类似思想也用在 IGM 分析中，见<a href="sec-4-20-visual-study-of-weak-interactions.html#42010-%E7%94%A8%E7%8B%AC%E7%AB%8B%E6%A2%AF%E5%BA%A6%E6%A8%A1%E5%9E%8B-igm-%E5%8F%AF%E8%A7%86%E5%8C%96%E5%92%8C%E5%AE%9A%E9%87%8F%E5%BC%B1%E7%9B%B8%E4%BA%92%E4%BD%9C%E7%94%A8">4.20.10节</a>的说明。</p>
+<p>现在在 EDA-FF 界面中选择 &quot;-4 Toggle if outputting atom contributions to .pqr files&quot; 选项，将其状态切换为 &quot;Yes&quot;，再选选项 1 做 EDA-FF 分析。计算完成后，当前目录下会出现 <em>atmint_tot.pqr</em>、<em>atmint_ele.pqr</em>、<em>atmint_rep.pqr</em>、<em>atmint_disp.pqr</em> 和 <em>atmint_vdW.pqr</em>（其中一些已放在 &quot;examples\EDA\EDA-FF\C3GC\pqr&quot; 中）。这些 .pqr 文件中原子电荷列的数据分别对应每个原子对片段间的总/静电/排斥/色散/vdW 相互作用能的贡献，数值与屏幕上打印的完全一致。例如，<em>atmint_disp.pqr</em> 中片段 1 的 C1 原子的原子电荷列数值对应 C1 原子与片段 2 和 3 所有原子之间色散相互作用能的一半。</p>
+<p>我们把 <em>atmint_tot.pqr</em> 载入 VMD 程序，进入 &quot;Graphics&quot; - &quot;Representation&quot;，按 &quot;Charge&quot; 属性给原子着色，把色标的下限和上限从默认值分别改为 -50 和 50。把 G 和 C 部分的绘制方式设为 CPK 模式（在 &quot;Selected Atoms&quot; 框中用 <em>fragment 0 1</em> 选择它们），C3 部分用 Licorice 风格显示（用 <em>fragment 2</em> 选择它）。色标方法设为 BWR (Blue-White-Red)。最后图形如下所示（若不熟悉 VMD、不知道如何在 VMD 中实现这些设置，请参考<a href="sec-4-A-special-topics-and-advanced-tutorials.html#4a10-%E9%80%9A%E8%BF%87%E7%BB%99%E5%8E%9F%E5%AD%90%E7%9D%80%E8%89%B2%E7%9B%B4%E8%A7%82%E5%B1%95%E7%A4%BA%E5%8E%9F%E5%AD%90%E6%80%A7%E8%B4%A8">4.A.10节</a>）：</p>
+<p><img src="assets/figures/ch4/image1287.png" alt="The system visualized in VMD with the atom indices indicated"></p>
+<p>由于当前色标为 Blue-White-Red，图中原子颜色越蓝，其对三聚体总结合能的原子贡献越负（即吸引效应越显著）；而越红的原子，起的排斥作用越强。相对较白的原子对三聚体结合只起微不足道的作用。从该图可见，每个氢键受体原子以及与之直接作用的氢原子颜色明显偏蓝，故它们对 G-C 结合的稳定性贡献很大。所有氢键供体原子的颜色为红色，表明它们的存在不利于结合，这是因为氢键供体与受体原子带有量级大且符号相同的原子电荷，因而彼此间有显著的静电互斥。从上图还可见，C3 的所有原子以及 G 和 C 中远离氢键区域的原子都只有很浅或纯白的颜色，这一现象并非意味着它们对三聚体结合的贡献近乎为零，而是表明它们的贡献相对较弱，故在当前色标设置下难以显现。</p>
+<p>假设我们想生动展示 C3 与 GC 碱基对之间的色散相互作用，则在 EDA-FF 界面中输入以下命令</p>
+<p><pre><code class="language-text">2  // Redefine fragments
+2  // Two fragments will be defined
+1-29  // Fragment 1, the GC base pair
+30-101  // Fragment 2, the C3 part
+1  // Start the EDA-FF calculation</code></pre></p>
+<p>随后屏幕上显示以下信息，数据等于 C3-C 与 C3-G 相互作用能之和</p>
+<p><pre><code class="language-text">                         Electrostatic   Repulsion   Dispersion     Total
+ Frag   1 -- Frag   2:         2.59       106.94      -227.31      -117.79</code></pre></p>
+<p>同时，当前文件夹中生成了四个新的 .pqr 文件（它们已放在 &quot;examples\EDA\EDA-FF\C3GC\pqr2&quot; 文件夹中）。把其中的 <em>atmint_disp.pqr</em> 载入 VMD，按上述方式根据原子着色，但色标用 -10 到 10，再选 &quot;Display&quot; - &quot;Orthographic&quot; 修改视角，可见</p>
+<p><img src="assets/figures/ch4/image1288.png" alt="The four molecules of the system shown in different colours"></p>
+<p>上图中原子颜色越蓝，它对 C3 与 GC 之间色散相互作用的贡献越大。从图可见，GC 部分每个重原子对色散相互作用的贡献几乎均等，主要是因为它们到 C3 平面的垂直距离几乎相同，且这些原子携带的电子数相差不大。GC 对中的氢原子对 C3-GC 色散相互作用的贡献很小，这是因为氢原子只有很少的电子。在 C3 部分，与 GC 对直接接触的碳颜色为浅蓝，表明它们对色散相互作用有显著贡献。远离 GC 对的 C3 原子颜色为白，反映它们对色散相互作用的影响可忽略（回想色散吸引随距离急剧衰减这一事实，它有 1/ $r^6$ 渐近行为）。</p>
+<blockquote>
+<p><strong>注</strong></p>
+<p>上图中 GC 对中的重原子很蓝，而 C3 中对等位置的原子没那么蓝，原因是：由于 C3 中原子很多，GC 对中每个重原子可与大范围的 C3 原子形成色散相互作用，故各项之和较大。由于 GC 对中原子数少，C3 的每个原子只能与 GC 对中相对较少的原子相互作用，故各项之和不大。若想让 C3 部分的原子颜色更突出，可把 C3 部分对应表示的色标范围设为比我们之前用的 -10~10 更小的值；例如，改为 -6 到 6 会得到满意的图形。</p>
+</blockquote>
+<h4 id="关于确定单个氢键的结合能"><strong>关于确定单个氢键的结合能</strong></h4>
+<p>一些读者可能想到，若能独立确定 G-C 之间三个氢键各自的结合能就好了。实现此目标没有唯一的方式，因为这相当于把体系划分成几部分，必然带有任意性。一个看似简便的实现方法是把一个氢键的供体与受体部分直接定义为两个片段。例如，考察 N10-H13...O14 氢键，我们输入</p>
+<p><pre><code class="language-text">2  // Redefine fragments
+2  // Two fragments will be defined
+10,13  // Atomic indices of donor part of N10-H13...O14
+14  // Atomic index of acceptor part of N10-H13...O14
+1  // Perform EDA-FF analysis</code></pre></p>
+<p>结果为</p>
+<p><pre><code class="language-text">                         Electrostatic   Repulsion   Dispersion     Total
+ Frag   1 -- Frag   2:        71.27        21.78        -9.40        83.65</code></pre></p>
+<p>显然该结果不合理，因为总结合能被预测为正值！根本原因是静电相互作用是长程效应（1/<em>r</em> 渐近行为），故不能简单忽略其它原子的影响。我也尝试过用其它方式评估 N10-H13...O14 氢键结合能，尽管其中一些给出看似可接受的结果（例如，把 N10、H12、H13 和 O14 对总 G-C 结合能的原子贡献加起来），但遗憾的是三个氢键的相对强弱无法得到忠实解释。依我之见，基于 EDA-FF 不可能对该体系导出单个氢键的相互作用能，原因是三个氢键靠得太近因而耦合很强，极化效应明显，同时这些氢键中还涉及共振助效，这些因素使三个氢键的总相互作用能很难被合理分解。不过，若有若干氢键且位点彼此相距很远，则应有可能通过估计相应局域区域中原子间的相互作用能来单独评估每个氢键的强度。</p>
+<p>AFAIK，确定单个氢键结合能的最好方法是用分子中的原子 (AIM) 分析，参见<a href="sec-4-2-topology-analysis.html#421-2-%E5%90%A1%E5%93%86%E9%86%87-2-%E6%B0%A8%E5%9F%BA%E5%90%A1%E5%95%B6%E7%9A%84%E5%88%86%E5%AD%90%E4%B8%AD%E7%9A%84%E5%8E%9F%E5%AD%90-aim-%E6%8B%93%E6%89%91%E5%88%86%E6%9E%90%E4%B8%8E%E8%8A%B3%E9%A6%99%E6%80%A7%E5%88%86%E6%9E%90">4.2.1节</a>中的介绍和说明。</p>
+<h4 id="其它方面"><strong>其它方面</strong></h4>
+<p>值得注意的是，除 SAPT 外，评估色散相互作用能的一个可能可行的方法是使用 DFT-D3 色散校正，采用对完全不能描述色散相互作用的交换-相关泛函拟合的 zero-damping 参数。该策略已用于<a href="sec-4-100-other-functions-part-1.html#41008-%E4%BD%BF%E7%94%A8%E7%BB%84%E5%90%88%E7%9A%84%E7%A2%8E%E7%89%87%E6%B3%A2%E5%87%BD%E6%95%B0-fragment-wavefunction%E8%BF%9B%E8%A1%8C%E7%AE%80%E5%8D%95%E7%9A%84%E8%83%BD%E9%87%8F%E5%88%86%E8%A7%A3-energy-decomposition">4.100.8节</a>所示的能量分解分析例子中。用 zero-damping BLYP 泛函参数算得的片段间相互作用能的 DFT-D3 色散校正如下所示</p>
+<p><pre><code class="language-text">C -- G: -26.65 kJ/mol
+C -- C3: -87.78 kJ/mol
+G -- C3: -115.10 kJ/mol</code></pre></p>
+<p>可见这三个值与 AMBER 力场评估的相应色散相互作用能（分别为 -45.54、-94.69、-132.62）接近，说明用 AMBER 力场或 DFT-D3 估计色散相互作用能都是合理的途径。</p>
+<p>用 UFF 做 EDA-FF 分析常常不理想。若对本体系这样做，结果为</p>
+<p><pre><code class="language-text">                         Electrostatic   Repulsion   Dispersion     Total
+ Frag   1 -- Frag   2:      -120.98       848.28       -80.36       646.94
+ Frag   1 -- Frag   3:         1.88        52.65      -107.41       -52.87
+ Frag   2 -- Frag   3:         0.71        68.89      -143.58       -73.99</code></pre></p>
+<p>可见 UFF 预测的 C3-C 与 C3-G 相互作用正常，量级与 AMBER 算出的接近，但 G-C 的相互作用能为很大的正值，显然完全不合理。从数据容易发现原因是交换-排斥成分被严重高估。这不是个别现象，而是 UFF 的普遍现象，这也是我一般不推荐基于 UFF 做 EDA-FF 的原因（尽管在 EDA-FF 之前用 UFF 优化几何可缓解此问题）。</p>
+<p>如<a href="sec-3-24-energy-decomposition-analysis.html#3241-%E5%9F%BA%E4%BA%8E%E5%88%86%E5%AD%90%E5%8A%9B%E5%9C%BA-force-field-ff-%E7%9A%84%E8%83%BD%E9%87%8F%E5%88%86%E8%A7%A3%E5%88%86%E6%9E%90-eda-ff">3.24.1节</a>所述，对非常大的体系，用非常便宜的 EEM 电荷（参数对 B3LYP/6-31G* 水平的 CHELPG 电荷拟合）代替严格导出的 ESP 拟合电荷做 EDA-FF 分析可能是可行的选择；但我的测试表明此处理会对本体系的静电相互作用造成显著误差。基于 EEM 电荷评估的 G 与 C 之间的静电相互作用能仅为 -74.26 kJ/mol，远低于基于 MK 电荷评估的值 (-120.98 kJ/mol)。因此，只要可能，强烈推荐在 EDA-FF 分析中使用 ESP 拟合电荷 (MK 或 CHELPG)，这对得到精度满意的静电相互作用能至关重要。</p>
+<h2 id="4212-乙烷旋转位垒的-shubin-liu-能量分解分析"><strong>4.21.2 乙烷旋转位垒的 Shubin Liu 能量分解分析</strong></h2>
+<p>Shubin Liu 能量分解 (EDA-SBL) 的思想和用法已在<a href="sec-3-24-energy-decomposition-analysis.html#3242-shubin-liu-%E8%83%BD%E9%87%8F%E5%88%86%E8%A7%A3">3.24.2节</a>中描述。本节用 EDA-SBL 方法研究乙烷优化过的 eclipsed 与 staggered 构象之间能量差的来源。相关输入输出文件已放在 &quot;examples\EDA\EDA_SBL&quot; 文件夹中。</p>
+<p>首先，用 Gaussian 在 B3LYP/def-TZVP 水平下优化 staggered 构象（D₃ 点群）和 eclipsed 构象（D$_{3h}$ 点群）的乙烷，后者实际是过渡态。然后用这些几何构型创建两个 Gaussian 输入文件，即 <em>ethane_staggered.gjf</em> 和 <em>ethane_eclipsed.gjf</em>，这两个文件对应 B3LYP/def2-TZVP 水平的单点任务。如<a href="sec-3-24-energy-decomposition-analysis.html#3242-shubin-liu-%E8%83%BD%E9%87%8F%E5%88%86%E8%A7%A3">3.24.2节</a>所述，route 部分包含 <em>ExtraLinks=L608</em> 关键词，输入文件末尾有 <em>-5</em> 行，表示当前用的泛函是 B3LYP。</p>
+<p>用 Gaussian 运行这两个 .gjf 文件分别得到 <em>ethane_staggered.out</em> 和 <em>ethane_eclipsed.out</em>，再用 formchk 把产生的 .chk 文件转为 .fch 文件。</p>
+<p>我们先对 staggered 乙烷评估 EDA-SBL 方法定义的能量项。启动 Multiwfn 并输入</p>
+<p><pre><code class="language-text">examples\EDA\EDA_SBL\ethane_staggered.fch
+21  // Energy decomposition analysis
+2  // Shubin Liu's energy decomposition
+examples\EDA\EDA_SBL\ethane_staggered.out</code></pre></p>
+<p>此时 Multiwfn 从 Gaussian 输出文件中载入相关信息，再评估 EDA-SBL 方法定义的 steric 项。最后打印 EDA-SBL 能量成分：</p>
+<p><pre><code class="language-text"> E_steric:              64.213411 Hartree
+ E_electrostatic:     -146.114859 Hartree
+ E_quantum:              2.037465 Hartree
+
+ E_total:              -79.863983 Hartree</code></pre></p>
+<p>E_total 与 Gaussian 输出文件中的单点能一致。</p>
+<p>对 eclipsed 乙烷重复上述分析，再把数据汇总为下表</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><em>E</em>$_{total}$</th>
+<th><em>E</em>$_{steric}$</th>
+<th><em>E</em>$_{electrostatic}$</th>
+<th><em>E</em>$_{quantum}$</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Eclipsed (a.u.)</td>
+<td>-79.85972</td>
+<td>64.21925</td>
+<td>-146.10780</td>
+<td>2.02883</td>
+</tr>
+<tr>
+<td>Staggered (a.u.)</td>
+<td>-79.86398</td>
+<td>64.21341</td>
+<td>-146.11486</td>
+<td>2.03747</td>
+</tr>
+<tr>
+<td>Diff. (kJ/mol)</td>
+<td>11.2</td>
+<td>15.3</td>
+<td>18.5</td>
+<td>-22.7</td>
+</tr>
+</tbody></table>
+<p>可见 eclipsed 构象能量比 staggered 高 11.2 kJ/mol，对应乙烷 C-C 单键旋转位垒。数据表明空间 (steric) 效应应是位垒的主要来源之一，因为 Δ $E_{\mathrm{steric}}$ 明显为正。此外，相当大的 Δ $E_{\mathrm{electrostatic}}$ =18.5 kJ/mol 表明静电相互作用是决定位垒高度的主导因素。相比之下，$E_{\mathrm{quantum}}$ 的变化反映纯粹由量子效应引起的能量变化，它显著抵消了空间和经典静电项，因而对降低位垒起重要作用。</p>
+<p>从屏幕上可见，EDA-SBL 模块还打印了构成 $E_{\mathrm{steric}}$、$E_{\mathrm{electrostatic}}$ 和 $E_{\mathrm{quantum}}$ 的其它中间量，如 Pauli 动能，故可用它们尝试从更多角度分析两种构象的能量差。</p>
+<p>用 EDA-SBL 方法对一系列小有机分子的旋转位垒的透彻分析见 <em>J. Phys. Chem. A</em>, <strong>117</strong>, 962 (2013)，建议感兴趣的用户阅读。</p>
+<h2 id="4213-sobeda-与-sobedaw-能量分解分析示例"><strong>4.21.3 sobEDA 与 sobEDAw 能量分解分析示例</strong></h2>
+<p><em>sobEDA.sh</em> shell 脚本用于基于 Gaussian 和 Multiwfn 方便地做 sobEDA 与 sobEDAw 能量分解分析。<a href="http://sobereva.com/soft/sobEDA_tutorial.zip">http://sobereva.com/soft/sobEDA_tutorial.zip</a> 中有非常详细的介绍和丰富的应用例子，请仔细查看。</p>
+<h2 id="4214-原子对色散能贡献分析示例"><strong>4.21.4 原子对色散能贡献分析示例</strong></h2>
+<blockquote>
+<p><strong>注</strong></p>
+<p>本节的中文版是我的博客文章&quot;使用 Multiwfn 图形化展示原子对色散能的贡献和色散密度&quot; (<a href="http://sobereva.com/705">http://sobereva.com/705</a>)，其中有更多例子和讨论。</p>
+</blockquote>
+<p>本节给出原子对色散能贡献以及色散能分析的一些例子。请先仔细阅读<a href="sec-3-24-energy-decomposition-analysis.html#3244-%E5%8E%9F%E5%AD%90%E5%AF%B9%E8%89%B2%E6%95%A3%E8%83%BD%E8%B4%A1%E7%8C%AE%E7%9A%84%E5%88%86%E6%9E%90">3.24.4节</a>掌握基础知识，并了解如何在 <em>settings.ini</em> 中设置&quot;dftd3path&quot;。</p>
+<h3 id="42141-考察-helicene-中原子贡献的色散能和色散密度"><strong>4.21.4.1 考察 helicene 中原子贡献的色散能和色散密度</strong></h3>
+<p>本例考察 6-helicene 中哪些原子对色散能有突出贡献。启动 Multiwfn 并输入</p>
+<p><pre><code class="language-text">examples\helicene.xyz  // Structure file of 6-helicene
+21  // Energy decomposition analysis
+4  // Analysis of atomic contribution to dispersion energy
+1  // Calculate atomic contributions to dispersion energy for current system</code></pre></p>
+<p>屏幕上会立即看到以下信息，其中包含当前体系的总色散，即带 B3LYP 拟合参数的 DFT-D3(BJ) 色散校正能。同时清楚给出了原子对色散能的贡献。</p>
+<p><pre><code class="language-text">Total dispersion energy:     -74.468 kcal/mol
+
+ Atomic contribution to dispersion energy
+     1(C )    -2.681 kcal/mol
+     2(C )    -2.072 kcal/mol
+     3(C )    -2.068 kcal/mol
+     4(C )    -2.650 kcal/mol
+     5(C )    -3.432 kcal/mol
+[...ignored]
+    40(H )    -0.569 kcal/mol
+    41(H )    -0.511 kcal/mol
+    42(H )    -0.614 kcal/mol</code></pre>
+接下来可输入 <em>y</em> 把 <em>atomdisp.pqr</em> 导出到当前文件夹。把它载入 VMD 程序，在&quot;Graphics&quot; - &quot;Representation&quot;界面中，把&quot;Drawing Method&quot;设为 CPK，&quot;Coloring Method&quot;设为&quot;Charge&quot;，再在&quot;Trajectory&quot;面板中把色标下限和上限分别设为 -5.0 和 5.0，可见下图。由于 VMD 默认色标为红-白-蓝，此图中颜色越红的原子，其对色散能的贡献越负，与其它原子的色散相互作用越强。</p>
+<p><img src="assets/figures/ch4/image1289.png" alt="The zeolite framework"></p>
+<p>从上图可见，碳原子对色散能的贡献远大于氢，越靠近 helicene 中心的碳原子贡献越大。原因很容易理解，因为越靠近分子中心的碳原子，能与其它原子有越丰富的色散相互作用。</p>
+<p>接下来计算色散密度 (dispersion density)。选择选项&quot;2 Calculate dispersion density for current system&quot;，再选&quot;Medium-quality grid&quot;，会发现 <em>dispdens.cub</em> 已导出到当前文件夹，它是色散密度的 cube 文件（单位 kcal/mol/Bohr³）。把它载入 VMD，以 -0.15 为等值面画等值面图并用透明材质，再把分子结构图的表示方式设为 licorice，可得下图。图中异值面分布清楚表明 helicene 内部区域比其它区域对色散能有相对更显著的贡献。</p>
+<p><img src="assets/figures/ch4/image1290.png" alt="Zeolite atoms coloured according to their charge"></p>
+<p>值得注意的是，本功能中可用选项 6 计算任意定义的两个片段之间的色散相互作用能。例如，要计算 helicene 两端两个六元碳环之间的色散相互作用能，选此选项后应输入 <em>17-22</em> 再输入 <em>11-12,23-26</em>，可见</p>
+<p><pre><code class="language-text">Dispersion interaction energy between the fragments:      -2.809 kcal/mol</code></pre></p>
+<h3 id="42142-actos-两种构象的色散能差异"><strong>4.21.4.2 actos 两种构象的色散能差异</strong></h3>
+<p>Actos 是柔性药物分子，其卷曲构象与线型构象的 xyz 文件已分别作为 <em>Actos_curly.xyz</em> 和 <em>Actos_linear.xyz</em> 放在&quot;examples&quot;文件夹中。本节考察卷曲构象相对线型构象原子对色散能贡献的变化。启动 Multiwfn 并输入</p>
+<p><pre><code class="language-text">examples\Actos_curly.xyz
+21  // Energy decomposition analysis
+4  // Analysis of atomic contribution to dispersion energy
+3  // Calculate difference of atomic contributions to dispersion energy between current and another systems
+[Press ENTER button]  // All atoms in the present system (Actos_curly.xyz) are of interest
+examples\Actos_linear.xyz
+[Press ENTER button]  // All atoms in Actos_curly.xyz are of interest</code></pre></p>
+<p>从屏幕输出可知 <em>Actos_linear.xyz</em> 与 <em>Actos_curly.xyz</em> 的总色散能分别为 -57.553 kcal/mol 和 -69.757 kcal/mol，可见卷曲构象的色散相互作用更显著。同时屏幕上还打印了每个原子对两结构色散能贡献的差值。</p>
+<p>然后输入 <em>y</em>，当前目录下会生成 <em>diffatomdisp.pqr</em>，其中&quot;charge&quot;属性记录 <em>Actos_curly.xyz</em> 每个原子贡献的色散能减去 <em>Actos_linear.xyz</em> 每个原子贡献的色散能，该文件中的原子坐标与 <em>Actos_curly.xyz</em> 相同。基于此文件用 VMD 画分子结构并按&quot;charge&quot;属性给原子着色，色标范围设为 -1.0 到 1.0 kcal/mol，可得下方左侧的图（色标条是从&quot;Graphics&quot; - &quot;Color&quot; - &quot;Color Scale&quot;面板截取再用 Powerpoint 手工制作的），下方右侧图中的原子按元素名着色以资比较（黄/青/红/蓝/白分别为硫/碳/氧/氮/氢）。</p>
+<p><img src="assets/figures/ch4/image1291.png" alt="The dispersion energy contributed by each atom shown with the colour scale"></p>
+<p>上方左图中越红的原子，对应在线型构象变为卷曲构象过程中对色散能变化贡献越多的原子。可见色散相互作用的增强主要发生在构象卷曲后能与其它原子靠得更近的原子上。白色原子的色散效应主要分布在边角处，变化不显著。</p>
+<p>Multiwfn 还能生成色散密度的差值格点数据。在本功能中输入以下命令</p>
+<p><pre><code class="language-text">4  // Calculate dispersion density difference between current and another system
+[Press ENTER button]  //All atoms in the present system (Actos_curly.xyz) are of interest
+examples\Actos_linear.xyz  // Another system</code></pre></p>
+<p><img src="assets/figures/ch4/image1292.png" alt="Dispersion density isosurfaces"></p>
+<h3 id="42143-甲苯在沸石上的吸附"><strong>4.21.4.3 甲苯在沸石上的吸附</strong></h3>
+<p>本节说明对周期性体系的分析。&quot;examples&quot;文件夹中的 <em>zeolite.cif</em> 与 <em>zeolite-mol.cif</em> 分别是沸石以及吸附了甲苯的沸石的结构文件，后者由 CP2K 程序在 PBE-D3(BJ)/DZVP-MOLOPT-SR-GTH 水平下优化，前者的坐标直接从后者中提取。这两个 .cif 文件都可用作原子对色散能贡献分析和色散密度计算的输入文件。因为 .cif 文件向 Multiwfn 提供了晶胞信息，计算会自动考虑周期性。</p>
+<p>首先，用与<a href="#42141-%E8%80%83%E5%AF%9F-helicene-%E4%B8%AD%E5%8E%9F%E5%AD%90%E8%B4%A1%E7%8C%AE%E7%9A%84%E8%89%B2%E6%95%A3%E8%83%BD%E5%92%8C%E8%89%B2%E6%95%A3%E5%AF%86%E5%BA%A6">4.21.4.1节</a>所述完全相同的方式对 <em>zeolite-mol.cif</em> 做分析并按原子对色散能的贡献给原子着色，色标设为 -8.0 到 8.0 kcal/mol，可得下图。只有吸附的甲苯原子（对应文件中的 217-231 号原子）显示为大球。从图可见硅原子对色散能的贡献最大，远大于氧和碳原子，甲苯中的氢原子贡献最小。</p>
+<p><img src="assets/figures/ch4/image1293.png" alt="The zeolite-toluene adsorption model"></p>
+<p><pre><code class="language-text">examples\zeolite-mol.cif
+21  // Energy decomposition analysis
+4  // Analysis of atomic contribution to dispersion energy
+3  // Calculate difference of atomic contributions to dispersion energy between current and another systems
+1-216  // The atoms of interest are those of the zeolite moiety (first 216 atoms) in the current system (zeolite-mol.cif)
+examples\zeolite.cif  // Another system
+[Press ENTER button directly]  // The atoms of interest are all 216 atoms in zeolite.cif, which also correspond to atoms 1-216 in zeolite-mol.cif
+y  // Export diffatomdisp.pqr in current folder</code></pre></p>
+<p>把 <em>diffatomdisp.pqr</em> 载入 VMD，按&quot;charge&quot;属性给原子着色，色标设为 -0.8 到 0.8，可见</p>
+<p><img src="assets/figures/ch4/image1294.png" alt="Difference dispersion density of the two conformations"></p>
+<p>上图中吸附的甲苯全为白色，因为它不在我们先前定义的 <em>zeolite-mol.cif</em> 感兴趣原子范围内，故其数据全为零。图中的粉色或红色原子表明靠近甲苯的沸石原子贡献的色散能因吸附发生了很大变化。由于 <em>zeolite-mol.cif</em> 中沸石部分的构型与 <em>zeolite.cif</em> 相同，故上图中原子颜色完全反映沸石原子与甲苯之间的色散相互作用。从图可见色散相互作用随距离衰减非常快（已知为 1/ $r^6$ 衰减行为）。基本上，只有离甲苯最近一层的沸石原子才与它有显著的色散相互作用。</p>
+<p>上图可改为下图，其中与甲苯有显著相互作用的沸石原子显示得清楚得多。具体而言，在 VMD 的&quot;Graphics&quot; - &quot;Representation&quot;界面中应创建三个 Rep</p>
+<ul>
+<li><p>Rep 1：显示甲苯，按 Name 着色，用 Licorice 风格和 BrushedMetal 材质显示</p>
+</li>
+<li><p>Rep 2：用选择 <em>serial 1 to 216</em> 显示整个沸石，绘制方式设为 Licorice（Bond Radius = 0.1），着色方式设为&quot;Charge&quot;，材质设为 Transparent</p>
+</li>
+<li><p>Rep 3：显示&quot;charge&quot;属性比 -0.2 更负（用选择 <em>charge&lt;-0.2</em>）的沸石原子，用 CPK 绘制方式和&quot;Charge&quot;着色方式。</p>
+</li>
+</ul>
+<p><img src="assets/figures/ch4/image1295.png" alt="Difference dispersion density of toluene adsorbed on zeolite"></p>
+<p>在本节末尾强调，在做原子色散能贡献或色散密度的差值分析时，两个体系中所选感兴趣原子范围的原子数必须相同，原子顺序也必须相同，否则显而易见，两个体系做差时原子贡献的色散能会混淆。</p>
+</article></main><aside id="tocwrap"><div id="toc"></div></aside></div>
+<div id="pal" hidden><div id="palbox"><input id="palq" placeholder="搜标题…（↑↓ 选择，回车打开，Esc 关闭）"><div id="palres"></div></div></div>
+<script>const NAV=[{"group":"首页","items":[{"f":"index","t":"Multiwfn 中文手册"}]},{"group":"应用与索引","items":[{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"}]},{"group":"分功能详表","items":[{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"}]},{"group":"手册章节","items":[],"subs":[{"title":"第一章 概述","items":[]},{"title":"第二章 通用信息","items":[]},{"title":"第三章 功能","items":[]},{"title":"第四章 教程实例","items":[]}]},{"group":"附录","items":[{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"}]}];const CUR="sec-4-21-energy-decomposition-analysis";const ROOT="";const ALL=[{"f":"index","t":"Multiwfn 中文手册"},{"f":"APPLIED_INDEX","t":"Multiwfn 应用导览（按实验问题组织）"},{"f":"EXP_GUIDE","t":"实验-计算对照指南"},{"f":"MENU_INDEX","t":"Multiwfn 菜单操作路径索引"},{"f":"GLOSSARY","t":"Multiwfn 中英术语表（英文主键）"},{"f":"FAQ","t":"Multiwfn 避坑表（FAQ）"},{"f":"PARAMS","t":"Multiwfn 参数关键词表"},{"f":"menu/func-00","t":"主功能0：显示分子结构与查看轨道/等值面"},{"f":"menu/func-01","t":"主功能1：在某一点输出所有性质"},{"f":"menu/func-02","t":"主功能2：拓扑分析"},{"f":"menu/func-03","t":"主功能3：在一条线上输出并绘制特定性质"},{"f":"menu/func-04","t":"主功能4：在平面内输出并绘制特定性质"},{"f":"menu/func-05","t":"主功能5：在空间区域内输出并绘制特定性质"},{"f":"menu/func-06","t":"主功能6：检查和修改波函数"},{"f":"menu/func-07","t":"主功能7：布居分析与原子电荷计算"},{"f":"menu/func-08","t":"主功能8：轨道成分分析"},{"f":"menu/func-09","t":"主功能9：键级分析"},{"f":"menu/func-10","t":"主功能10：态密度（DOS）、光电子能谱（PES）与 COHP 分析"},{"f":"menu/func-11","t":"主功能11：光谱绘制"},{"f":"menu/func-12","t":"主功能12：分子表面定量分析"},{"f":"menu/func-13","t":"主功能13：处理格点数据"},{"f":"menu/func-14","t":"主功能14：自适应自然密度划分（AdNDP）分析"},{"f":"menu/func-15","t":"主功能15：模糊原子空间分析"},{"f":"menu/func-16","t":"主功能16：电荷分解分析与轨道相互作用图"},{"f":"menu/func-17","t":"主功能17：盆分析"},{"f":"menu/func-18","t":"主功能18：电子激发分析"},{"f":"menu/func-19","t":"主功能19：轨道定域化分析"},{"f":"menu/func-20","t":"主功能20：弱相互作用可视化"},{"f":"menu/func-21","t":"主功能21：能量分解分析"},{"f":"menu/func-22","t":"主功能22：概念密度泛函理论（CDFT）分析"},{"f":"menu/func-23","t":"主功能23：ETS-NOCV 分析"},{"f":"menu/func-24","t":"主功能24：（超）极化率分析"},{"f":"menu/func-25","t":"主功能25：电子离域与芳香性分析"},{"f":"menu/func-100","t":"主功能100：其他功能，第1部分"},{"f":"menu/func-200","t":"主功能200：其它功能，第二部分"},{"f":"menu/func-300","t":"主功能300：其它功能，第三部分"},{"f":"sec-5-1-make-multiwfn-support-more-quantum-chemistry-programs","t":"5.1 使 Multiwfn 支持更多的量子化学程序"},{"f":"sec-5-2-running-multiwfn-in-silent-mode","t":"5.2 以静默模式运行 Multiwfn"},{"f":"sec-5-3-running-multiwfn-in-batch-mode","t":"5.3 以批处理模式运行 Multiwfn"},{"f":"sec-5-4-copy-outputs-from-command-line-window-to-clipboard","t":"5.4 从命令行窗口复制输出到剪贴板"},{"f":"sec-5-5-make-command-line-window-capable-of-recording-more-outputs","t":"5.5 让命令行窗口能够记录更多输出"},{"f":"sec-5-6-rapidly-load-a-file-into-multiwfn","t":"5.6 快速将文件载入 Multiwfn"},{"f":"sec-5-7-make-use-of-cubegen-utility-in-gaussian-package","t":"5.7 利用 Gaussian 软件包中的 cubegen 工具以减少计算耗时"},{"f":"sec-5-8-some-tips-on-achieving-ideal-drawing-quality","t":"5.8 获得理想绘图质量的一些技巧"},{"f":"sec-6-1-setting-up-running-environment-for-gaussian-in-windows","t":"6.1 在 Windows 下为 Gaussian 设置运行环境"},{"f":"sec-6-2-the-routines-for-evaluating-real-space-functions","t":"6.2 计算实空间函数的程序"},{"f":"sec-6-3-detail-of-built-in-atomic-densities","t":"6.3 内建原子密度的细节"},{"f":"sec-6-4-details-about-supplying-inner-core-electron-density","t":"6.4 关于为涉及赝势的波函数补充内层电子密度的细节"},{"f":"sec-6-5-check-sanity-of-wavefunction","t":"6.5 检查波函数的合理性"},{"f":"sec-6-6-special-functions","t":"6.6 特殊功能"},{"f":"sec-6-7-about-providing-fock-ks-matrix-to-multiwfn","t":"6.7 关于向 Multiwfn 提供 Fock/KS 矩阵"},{"f":"2-general-information","t":"2 通用信息 (General information)"},{"f":"sec-2-1-install","t":"2.1 安装"},{"f":"sec-2-2-using-multiwfn","t":"2.2 使用 Multiwfn"},{"f":"sec-2-3-files-of-multiwfn","t":"2.3 Multiwfn 的文件"},{"f":"sec-2-4-parallel-implementation","t":"2.4 并行实现"},{"f":"sec-2-5-input-files-and-wavefunction-types","t":"2.5 输入文件与波函数类型"},{"f":"sec-2-6-real-space-functions","t":"2.6 实空间函数"},{"f":"sec-2-7-user-defined-real-space-function","t":"2.7 自定义实空间函数"},{"f":"sec-2-8-graphic-formats-and-image-size","t":"2.8 图形格式与图像尺寸"},{"f":"sec-2-9-analysis-of-periodic-systems","t":"2.9 周期体系的分析"},{"f":"3-functions","t":"3 功能 (Functions)"},{"f":"sec-3-2-showing-molecular-structure","t":"3.2 显示分子结构与查看轨道/等值面 (0)"},{"f":"sec-3-3-outputting-all-properties-at-a-point","t":"3.3 在某一点输出所有性质 (1)"},{"f":"sec-3-4-outputting-and-plotting-specific-property-in-a-line","t":"3.4 在一条线上输出并绘制特定性质 (3)"},{"f":"sec-3-5-outputting-and-plotting-specific-property-in-a-plane","t":"3.5 在平面内输出并绘制特定性质 (4)"},{"f":"sec-3-6-outputting-and-plotting-specific-property-within-a-spatial-region","t":"3.6 在空间区域内输出并绘制特定性质 (5)"},{"f":"sec-3-7-custom-operation-promolecular-and-deformation-properties","t":"3.7 自定义操作、前分子与变形性质 (Custom operation, promolecular and deformation properties)（选"},{"f":"sec-3-8-checking-and-modifying-wavefunction","t":"3.8 检查和修改波函数 (6)"},{"f":"sec-3-9-population-analysis-and-calculation-of-atomic-charges","t":"3.9 布居分析 (Population analysis)与原子电荷计算 (7)"},{"f":"sec-3-10-orbital-composition-analysis","t":"3.10 轨道成分分析 (8)"},{"f":"sec-3-11-bond-order-analysis","t":"3.11 键级分析(Bond order analysis) (9)"},{"f":"sec-3-12-plotting-density-of-states-pes-and-cohp","t":"3.12 绘制态密度(density-of-states, DOS)、光电子能谱(photoelectron spectrum, PES)和COHP (10)"},{"f":"sec-3-13-plotting-spectra","t":"3.13 绘制IR、Raman、UV-Vis、ECD、VCD、ROA和NMR光谱 (11)"},{"f":"sec-3-14-topology-analysis","t":"3.14 拓扑分析(topology analysis) (2)"},{"f":"sec-3-15-quantitative-analysis-of-molecular-surface","t":"3.15 分子表面的定量分析 (12)"},{"f":"sec-3-16-processing-grid-data","t":"3.16 处理格点数据 (13)"},{"f":"sec-3-17-adaptive-natural-density-partitioning-analysis","t":"3.17 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析 (14)"},{"f":"sec-3-18-fuzzy-atomic-space-analysis","t":"3.18 模糊原子空间分析 (15)"},{"f":"sec-3-19-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"3.19 电荷分解分析与绘制轨道相互作用图 (16)"},{"f":"sec-3-20-basin-analysis","t":"3.20 Basin 分析 (17)"},{"f":"sec-3-21-electron-excitation-analysis","t":"3.21 电子激发分析 (18)"},{"f":"sec-3-22-orbital-localization-analysis","t":"3.22 轨道定域化分析 (19)"},{"f":"sec-3-23-visual-study-of-weak-interaction","t":"3.23 弱相互作用 (weak interaction)的可视化研究 (20)"},{"f":"sec-3-24-energy-decomposition-analysis","t":"3.24 能量分解分析 (21)"},{"f":"sec-3-25-conceptual-density-functional-theory-analysis","t":"3.25 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析 (22)"},{"f":"sec-3-26-ets-nocv-analysis","t":"3.26 扩展过渡态-化学价自然轨道 (Extended Transition State - Natural Orbitals for Chemical Va"},{"f":"sec-3-27-hyperpolarizability-analysis","t":"3.27 （超）极化率分析 (24)"},{"f":"sec-3-28-electron-delocalization-and-aromaticity-analyses","t":"3.28 电子离域与芳香性分析 (25)"},{"f":"sec-3-100-other-functions-part-1","t":"3.100 其他功能，第1部分(Other functions, part 1) (100)"},{"f":"sec-3-200-other-functions-part-2","t":"3.200 其它功能，第二部分 (200)"},{"f":"sec-3-300-other-functions-part-3","t":"3.300 其它功能，第三部分 (300)"},{"f":"4-tutorials-and-examples","t":"4 教程与实例 (Tutorials and Examples)"},{"f":"sec-4-prologue-and-generation-of-input-files","t":"序言与输入文件的生成"},{"f":"sec-4-0-view-orbitals-and-structure","t":"4.0 观察轨道与结构"},{"f":"sec-4-1-calculate-properties-at-a-point","t":"4.1 在单点处计算性质"},{"f":"sec-4-2-topology-analysis","t":"4.2 拓扑分析"},{"f":"sec-4-3-output-and-plot-various-properties-in-a-line","t":"4.3 在一条线上输出并绘制各种性质"},{"f":"sec-4-4-output-and-plot-various-properties-in-a-plane","t":"4.4 在平面内输出和绘制各种性质"},{"f":"sec-4-5-generate-grid-data-and-view-isosurface-map","t":"4.5 产生格点数据并查看等值面图"},{"f":"sec-4-6-modify-and-check-wavefunction","t":"4.6 修改和检查波函数"},{"f":"sec-4-7-population-analysis-and-atomic-charge-calculation","t":"4.7 布居分析与原子电荷计算"},{"f":"sec-4-8-molecular-orbital-composition-analysis","t":"4.8 分子轨道组成分析"},{"f":"sec-4-9-bond-order-analysis","t":"4.9 键级分析"},{"f":"sec-4-10-plot-density-of-states-dos-maps","t":"4.10 绘制态密度 (density-of-states, DOS) 图"},{"f":"sec-4-11-plot-various-kinds-of-spectra","t":"4.11 绘制各种光谱 (spectrum)"},{"f":"sec-4-12-quantitative-analysis-of-molecular-surface","t":"4.12 分子表面的定量分析 (Quantitative analysis of molecular surface)"},{"f":"sec-4-13-process-grid-data","t":"4.13 处理格点数据 (Process grid data)"},{"f":"sec-4-14-adaptive-natural-density-partitioning-adndp-analysis","t":"4.14 自适应自然密度划分 (Adaptive natural density partitioning, AdNDP) 分析"},{"f":"sec-4-15-fuzzy-atomic-space-analysis","t":"4.15 模糊原子空间 (Fuzzy atomic space) 分析"},{"f":"sec-4-16-charge-decomposition-analysis-and-orbital-interaction-diagram","t":"4.16 电荷分解分析与绘制轨道相互作用图"},{"f":"sec-4-17-basin-analysis","t":"4.17 流域 (Basin) 分析"},{"f":"sec-4-18-electron-excitation-analysis","t":"4.18 电子激发分析"},{"f":"sec-4-19-orbital-localization-analysis","t":"4.19 轨道定域化 (Orbital localization) 分析"},{"f":"sec-4-20-visual-study-of-weak-interactions","t":"4.20 弱相互作用的可视化研究"},{"f":"sec-4-21-energy-decomposition-analysis","t":"4.21 能量分解分析 (Energy decomposition analysis)"},{"f":"sec-4-22-examples-of-conceptual-density-functional-theory-cdft-analysis","t":"4.22 概念密度泛函理论 (conceptual density functional theory, CDFT) 分析实例"},{"f":"sec-4-23-examples-of-ets-nocv-analysis","t":"4.23 ETS-NOCV 分析的例子"},{"f":"sec-4-24-examples-of-hyperpolarizability-analyses","t":"4.24 (超)极化率分析的例子"},{"f":"sec-4-25-examples-of-electron-delocalization-and-aromaticity-analyses","t":"4.25 电子离域和芳香性分析的例子"},{"f":"sec-4-100-other-functions-part-1","t":"4.100 其他功能 (Other functions)（第1部分，Part 1）"},{"f":"sec-4-200-other-functions-part-2","t":"4.200 其他功能（第二部分）"},{"f":"sec-4-300-other-functions-part-3","t":"4.300 其他功能（第三部分）"},{"f":"sec-4-A-special-topics-and-advanced-tutorials","t":"4.A 专题与高级教程"}];</script>
+<script src="app.js"></script></body></html>
