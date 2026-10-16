@@ -17,7 +17,7 @@ $$
 E_{\mathrm{HF}}
 = \sum_i^{\mathrm{occ}} h_{ii}
 + \frac{1}{2}\sum_{ij}^{\mathrm{occ}}(J_{ij}-K_{ij}).
-\tag{1}
+\tag{1} + \sin x + \alpha + \sin x + \cosh x + \in
 $$
 
 化学式与反应式使用 KaTeX 的 `mhchem` 语法，元素下标和反应箭头会自动排版：
